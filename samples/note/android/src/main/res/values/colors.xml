@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2015 Kejun Xia
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <color name="primary">@color/palette_blue_500</color>
+    <color name="primary_dark">@color/palette_blue_700</color>
+    <color name="accent">@color/palette_blue_700</color>
+    <color name="accent_pressed">@color/palette_blue_500</color>
+    <color name="accent_ripple">@color/palette_grey_600</color>
+    <color name="text_color_primary">@color/palette_black87p</color>
+    <color name="text_color_secondary">@color/palette_black54p</color>
+    <color name="text_color">@color/palette_black87p</color>
+    <color name="text_color2">@color/palette_black54p</color>
+    <color name="window_background">@color/palette_grey_100</color>
+    <color name="dialog_title_textColor">@color/text_color</color>
+    <color name="dialog_message_textColor">@color/text_color</color>
+
+    <color name="thumbnail_bg_color">@color/palette_black</color>
+    <color name="grid_viewer_bg">#ddd</color>
+    <color name="grid_item_checked">@color/palette_grey54p</color>
+    <color name="local_file_viewer_buttonBg">#cccccccc</color>
+
+    <color name="tab_divider_color">@color/palette_blue_700</color>
+    <color name="tab_indicator_color">@color/palette_blue_50</color>
+
+    <color name="button_flat_text">@color/accent</color>
+</resources>

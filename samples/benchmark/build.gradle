@@ -1,0 +1,74 @@
+/*
+ * Copyright 2015 Kejun Xia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'android'
+apply plugin: 'com.neenbedankt.android-apt'
+
+dependencies {
+    provided 'javax.annotation:javax.annotation-api:1.2'
+    apt "com.google.dagger:dagger-compiler:2.0"
+    compile "com.google.dagger:dagger:2.0"
+
+    compile project(':library:poke')
+}
+
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileSdkVersion rootProject.ext.androidCompileSdkVersion
+    buildToolsVersion rootProject.lib.androidBuildToolVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.androidMinSdkVersion
+        targetSdkVersion rootProject.ext.androidTargetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+        }
+
+        release {
+            debuggable false
+        }
+    }
+
+    /**
+     * Fix the issues for some libs with Android gradle build tool 0.7.+
+     */
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'LICENSE.txt'
+
+        /** exclude some more lombok files */
+        exclude 'AUTHORS'
+        exclude 'changelog.txt'
+        exclude 'release-timestamp.txt'
+        exclude 'LICENSE'
+    }
+}
