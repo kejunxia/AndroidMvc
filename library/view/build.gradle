@@ -61,7 +61,8 @@ install {
                 packaging 'aar'
 
                 // Add your description here
-                name 'Andorid MVC framework'
+                name 'AndoridMvc'
+                description 'Android MVC framework'
                 url siteUrl
 
                 // Set your license
