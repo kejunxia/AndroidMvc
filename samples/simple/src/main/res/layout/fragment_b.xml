@@ -26,7 +26,16 @@
         android:layout_marginBottom="20dp"
         android:text="Fragment B"
         android:textSize="20sp"
-        android:layout_above="@+id/fragment_b_counter"/>
+        android:layout_above="@+id/fragment_b_buttonAutoIncrement"/>
+
+    <Button
+        android:layout_width="280dp"
+        android:layout_height="80dp"
+        android:textSize="20sp"
+        android:text="Auto Increment 10 times"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/fragment_b_counter"
+        android:id="@+id/fragment_b_buttonAutoIncrement"/>
 
     <RelativeLayout
         android:layout_width="match_parent"

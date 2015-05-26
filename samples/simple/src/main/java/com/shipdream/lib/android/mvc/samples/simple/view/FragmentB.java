@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc.samples.simple.view;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,6 +38,7 @@ public class FragmentB extends MvcFragment {
     private TextView display;
     private Button increment;
     private Button decrement;
+    private Button autoIncrement;
 
     @Override
     protected int getLayoutResId() {
@@ -50,6 +52,7 @@ public class FragmentB extends MvcFragment {
         display = (TextView) view.findViewById(R.id.fragment_b_counterDisplay);
         increment = (Button) view.findViewById(R.id.fragment_b_buttonIncrement);
         decrement = (Button) view.findViewById(R.id.fragment_b_buttonDecrement);
+        autoIncrement = (Button) view.findViewById(R.id.fragment_b_buttonAutoIncrement);
 
         increment.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -80,6 +83,14 @@ public class FragmentB extends MvcFragment {
                         break;
                 }
                 return false;
+            }
+        });
+
+        autoIncrement.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CountService.class);
+                getActivity().startService(intent);
             }
         });
 
