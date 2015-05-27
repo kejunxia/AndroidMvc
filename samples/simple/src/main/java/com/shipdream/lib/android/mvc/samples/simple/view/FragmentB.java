@@ -34,7 +34,7 @@ public class FragmentB extends MvcFragment {
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;
-        private static final long INTERVAL = 500;
+        private static final long INTERVAL = 200;
 
         public ContinuousCounter(boolean incrementing) {
             this.incrementing = incrementing;

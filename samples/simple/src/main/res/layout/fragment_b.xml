@@ -20,22 +20,14 @@
                 android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:padding="10dp"
         android:text="Fragment B"
-        android:textSize="20sp"
-        android:layout_above="@+id/fragment_b_buttonAutoIncrement"/>
-
-    <Button
-        android:layout_width="280dp"
-        android:layout_height="80dp"
-        android:textSize="20sp"
-        android:text="Auto Increment 10 times"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@+id/fragment_b_counter"
-        android:id="@+id/fragment_b_buttonAutoIncrement"/>
+        android:background="#aaa"
+        android:textStyle="bold"
+        android:textSize="20sp"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -80,7 +72,24 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:padding="10dp"
-        android:text="Advanced counter view: hold plus/minus button to increment/decrement count continuously. It shares the same count controller model as the previous fragment-FragmentA. So count updated in this fragment will be picked up by previous fragment too."
+        android:text="Hold buttons to update count continuously."
         android:layout_below="@+id/fragment_b_counter"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:padding="10dp"
+        android:text="Start service to increment every second for 10 times. Note count value in all fragments and notification view will be updated in sync"
+        android:layout_above="@+id/fragment_b_buttonAutoIncrement"
+        android:id="@+id/fragment_b_autoCountDescription"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:text="Auto Increment 10 times"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/fragment_b_buttonAutoIncrement"/>
 
 </RelativeLayout>

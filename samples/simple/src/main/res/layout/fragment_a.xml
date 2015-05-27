@@ -20,27 +20,39 @@
                 android:layout_height="match_parent">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="20dp"
+        android:gravity="center"
+        android:padding="10dp"
         android:text="Fragment A"
+        android:background="#aaa"
+        android:textStyle="bold"
         android:textSize="20sp"
-        android:layout_above="@+id/fragment_a_anotherFragmentContainer"/>
+        android:id="@+id/fragment_a_title"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:padding="10dp"
+        android:text="The sample demonstrates how multiple UIs for count value are updated by the same event, including this FragmentA, the nestedFragment, next FragmentB and notification view created by AdvancedView"
+        android:layout_below="@+id/fragment_a_title"
+        android:id="@+id/fragment_a_sampleExplanation"/>
 
     <FrameLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/fragment_a_counter"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_below="@+id/fragment_a_sampleExplanation"
         android:id="@+id/fragment_a_anotherFragmentContainer"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:layout_margin="10dp"
+        android:layout_below="@+id/fragment_a_anotherFragmentContainer"
+        android:layout_margin="20dp"
         android:id="@+id/fragment_a_counter">
 
         <Button
@@ -78,8 +90,9 @@
         android:layout_height="wrap_content"
         android:textSize="18sp"
         android:padding="10dp"
-        android:text="Basic counter view: click plus/minus button to increment/decrement count. The nested fragment listening to the same count update event and display the updated count in English."
-        android:layout_below="@+id/fragment_a_counter"/>
+        android:text="Go to AdvancedView in new fragment that keep count value in sync"
+        android:layout_above="@+id/fragment_a_buttonShowAdvancedView"
+        android:id="@+id/fragment_a_buttonShowAdvancedViewExplanation"/>
 
     <Button
         android:layout_width="match_parent"
