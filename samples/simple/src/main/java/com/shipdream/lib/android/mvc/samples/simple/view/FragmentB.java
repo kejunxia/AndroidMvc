@@ -18,6 +18,7 @@ package com.shipdream.lib.android.mvc.samples.simple.view;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,32 @@ import com.shipdream.lib.android.mvc.view.MvcFragment;
 import javax.inject.Inject;
 
 public class FragmentB extends MvcFragment {
-    private static final long INTERVAL = 500;
+    private class ContinuousCounter implements Runnable {
+        private final boolean incrementing;
+        private boolean canceled = false;
+        private static final long INTERVAL = 500;
+
+        public ContinuousCounter(boolean incrementing) {
+            this.incrementing = incrementing;
+        }
+
+        @Override
+        public void run() {
+            if (!canceled) {
+                if (incrementing) {
+                    counterController.increment(this);
+                } else {
+                    counterController.decrement(this);
+                }
+
+                handler.postDelayed(this, INTERVAL);
+            }
+        }
+
+        private void cancel() {
+            canceled = true;
+        }
+    }
 
     @Inject
     private CounterController counterController;
@@ -39,10 +65,19 @@ public class FragmentB extends MvcFragment {
     private Button increment;
     private Button decrement;
     private Button autoIncrement;
+    private Handler handler;
+    private ContinuousCounter incrementCounter;
+    private ContinuousCounter decrementCounter;
 
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_b;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        handler = new Handler();
     }
 
     @Override
@@ -59,11 +94,11 @@ public class FragmentB extends MvcFragment {
             public boolean onTouch(final View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        startContinuousIncrement(v);
+                        startContinuousIncrement();
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
-                        stopContinuousIncrement(v);
+                        stopContinuousIncrement();
                         break;
                 }
                 return false;
@@ -75,11 +110,11 @@ public class FragmentB extends MvcFragment {
             public boolean onTouch(final View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        startContinuousDecrement(v);
+                        startContinuousDecrement();
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
-                        stopContinuousDecrement(v);
+                        stopContinuousDecrement();
                         break;
                 }
                 return false;
@@ -108,51 +143,28 @@ public class FragmentB extends MvcFragment {
         //automatically
     }
 
-    private boolean isIncrementingOn = false;
-    private boolean firstIncrementTriggered = false;
-    private void startContinuousIncrement(final View v) {
-        isIncrementingOn = true;
-        v.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isIncrementingOn) {
-                    firstIncrementTriggered = true;
-                    counterController.increment(v);
-                    v.postDelayed(this, INTERVAL);
-                }
-            }
-        }, INTERVAL);
+    private void startContinuousIncrement() {
+        stopContinuousIncrement();
+        incrementCounter = new ContinuousCounter(true);
+        incrementCounter.run();
     }
 
-    private void stopContinuousIncrement(View v) {
-        isIncrementingOn = false;
-        if (!firstIncrementTriggered) {
-            counterController.increment(v);
+    private void stopContinuousIncrement() {
+        if (incrementCounter != null) {
+            incrementCounter.cancel();
         }
-        firstIncrementTriggered = false;
     }
 
-    private boolean isDecrementingOn = false;
-    private boolean firstDecrementTriggered = false;
-    private void startContinuousDecrement(final View v) {
-        isDecrementingOn = true;
-        v.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isDecrementingOn) {
-                    counterController.decrement(v);
-                    v.postDelayed(this, INTERVAL);
-                }
-            }
-        }, INTERVAL);
+    private void startContinuousDecrement() {
+        stopContinuousDecrement();
+        decrementCounter = new ContinuousCounter(false);
+        decrementCounter.run();
     }
 
-    private void stopContinuousDecrement(View v) {
-        isDecrementingOn = false;
-        if (!firstDecrementTriggered) {
-            counterController.decrement(v);
+    private void stopContinuousDecrement() {
+        if (decrementCounter != null) {
+            decrementCounter.cancel();
         }
-        firstDecrementTriggered = false;
     }
 
     private void onEvent(CounterController.EventC2V.OnCounterUpdated event) {
