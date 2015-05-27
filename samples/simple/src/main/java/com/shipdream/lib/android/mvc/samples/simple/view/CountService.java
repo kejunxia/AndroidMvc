@@ -25,7 +25,6 @@ public class CountService extends MvcService{
                     counterController.increment(this);
                     handler.postDelayed(this, 1000);
                 } else {
-                    stopAutoIncrement();
                     stopSelf();
                 }
             }
@@ -60,7 +59,12 @@ public class CountService extends MvcService{
     @Override
     public void onDestroy() {
         super.onDestroy();
+        stopAutoIncrement();
         notificationManager.cancel(NOTIFICATION_ID);
+    }
+
+    public void onTaskRemoved(Intent rootIntent) {
+        stopSelf();
     }
 
     @Override
