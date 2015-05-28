@@ -75,7 +75,7 @@ public class NoteListFragment extends BaseFragment {
         mLayoutManager = new LinearLayoutManager(getActivity());
         mListView.setLayoutManager(mLayoutManager);
 
-        if (reason == Reason.FIRST_TIME) {
+        if (reason != Reason.ROTATE) {
             updateList();
         }
 
@@ -86,9 +86,8 @@ public class NoteListFragment extends BaseFragment {
         super.onResume();
         if(getCurrentOrientation() == Configuration.ORIENTATION_PORTRAIT) {
             getToolBar().setTitle("My Notes");
-        } else {
-            //otherwise let Tablet Fragment show its title
         }
+        //otherwise let Tablet Fragment show its title
     }
 
     @Override

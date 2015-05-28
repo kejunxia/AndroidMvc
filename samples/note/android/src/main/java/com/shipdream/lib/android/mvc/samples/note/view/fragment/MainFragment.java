@@ -35,18 +35,15 @@ import com.shipdream.lib.android.mvc.view.MvcActivity;
 import javax.inject.Inject;
 
 public class MainFragment extends MvcActivity.DelegateFragment {
+    @Inject
+    AppController mAppController;
     private DrawerLayout drawerLayout;
     private ViewGroup mainContainer;
     private ViewGroup navContainer;
     private ActionBarDrawerToggle drawerToggle;
     private Toolbar toolbar;
-
     private View navHome;
     private View navWeather;
-
-    @Inject
-    AppController mAppController;
-
     @Inject
     private NavigationController navigationController;
 
@@ -64,7 +61,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
         toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-        drawerLayout = (DrawerLayout)view.findViewById(R.id.drawer_container);
+        drawerLayout = (DrawerLayout) view.findViewById(R.id.drawer_container);
         mainContainer = (ViewGroup) view.findViewById(R.id.main_container);
         navContainer = (ViewGroup) view.findViewById(R.id.nav_container);
         drawerToggle = new ActionBarDrawerToggle(this.getActivity(), drawerLayout,
@@ -98,15 +95,21 @@ public class MainFragment extends MvcActivity.DelegateFragment {
         });
 
         updateNavigationUi();
+
+        //When app starts or restore, notify the app controller the original orientation
+        switch (reason) {
+            case FIRST_TIME:
+            case RESTORE:
+                mAppController.notifyOrientationChanged(
+                        convertOrientation(getResources().getConfiguration().orientation),
+                        convertOrientation(getCurrentOrientation()));
+                break;
+        }
     }
 
     @Override
     protected void onStartUp() {
         mAppController.navigateToInitialLocation();
-
-        mAppController.notifyOrientationChanged(
-                convertOrientation(Configuration.ORIENTATION_UNDEFINED),
-                convertOrientation(getCurrentOrientation()));
     }
 
     @Override
@@ -117,9 +120,9 @@ public class MainFragment extends MvcActivity.DelegateFragment {
     }
 
     private AppController.Orientation convertOrientation(int orientation) {
-        if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             return AppController.Orientation.PORTRAIT;
-        } else if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        } else if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
             return AppController.Orientation.LANDSCAPE;
         } else {
             return AppController.Orientation.UNSPECIFIED;
@@ -140,7 +143,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
     private void updateNavigationUi() {
         NavLocation curLoc = navigationController.getModel().getCurrentLocation();
-        if(curLoc != null && curLoc.getPreviousLocation() != null) {
+        if (curLoc != null && curLoc.getPreviousLocation() != null) {
             //Has history location,should show back nav icon
             toolbar.setNavigationIcon(R.drawable.ic_action_navigation_back_menu);
 
