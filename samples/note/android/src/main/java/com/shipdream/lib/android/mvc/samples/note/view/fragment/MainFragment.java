@@ -101,7 +101,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
             case FIRST_TIME:
             case RESTORE:
                 mAppController.notifyOrientationChanged(
-                        convertOrientation(getResources().getConfiguration().orientation),
+                        convertOrientation(Configuration.ORIENTATION_UNDEFINED),
                         convertOrientation(getCurrentOrientation()));
                 break;
         }
