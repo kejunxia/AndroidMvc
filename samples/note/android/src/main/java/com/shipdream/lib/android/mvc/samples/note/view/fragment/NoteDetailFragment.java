@@ -52,7 +52,7 @@ public class NoteDetailFragment extends BaseFragment {
     }
 
     private void displayNote(Note note) {
-        title.setText(note == null ? "[Error: Invalid note]" : note.getTitle());
+        title.setText(note == null ? "NO SELECTED NOTE" : note.getTitle());
         content.setText(note == null ? "" : note.getContent());
     }
 
