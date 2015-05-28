@@ -95,7 +95,7 @@ public abstract class MvcActivity extends ActionBarActivity {
 
     /**
      * Add callback so that onViewReady will be delay to call after all instance state are restored
-     * @param runnable
+     * @param runnable The delayed onViewReady callbacks
      */
     void addPendingOnViewReadyActions(Runnable runnable) {
         mDelegateFragment.mPendingOnViewReadyActions.add(runnable);
@@ -256,6 +256,12 @@ public abstract class MvcActivity extends ActionBarActivity {
             //their controllers
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.mDelegateFragment = this;
+
+            //When activity is restoring we need to delay the callback of onViewReady for this
+            //DelegateFragment as well.
+            if (savedInstanceState != null) {
+                delayOnViewReady = true;
+            }
         }
 
         @Override
@@ -265,7 +271,13 @@ public abstract class MvcActivity extends ActionBarActivity {
                 onStartUp();
             } else if (reason == Reason.RESTORE) {
                 //When the delegate fragment is restoring it should notify all visible fragments
-                //to hold to call their onViewReady callback untial state is restored.
+                //to hold to call their onViewReady callback until state is restored. Because Android
+                //calls onViewStateRestored of DelegateFragment after all nested fragments call
+                //their onViewCreated life cycle, but onViewReady inside onViewCreated should
+                //guarantee when onViewReady of nested fragments get called, all state of them should
+                //be restored which is done this onViewStateRestored of this DelegateFragment. So
+                //we need to call onViewReady of nested fragments when onViewStateRestored of this
+                //DelegateFragment finishes.
                 List<Fragment> frags = childFragmentManager().getFragments();
                 int size = frags.size();
                 for (int i = 0; i < size; i++) {

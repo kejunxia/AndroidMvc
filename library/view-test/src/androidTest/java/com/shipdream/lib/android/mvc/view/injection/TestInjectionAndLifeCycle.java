@@ -113,7 +113,6 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textC)).check(matches(withText("")));
     }
 
-
     @Test
     public void test_should_delay_call_on_view_ready_on_sub_fragments_after_dependencies_injected_when_restore_from_kill() throws Throwable {
         if (!isDontKeepActivities()) {
@@ -146,4 +145,5 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 "Added by FragmentB\nAdded by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
     }
+
 }
