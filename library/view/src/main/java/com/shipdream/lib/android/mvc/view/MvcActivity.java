@@ -21,7 +21,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.NavLocation;
@@ -37,7 +37,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public abstract class MvcActivity extends ActionBarActivity {
+public abstract class MvcActivity extends AppCompatActivity {
     private DelegateFragment mDelegateFragment;
 
     String getDelegateFragmentTag() {
