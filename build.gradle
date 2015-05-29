@@ -50,12 +50,12 @@ ext {
     ]
 
     androidMinSdkVersion = 14
-    androidCompileSdkVersion = 21
-    supportLibVersion = "21.0.3"
+    androidCompileSdkVersion = 22
+    supportLibVersion = "22.2.0"
     androidTargetSdkVersion = androidCompileSdkVersion
     lib = [
             androidSupportLib: "com.android.support:appcompat-v7:$supportLibVersion",
-            androidBuildToolVersion: "$androidCompileSdkVersion.1.2",
+            androidBuildToolVersion: "$androidCompileSdkVersion.0.1",
             mokito: 'org.mockito:mockito-core:1.9.5',
             lombok: 'org.projectlombok:lombok:1.14.6',
             slf4jApi: "org.slf4j:slf4j-api:$log4jVersion",

@@ -22,12 +22,16 @@ dependencies {
     compile rootProject.lib.logbackAndroidCore
     compile rootProject.lib.logbackAndroidClassic
 
-    compile "com.android.support:support-annotations:${rootProject.ext.supportLibVersion}"
     // Testing-only dependencies
-    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
-    androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.0'
+    androidTestCompile 'com.android.support.test:runner:0.2'
+    androidTestCompile 'com.android.support.test:rules:0.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.1'
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
+}
+
+configurations.all {
+    //Workaround for the conflict dependency issue
+    resolutionStrategy.force 'com.android.support:support-annotations:22.0.0'
 }
 
 android {
