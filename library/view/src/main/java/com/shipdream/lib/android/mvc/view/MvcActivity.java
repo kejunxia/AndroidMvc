@@ -256,20 +256,14 @@ public abstract class MvcActivity extends ActionBarActivity {
             //their controllers
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.mDelegateFragment = this;
-
-            //When activity is restoring we need to delay the callback of onViewReady for this
-            //DelegateFragment as well.
-            if (savedInstanceState != null) {
-                delayOnViewReady = true;
-            }
         }
 
         @Override
-        public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
-            super.onViewReady(view, savedInstanceState, reason);
-            if (reason == Reason.FIRST_TIME) {
-                onStartUp();
-            } else if (reason == Reason.RESTORE) {
+        void preInvokeCallbackOnViewCreated(final View view, final Bundle savedInstanceState) {
+            super.preInvokeCallbackOnViewCreated(view, savedInstanceState);
+            if (savedInstanceState != null) {
+                delayOnViewReady = true;
+
                 //When the delegate fragment is restoring it should notify all visible fragments
                 //to hold to call their onViewReady callback until state is restored. Because Android
                 //calls onViewStateRestored of DelegateFragment after all nested fragments call
@@ -282,10 +276,18 @@ public abstract class MvcActivity extends ActionBarActivity {
                 int size = frags.size();
                 for (int i = 0; i < size; i++) {
                     Fragment frag = frags.get(i);
-                    if (frag != null && frag != this && frag.isAdded() && frag instanceof MvcFragment) {
+                    if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
                         ((MvcFragment) frag).delayOnViewReady = true;
                     }
                 }
+            }
+        }
+
+        @Override
+        public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
+            super.onViewReady(view, savedInstanceState, reason);
+            if (reason == Reason.FIRST_TIME) {
+                onStartUp();
             }
         }
 

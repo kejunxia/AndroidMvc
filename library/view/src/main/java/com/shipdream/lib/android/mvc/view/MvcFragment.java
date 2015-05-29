@@ -70,7 +70,7 @@ public abstract class MvcFragment extends Fragment {
          * is killed and recreated by the OS. Note that even there is an orientation change along
          * with the restoration only the reason will still be RESTORE.
          */
-        RESTORE;
+        RESTORE
     }
 
     private final static String STATE_LAST_ORIENTATION = AndroidMvc.MVC_SATE_PREFIX + "LastOrientation--__";
@@ -181,6 +181,7 @@ public abstract class MvcFragment extends Fragment {
         mEventRegister = new EventRegister(this);
         mEventRegister.registerEventBuses();
 
+        preInvokeCallbackOnViewCreated(view, savedInstanceState);
         if (!delayOnViewReady) {
             doOnViewCreatedCallBack(view, savedInstanceState);
         } else {
@@ -192,6 +193,10 @@ public abstract class MvcFragment extends Fragment {
                 }
             });
         }
+    }
+
+    //A cut point for delegate fragment to delay calling onViewReady on app restoration
+    void preInvokeCallbackOnViewCreated(final View view, final Bundle savedInstanceState) {
     }
 
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState) {
