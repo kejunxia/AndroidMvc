@@ -1,32 +1,34 @@
 # AndroidMvc Framework
 ## Features
-  - Clear division between view logic and business logic
+  - Easy to apply MVC/MVVM pattern for Android development
   - Event driven
-  - Easy testing for business logic on JVM without Android dependency
-  - Dependency injection - easier to mock
-  - Clear navigation logic and testable
+  - Easy testing for controllers on JVM without Android dependency
+  - Dependency injection to make mock easy
+  - Manage navigation by NavigationController which is also testable
+  - Improved Fragment life cycles - e.g. Differentiate why view is created: 1. __NewlyCreated__, 2. __Rotated__ or 3. __StateRestored__
   - Automatically save restore instance state
 
 ## Overview
-AndroidMvc is event driven based on event bus. Controllers can be injected into views by fields annotated by @Inject. When views need to handle business logic they will issue commands to Controllers. Once controllers
-finish processing the command they send the result back to views through event bus. Then all views
-subscribed to that event will receive the result and respond to it.
+Unlike iOS development, Android doesn't come with design pattern out of box and the SDK doesn't enforce any design pattern too. To apply design pattern to Android development is not straight forward due to the hard coupling of Android objects to all Android components. This hurdle not just makes coding less well organized but also harder unit testable.
 
-To isolate events between different layers, there are 3 event buses pre-setup in the framework:
+AndroidMvc provides a framework let Android development adopt MVC pattern much easier. With AndroidMvc framework, business logic can be easily abstracted out from Activity/Fragment/Service to pure java controllers not depending on any Android components which makes the controllers completely unit testable.
+
+AndroidMvc is also event driven. Communication between controllers and views are linked by **EventBus**. To isolate events between different layers, there are 3 event buses pre-setup in the framework:
+
 - **EventBusC2V** (Controllers to Views): One way event bus routing events from controllers to views. Events sent to views will be guaranteed to be run on Android UI thread by the framework.
 - **EventBusC2C** (Controllers to Controllers): Routes events among controllers. Events will be received on the same thread who send them.
 - **EventBusV2V** (Views to views): Routes events among views. Events will be received on the same thread who send them.
 
 #### View
-All views should be **as lean as possible** that they are only responsible to capture user interaction and display data sent back from controllers. Therefore, business logic can be maximally abstracted away from views into controllers. As a result, more unit testings can be done on controllers. At a high level, any components of Android framework could be considered as views including activities, fragments, widgets or even services and etc, because responsibilities of all components above are just to capture user interactions and present the data.
+All views should be **as lean as possible** that they are only responsible to capture user interactions and display the data sent back from controllers via **EventBusC2V**. Therefore, business logic can be maximally abstracted away from views into controllers. As a result, more unit testings can be done upon controllers. At a high level, any components of Android framework could be considered as views including activities, fragments, widgets or even services and etc, because responsibilities of all components above are just to capture user interactions and present data to users.
 
 #### Controller
-Controllers manage business logic, how to retrieve data, calculate and present data. In this MVC design, all controllers are **SINGLETON** application wide. 
+Controllers manage business logic including how to retrieve data, calculate, format data and wrap the data into event sending back to views. Controllers are defined in Interfaces and injected into views via @Inject annotation. In this way, the controllers would be easy to mocked against the interface definition. Views subscribed to events from controllers. When views receive user interactions, they invoke methods of injected controllers. The underlining controller implementations will process the request according to the business logic and send processed data back to views by events through **EventBusC2V**.
+
+Note that, in this MVC design, all controllers are **SINGLETON** application wide.
 
 #### Model
-Models in AndroidMVC design represent the state of controllers. So each controller has at most one
-model to represent the state of the controller. The state of the controller will be automatically saved when
-Android saveInstanceState and get restored when Android restoreInstanceState.
+Models in AndroidMVC design represent the state of controllers. So each controller has at only one model object to represent the state of the controller. The framework will automatically save and restore the instance state of the controller models. So we don't need to always manually write boiler plate code to saveInstanceState and restore them.
 
 
 ## Using AndroidMvc
