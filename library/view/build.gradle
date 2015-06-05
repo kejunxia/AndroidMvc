@@ -19,7 +19,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 // This is the library version used when deploying the artifact
-version = "0.1.0"
+version = "0.1.2"
 
 dependencies {
     compile project(':library:controller')
@@ -46,12 +46,21 @@ android {
         abortOnError false
     }
 
+    libraryVariants.all { variant ->
+        variant.outputs.each { output ->
+            def outputFile = output.outputFile
+            if (outputFile != null && outputFile.name.endsWith('.aar')) {
+                def fileName = "${archivesBaseName}-${version}.aar"
+                output.outputFile = new File(outputFile.parent, fileName)
+            }
+        }
+    }
 }
 
 def siteUrl = 'https://github.com/kejunxia/AndroidMvc'      // Homepage URL of the library
 def gitUrl = 'https://github.com/kejunxia/AndroidMvc.git'   // Git repository URL
 group = "com.shipdream"                                        // Maven Group ID for the artifact
-
+archivesBaseName = "android-mvc"                       // Maven Artifact ID for the artifact
 
 install {
     repositories.mavenInstaller {
