@@ -16,10 +16,6 @@
 
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
-
-// This is the library version used when deploying the artifact
-version = rootProject.ext.androidMvcVersion
 
 dependencies {
     compile project(':library:controller')
@@ -38,8 +34,6 @@ android {
     defaultConfig {
         minSdkVersion rootProject.ext.androidMinSdkVersion
         targetSdkVersion rootProject.ext.androidTargetSdkVersion
-        versionCode 1
-        versionName version
     }
 
     lintOptions {
@@ -57,7 +51,6 @@ android {
     }
 }
 
-group = "com.shipdream"                                        // Maven Group ID for the artifact
 archivesBaseName = "android-mvc"                       // Maven Artifact ID for the artifact
 
 install {
@@ -79,6 +72,7 @@ install {
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
+
                 developers {
                     developer {
                         id 'kejunxia'
@@ -86,6 +80,7 @@ install {
                         email 'ideablast@gmail.com'
                     }
                 }
+
                 scm {
                     connection rootProject.ext.gitUrl
                     developerConnection rootProject.ext.gitUrl
@@ -119,7 +114,9 @@ artifacts {
 bintray {
     user = System.properties['bintray.user']
     key = System.properties["bintray.apiKey"]
-
+    configure(subprojects.findAll { new File(it.projectDir, 'src').directory }) {
+        apply plugin: 'java'
+    }
     configurations = ['archives']
     pkg {
         repo = "maven"

@@ -17,8 +17,6 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
-version = rootProject.ext.androidMvcVersion
-group = "com.shipdream"                        // Maven Group ID for the artifact
 archivesBaseName = "poke"                       // Maven Artifact ID for the artifact
 
 sourceSets {
@@ -35,27 +33,22 @@ sourceSets {
 
 dependencies {
     compile 'javax.inject:javax.inject:1'
-    testCompile 'junit:junit:4.+'
-    testCompile 'org.mockito:mockito-core:1.9.+'
 }
 
-task sourcesJar(type: Jar) {
+task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
     classifier = 'sources'
 }
 
-task sourceDocJar(type: Javadoc) {
-    source = sourceSets.main.allJava
-}
-
-task javadocJar(type: Jar, dependsOn: sourceDocJar) {
+task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
     from javadoc.destinationDir
 }
 
+// Add the sourceJars to non-extractor modules
 artifacts {
+    archives sourceJar
     archives javadocJar
-    archives sourcesJar
 }
 
 install {
