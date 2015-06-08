@@ -117,6 +117,9 @@ artifacts {
 }
 
 bintray {
+    user = System.properties['bintray.user']
+    key = System.properties["bintray.apiKey"]
+
     configurations = ['archives']
     pkg {
         repo = "maven"
