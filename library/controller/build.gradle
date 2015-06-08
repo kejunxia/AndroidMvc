@@ -15,6 +15,11 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'maven'
+
+version = rootProject.ext.androidMvcVersion
+group = "com.shipdream"                                        // Maven Group ID for the artifact
+archivesBaseName = "android-mvc-controller"                  // Maven Artifact ID for the artifact
 
 configurations {
     provided
@@ -42,4 +47,59 @@ dependencies {
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'
     testCompile 'org.slf4j:slf4j-log4j12:1.7.4'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task sourceDocJar(type: Javadoc) {
+    source = sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: sourceDocJar) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+
+                // Add your description here
+                name 'AndoridMvc'
+                description 'Controller component of Android MVC framework'
+                url rootProject.ext.siteUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'kejunxia'
+                        name 'Kejun Xia'
+                        email 'ideablast@gmail.com'
+                    }
+                }
+                scm {
+                    connection rootProject.ext.gitUrl
+                    developerConnection rootProject.ext.gitUrl
+                    url rootProject.ext.siteUrl
+                }
+            }
+        }
+    }
 }

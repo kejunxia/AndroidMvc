@@ -44,6 +44,9 @@ allprojects{
 }
 
 ext {
+    siteUrl = 'https://github.com/kejunxia/AndroidMvc'      // Homepage URL of the library
+    gitUrl = 'https://github.com/kejunxia/AndroidMvc.git'   // Git repository URL
+    androidMvcVersion = '0.1.3'
     maven = [
             groupId: 'com.shipdream.lib.android-mvc',
             version: '0.1.0'

@@ -17,7 +17,7 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile project(':library:view')
+    compile 'com.shipdream:android-mvc:0.1.2@aar'
 
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'

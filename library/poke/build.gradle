@@ -15,6 +15,11 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'maven'
+
+version = rootProject.ext.androidMvcVersion
+group = "com.shipdream"                        // Maven Group ID for the artifact
+archivesBaseName = "poke"                       // Maven Artifact ID for the artifact
 
 sourceSets {
     main {
@@ -32,4 +37,59 @@ dependencies {
     compile 'javax.inject:javax.inject:1'
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task sourceDocJar(type: Javadoc) {
+    source = sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar, dependsOn: sourceDocJar) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+
+                // Add your description here
+                name 'AndoridMvc'
+                description 'Dependency injection library with reference count'
+                url rootProject.ext.siteUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'kejunxia'
+                        name 'Kejun Xia'
+                        email 'ideablast@gmail.com'
+                    }
+                }
+                scm {
+                    connection rootProject.ext.gitUrl
+                    developerConnection rootProject.ext.gitUrl
+                    url rootProject.ext.siteUrl
+                }
+            }
+        }
+    }
 }
