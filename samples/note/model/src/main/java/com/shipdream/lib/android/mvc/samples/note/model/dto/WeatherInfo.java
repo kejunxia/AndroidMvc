@@ -22,10 +22,10 @@ import java.util.List;
 
 @Parcel
 public class WeatherInfo {
-    private int id;
-    private String name;
-    private List<Weather> weather;
-    private Main main;
+    int id;
+    String name;
+    List<Weather> weather;
+    Main main;
 
     public int getId() {
         return id;
@@ -61,8 +61,8 @@ public class WeatherInfo {
 
     @Parcel
     public static class Main {
-        private double temp;
-        private double humidity;
+        double temp;
+        double humidity;
 
         public double getHumidity() {
             return humidity;
@@ -83,9 +83,9 @@ public class WeatherInfo {
 
     @Parcel
     public static class Weather {
-        private int id;
-        private String main;
-        private String description;
+        int id;
+        String main;
+        String description;
 
         public int getId() {
             return id;
