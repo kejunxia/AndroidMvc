@@ -17,6 +17,22 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
+task sourceJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Add the sourceJars to non-extractor modules
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
 archivesBaseName = "poke"                       // Maven Artifact ID for the artifact
 
 sourceSets {
@@ -36,22 +52,6 @@ dependencies {
 
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'
-}
-
-task sourceJar(type: Jar) {
-    from sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-// Add the sourceJars to non-extractor modules
-artifacts {
-    archives sourceJar
-    archives javadocJar
 }
 
 install {

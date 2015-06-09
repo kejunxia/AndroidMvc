@@ -17,6 +17,22 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
+task sourceJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Add the sourceJars to non-extractor modules
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
 archivesBaseName = "android-mvc-controller"                  // Maven Artifact ID for the artifact
 
 configurations {
@@ -45,26 +61,6 @@ dependencies {
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'
     testCompile 'org.slf4j:slf4j-log4j12:1.7.4'
-}
-
-configurations {
-    published
-}
-
-task sourceJar(type: Jar) {
-    from sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-// Add the sourceJars to non-extractor modules
-artifacts {
-    published sourceJar
-    published javadocJar
 }
 
 install {
