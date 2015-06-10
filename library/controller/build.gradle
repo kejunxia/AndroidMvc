@@ -16,6 +16,7 @@
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'com.jfrog.bintray'
 
 task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
@@ -52,7 +53,9 @@ sourceSets {
 }
 
 dependencies {
-    compile project(':library:poke')
+    compile (project(':library:poke')) {
+        transitive = true
+    }
 
     compile 'com.google.android:android:4.0.+'
     compile "org.slf4j:slf4j-api:1.7.4"
@@ -67,11 +70,12 @@ install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
+            artifactId = archivesBaseName
             project {
                 packaging 'jar'
 
                 // Add your description here
-                name 'AndoridMvc'
+                name 'android-mvc-controller'
                 description 'Controller component of Android MVC framework'
                 url rootProject.ext.siteUrl
 
@@ -96,5 +100,22 @@ install {
                 }
             }
         }
+    }
+}
+
+bintray {
+    user = System.properties['bintray.user']
+    key = System.properties["bintray.apiKey"]
+    configure(subprojects.findAll { new File(it.projectDir, 'src').directory }) {
+        apply plugin: 'java'
+    }
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "android-mvc-controller"
+        websiteUrl = rootProject.ext.siteUrl
+        vcsUrl = rootProject.ext.gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
     }
 }

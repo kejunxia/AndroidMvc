@@ -16,6 +16,7 @@
 
 apply plugin: 'java'
 apply plugin: 'maven'
+apply plugin: 'com.jfrog.bintray'
 
 task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
@@ -62,7 +63,7 @@ install {
                 packaging 'jar'
 
                 // Add your description here
-                name 'AndoridMvc'
+                name 'poke'
                 description 'Dependency injection library with reference count'
                 url rootProject.ext.siteUrl
 
@@ -87,5 +88,22 @@ install {
                 }
             }
         }
+    }
+}
+
+bintray {
+    user = System.properties['bintray.user']
+    key = System.properties["bintray.apiKey"]
+    configure(subprojects.findAll { new File(it.projectDir, 'src').directory }) {
+        apply plugin: 'java'
+    }
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "poke"
+        websiteUrl = rootProject.ext.siteUrl
+        vcsUrl = rootProject.ext.gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
     }
 }

@@ -58,11 +58,12 @@ install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
+            artifactId = archivesBaseName
             project {
                 packaging 'aar'
 
                 // Add your description here
-                name 'AndoridMvc'
+                name 'android-mvc'
                 description 'Android MVC framework'
                 url rootProject.ext.siteUrl
 
@@ -121,7 +122,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "AndroidMvc"
+        name = "android-mvc"
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]
