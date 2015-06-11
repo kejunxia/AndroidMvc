@@ -1,0 +1,4 @@
+subprojects {
+    group = rootProject.ext.libGroup
+    version = rootProject.ext.libVersion
+}

@@ -15,6 +15,26 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'com.jfrog.bintray'
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Add the sourceJars to non-extractor modules
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
+archivesBaseName = "poke"                       // Maven Artifact ID for the artifact
 
 sourceSets {
     main {
@@ -30,6 +50,60 @@ sourceSets {
 
 dependencies {
     compile 'javax.inject:javax.inject:1'
+
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+
+                // Add your description here
+                name 'poke'
+                description 'Dependency injection library with reference count'
+                url rootProject.ext.siteUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'kejunxia'
+                        name 'Kejun Xia'
+                        email 'ideablast@gmail.com'
+                    }
+                }
+                scm {
+                    connection rootProject.ext.gitUrl
+                    developerConnection rootProject.ext.gitUrl
+                    url rootProject.ext.siteUrl
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.properties['bintray.user']
+    key = System.properties["bintray.apiKey"]
+    configure(subprojects.findAll { new File(it.projectDir, 'src').directory }) {
+        apply plugin: 'java'
+    }
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "poke"
+        websiteUrl = rootProject.ext.siteUrl
+        vcsUrl = rootProject.ext.gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
 }

@@ -16,8 +16,13 @@
 
 apply plugin: 'com.android.application'
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
-    compile project(':library:view')
+//    compile project(":library:view")
+    compile "com.shipdream:android-mvc:${rootProject.ext.libVersion}"
 
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'

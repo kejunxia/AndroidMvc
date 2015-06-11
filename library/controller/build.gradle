@@ -15,6 +15,26 @@
  */
 
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'com.jfrog.bintray'
+
+task sourceJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Add the sourceJars to non-extractor modules
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
+archivesBaseName = "android-mvc-controller"                  // Maven Artifact ID for the artifact
 
 configurations {
     provided
@@ -33,7 +53,9 @@ sourceSets {
 }
 
 dependencies {
-    compile project(':library:poke')
+    compile (project(':library:poke')) {
+        transitive = true
+    }
 
     compile 'com.google.android:android:4.0.+'
     compile "org.slf4j:slf4j-api:1.7.4"
@@ -42,4 +64,58 @@ dependencies {
     testCompile 'junit:junit:4.+'
     testCompile 'org.mockito:mockito-core:1.9.+'
     testCompile 'org.slf4j:slf4j-log4j12:1.7.4'
+}
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            artifactId = archivesBaseName
+            project {
+                packaging 'jar'
+
+                // Add your description here
+                name 'android-mvc-controller'
+                description 'Controller component of Android MVC framework'
+                url rootProject.ext.siteUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'kejunxia'
+                        name 'Kejun Xia'
+                        email 'ideablast@gmail.com'
+                    }
+                }
+                scm {
+                    connection rootProject.ext.gitUrl
+                    developerConnection rootProject.ext.gitUrl
+                    url rootProject.ext.siteUrl
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.properties['bintray.user']
+    key = System.properties["bintray.apiKey"]
+    configure(subprojects.findAll { new File(it.projectDir, 'src').directory }) {
+        apply plugin: 'java'
+    }
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "android-mvc-controller"
+        websiteUrl = rootProject.ext.siteUrl
+        vcsUrl = rootProject.ext.gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+    }
 }

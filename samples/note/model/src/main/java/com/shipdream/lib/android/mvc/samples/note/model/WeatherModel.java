@@ -52,7 +52,7 @@ public class WeatherModel {
         }
     }
 
-    private Map<City, WeatherInfo> weatherWatchlist;
+    Map<City, WeatherInfo> weatherWatchlist;
 
     public Map<City, WeatherInfo> getWeatherWatchlist() {
         return weatherWatchlist;

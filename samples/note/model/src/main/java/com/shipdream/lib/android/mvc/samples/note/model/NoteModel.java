@@ -24,9 +24,9 @@ import java.util.List;
 
 @Parcel
 public class NoteModel {
-    private Note viewingNote;
-    private List<Note> notes;
-    private List<Long> selectedNoteIds;
+    Note viewingNote;
+    List<Note> notes;
+    List<Long> selectedNoteIds;
 
     public Note getViewingNote() {
         return viewingNote;

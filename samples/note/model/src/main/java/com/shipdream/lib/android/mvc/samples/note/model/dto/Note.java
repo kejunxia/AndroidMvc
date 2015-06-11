@@ -20,10 +20,10 @@ import org.parceler.Parcel;
 
 @Parcel
 public class Note {
-    private long id;
-    private String title;
-    private String content;
-    private long updateTime;
+    long id;
+    String title;
+    String content;
+    long updateTime;
 
     public long getId() {
         return id;
