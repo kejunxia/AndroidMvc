@@ -63,7 +63,7 @@ install {
                 packaging 'aar'
 
                 // Add your description here
-                name 'android-mvc'
+                name archivesBaseName
                 description 'Android MVC framework'
                 url rootProject.ext.siteUrl
 
@@ -93,24 +93,26 @@ install {
     }
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
+task androidJavadocs(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task androidJavadocsJar(type: Jar) {
     classifier = 'javadoc'
-    from javadoc.destinationDir
+    baseName = archivesBaseName
+    from androidJavadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    baseName = archivesBaseName
+    from android.sourceSets.main.java.srcDirs
 }
 
 artifacts {
-    archives javadocJar
-    archives sourcesJar
+    archives androidSourcesJar
+    archives androidJavadocsJar
 }
 
 bintray {
@@ -122,7 +124,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "android-mvc"
+        name = archivesBaseName
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]
