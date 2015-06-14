@@ -29,6 +29,6 @@ sourceSets {
 
 dependencies {
     provided 'org.parceler:parceler:0.2.16'
-    provided 'com.google.android:android:4.0.+'
+    provided rootProject.ext.lib.androidMinSdk
     compile 'org.parceler:parceler-api:0.2.16'
 }

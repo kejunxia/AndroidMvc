@@ -29,11 +29,11 @@ sourceSets {
 }
 
 dependencies {
-    compile ("com.squareup.retrofit:retrofit:1.9.+") {
+    compile ("com.squareup.retrofit:retrofit:1.9.0") {
         exclude group: 'com.google.guava'
         exclude group: 'com.google.code.gson'
     }
-    compile (project(':library:controller')) {
+    compile (project(':library:android-mvc-controller')) {
         exclude group: 'com.google.guava'
     }
 }

@@ -14,57 +14,64 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'java'
+apply plugin: 'maven'
 apply plugin: 'com.jfrog.bintray'
 
+task sourceJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Add the sourceJars to non-extractor modules
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
+configurations {
+    provided
+}
+
+sourceSets {
+    main {
+        java.srcDir 'src/main/java'
+        resources.srcDir 'src/main/resources'
+    }
+
+    test {
+        java.srcDir 'src/test/java'
+        resources.srcDir 'src/test/resources'
+    }
+}
+
 dependencies {
-    compile project(':library:controller')
-    compile rootProject.lib.androidSupportLib
+    compile project(':library:poke')
+
+    compile rootProject.ext.lib.androidMinSdk
+    compile "org.slf4j:slf4j-api:1.7.4"
+    compile 'com.google.code.gson:gson:2.3.1'
+
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
+    testCompile rootProject.ext.lib.slf4jLog
 }
-
-android {
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
-    }
-
-    compileSdkVersion rootProject.ext.androidCompileSdkVersion
-    buildToolsVersion rootProject.lib.androidBuildToolVersion
-
-    defaultConfig {
-        minSdkVersion rootProject.ext.androidMinSdkVersion
-        targetSdkVersion rootProject.ext.androidTargetSdkVersion
-    }
-
-    lintOptions {
-        abortOnError false
-    }
-
-    libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            def outputFile = output.outputFile
-            if (outputFile != null && outputFile.name.endsWith('.aar')) {
-                def fileName = "${archivesBaseName}-${version}.aar"
-                output.outputFile = new File(outputFile.parent, fileName)
-            }
-        }
-    }
-}
-
-archivesBaseName = "android-mvc"                       // Maven Artifact ID for the artifact
 
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
-            artifactId = archivesBaseName
             project {
-                packaging 'aar'
+                packaging 'jar'
 
                 // Add your description here
-                name archivesBaseName
-                description 'Android MVC framework'
+                name 'android-mvc-controller'
+                description 'Controller component of Android MVC framework'
                 url rootProject.ext.siteUrl
 
                 // Set your license
@@ -74,7 +81,6 @@ install {
                         url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
-
                 developers {
                     developer {
                         id 'kejunxia'
@@ -82,7 +88,6 @@ install {
                         email 'ideablast@gmail.com'
                     }
                 }
-
                 scm {
                     connection rootProject.ext.gitUrl
                     developerConnection rootProject.ext.gitUrl
@@ -91,28 +96,6 @@ install {
             }
         }
     }
-}
-
-task androidJavadocs(type: Javadoc) {
-    source = android.sourceSets.main.java.srcDirs
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-}
-
-task androidJavadocsJar(type: Jar) {
-    classifier = 'javadoc'
-    baseName = archivesBaseName
-    from androidJavadocs.destinationDir
-}
-
-task androidSourcesJar(type: Jar) {
-    classifier = 'sources'
-    baseName = archivesBaseName
-    from android.sourceSets.main.java.srcDirs
-}
-
-artifacts {
-    archives androidSourcesJar
-    archives androidJavadocsJar
 }
 
 bintray {
@@ -124,10 +107,10 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = archivesBaseName
+        name = "android-mvc-controller"
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]
-        publish = true
+        publish = rootProject.ext.shouldPublish
     }
 }

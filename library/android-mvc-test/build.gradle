@@ -17,7 +17,7 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile project(':library:view')
+    compile project(':library:android-mvc')
     compile rootProject.lib.slf4jApi
     compile rootProject.lib.logbackAndroidCore
     compile rootProject.lib.logbackAndroidClassic

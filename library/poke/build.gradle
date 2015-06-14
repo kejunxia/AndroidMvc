@@ -34,8 +34,6 @@ artifacts {
     archives javadocJar
 }
 
-archivesBaseName = "poke"                       // Maven Artifact ID for the artifact
-
 sourceSets {
     main {
         java.srcDir 'src/main/java'
@@ -51,8 +49,8 @@ sourceSets {
 dependencies {
     compile 'javax.inject:javax.inject:1'
 
-    testCompile 'junit:junit:4.+'
-    testCompile 'org.mockito:mockito-core:1.9.+'
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
 }
 
 install {
@@ -104,6 +102,6 @@ bintray {
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]
-        publish = true
+        publish = rootProject.ext.shouldPublish
     }
 }

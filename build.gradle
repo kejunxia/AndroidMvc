@@ -48,14 +48,17 @@ ext {
     gitUrl = 'https://github.com/kejunxia/AndroidMvc.git'   // Git repository URL
     libGroup = 'com.shipdream'
     libVersion = "1.0"
+    shouldPublish = false
 
     androidMinSdkVersion = 14
     androidCompileSdkVersion = 22
     supportLibVersion = "22.2.0"
     androidTargetSdkVersion = androidCompileSdkVersion
     lib = [
+            androidMinSdk: 'com.google.android:android:4.0.1.2',
             androidSupportLib: "com.android.support:appcompat-v7:$supportLibVersion",
             androidBuildToolVersion: "$androidCompileSdkVersion.0.1",
+            junit: 'junit:junit:4.12',
             mokito: 'org.mockito:mockito-core:1.9.5',
             lombok: 'org.projectlombok:lombok:1.14.6',
             slf4jApi: "org.slf4j:slf4j-api:$log4jVersion",
