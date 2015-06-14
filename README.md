@@ -12,8 +12,9 @@
 Unlike iOS development, Android doesn't come with design pattern out of box and the SDK doesn't enforce any design pattern too. To apply design pattern to Android development is not straight forward due to the hard coupling of Android objects to all Android components. This hurdle not just makes coding less well organized but also harder unit testable.
 
 AndroidMvc provides a framework let Android development adopt MVC pattern much easier. With AndroidMvc framework, business logic can be easily abstracted out from Activity/Fragment/Service to pure java controllers not depending on any Android components which makes the controllers completely unit testable.
+![alt Android-Mvc-Pattern](https://github.com/kejunxia/AndroidMvc/blob/master/documents/imgs/Android-Mvc-Pattern.jpg?raw=true)
 
-AndroidMvc is also event driven. Communication between controllers and views are linked by **EventBus**. To isolate events between different layers, there are 3 event buses pre-setup in the framework:
+AndroidMvc is event driven. Communication between controllers and views are linked by **EventBus**. To isolate events between different layers, there are 3 event buses pre-setup in the framework:
 
 - **EventBusC2V** (Controllers to Views): One way event bus routing events from controllers to views. Events sent to views will be guaranteed to be run on Android UI thread by the framework.
 - **EventBusC2C** (Controllers to Controllers): Routes events among controllers. Events will be received on the same thread who send them.
@@ -29,6 +30,9 @@ Note that, in this MVC design, all controllers are **SINGLETON** application wid
 
 #### Model
 Models in AndroidMVC design represent the state of controllers. So each controller has at only one model object to represent the state of the controller. The framework will automatically save and restore the instance state of the controller models. So we don't need to always manually write boiler plate code to saveInstanceState and restore them.
+
+#### Events
+Views should be updated by events sent from controllers. When methods of controllers get invoked by views, data will be loaded and updated in controllers followed by wrapping the updated data into events sending back to views. Therefore, the events can also be seen as **ViewModel** to update entire or partial view. In this way, the testing against views could be little because all data bound to views are formatted in the event by controllers. And the logic should be tested can be moved to controller unit tests which decouples the tests from Android SDK and can be run on JVM. Hence, the pattern could be considered as **MVVM** as well.
 
 
 ## Using AndroidMvc
