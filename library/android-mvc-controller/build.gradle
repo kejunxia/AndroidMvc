@@ -107,9 +107,10 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
+        name = "android-mvc-controller"
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]
-        publish = true
+        publish = rootProject.ext.shouldPublish
     }
 }
