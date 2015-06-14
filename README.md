@@ -20,5 +20,5 @@ compile "com.shipdream:android-mvc:1.0"
 ```
 
 ## Samples APKs
- - [Counter](hhttps://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk) - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
+ - [Counter](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk) - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
  - [Note](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk) - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
