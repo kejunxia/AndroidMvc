@@ -754,6 +754,13 @@ public class NoteApp extends Application {
 }
 ````
 
+## Download
+The library is currently release to jCenter and MavenCentral
+
+Gradle dependency is
+```groovy
+compile "com.shipdream:android-mvc:1.0"
+```
 
 ## Samples APKs
  - [Counter](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk) - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
