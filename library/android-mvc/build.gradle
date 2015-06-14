@@ -19,7 +19,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply plugin: 'com.jfrog.bintray'
 
 dependencies {
-    compile project(':library:controller')
+    compile project(':library:android-mvc-controller')
     compile rootProject.lib.androidSupportLib
 }
 
@@ -52,13 +52,10 @@ android {
     }
 }
 
-archivesBaseName = "android-mvc"                       // Maven Artifact ID for the artifact
-
 install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
-            artifactId = archivesBaseName
             project {
                 packaging 'aar'
 
@@ -124,7 +121,6 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = archivesBaseName
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]

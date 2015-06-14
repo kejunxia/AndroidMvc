@@ -6,8 +6,7 @@ dependencies {
     compile rootProject.lib.logbackAndroidClassic
     compile "com.android.support:recyclerview-v7:${rootProject.ext.supportLibVersion}"
 
-    compile (project(':library:view')){
-    }
+    compile project(':library:android-mvc')
 
     compile (project(':samples:note:controllers')){
         exclude(group:'org.apache.httpcomponents', module:'httpclient')

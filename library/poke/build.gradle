@@ -34,8 +34,6 @@ artifacts {
     archives javadocJar
 }
 
-archivesBaseName = "poke"                       // Maven Artifact ID for the artifact
-
 sourceSets {
     main {
         java.srcDir 'src/main/java'

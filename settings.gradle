@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-include ':library:controller'
+include ':library:android-mvc-test'
+include ':library:android-mvc'
+include ':library:android-mvc-controller'
 include ':library:poke'
-include ':library:view'
-include ':library:view-test'
 
 include ':extension:controller-retrofit'
 include ':extension:service-core'

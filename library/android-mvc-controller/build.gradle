@@ -34,8 +34,6 @@ artifacts {
     archives javadocJar
 }
 
-archivesBaseName = "android-mvc-controller"                  // Maven Artifact ID for the artifact
-
 configurations {
     provided
 }
@@ -53,9 +51,7 @@ sourceSets {
 }
 
 dependencies {
-    compile (project(':library:poke')) {
-        transitive = true
-    }
+    compile project(':library:poke')
 
     compile rootProject.ext.lib.androidMinSdk
     compile "org.slf4j:slf4j-api:1.7.4"
@@ -70,7 +66,6 @@ install {
     repositories.mavenInstaller {
         // This generates POM.xml with proper parameters
         pom {
-            artifactId = archivesBaseName
             project {
                 packaging 'jar'
 
@@ -112,7 +107,6 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "android-mvc-controller"
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]

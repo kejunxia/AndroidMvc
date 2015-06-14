@@ -29,7 +29,7 @@ sourceSets {
 }
 
 dependencies {
-    compile project(':library:controller')
+    compile project(':library:android-mvc-controller')
     compile project(':samples:note:model')
 
     testCompile rootProject.ext.lib.junit

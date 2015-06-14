@@ -33,7 +33,7 @@ dependencies {
         exclude group: 'com.google.guava'
         exclude group: 'com.google.code.gson'
     }
-    compile (project(':library:controller')) {
+    compile (project(':library:android-mvc-controller')) {
         exclude group: 'com.google.guava'
     }
 }
