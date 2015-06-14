@@ -51,8 +51,8 @@ sourceSets {
 dependencies {
     compile 'javax.inject:javax.inject:1'
 
-    testCompile 'junit:junit:4.+'
-    testCompile 'org.mockito:mockito-core:1.9.+'
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
 }
 
 install {

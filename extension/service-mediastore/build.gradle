@@ -29,5 +29,5 @@ sourceSets {
 }
 
 dependencies {
-    compile 'com.google.android:android:4.0.+'
+    compile rootProject.ext.lib.androidMinSdk
 }

@@ -32,7 +32,7 @@ dependencies {
     compile project(':library:controller')
     compile project(':samples:note:model')
 
-    testCompile 'junit:junit:4.+'
-    testCompile 'org.mockito:mockito-core:1.9.+'
-    testCompile 'org.slf4j:slf4j-log4j12:1.7.4'
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
+    testCompile rootProject.ext.lib.slf4jLog
 }

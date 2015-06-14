@@ -57,13 +57,13 @@ dependencies {
         transitive = true
     }
 
-    compile 'com.google.android:android:4.0.+'
+    compile rootProject.ext.lib.androidMinSdk
     compile "org.slf4j:slf4j-api:1.7.4"
-    compile 'com.google.code.gson:gson:2.3.+'
+    compile 'com.google.code.gson:gson:2.3.1'
 
-    testCompile 'junit:junit:4.+'
-    testCompile 'org.mockito:mockito-core:1.9.+'
-    testCompile 'org.slf4j:slf4j-log4j12:1.7.4'
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
+    testCompile rootProject.ext.lib.slf4jLog
 }
 
 install {
