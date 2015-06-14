@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Android Mvc Framework by kejunxia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Android Mvc Framework</h1>
+      <h2 class="project-tagline">Android, MVC, MVVM, Unit Test, EventBus</h2>
+      <a href="https://github.com/kejunxia/AndroidMvc" class="btn">View on GitHub</a>
+      <a href="https://github.com/kejunxia/AndroidMvc/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/kejunxia/AndroidMvc/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h1>
+<a id="androidmvc-framework" class="anchor" href="#androidmvc-framework" aria-hidden="true"><span class="octicon octicon-link"></span></a>AndroidMvc Framework</h1>
+
+<h2>
+<a id="features" class="anchor" href="#features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Features</h2>
+
+<ul>
+<li>Easy to apply MVC/MVVM pattern for Android development</li>
+<li>Event driven</li>
+<li>Easy testing for controllers on JVM without Android dependency</li>
+<li>Dependency injection to make mock easy</li>
+<li>Manage navigation by NavigationController which is also testable</li>
+<li>Improved Fragment life cycles - e.g. Differentiate why view is created: 1. <strong>NewlyCreated</strong>, 2. <strong>Rotated</strong> or 3. <strong>StateRestored</strong>
+</li>
+<li>Automatically save restore instance state</li>
+</ul>
+
+<h2>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>Unlike iOS development, Android doesn't come with design pattern out of box and the SDK doesn't enforce any design pattern too. To apply design pattern to Android development is not straight forward due to the hard coupling of Android objects to all Android components. This hurdle not just makes coding less well organized but also harder unit testable.</p>
+
+<p>AndroidMvc provides a framework let Android development adopt MVC pattern much easier. With AndroidMvc framework, business logic can be easily abstracted out from Activity/Fragment/Service to pure java controllers not depending on any Android components which makes the controllers completely unit testable.
+<img src="https://github.com/kejunxia/AndroidMvc/blob/master/documents/imgs/Android-Mvc-Pattern.jpg?raw=true" alt="alt Android-Mvc-Pattern"></p>
+
+<p>AndroidMvc is event driven. Communication between controllers and views are linked by <strong>EventBus</strong>. To isolate events between different layers, there are 3 event buses pre-setup in the framework:</p>
+
+<ul>
+<li>
+<strong>EventBusC2V</strong> (Controllers to Views): One way event bus routing events from controllers to views. Events sent to views will be guaranteed to be run on Android UI thread by the framework.</li>
+<li>
+<strong>EventBusC2C</strong> (Controllers to Controllers): Routes events among controllers. Events will be received on the same thread who send them.</li>
+<li>
+<strong>EventBusV2V</strong> (Views to views): Routes events among views. Events will be received on the same thread who send them.</li>
+</ul>
+
+<h4>
+<a id="view" class="anchor" href="#view" aria-hidden="true"><span class="octicon octicon-link"></span></a>View</h4>
+
+<p>All views should be <strong>as lean as possible</strong> that they are only responsible to capture user interactions and display the data sent back from controllers via <strong>EventBusC2V</strong>. Therefore, business logic can be maximally abstracted away from views into controllers. As a result, more unit testings can be done upon controllers. At a high level, any components of Android framework could be considered as views including activities, fragments, widgets or even services and etc, because responsibilities of all components above are just to capture user interactions and present data to users.</p>
+
+<h4>
+<a id="controller" class="anchor" href="#controller" aria-hidden="true"><span class="octicon octicon-link"></span></a>Controller</h4>
+
+<p>Controllers manage business logic including how to retrieve data, calculate, format data and wrap the data into event sending back to views. Controllers are defined in Interfaces and injected into views via <a href="https://github.com/Inject" class="user-mention">@Inject</a> annotation. In this way, the controllers would be easy to mocked against the interface definition. Views subscribed to events from controllers. When views receive user interactions, they invoke methods of injected controllers. The underlining controller implementations will process the request according to the business logic and send processed data back to views by events through <strong>EventBusC2V</strong>.</p>
+
+<p>Note that, in this MVC design, all controllers are <strong>SINGLETON</strong> application wide.</p>
+
+<h4>
+<a id="model" class="anchor" href="#model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Model</h4>
+
+<p>Models in AndroidMVC design represent the state of controllers. So each controller has at only one model object to represent the state of the controller. The framework will automatically save and restore the instance state of the controller models. So we don't need to always manually write boiler plate code to saveInstanceState and restore them.</p>
+
+<h4>
+<a id="events" class="anchor" href="#events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Events</h4>
+
+<p>Views should be updated by events sent from controllers. When methods of controllers get invoked by views, data will be loaded and updated in controllers followed by wrapping the updated data into events sending back to views. Therefore, the events can also be seen as <strong>ViewModel</strong> to update entire or partial view. In this way, the testing against views could be little because all data bound to views are formatted in the event by controllers. And the logic should be tested can be moved to controller unit tests which decouples the tests from Android SDK and can be run on JVM. Hence, the pattern could be considered as <strong>MVVM</strong> as well.</p>
+
+<h2>
+<a id="download" class="anchor" href="#download" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download</h2>
+
+<p>The library is currently release to jCenter and MavenCentral</p>
+
+<p>Gradle dependency is </p>
+
+<div class="highlight highlight-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.0<span class="pl-pds">"</span></span></pre></div>
+
+<h2>
+<a id="using-androidmvc" class="anchor" href="#using-androidmvc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using AndroidMvc</h2>
+
+<p>Let's take a simple app counting number as an example. The counter app has two navigation locations: 
+1. LocationA: presented by FragmentA</p>
+
+<ul>
+<li>One text view to display the current count in number. Updated by event OnCounterUpdated</li>
+<li>Two buttons which increment and decrement count <strong>on click</strong>.</li>
+<li>An nested fragment with a TextView to display count in English. Updated by event OnCounterUpdated too</li>
+<li>An button to show advance view which results in navigating to LocationB</li>
+<li>Shares the result of counting updated by LocationB
+
+<ol>
+<li>LocationB: presented by FragmentB</li>
+</ol>
+</li>
+<li>One text view to display the current count in number. Updated by event OnCounterUpdated</li>
+<li>Two buttons which increment and decrement count <strong>continuously on hold</strong>.</li>
+<li>Shares the result of counting updated by LocationB</li>
+</ul>
+
+<p>Below is how to use AndroidMvc framework to implement and test the app including navigation. Note the code below doesn't show all code. To see more details check the sample project in the app - Simple under samples subfolder.</p>
+
+<h5>
+<a id="1-extend-mvcactivity-for-the-single-activity" class="anchor" href="#1-extend-mvcactivity-for-the-single-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Extend MvcActivity for the single Activity</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<span class="pl-c"> * Single activity for the app</span>
+<span class="pl-c"> */</span>
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">MainActivity</span> <span class="pl-k">extends</span> <span class="pl-e">MvcActivity</span> {
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Define how to map navigation location id to full screen fragments</span>
+<span class="pl-c">     * @param locationId The location id in string</span>
+<span class="pl-c">     * @return The class of the fragment representing the navigation locations</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">protected</span> <span class="pl-k">Class&lt;? extends <span class="pl-smi">MvcFragment</span>&gt;</span> <span class="pl-en">mapNavigationFragment</span>(<span class="pl-smi">String</span> <span class="pl-v">locationId</span>) {
+        <span class="pl-k">switch</span> (locationId) {
+            <span class="pl-k">case</span> <span class="pl-s"><span class="pl-pds">"</span>LocationA<span class="pl-pds">"</span></span><span class="pl-k">:</span>
+                <span class="pl-k">return</span> <span class="pl-smi">FragmentA</span><span class="pl-k">.</span>class;
+            <span class="pl-k">case</span> <span class="pl-s"><span class="pl-pds">"</span>LocationB<span class="pl-pds">"</span></span><span class="pl-k">:</span>
+                <span class="pl-k">return</span> <span class="pl-smi">FragmentB</span><span class="pl-k">.</span>class;
+            <span class="pl-k">default</span><span class="pl-k">:</span>
+                <span class="pl-k">return</span> <span class="pl-c1">null</span>;
+        }
+    }
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Define the delegate fragment for the activity</span>
+<span class="pl-c">     * @return</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">protected</span> <span class="pl-k">Class&lt;? extends <span class="pl-smi">DelegateFragment</span>&gt;</span> <span class="pl-en">getDelegateFragmentClass</span>() {
+        <span class="pl-k">return</span> <span class="pl-smi">ContainerFragment</span><span class="pl-k">.</span>class;
+    }
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Container fragment extends DelegateFragment would be the root container fragments to swap</span>
+<span class="pl-c">     * full screen fragments inside it on navigation.</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-k">class</span> <span class="pl-en">ContainerFragment</span> <span class="pl-k">extends</span> <span class="pl-e">DelegateFragment</span> {
+        <span class="pl-c">/**</span>
+<span class="pl-c">         * What to do when app starts for the first time</span>
+<span class="pl-c">         */</span>
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">protected</span> <span class="pl-k">void</span> <span class="pl-en">onStartUp</span>() {
+            <span class="pl-c">//Navigate to location a when app starts for the first time by navigation controller</span>
+            <span class="pl-c">//here we navigate to LocationA which result in load FragmentA mapped by the</span>
+            <span class="pl-c">//the method mapNavigationFragment above</span>
+            getNavigationController()<span class="pl-k">.</span>navigateTo(<span class="pl-v">this</span>, <span class="pl-s"><span class="pl-pds">"</span>LocationA<span class="pl-pds">"</span></span>);
+        }
+    }
+}</pre></div>
+
+<h5>
+<a id="2-create-fragmenta-to-present-locationa" class="anchor" href="#2-create-fragmenta-to-present-locationa" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Create FragmentA to present "LocationA"</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * @return Layout id used to inflate the view of this MvcFragment.</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">protected</span> <span class="pl-k">int</span> <span class="pl-en">getLayoutResId</span>() {
+        <span class="pl-k">return</span> <span class="pl-smi">R</span><span class="pl-k">.</span>layout<span class="pl-k">.</span>fragment_a;
+    }
+}</pre></div>
+
+<h5>
+<a id="3-create-a-controller-contract-and-the-model-its-managing" class="anchor" href="#3-create-a-controller-contract-and-the-model-its-managing" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Create a controller contract and the model it's managing</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.simple.controller</span>;
+
+<span class="pl-c">/**</span>
+<span class="pl-c"> * Define controller contract and its events. And specify which model it manages by binding the </span>
+<span class="pl-c"> * model type.</span>
+<span class="pl-c"> */</span>
+<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">CounterController</span> <span class="pl-k">extends</span> <span class="pl-e">BaseController&lt;<span class="pl-smi">CounterModel</span>&gt;</span> {
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Increment count and will raise {@link EventC2V.OnCounterUpdated}</span>
+<span class="pl-c">     * @param sender Who requests this action</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">void</span> <span class="pl-en">increment</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>);
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Decrement count and will raise {@link EventC2V.OnCounterUpdated}</span>
+<span class="pl-c">     * @param sender Who requests this action</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">void</span> <span class="pl-en">decrement</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>);
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Method to convert number to english</span>
+<span class="pl-c">     * @param number</span>
+<span class="pl-c">     * @return</span>
+<span class="pl-c">     */</span>
+    <span class="pl-smi">String</span> <span class="pl-en">convertNumberToEnglish</span>(<span class="pl-k">int</span> <span class="pl-v">number</span>);
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Namespace the events for this controller by nested interface so that all its events would</span>
+<span class="pl-c">     * be referenced as CounterController.EventC2V.BlaBlaEvent</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">interface</span> <span class="pl-en">EventC2V</span> {
+        <span class="pl-c">/**</span>
+<span class="pl-c">         * Event to notify views counter has been updated</span>
+<span class="pl-c">         */</span>
+        <span class="pl-k">class</span> <span class="pl-en">OnCounterUpdated</span> <span class="pl-k">extends</span> <span class="pl-e">BaseEventC2V</span> {
+            <span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-k">int</span> count;
+            <span class="pl-k">private</span> <span class="pl-k">final</span> <span class="pl-smi">String</span> countInEnglish;
+            <span class="pl-k">public</span> <span class="pl-en">OnCounterUpdated</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>, <span class="pl-k">int</span> <span class="pl-v">count</span>, <span class="pl-smi">String</span> <span class="pl-v">countInEnglish</span>) {
+                <span class="pl-v">super</span>(sender);
+                <span class="pl-v">this</span><span class="pl-k">.</span>count <span class="pl-k">=</span> count;
+                <span class="pl-v">this</span><span class="pl-k">.</span>countInEnglish <span class="pl-k">=</span> countInEnglish;
+            }
+
+            <span class="pl-k">public</span> <span class="pl-k">int</span> <span class="pl-en">getCount</span>() {
+                <span class="pl-k">return</span> count;
+            }
+
+            <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">getCountInEnglish</span>() {
+                <span class="pl-k">return</span> countInEnglish;
+            }
+        }
+    }
+}</pre></div>
+
+<h5>
+<a id="3-implement-the-controller" class="anchor" href="#3-implement-the-controller" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Implement the controller</h5>
+
+<p><strong>Note that, to allow AndroidMvc to find the default implementation of injectable object, the implementation class must be under the sub-package "internal" which resides in the same parent package as the interface and the name must be [InterfaceName]Impl.</strong> For this example, say CounterController is under package samples.simple.controller the  implementation must be named as CounterControllerImpl and placed under package samples.simple.controller.internal</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<span class="pl-c"> * Note the structure of the package name. It is in a subpackage(internal) sharing the same parent </span>
+<span class="pl-c"> * package as the controller interface CounterController</span>
+<span class="pl-c"> */</span>
+<span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.simple.controller.internal</span>;
+
+<span class="pl-c">/**</span>
+<span class="pl-c"> * Note the class name is [CounterController]Impl.</span>
+<span class="pl-c"> */</span>
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">CounterControllerImpl</span> <span class="pl-k">extends</span> <span class="pl-e">BaseControllerImpl&lt;<span class="pl-smi">CounterModel</span>&gt;</span> <span class="pl-k">implements</span> <span class="pl-e">CounterController</span>{
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Just return the class type of the model managed by this controller</span>
+<span class="pl-c">     * @return</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">protected</span> <span class="pl-k">Class&lt;<span class="pl-smi">CounterModel</span>&gt;</span> <span class="pl-en">getModelClassType</span>() {
+        <span class="pl-k">return</span> <span class="pl-smi">CounterModel</span><span class="pl-k">.</span>class;
+    }
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">increment</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>) {
+        <span class="pl-k">int</span> count <span class="pl-k">=</span> getModel()<span class="pl-k">.</span>getCount();
+        getModel()<span class="pl-k">.</span>setCount(<span class="pl-k">++</span>count);
+        <span class="pl-c">//Post controller to view event to views</span>
+        postC2VEvent(<span class="pl-k">new</span> <span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnCounterUpdated</span>(sender, count, convertNumberToEnglish(count)));
+    }
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">decrement</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>) {
+        <span class="pl-k">int</span> count <span class="pl-k">=</span> getModel()<span class="pl-k">.</span>getCount();
+        getModel()<span class="pl-k">.</span>setCount(<span class="pl-k">--</span>count);
+        <span class="pl-c">//Post controller to view event to views</span>
+        postC2VEvent(<span class="pl-k">new</span> <span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnCounterUpdated</span>(sender, count, convertNumberToEnglish(count)));
+    }
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-smi">String</span> <span class="pl-en">convertNumberToEnglish</span>(<span class="pl-k">int</span> <span class="pl-v">number</span>) {
+        <span class="pl-k">if</span> (number <span class="pl-k">&lt;</span> <span class="pl-k">-</span><span class="pl-c1">3</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Less than negative three<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span>  <span class="pl-k">if</span> (number <span class="pl-k">==</span> <span class="pl-k">-</span><span class="pl-c1">3</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Negative three<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span>  <span class="pl-k">if</span> (number <span class="pl-k">==</span> <span class="pl-k">-</span><span class="pl-c1">2</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Negative two<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span>  <span class="pl-k">if</span> (number <span class="pl-k">==</span> <span class="pl-k">-</span><span class="pl-c1">1</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Negative one<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span> <span class="pl-k">if</span> (number <span class="pl-k">==</span> <span class="pl-c1">0</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Zero<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span> <span class="pl-k">if</span> (number <span class="pl-k">==</span> <span class="pl-c1">1</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>One<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span> <span class="pl-k">if</span> (number <span class="pl-k">==</span> <span class="pl-c1">2</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Two<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span> <span class="pl-k">if</span> (number <span class="pl-k">==</span> <span class="pl-c1">3</span>) {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Three<span class="pl-pds">"</span></span>;
+        } <span class="pl-k">else</span> {
+            <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>Greater than three<span class="pl-pds">"</span></span>;
+        }
+    }
+}</pre></div>
+
+<h5>
+<a id="4-inject-controller-into-views-setup-views-and-handle-c2v-events-from-controllers" class="anchor" href="#4-inject-controller-into-views-setup-views-and-handle-c2v-events-from-controllers" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Inject Controller into Views, setup views and handle C2V events from controllers</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
+    <span class="pl-k">@Inject</span>
+    <span class="pl-k">private</span> <span class="pl-smi">CounterController</span> counterController;
+
+    <span class="pl-k">private</span> <span class="pl-smi">TextView</span> display;
+    <span class="pl-k">private</span> <span class="pl-smi">Button</span> increment;
+    <span class="pl-k">private</span> <span class="pl-smi">Button</span> decrement;
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * @return Layout id used to inflate the view of this MvcFragment.</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">protected</span> <span class="pl-k">int</span> <span class="pl-en">getLayoutResId</span>() {
+        <span class="pl-k">return</span> <span class="pl-smi">R</span><span class="pl-k">.</span>layout<span class="pl-k">.</span>fragment_a;
+    }
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Lifecycle similar to onViewCreated by with more granular control with an extra argument to </span>
+<span class="pl-c">     * indicate why this view is created: 1. first time created, or 2. rotated or 3. restored</span>
+<span class="pl-c">     * @param view The root view of the fragment</span>
+<span class="pl-c">     * @param savedInstanceState The savedInstanceState when the fragment is being recreated after</span>
+<span class="pl-c">     *                           its enclosing activity is killed by OS, otherwise null including on</span>
+<span class="pl-c">     *                           rotation</span>
+<span class="pl-c">     * @param reason Indicates the {@link Reason} why the onViewReady is called.</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onViewReady</span>(<span class="pl-smi">View</span> <span class="pl-v">view</span>, <span class="pl-smi">Bundle</span> <span class="pl-v">savedInstanceState</span>, <span class="pl-smi">Reason</span> <span class="pl-v">reason</span>) {
+        <span class="pl-v">super</span><span class="pl-k">.</span>onViewReady(view, savedInstanceState, reason);
+
+        display <span class="pl-k">=</span> (<span class="pl-smi">TextView</span>) view<span class="pl-k">.</span>findViewById(<span class="pl-smi">R</span><span class="pl-k">.</span>id<span class="pl-k">.</span>fragment_a_counterDisplay);
+        increment <span class="pl-k">=</span> (<span class="pl-smi">Button</span>) view<span class="pl-k">.</span>findViewById(<span class="pl-smi">R</span><span class="pl-k">.</span>id<span class="pl-k">.</span>fragment_a_buttonIncrement);
+        decrement <span class="pl-k">=</span> (<span class="pl-smi">Button</span>) view<span class="pl-k">.</span>findViewById(<span class="pl-smi">R</span><span class="pl-k">.</span>id<span class="pl-k">.</span>fragment_a_buttonDecrement);
+
+        increment<span class="pl-k">.</span>setOnClickListener(<span class="pl-k">new</span> <span class="pl-smi">View</span>.<span class="pl-smi">OnClickListener</span>() {
+            <span class="pl-k">@Override</span>
+            <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onClick</span>(<span class="pl-smi">View</span> <span class="pl-v">v</span>) {
+                counterController<span class="pl-k">.</span>increment(v);
+            }
+        });
+
+        decrement<span class="pl-k">.</span>setOnClickListener(<span class="pl-k">new</span> <span class="pl-smi">View</span>.<span class="pl-smi">OnClickListener</span>() {
+            <span class="pl-k">@Override</span>
+            <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onClick</span>(<span class="pl-smi">View</span> <span class="pl-v">v</span>) {
+                counterController<span class="pl-k">.</span>decrement(v);
+            }
+        });
+
+        updateCountDisplay(counterController<span class="pl-k">.</span>getModel()<span class="pl-k">.</span>getCount());
+    }
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Callback when the fragment is popped out by back navigation</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">protected</span> <span class="pl-k">void</span> <span class="pl-en">onPoppedOutToFront</span>() {
+        <span class="pl-v">super</span><span class="pl-k">.</span>onPoppedOutToFront();
+        updateCountDisplay(counterController<span class="pl-k">.</span>getModel()<span class="pl-k">.</span>getCount());
+    }
+
+    <span class="pl-c">//Define event handler by method named as onEvent with single parameter of the event type</span>
+    <span class="pl-c">//to respond event CounterController.EventC2V.OnCounterUpdated</span>
+    <span class="pl-k">private</span> <span class="pl-k">void</span> <span class="pl-en">onEvent</span>(<span class="pl-smi">CounterController</span>.<span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnCounterUpdated</span> <span class="pl-v">event</span>) {
+        updateCountDisplay(event<span class="pl-k">.</span>getCount());
+    }
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Update the text view of count number</span>
+<span class="pl-c">     * @param count The number of count</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">private</span> <span class="pl-k">void</span> <span class="pl-en">updateCountDisplay</span>(<span class="pl-k">int</span> <span class="pl-v">count</span>) {
+        display<span class="pl-k">.</span>setText(<span class="pl-smi">String</span><span class="pl-k">.</span>valueOf(count));
+    }
+}</pre></div>
+
+<h5>
+<a id="5-unit-tests-on-controllers" class="anchor" href="#5-unit-tests-on-controllers" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Unit tests on controllers</h5>
+
+<p>As discussed before, business logic should be decoupled from view(Android components) and abstracted to controllers, then we can pretty much test most logic just on controllers without dependencies of any Android components. Views just need to make sure data carried back from controllers are displayed correctly. Whether or not the data is processed correctly is completely controllers' responsibilities that is what is being tested here.</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TestCounterController</span> {
+    <span class="pl-c1">..</span><span class="pl-k">.</span>other dependencies are omitted here
+
+    <span class="pl-k">private</span> <span class="pl-smi">CounterController</span> counterController;
+
+    <span class="pl-k">@Before</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">setUp</span>() <span class="pl-k">throws</span> <span class="pl-smi">Exception</span> {
+        <span class="pl-c1">..</span><span class="pl-k">.</span>other dependencies are omitted here
+
+        <span class="pl-c">//create instance of CounterController</span>
+        counterController <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">CounterControllerImpl</span>();
+        counterController<span class="pl-k">.</span>init();
+    }
+
+    <span class="pl-k">@Test</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">increment_should_post_counter_update_event_with_incremented_value</span>() {
+        <span class="pl-c">//1. Prepare</span>
+        <span class="pl-c">//prepare event monitor</span>
+        <span class="pl-k">class</span> <span class="pl-en">Monitor</span> {
+            <span class="pl-k">void</span> <span class="pl-en">onEvent</span>(<span class="pl-smi">CounterController</span>.<span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnCounterUpdated</span> <span class="pl-v">event</span>) {
+            }
+        }
+        <span class="pl-smi">Monitor</span> monitor <span class="pl-k">=</span> mock(<span class="pl-smi">Monitor</span><span class="pl-k">.</span>class);
+        eventBusC2V<span class="pl-k">.</span>register(monitor);
+
+        <span class="pl-c">//mock controller model for count value</span>
+        <span class="pl-k">int</span> value <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">Random</span>()<span class="pl-k">.</span>nextInt();
+        <span class="pl-smi">CounterModel</span> counterModel <span class="pl-k">=</span> mock(<span class="pl-smi">CounterModel</span><span class="pl-k">.</span>class);
+        when(counterModel<span class="pl-k">.</span>getCount())<span class="pl-k">.</span>thenReturn(value);
+        <span class="pl-c">//Bind the mock model to the controller</span>
+        counterController<span class="pl-k">.</span>bindModel(<span class="pl-v">this</span>, counterModel);
+
+        <span class="pl-c">//2. Act</span>
+        counterController<span class="pl-k">.</span>increment(<span class="pl-v">this</span>);
+
+        <span class="pl-c">//3. Verify</span>
+        <span class="pl-k">ArgumentCaptor&lt;<span class="pl-smi">CounterController</span>.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnCounterUpdated</span><span class="pl-k">&gt;</span> updateEvent
+                <span class="pl-k">=</span> <span class="pl-smi">ArgumentCaptor</span><span class="pl-k">.</span>forClass(<span class="pl-smi">CounterController</span><span class="pl-k">.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnCounterUpdated</span><span class="pl-k">.</span>class);
+        <span class="pl-c">//event should be fired once</span>
+        verify(monitor, times(<span class="pl-c1">1</span>))<span class="pl-k">.</span>onEvent(updateEvent<span class="pl-k">.</span>capture());
+        <span class="pl-c">//event should carry incremented value</span>
+        <span class="pl-smi">Assert</span><span class="pl-k">.</span>assertEquals(value <span class="pl-k">+</span> <span class="pl-c1">1</span>, updateEvent<span class="pl-k">.</span>getValue()<span class="pl-k">.</span>getCount());
+    }
+}</pre></div>
+
+<h5>
+<a id="5-navigation" class="anchor" href="#5-navigation" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Navigation</h5>
+
+<p>Instead creating, replacing or popping full screen fragments by FragmentManager of Android Activity, AndroidMvc provides NavigationController to manage navigation. Therefore, navigation logic can be abstracted out from View layer. To make navigation easier to be tested, we can inject NavigationController to CounterController and then test the model of NavigationController to verify if navigation location is changed as expected.</p>
+
+<h5>
+<a id="51-add-two-methods-to-countercontroller-to-wrap-navigation-logic" class="anchor" href="#51-add-two-methods-to-countercontroller-to-wrap-navigation-logic" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.1. Add two methods to CounterController to wrap navigation logic</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">CounterController</span> <span class="pl-k">extends</span> <span class="pl-e">BaseController&lt;<span class="pl-smi">CounterModel</span>&gt;</span> {
+    <span class="pl-c1">...</span> other methods
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Navigate to LocationB by {@link NavigationController}to show advance view that can update</span>
+<span class="pl-c">     * count continuously by holding buttons.</span>
+<span class="pl-c">     * @param sender</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">void</span> <span class="pl-en">goToAdvancedView</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>);
+
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Navigate back to LocationA by {@link NavigationController}to show basic view from LocationB</span>
+<span class="pl-c">     * @param sender</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">void</span> <span class="pl-en">goBackToBasicView</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>);
+
+    <span class="pl-c1">...</span> other methods
+}</pre></div>
+
+<h5>
+<a id="52-inject-navigationcontroller-to-countercontrollerimpl-and-implement-navigation-methods" class="anchor" href="#52-inject-navigationcontroller-to-countercontrollerimpl-and-implement-navigation-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.2. Inject NavigationController to CounterControllerImpl and implement navigation methods</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">CounterControllerImpl</span> <span class="pl-k">extends</span> <span class="pl-e">BaseControllerImpl&lt;<span class="pl-smi">CounterModel</span>&gt;</span> <span class="pl-k">implements</span> <span class="pl-e">CounterController</span>{
+    <span class="pl-c1">...</span> other methods
+
+    <span class="pl-k">@Inject</span>
+    <span class="pl-smi">NavigationController</span> navigationController;
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">goToAdvancedView</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>) {
+        navigationController<span class="pl-k">.</span>navigateTo(sender, <span class="pl-s"><span class="pl-pds">"</span>LocationB<span class="pl-pds">"</span></span>);
+    }
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">goBackToBasicView</span>(<span class="pl-smi">Object</span> <span class="pl-v">sender</span>) {
+        navigationController<span class="pl-k">.</span>navigateBack(sender);
+    }
+
+    <span class="pl-c1">...</span> other methods
+}</pre></div>
+
+<h5>
+<a id="53-invoke-countercontroller-methods-wrapping-navigation-in-views" class="anchor" href="#53-invoke-countercontroller-methods-wrapping-navigation-in-views" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.3. Invoke CounterController methods wrapping navigation in views</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
+    <span class="pl-c1">...</span>
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onViewReady</span>(<span class="pl-smi">View</span> <span class="pl-v">view</span>, <span class="pl-smi">Bundle</span> <span class="pl-v">savedInstanceState</span>, <span class="pl-smi">Reason</span> <span class="pl-v">reason</span>) {
+        <span class="pl-v">super</span><span class="pl-k">.</span>onViewReady(view, savedInstanceState, reason);
+
+        <span class="pl-c1">...</span>
+
+        buttonShowAdvancedView<span class="pl-k">.</span>setOnClickListener(<span class="pl-k">new</span> <span class="pl-smi">View</span>.<span class="pl-smi">OnClickListener</span>() {
+            <span class="pl-k">@Override</span>
+            <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onClick</span>(<span class="pl-smi">View</span> <span class="pl-v">v</span>) {
+                <span class="pl-c">//Use counterController to manage navigation to make navigation testable</span>
+                counterController<span class="pl-k">.</span>goToAdvancedView(v);
+                <span class="pl-c">//Or we can use NavigationController directly though it's harder to unit test on</span>
+                <span class="pl-c">//controller level.</span>
+                <span class="pl-c">//example:</span>
+                <span class="pl-c">//navigationController.navigateTo(v, "LocationB");</span>
+            }
+        });
+
+        <span class="pl-c1">...</span>
+    }
+
+    <span class="pl-c1">...</span>
+}
+
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentB</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
+    <span class="pl-c1">...</span>
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">boolean</span> <span class="pl-en">onBackButtonPressed</span>() {
+        <span class="pl-c">//Use counterController to manage navigation back make navigation testable</span>
+        counterController<span class="pl-k">.</span>goBackToBasicView(<span class="pl-v">this</span>);
+        <span class="pl-c">//Return true to not pass the back button pressed event to upper level handler.</span>
+        <span class="pl-k">return</span> <span class="pl-c1">true</span>;
+        <span class="pl-c">//Or we can let the fragment manage back navigation back automatically where we don't</span>
+        <span class="pl-c">//override this method which will call NavigationController.navigateBack(Object sender)</span>
+        <span class="pl-c">//automatically</span>
+    }
+
+    <span class="pl-c1">...</span>
+}</pre></div>
+
+<h5>
+<a id="54-able-to-test-navigation-on-countercontroller" class="anchor" href="#54-able-to-test-navigation-on-countercontroller" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.4. Able to test navigation on CounterController</h5>
+
+<div class="highlight highlight-java"><pre>    @<span class="pl-smi">Test</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> should_navigate_to_locationB_when_go_to_advance_view_and_back_to_locationA_after_go_to_basic_view() {
+        <span class="pl-c">//Prepare</span>
+        <span class="pl-smi">NavigationController</span> navigationController <span class="pl-k">=</span> ((<span class="pl-smi">CounterControllerImpl</span>) counterController)<span class="pl-k">.</span>navigationController;
+        <span class="pl-smi">NavigationController</span><span class="pl-k">.</span><span class="pl-smi">Model</span> navModel <span class="pl-k">=</span> navigationController<span class="pl-k">.</span>getModel();
+        <span class="pl-c">//App has not navigated to anywhere, current location should be null</span>
+        <span class="pl-smi">Assert</span><span class="pl-k">.</span>assertNull(navModel<span class="pl-k">.</span>getCurrentLocation());
+        <span class="pl-c">//Simulate navigating to location A</span>
+        navigationController<span class="pl-k">.</span>navigateTo(<span class="pl-v">this</span>, <span class="pl-s"><span class="pl-pds">"</span>LocationA<span class="pl-pds">"</span></span>);
+        <span class="pl-c">//Verify: location should be changed to LocationA</span>
+        <span class="pl-smi">Assert</span><span class="pl-k">.</span>assertEquals(navModel<span class="pl-k">.</span>getCurrentLocation()<span class="pl-k">.</span>getLocationId(), <span class="pl-s"><span class="pl-pds">"</span>LocationA<span class="pl-pds">"</span></span>);
+
+        <span class="pl-c">//Act: CounterController now goes to advanced view underlining logic is navigating to locationB</span>
+        counterController<span class="pl-k">.</span>goToAdvancedView(<span class="pl-v">this</span>);
+
+        <span class="pl-c">//Verify: Current location should be LocationB</span>
+        <span class="pl-smi">Assert</span><span class="pl-k">.</span>assertEquals(navModel<span class="pl-k">.</span>getCurrentLocation()<span class="pl-k">.</span>getLocationId(), <span class="pl-s"><span class="pl-pds">"</span>LocationB<span class="pl-pds">"</span></span>);
+
+        <span class="pl-c">//Act: CounterController now goes back to basic view underlining logic is navigating back to locationA</span>
+        counterController<span class="pl-k">.</span>goBackToBasicView(<span class="pl-v">this</span>);
+
+        <span class="pl-c">//Verify: Current location should be back to LocationA</span>
+        <span class="pl-smi">Assert</span><span class="pl-k">.</span>assertEquals(navModel<span class="pl-k">.</span>getCurrentLocation()<span class="pl-k">.</span>getLocationId(), <span class="pl-s"><span class="pl-pds">"</span>LocationA<span class="pl-pds">"</span></span>);
+    }</pre></div>
+
+<h2>
+<a id="other-features" class="anchor" href="#other-features" aria-hidden="true"><span class="octicon octicon-link"></span></a>Other features</h2>
+
+<h4>
+<a id="1-dependency-injection" class="anchor" href="#1-dependency-injection" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Dependency Injection</h4>
+
+<h5>
+<a id="inject" class="anchor" href="#inject" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://github.com/Inject" class="user-mention">@Inject</a>
+</h5>
+
+<p>The framework currently only support field injection. To inject an object, use <a href="https://github.com/Inject" class="user-mention">@Inject</a> to annotate fields and then inject the object with those fields by</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-smi">AndroidMvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>inject(<span class="pl-smi">ObjectToBeInjected</span>)</pre></div>
+
+<p>All injected objects will be reference counted. This is because
+the graph will automatically save and restore injected objects implementing StateManaged. For performance reasons the injected but not anymore referenced objects don't need to be saved and restored. So don't forget to call</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-smi">AndroidMvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>release(<span class="pl-smi">ObjectBeenInjected</span>)</pre></div>
+
+<p>to dereference them. Fortunately, all MvcFragment will do the injection and releasing in their
+Android lifecycle - onCreate and onDestroy. So we don't need to do this manually for fragments.</p>
+
+<h5>
+<a id="provides" class="anchor" href="#provides" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://github.com/Provides" class="user-mention">@Provides</a>
+</h5>
+
+<p>To provide the instance to inject the
+fields, there are 2 ways.</p>
+
+<ol>
+<li><p><strong>Name pattern</strong>. The implementation of the injecting class will be located by file structure and
+file name. A default implementation will be looked for in the sub folder - internal from the parent
+folder of the interface and the name of the file should be [InterfaceName]Impl. For example, we
+define a controller LoginController in folder /controllers/LoginController then the implementation
+should be placed under /controllers/internal and named as LoginControllerImpl. So the implementation
+should be at /controllers/internal/LoginControllerImpl</p></li>
+<li><p><strong>Register providers</strong> by extending a Component and annotate the methods providing the instance by
+<strong><a href="https://github.com/Provides" class="user-mention">@Provides</a></strong>. This can be used to replace the implementation located by the name pattern described
+above for the unit testing. Also the component can be unregistered from <strong><a href="https://github.com/Singleton" class="user-mention">@Singleton</a></strong> can
+be used if singleton is required. Beware singleton is relative to the ScopeCache associated to the
+Component. So to make the instance absolute singleton, either guarantee the Component is the unique
+or the ScopeCache associated to the Component is unique. In other words, if the component is
+recreated or the cache of it is recreated it new instance will be provided and cached sharing the
+same time span as the component or its cache again.</p></li>
+</ol>
+
+<h3>
+<a id="2-unit-testing-on-asynchronous-actions-eg-http-requests" class="anchor" href="#2-unit-testing-on-asynchronous-actions-eg-http-requests" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Unit testing on asynchronous actions, e.g. Http requests</h3>
+
+<p>Below is an example to consume a public weather API from <a href="http://openweathermap.org/api">OpenWeatherMap</a>. To be able to test controller without real http communication, the http request can be abstracted into a service interface. The service interface is injected into controllers. Then in real implementation of the service interface we send http request by http client while in controller testings we mock the service to provide mock data. </p>
+
+<p>See more details in the sample project - Node</p>
+
+<p><strong>Note that, BaseMvcControllerImpl provides protected methods to run actions asynchronously. The ExecutorService is injected into controllers. By default, AndroidMvc framework automatically injects with an implementation running tasks on non-main thread. Whereas in unit tests we can override the injection with an implementation runs the task on the same thread as the caller's so that the asynchronous actions can be tested easier.</strong></p>
+
+<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<span class="pl-c"> * Run async task on the default ExecutorService injected as a field of this class. Exceptions</span>
+<span class="pl-c"> * occur during running the task will be handled by the given {@link AsyncExceptionHandler}.</span>
+<span class="pl-c"> *</span>
+<span class="pl-c"> * @param sender                who initiated this task</span>
+<span class="pl-c"> * @param asyncTask             task to execute</span>
+<span class="pl-c"> * @param asyncExceptionHandler error handler for the exception during running the task</span>
+<span class="pl-c"> * @return the reference of {@link AsyncTask} that can be used to query its state and cancel it.</span>
+<span class="pl-c"> */</span>
+<span class="pl-k">protected</span> <span class="pl-smi">AsyncTask</span> runAsyncTask(<span class="pl-smi">Object</span> sender, <span class="pl-smi">AsyncTask</span> asyncTask, <span class="pl-smi">AsyncExceptionHandler</span> asyncExceptionHandler)</pre></div>
+
+<h5>
+<a id="1-define-http-service-interface" class="anchor" href="#1-define-http-service-interface" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Define http service interface</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.note.service.http</span>;
+
+<span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">WeatherService</span> {
+    <span class="pl-c">/**</span>
+<span class="pl-c">     * Get weathers of the cities with the given ids</span>
+<span class="pl-c">     * @param ids Ids of the cities</span>
+<span class="pl-c">     * @return The response</span>
+<span class="pl-c">     */</span>
+    <span class="pl-smi">WeatherListResponse</span> <span class="pl-en">getWeathers</span>(<span class="pl-k">List&lt;<span class="pl-smi">Integer</span>&gt;</span><span class="pl-v">ids</span>) <span class="pl-k">throws</span> <span class="pl-smi">IOException</span>;
+}</pre></div>
+
+<h5>
+<a id="2-send-and-consume-real-http-service-in-implementation" class="anchor" href="#2-send-and-consume-real-http-service-in-implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Send and consume real http service in implementation</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<span class="pl-c"> * Note the package structure which is under internal subpackage sharing the same parent package as </span>
+<span class="pl-c"> * WeatherService as above</span>
+<span class="pl-c"> */</span>
+<span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.note.service.http.internal</span>;
+
+<span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">WeatherServiceImpl</span> <span class="pl-k">implements</span> <span class="pl-e">WeatherService</span>{
+    <span class="pl-k">private</span> <span class="pl-smi">HttpClient</span> httpClient;
+    <span class="pl-k">private</span> <span class="pl-smi">Gson</span> gson;
+
+    <span class="pl-k">public</span> <span class="pl-en">WeatherServiceImpl</span>() {
+        httpClient <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">DefaultHttpClient</span>();
+        gson <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">Gson</span>();
+    }
+
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-smi">WeatherListResponse</span> <span class="pl-en">getWeathers</span>(<span class="pl-k">List&lt;<span class="pl-smi">Integer</span>&gt;</span> <span class="pl-v">ids</span>) <span class="pl-k">throws</span> <span class="pl-smi">IOException</span> {
+        <span class="pl-smi">String</span> idsStr <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span>;
+        <span class="pl-k">for</span> (<span class="pl-smi">Integer</span> id <span class="pl-k">:</span> ids) {
+            <span class="pl-k">if</span> (<span class="pl-k">!</span>idsStr<span class="pl-k">.</span>isEmpty()) {
+                idsStr <span class="pl-k">+=</span> <span class="pl-s"><span class="pl-pds">"</span>, <span class="pl-pds">"</span></span>;
+            }
+            idsStr <span class="pl-k">+=</span> <span class="pl-smi">String</span><span class="pl-k">.</span>valueOf(id);
+        }
+        <span class="pl-smi">String</span> url <span class="pl-k">=</span> <span class="pl-smi">String</span><span class="pl-k">.</span>format(<span class="pl-s"><span class="pl-pds">"</span>http://api.openweathermap.org/data/2.5/group?id=%s&amp;units=metric<span class="pl-pds">"</span></span>,
+                <span class="pl-smi">URLEncoder</span><span class="pl-k">.</span>encode(idsStr, <span class="pl-s"><span class="pl-pds">"</span>UTF-8<span class="pl-pds">"</span></span>));
+        <span class="pl-smi">HttpGet</span> get <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">HttpGet</span>(url);
+        <span class="pl-smi">HttpResponse</span> resp <span class="pl-k">=</span> httpClient<span class="pl-k">.</span>execute(get);
+        <span class="pl-smi">String</span> responseStr <span class="pl-k">=</span> <span class="pl-smi">EntityUtils</span><span class="pl-k">.</span>toString(resp<span class="pl-k">.</span>getEntity());
+        <span class="pl-k">return</span> gson<span class="pl-k">.</span>fromJson(responseStr, <span class="pl-smi">WeatherListResponse</span><span class="pl-k">.</span>class);
+    }
+}</pre></div>
+
+<h5>
+<a id="3-inject-the-http-service-into-weathercontrollerimpl" class="anchor" href="#3-inject-the-http-service-into-weathercontrollerimpl" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Inject the http service into WeatherControllerImpl</h5>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">WeatherControllerImpl</span> <span class="pl-k">extends</span> <span class="pl-e">BaseControllerImpl</span> &lt;<span class="pl-e">WeatherModel</span>&gt; <span class="pl-k">implements</span>
+        <span class="pl-e">WeatherController</span>{
+    <span class="pl-c1">....</span>
+
+    <span class="pl-k">@Inject</span>
+    <span class="pl-k">private</span> <span class="pl-smi">WeatherService</span> weatherService;
+
+    <span class="pl-c">//consume the service and fetch weathers</span>
+    <span class="pl-c">//...</span>
+}</pre></div>
+
+<h5>
+<a id="4-in-controller-unit-test-override-injection-of-executorservice-with-implementation-running-actions-on-the-same-thread-as-the-callers" class="anchor" href="#4-in-controller-unit-test-override-injection-of-executorservice-with-implementation-running-actions-on-the-same-thread-as-the-callers" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. In controller unit test, override injection of ExecutorService with implementation running actions on the same thread as the caller's</h5>
+
+<p>Code below is partial implementation, see sample Note in the project for more details.</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TestWeatherController</span> <span class="pl-k">extends</span> <span class="pl-e">TestControllerBase&lt;<span class="pl-smi">WeatherController</span>&gt;</span> {
+<span class="pl-k">@Override</span>
+<span class="pl-k">protected</span> <span class="pl-k">void</span> <span class="pl-en">registerDependencies</span>(<span class="pl-smi">MvcGraph</span> <span class="pl-v">mvcGraph</span>) {
+    <span class="pl-c1">...</span>
+
+    <span class="pl-c">//Setup mock executor service mock that runs task on the same thread.</span>
+    executorService <span class="pl-k">=</span> mock(<span class="pl-smi">ExecutorService</span><span class="pl-k">.</span>class);
+    doAnswer(<span class="pl-k">new</span> <span class="pl-smi">Answer</span>() {
+        <span class="pl-k">@Override</span>
+        <span class="pl-k">public</span> <span class="pl-smi">Object</span> <span class="pl-en">answer</span>(<span class="pl-smi">InvocationOnMock</span> <span class="pl-v">invocation</span>) <span class="pl-k">throws</span> <span class="pl-smi">Throwable</span> {
+            <span class="pl-smi">Runnable</span> runnable <span class="pl-k">=</span> (<span class="pl-smi">Runnable</span>) invocation<span class="pl-k">.</span>getArguments()[<span class="pl-c1">0</span>];
+            runnable<span class="pl-k">.</span>run();
+            <span class="pl-k">return</span> <span class="pl-c1">null</span>;
+        }
+    })<span class="pl-k">.</span>when(executorService)<span class="pl-k">.</span>submit(any(<span class="pl-smi">Runnable</span><span class="pl-k">.</span>class));
+
+    <span class="pl-c">//Register the injecting component to mvcGraph to override the implementation being injected</span>
+    <span class="pl-c">//to controllers</span>
+    <span class="pl-smi">TestComp</span> testComp <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">TestComp</span>();
+    testComp<span class="pl-k">.</span>testNoteController <span class="pl-k">=</span> <span class="pl-v">this</span>;
+    mvcGraph<span class="pl-k">.</span>register(testComp);
+}
+}</pre></div>
+
+<h5>
+<a id="5-test-if-weathercontroller-sends-successful-event-with-good-http-response" class="anchor" href="#5-test-if-weathercontroller-sends-successful-event-with-good-http-response" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Test if WeatherController sends successful event with good http response</h5>
+
+<p>What to mock
+1. Http Service to provide good response
+2. Event monitor to subscribe to the successful event
+So when WeatherController#updateAllCities(Object) is called, we can verify whether the mocked monitor receives the successful event.</p>
+
+<div class="highlight highlight-java"><pre>@<span class="pl-smi">Test</span>
+<span class="pl-k">public</span> <span class="pl-k">void</span> shouldRaiseSuccessEventForGoodUpdateWeathers() throws <span class="pl-smi">IOException</span> {
+    <span class="pl-c">//---Arrange---</span>
+    <span class="pl-c">//Define a subscriber class</span>
+    <span class="pl-k">class</span> <span class="pl-en">Monitor</span> {
+        <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onEvent</span>(<span class="pl-smi">WeatherController</span>.<span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnWeathersUpdated</span> <span class="pl-v">event</span>) {
+        }
+        <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onEvent</span>(<span class="pl-smi">WeatherController</span>.<span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnWeathersUpdateFailed</span> <span class="pl-v">event</span>) {
+        }
+    }
+    <span class="pl-smi">Monitor</span> monitor <span class="pl-k">=</span> mock(<span class="pl-smi">Monitor</span><span class="pl-k">.</span>class);
+    <span class="pl-c">//Subscribe to eventBus</span>
+    eventBusC2V<span class="pl-k">.</span>register(monitor);
+
+    <span class="pl-c">//Weather service mock prepares a good response</span>
+    <span class="pl-smi">WeatherListResponse</span> responseMock <span class="pl-k">=</span> mock(<span class="pl-smi">WeatherListResponse</span><span class="pl-k">.</span>class);
+    when(weatherServiceMock<span class="pl-k">.</span>getWeathers(any(<span class="pl-smi">List</span><span class="pl-k">.</span>class)))<span class="pl-k">.</span>thenReturn(responseMock);
+
+    <span class="pl-c">//---Action---</span>
+    controllerToTest<span class="pl-k">.</span>updateAllCities(<span class="pl-v">this</span>);
+
+    <span class="pl-c">//---Verify---</span>
+    <span class="pl-c">//Success event should be raised</span>
+    <span class="pl-k">ArgumentCaptor&lt;<span class="pl-smi">WeatherController</span>.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdated</span><span class="pl-k">&gt;</span> eventSuccess
+            <span class="pl-k">=</span> <span class="pl-smi">ArgumentCaptor</span><span class="pl-k">.</span>forClass(<span class="pl-smi">WeatherController</span><span class="pl-k">.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdated</span><span class="pl-k">.</span>class);
+    verify(monitor, times(<span class="pl-c1">1</span>))<span class="pl-k">.</span>onEvent(eventSuccess<span class="pl-k">.</span>capture());
+    <span class="pl-c">//Failed event should not be raised</span>
+    <span class="pl-k">ArgumentCaptor&lt;<span class="pl-smi">WeatherController</span>.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdateFailed</span><span class="pl-k">&gt;</span> eventFailure
+            <span class="pl-k">=</span> <span class="pl-smi">ArgumentCaptor</span><span class="pl-k">.</span>forClass(<span class="pl-smi">WeatherController</span><span class="pl-k">.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdateFailed</span><span class="pl-k">.</span>class);
+    verify(monitor, times(<span class="pl-c1">0</span>))<span class="pl-k">.</span>onEvent(eventFailure<span class="pl-k">.</span>capture());
+}</pre></div>
+
+<h5>
+<a id="6-test-if-weathercontroller-sends-failed-event-with-bad-http-response" class="anchor" href="#6-test-if-weathercontroller-sends-failed-event-with-bad-http-response" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. <strong>Test if WeatherController sends failed event with bad http response</strong>
+</h5>
+
+<p>What to mock
+1. Http Service to provide bad response
+2. Event monitor to subscribe to the failed event
+So when WeatherController#updateAllCities(Object) is called, we can verify whether the mocked monitor receives the failed event.</p>
+
+<div class="highlight highlight-java"><pre>@<span class="pl-smi">Test</span>
+<span class="pl-k">public</span> <span class="pl-k">void</span> shouldRaiseFailEventForNetworkErrorToUpdateWeathers() throws <span class="pl-smi">IOException</span> {
+    <span class="pl-c">//---Arrange---</span>
+    <span class="pl-c">//Define a subscriber class</span>
+    <span class="pl-k">class</span> <span class="pl-en">Monitor</span> {
+        <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onEvent</span>(<span class="pl-smi">WeatherController</span>.<span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnWeathersUpdated</span> <span class="pl-v">event</span>) {
+        }
+        <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onEvent</span>(<span class="pl-smi">WeatherController</span>.<span class="pl-smi">EventC2V</span>.<span class="pl-smi">OnWeathersUpdateFailed</span> <span class="pl-v">event</span>) {
+        }
+    }
+    <span class="pl-smi">Monitor</span> monitor <span class="pl-k">=</span> mock(<span class="pl-smi">Monitor</span><span class="pl-k">.</span>class);
+    <span class="pl-c">//Subscribe to eventBus</span>
+    eventBusC2V<span class="pl-k">.</span>register(monitor);
+
+    <span class="pl-c">//Weather service mock prepares a bad response </span>
+    <span class="pl-c">//by throwing an exception when getting the weather data</span>
+    when(weatherServiceMock<span class="pl-k">.</span>getWeathers(any(<span class="pl-smi">List</span><span class="pl-k">.</span>class)))<span class="pl-k">.</span>thenThrow(<span class="pl-k">new</span> <span class="pl-smi">IOException</span>());
+
+    <span class="pl-c">//---Action---</span>
+    controllerToTest<span class="pl-k">.</span>updateAllCities(<span class="pl-v">this</span>);
+
+    <span class="pl-c">//---Verify---</span>
+    <span class="pl-c">//Success event should not be raised</span>
+    <span class="pl-k">ArgumentCaptor&lt;<span class="pl-smi">WeatherController</span>.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdated</span><span class="pl-k">&gt;</span> eventSuccess
+            <span class="pl-k">=</span> <span class="pl-smi">ArgumentCaptor</span><span class="pl-k">.</span>forClass(<span class="pl-smi">WeatherController</span><span class="pl-k">.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdated</span><span class="pl-k">.</span>class);
+    verify(monitor, times(<span class="pl-c1">0</span>))<span class="pl-k">.</span>onEvent(eventSuccess<span class="pl-k">.</span>capture());
+    <span class="pl-c">//Failed event must be raised</span>
+    <span class="pl-k">ArgumentCaptor&lt;<span class="pl-smi">WeatherController</span>.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdateFailed</span><span class="pl-k">&gt;</span> eventFailure
+            <span class="pl-k">=</span> <span class="pl-smi">ArgumentCaptor</span><span class="pl-k">.</span>forClass(<span class="pl-smi">WeatherController</span><span class="pl-k">.</span><span class="pl-smi">EventC2V</span><span class="pl-k">.</span><span class="pl-smi">OnWeathersUpdateFailed</span><span class="pl-k">.</span>class);
+    verify(monitor, times(<span class="pl-c1">1</span>))<span class="pl-k">.</span>onEvent(eventFailure<span class="pl-k">.</span>capture());
+}</pre></div>
+
+<h3>
+<a id="3-custom-mechanism-to-automatically-saverestore-models-of-controllers" class="anchor" href="#3-custom-mechanism-to-automatically-saverestore-models-of-controllers" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Custom mechanism to automatically save/restore models of controllers</h3>
+
+<p>By default, AndroidMvc uses GSON to serialize and deserialize models of controllers automatically. In general uses the performance is acceptable. For example, on rotation, as long as the models are not very large, the frozen time of the rotation would be between 200ms and 300ms.</p>
+
+<p>If we need to provide more optimized mechanism to do so in case there are large models taking long to be serialized and deserialized by GSON, custom StateKeeper can be set to provide alternative save/restore implementation. For Android, Parcelable is the best performed mechanism to save/restore state but it is not fun and error prone. Fortunately, there a handy library <a href="https://github.com/johncarl81/parceler">Parceler</a> from another developer does this automatically. In the example below, we tried this library to implement custom StateKeeper to save/restore state by Parcelables automatically. The best place to set the custom StateKeeper is the Application#onCreate(). </p>
+
+<p>Check out more details in the sample code - Note</p>
+
+<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">NoteApp</span> <span class="pl-k">extends</span> <span class="pl-e">Application</span> {
+    <span class="pl-k">@Override</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onCreate</span>() {
+        <span class="pl-v">super</span><span class="pl-k">.</span>onCreate();
+
+        <span class="pl-smi">AndroidMvc</span><span class="pl-k">.</span>setCustomStateKeeper(<span class="pl-k">new</span> <span class="pl-smi">AndroidStateKeeper</span>() {
+            <span class="pl-k">@SuppressWarnings</span>(<span class="pl-s"><span class="pl-pds">"</span>unchecked<span class="pl-pds">"</span></span>)
+            <span class="pl-k">@Override</span>
+            <span class="pl-k">public</span> <span class="pl-smi">Parcelable</span> <span class="pl-en">saveState</span>(<span class="pl-smi">Object</span> <span class="pl-v">state</span>, <span class="pl-smi">Class</span> <span class="pl-v">type</span>) {
+                <span class="pl-c">/**</span>
+<span class="pl-c">                 * Use parcelable to save all states.</span>
+<span class="pl-c">                 */</span>
+                <span class="pl-k">return</span> <span class="pl-smi">Parcels</span><span class="pl-k">.</span>wrap(state);
+                <span class="pl-c">//type of the state can be used as a filter to handle some state specially</span>
+                <span class="pl-c">//if (type == BlaBlaType) {</span>
+                <span class="pl-c">//    special logic to save state</span>
+                <span class="pl-c">//}</span>
+            }
+
+            <span class="pl-k">@SuppressWarnings</span>(<span class="pl-s"><span class="pl-pds">"</span>unchecked<span class="pl-pds">"</span></span>)
+            <span class="pl-k">@Override</span>
+            <span class="pl-k">public</span> <span class="pl-smi">Object</span> <span class="pl-en">getState</span>(<span class="pl-smi">Parcelable</span> <span class="pl-v">parceledState</span>, <span class="pl-smi">Class</span> <span class="pl-v">type</span>) {
+                <span class="pl-c">/**</span>
+<span class="pl-c">                 * Use parcelable to restore all states.</span>
+<span class="pl-c">                 */</span>
+                <span class="pl-k">return</span> <span class="pl-smi">Parcels</span><span class="pl-k">.</span>unwrap(parceledState);
+
+                <span class="pl-c">//type of the state can be used as a filter to handle some state specially</span>
+                <span class="pl-c">//if (type == BlaBlaType) {</span>
+                <span class="pl-c">//    special logic to restore state</span>
+                <span class="pl-c">//}</span>
+            }
+        });
+    }
+}</pre></div>
+
+<h2>
+<a id="download-1" class="anchor" href="#download-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download</h2>
+
+<p>The library is currently release to jCenter and MavenCentral</p>
+
+<p>Gradle dependency is</p>
+
+<div class="highlight highlight-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.0<span class="pl-pds">"</span></span></pre></div>
+
+<h2>
+<a id="samples-apks" class="anchor" href="#samples-apks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples APKs</h2>
+
+<ul>
+<li>
+<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk">Counter</a> - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.</li>
+<li>
+<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk">Note</a> - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.</li>
+</ul>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/kejunxia/AndroidMvc">Android Mvc Framework</a> is maintained by <a href="https://github.com/kejunxia">kejunxia</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+            <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-21820164-19");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
+
