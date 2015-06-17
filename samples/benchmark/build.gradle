@@ -45,6 +45,15 @@ android {
         versionName "1.0.0"
     }
 
+    signingConfigs {
+        DefaultConfig {
+            storeFile file("../AndroidMvcKeyStore.jks")
+            storePassword "AndroidMvc"
+            keyAlias "AndroidMvc"
+            keyPassword "AndroidMvc"
+        }
+    }
+
     buildTypes {
         debug {
             debuggable true
@@ -54,15 +63,6 @@ android {
         release {
             debuggable false
             signingConfig signingConfigs.DefaultConfig
-        }
-    }
-
-    signingConfigs {
-        DefaultConfig {
-            storeFile file("../AndroidMvcKeyStore.jks")
-            storePassword "AndroidMvc"
-            keyAlias "AndroidMvc"
-            keyPassword "AndroidMvc"
         }
     }
 
