@@ -37,6 +37,25 @@
 </ul>
 
 <h2>
+<a id="samples-apks" class="anchor" href="#samples-apks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples APKs</h2>
+
+<ul>
+<li>
+<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk">Counter</a> - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.</li>
+<li>
+<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk">Note</a> - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.</li>
+</ul>
+
+<h2>
+<a id="download" class="anchor" href="#download" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download</h2>
+
+<p>The library is currently release to jCenter and MavenCentral</p>
+
+<p>Gradle dependency is</p>
+
+<div class="highlight highlight-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.0<span class="pl-pds">"</span></span></pre></div>
+
+<h2>
 <a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
 
 <p>Unlike iOS development, Android doesn't come with design pattern out of box and the SDK doesn't enforce any design pattern too. To apply design pattern to Android development is not straight forward due to the hard coupling of Android objects to all Android components. This hurdle not just makes coding less well organized but also harder unit testable.</p>
@@ -76,15 +95,6 @@
 <a id="events" class="anchor" href="#events" aria-hidden="true"><span class="octicon octicon-link"></span></a>Events</h4>
 
 <p>Views should be updated by events sent from controllers. When methods of controllers get invoked by views, data will be loaded and updated in controllers followed by wrapping the updated data into events sending back to views. Therefore, the events can also be seen as <strong>ViewModel</strong> to update entire or partial view. In this way, the testing against views could be little because all data bound to views are formatted in the event by controllers. And the logic should be tested can be moved to controller unit tests which decouples the tests from Android SDK and can be run on JVM. Hence, the pattern could be considered as <strong>MVVM</strong> as well.</p>
-
-<h2>
-<a id="download" class="anchor" href="#download" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download</h2>
-
-<p>The library is currently release to jCenter and MavenCentral</p>
-
-<p>Gradle dependency is </p>
-
-<div class="highlight highlight-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.0<span class="pl-pds">"</span></span></pre></div>
 
 <h2>
 <a id="using-androidmvc" class="anchor" href="#using-androidmvc" aria-hidden="true"><span class="octicon octicon-link"></span></a>Using AndroidMvc</h2>
@@ -830,25 +840,6 @@ So when WeatherController#updateAllCities(Object) is called, we can verify wheth
         });
     }
 }</pre></div>
-
-<h2>
-<a id="download-1" class="anchor" href="#download-1" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download</h2>
-
-<p>The library is currently release to jCenter and MavenCentral</p>
-
-<p>Gradle dependency is</p>
-
-<div class="highlight highlight-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.0<span class="pl-pds">"</span></span></pre></div>
-
-<h2>
-<a id="samples-apks" class="anchor" href="#samples-apks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples APKs</h2>
-
-<ul>
-<li>
-<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk">Counter</a> - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.</li>
-<li>
-<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk">Note</a> - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.</li>
-</ul>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/kejunxia/AndroidMvc">Android Mvc Framework</a> is maintained by <a href="https://github.com/kejunxia">kejunxia</a>.</span>
