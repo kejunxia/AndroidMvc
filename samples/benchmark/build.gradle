@@ -48,10 +48,21 @@ android {
     buildTypes {
         debug {
             debuggable true
+            signingConfig signingConfigs.DefaultConfig
         }
 
         release {
             debuggable false
+            signingConfig signingConfigs.DefaultConfig
+        }
+    }
+
+    signingConfigs {
+        DefaultConfig {
+            storeFile file("../AndroidMvcKeyStore.jks")
+            storePassword "AndroidMvc"
+            keyAlias "AndroidMvc"
+            keyPassword "AndroidMvc"
         }
     }
 
