@@ -15,13 +15,22 @@
   - Automatically save restore instance state
 
 ## Samples APKs
- - [Counter](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk) - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
- - [Note](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk) - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
+ - **[Counter](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
+ - **[Note](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk)** - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
 
 ## Download
 The library is currently release to jCenter and MavenCentral
 
-Gradle dependency is 
+**Maven:**
+```xml
+<dependency>
+    <groupId>com.shipdream</groupId>
+    <artifactId>android-mvc</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+**Gradle:**
 ```groovy
 compile "com.shipdream:android-mvc:1.0"
 ```
