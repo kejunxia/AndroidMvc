@@ -37,4 +37,4 @@ env:
  - TERM=dumb
 
 after_success:
-- ./gradlew coveralls
+- ./gradlew coveralls uploadArchives
