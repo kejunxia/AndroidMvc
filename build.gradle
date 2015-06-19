@@ -33,8 +33,16 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
+
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
     }
 }
+
+// Only report code coverage for projects that are distrubuted
+def jacocoCoveredProjects = [
+        project(":library:poke"),
+        project(":library:android-mvc-controller")
+]
 
 allprojects{
     repositories {
@@ -42,6 +50,15 @@ allprojects{
         jcenter()
         maven {
             url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
+    }
+
+    if (jacocoCoveredProjects.contains(project)) {
+        apply plugin: 'java'
+        apply plugin: 'jacoco'
+
+        jacoco {
+            toolVersion = "0.7.5.201505241946"
         }
     }
 }
@@ -72,20 +89,14 @@ ext {
     ]
 }
 
-// Only report code coverage for projects that are distrubuted
-def publishedProjects = [
-        ":library:poke",
-        ":library:android-mvc-controller"
-]
-
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
     description = 'Generates an aggregate report from all subprojects'
-    dependsOn(publishedProjects.test)
+    dependsOn(jacocoCoveredProjects.test)
 
-    additionalSourceDirs = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories = files(publishedProjects.sourceSets.main.allSource.srcDirs)
-    classDirectories = files(publishedProjects.sourceSets.main.output)
-    executionData = files(publishedProjects.jacocoTestReport.executionData)
+    additionalSourceDirs = files(jacocoCoveredProjects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(jacocoCoveredProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(jacocoCoveredProjects.sourceSets.main.output)
+    executionData = files(jacocoCoveredProjects.jacocoTestReport.executionData)
 
     reports {
         html.enabled = true
@@ -98,7 +109,7 @@ task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
 }
 
 coveralls {
-    sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
+    sourceDirs = jacocoCoveredProjects.sourceSets.main.allSource.srcDirs.flatten()
     jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
 }
 
