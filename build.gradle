@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'jacoco'
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 def log4jVersion = '1.7.4'
 def logbackAndroidVersion = '1.1.1-1'
@@ -67,4 +70,42 @@ ext {
             logbackAndroidCore: "com.github.tony19:logback-android-core:$logbackAndroidVersion",
             logbackAndroidClassic: "com.github.tony19:logback-android-classic:$logbackAndroidVersion"
     ]
+}
+
+// Only report code coverage for projects that are distrubuted
+def publishedProjects = [
+        ":library:poke",
+        ":library:android-mvc-controller"
+]
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn(publishedProjects.test)
+
+    additionalSourceDirs = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(publishedProjects.sourceSets.main.output)
+    executionData = files(publishedProjects.jacocoTestReport.executionData)
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+coveralls {
+    sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoRootReport
+    onlyIf { System.env.'CI' }
 }
