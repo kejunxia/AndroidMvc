@@ -114,3 +114,13 @@ bintray {
         publish = rootProject.ext.shouldPublish
     }
 }
+
+apply plugin: "jacoco"
+
+jacoco {
+    toolVersion = "0.7.5.201505241946"
+}
+
+test {
+    finalizedBy jacocoTestReport
+}
