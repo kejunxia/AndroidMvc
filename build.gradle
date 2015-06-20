@@ -51,10 +51,6 @@ allprojects{
     if (jacocoCoveredProjects.contains(project)) {
         apply plugin: 'java'
         apply plugin: 'jacoco'
-
-        jacoco {
-            toolVersion = "0.7.5.201505241946"
-        }
     }
 }
 
