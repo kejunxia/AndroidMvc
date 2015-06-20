@@ -23,9 +23,7 @@ def logbackAndroidVersion = '1.1.1-1'
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
+        mavenLocal()
     }
 
     dependencies {
@@ -46,11 +44,8 @@ def jacocoCoveredProjects = [
 
 allprojects{
     repositories {
-        mavenLocal()
         jcenter()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
+        mavenLocal()
     }
 
     if (jacocoCoveredProjects.contains(project)) {

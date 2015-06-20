@@ -34,7 +34,7 @@ jdk:
   - oraclejdk7
 
 env:
- - TERM=dumb
+- TERM=dumb
 
 after_success:
-- ./gradlew coveralls uploadArchives
+- ./gradlew coveralls
