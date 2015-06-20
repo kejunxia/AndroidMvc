@@ -42,7 +42,7 @@ public class TestRunAsyncTask extends BaseControllerTest {
 
     private MyControllerImpl controller;
     private EventMonitor eventMonitor;
-    private static final long WAIT_DURATION = MyControllerImpl.LONG_TASK_DURATION + 100;
+    private static final long WAIT_DURATION = MyControllerImpl.LONG_TASK_DURATION + 1000;
 
     @Before
     public void setUp() throws Exception {

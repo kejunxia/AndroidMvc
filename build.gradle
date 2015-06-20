@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+apply plugin: 'com.github.kt3k.coveralls'
+apply plugin: 'jacoco'
+
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 def log4jVersion = '1.7.4'
 def logbackAndroidVersion = '1.1.1-1'
@@ -20,9 +23,7 @@ def logbackAndroidVersion = '1.1.1-1'
 buildscript {
     repositories {
         jcenter()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
-        }
+        mavenLocal()
     }
 
     dependencies {
@@ -30,15 +31,29 @@ buildscript {
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
+
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
     }
 }
 
+// Only report code coverage for projects that are distrubuted
+def jacocoCoveredProjects = [
+        project(":library:poke"),
+        project(":library:android-mvc-controller")
+]
+
 allprojects{
     repositories {
-        mavenLocal()
         jcenter()
-        maven {
-            url "https://oss.sonatype.org/content/repositories/snapshots"
+        mavenLocal()
+    }
+
+    if (jacocoCoveredProjects.contains(project)) {
+        apply plugin: 'java'
+        apply plugin: 'jacoco'
+
+        jacoco {
+            toolVersion = "0.7.5.201505241946"
         }
     }
 }
@@ -67,4 +82,36 @@ ext {
             logbackAndroidCore: "com.github.tony19:logback-android-core:$logbackAndroidVersion",
             logbackAndroidClassic: "com.github.tony19:logback-android-classic:$logbackAndroidVersion"
     ]
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn(jacocoCoveredProjects.test)
+
+    additionalSourceDirs = files(jacocoCoveredProjects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(jacocoCoveredProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(jacocoCoveredProjects.sourceSets.main.output)
+    executionData = files(jacocoCoveredProjects.jacocoTestReport.executionData)
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+coveralls {
+    sourceDirs = jacocoCoveredProjects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+
+    dependsOn jacocoRootReport
+    onlyIf { System.env.'CI' }
 }
