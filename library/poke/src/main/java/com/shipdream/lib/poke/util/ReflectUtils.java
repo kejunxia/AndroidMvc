@@ -87,7 +87,7 @@ public class ReflectUtils {
             field.set(obj, value);
         } catch (IllegalAccessException e) {
             //ignore should not happen as accessibility has been updated to suit assignment
-            e.printStackTrace();
+            e.printStackTrace(); // $COVERAGE-IGNORE$
         }
         //restore accessibility
         field.setAccessible(accessible);
@@ -109,7 +109,7 @@ public class ReflectUtils {
             value = field.get(obj);
         } catch (IllegalAccessException e) {
             //ignore should not happen as accessibility has been updated to suit assignment
-            e.printStackTrace();
+            e.printStackTrace(); // $COVERAGE-IGNORE$
         }
         //restore accessibility
         field.setAccessible(accessible);
