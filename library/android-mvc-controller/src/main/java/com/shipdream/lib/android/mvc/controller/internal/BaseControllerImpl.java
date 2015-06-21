@@ -174,7 +174,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     @Override
     public void bindModel(Object sender, MODEL model) {
         if (model == null) {
-            throw new RuntimeException("Can't bind a null model to a controller explicitly.");
+            throw new IllegalArgumentException("Can't bind a null model to a controller explicitly.");
         }
         mModel = model;
     }

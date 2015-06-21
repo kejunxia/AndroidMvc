@@ -24,8 +24,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Named;
-
 /**
  * The cache controls how the provider associated should generate new instances.
  */
@@ -38,20 +36,6 @@ public class ScopeCache {
     }
 
     protected Map<String, CachedItem> cache = new HashMap<>();
-
-    private String makeProviderKey(Class type, Annotation qualifier) {
-        String qualifierStr;
-        if (qualifier == null) {
-            qualifierStr = "null";
-        } else {
-            if (qualifier.annotationType() == Named.class) {
-                qualifierStr = qualifier.toString() + ":" + ((Named) qualifier).value();
-            } else {
-                qualifierStr = qualifier.toString();
-            }
-        }
-        return type.getName() + "@" + qualifierStr;
-    }
 
     @SuppressWarnings("unchecked")
     <T> T get(Provider<T> provider) throws ProvideException, ProviderMissingException,

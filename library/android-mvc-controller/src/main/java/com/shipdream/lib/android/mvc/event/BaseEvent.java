@@ -27,19 +27,4 @@ public class BaseEvent {
         return sender;
     }
 
-    @Override
-    public boolean equals(Object o){
-        if (this == o) return true;
-        if (!(o instanceof BaseEvent)) return false;
-
-        BaseEvent baseEvent = (BaseEvent) o;
-
-        return sender.equals(baseEvent.sender);
-
-    }
-
-    @Override
-    public int hashCode(){
-        return sender.hashCode();
-    }
 }

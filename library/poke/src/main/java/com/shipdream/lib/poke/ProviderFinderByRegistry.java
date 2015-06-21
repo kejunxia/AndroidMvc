@@ -404,10 +404,10 @@ public class ProviderFinderByRegistry implements ProviderFinder {
                 return method.invoke(component);
             } catch (IllegalAccessException e) {
                 throw new ProvideException(String.format("Provides method %s must " +
-                        "be accessible.", method.getName()), e);
+                        "be accessible.", method.getName()), e);  // $COVERAGE-IGNORE$
             } catch (InvocationTargetException e) {
                 throw new ProvideException(String.format("Provides method %s is not able " +
-                        "to be invoked against %s.", method.getName(), component.getClass().getName()));
+                        "to be invoked against %s.", method.getName(), component.getClass().getName()));  // $COVERAGE-IGNORE$
             }
         }
     }

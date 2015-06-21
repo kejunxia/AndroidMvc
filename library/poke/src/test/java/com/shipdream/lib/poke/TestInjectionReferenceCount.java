@@ -28,6 +28,7 @@ import javax.inject.Singleton;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -275,6 +276,200 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.release(kitchen, MyInject.class);
         verify(proxy, times(1)).onFreed(eq(Container.class));
         verify(proxy, times(1)).onFreed(eq(Fruit.class));
+    }
+
+    @Test
+    public void should_not_invoke_on_freed_callback_when_freedListeners_are_unregistered()
+            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+        //As mockito can't mock annotation so we need a proxy to stub it
+        class OnCacheFreedProxy {
+            public void onFreed(Class<?> type) {}
+        }
+
+        SimpleGraph graph = new SimpleGraph();
+        Component component = new TestComp2();
+        graph.register(component);
+
+        Kitchen kitchen = new Kitchen();
+        graph.inject(kitchen, MyInject.class);
+
+        final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
+        Graph.OnProviderFreedListener onFreed = new Graph.OnProviderFreedListener() {
+            @Override
+            public void onFreed(Provider provider) {
+                proxy.onFreed(provider.type());
+            }
+        };
+        graph.registerProviderFreedListener(onFreed);
+
+        graph.unregisterProviderFreedListener(onFreed);
+
+        //Assert
+        graph.release(kitchen, MyInject.class);
+        verify(proxy, times(0)).onFreed(eq(Container.class));
+        verify(proxy, times(0)).onFreed(eq(Fruit.class));
+    }
+
+    @Test
+    public void should_not_invoke_on_freed_callback_when_freedListeners_are_cleared()
+            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+        //As mockito can't mock annotation so we need a proxy to stub it
+        class OnCacheFreedProxy {
+            public void onFreed(Class<?> type) {}
+        }
+
+        SimpleGraph graph = new SimpleGraph();
+        Component component = new TestComp2();
+        graph.register(component);
+
+        Kitchen kitchen = new Kitchen();
+        graph.inject(kitchen, MyInject.class);
+
+        final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
+        Graph.OnProviderFreedListener onFreed = new Graph.OnProviderFreedListener() {
+            @Override
+            public void onFreed(Provider provider) {
+                proxy.onFreed(provider.type());
+            }
+        };
+        graph.registerProviderFreedListener(onFreed);
+
+        graph.clearOnProviderFreedListeners();
+
+        //Assert
+        graph.release(kitchen, MyInject.class);
+        verify(proxy, times(0)).onFreed(eq(Container.class));
+        verify(proxy, times(0)).onFreed(eq(Fruit.class));
+    }
+
+    @Test
+    public void should_invoke_call_backs_of_registered_graph_monitors()
+            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+        //As mockito can't mock annotation so we need a proxy to stub it
+        class MonitorProxy {
+            public void onInject(Object target) {}
+            public void onRelease(Object target) {}
+        }
+
+        SimpleGraph graph = new SimpleGraph();
+        Component component = new TestComp2();
+        graph.register(component);
+
+        final MonitorProxy proxy = mock(MonitorProxy.class);
+        Graph.Monitor monitor = new Graph.Monitor() {
+            @Override
+            public void onInject(Object target) {
+                proxy.onInject(target);
+            }
+
+            @Override
+            public void onRelease(Object target) {
+                proxy.onRelease(target);
+            }
+        };
+        graph.registerMonitor(monitor);
+
+        Kitchen kitchen = new Kitchen();
+
+        //Act
+        graph.inject(kitchen, MyInject.class);
+
+        //Assert
+        verify(proxy, times(1)).onInject(kitchen);
+
+        reset(proxy);
+        //Act
+        graph.release(kitchen, MyInject.class);
+        //Assert
+        verify(proxy, times(1)).onRelease(kitchen);
+    }
+
+    @Test
+    public void should_not_invoke_call_backs_of_unregistered_graph_monitors()
+            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+        //As mockito can't mock annotation so we need a proxy to stub it
+        class MonitorProxy {
+            public void onInject(Object target) {}
+            public void onRelease(Object target) {}
+        }
+
+        SimpleGraph graph = new SimpleGraph();
+        Component component = new TestComp2();
+        graph.register(component);
+
+        final MonitorProxy proxy = mock(MonitorProxy.class);
+        Graph.Monitor monitor = new Graph.Monitor() {
+            @Override
+            public void onInject(Object target) {
+                proxy.onInject(target);
+            }
+
+            @Override
+            public void onRelease(Object target) {
+                proxy.onRelease(target);
+            }
+        };
+        graph.registerMonitor(monitor);
+
+        Kitchen kitchen = new Kitchen();
+
+        graph.unregisterMonitor(monitor);
+
+        //Act
+        graph.inject(kitchen, MyInject.class);
+
+        //Assert
+        verify(proxy, times(0)).onInject(kitchen);
+
+        reset(proxy);
+        //Act
+        graph.release(kitchen, MyInject.class);
+        //Assert
+        verify(proxy, times(0)).onRelease(kitchen);
+    }
+
+    @Test
+    public void should_not_invoke_call_backs_after_clear_graph_monitors()
+            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+        //As mockito can't mock annotation so we need a proxy to stub it
+        class MonitorProxy {
+            public void onInject(Object target) {}
+            public void onRelease(Object target) {}
+        }
+
+        SimpleGraph graph = new SimpleGraph();
+        Component component = new TestComp2();
+        graph.register(component);
+
+        final MonitorProxy proxy = mock(MonitorProxy.class);
+        Graph.Monitor monitor = new Graph.Monitor() {
+            @Override
+            public void onInject(Object target) {
+                proxy.onInject(target);
+            }
+
+            @Override
+            public void onRelease(Object target) {
+                proxy.onRelease(target);
+            }
+        };
+        graph.registerMonitor(monitor);
+
+        Kitchen kitchen = new Kitchen();
+
+        graph.clearMonitors();
+
+        //Act
+        graph.inject(kitchen, MyInject.class);
+
+        //Assert
+        verify(proxy, times(0)).onInject(kitchen);
+
+        reset(proxy);
+        //Act
+        graph.release(kitchen, MyInject.class);
+        //Assert
+        verify(proxy, times(0)).onRelease(kitchen);
     }
 
     static class Orange implements Fruit {
