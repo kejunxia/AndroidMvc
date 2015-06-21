@@ -20,6 +20,7 @@ import com.shipdream.lib.android.mvc.event.BaseEventC2V;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 
 import java.util.concurrent.ExecutorService;
 
@@ -30,9 +31,27 @@ import static org.mockito.Mockito.mock;
 public class MyControllerImpl extends BaseControllerImpl {
     public static final long LONG_TASK_DURATION = 100;
 
+    public void setLogger(Logger logger) {
+        mLogger = logger;
+    }
+
+    public Logger getLogger() {
+        return mLogger;
+    }
+
     @Override
     public Class getModelClassType() {
         return null;
+    }
+
+    public AsyncTask loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(final Object sender) {
+        return runAsyncTask(this, new AsyncTask() {
+            @Override
+            public void execute() throws Exception {
+                Thread.sleep(LONG_TASK_DURATION);
+                postC2VEvent(new ResourceLoaded(sender));
+            }
+        });
     }
 
     public AsyncTask loadHeavyResourceSuccessfullyWithoutErrorHandler(final Object sender) {
@@ -70,6 +89,15 @@ public class MyControllerImpl extends BaseControllerImpl {
         });
     }
 
+    public AsyncTask loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(final Object sender) {
+        return runAsyncTask(this, new AsyncTask() {
+            @Override
+            public void execute() throws Exception {
+                Thread.sleep(LONG_TASK_DURATION);
+                throw new RuntimeException("Something went wrong");
+            }
+        });
+    }
     public AsyncTask loadHeavyResourceWithException(final Object sender) {
         return runAsyncTask(this, new AsyncTask() {
             @Override
@@ -84,6 +112,7 @@ public class MyControllerImpl extends BaseControllerImpl {
             }
         });
     }
+
 
     public AsyncTask loadHeavyResourceAndCancel(final Object sender) {
         AsyncTask asyncTask = new AsyncTask() {
