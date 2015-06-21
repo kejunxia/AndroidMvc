@@ -210,4 +210,26 @@ public class TestComponentInjection extends BaseTestCases {
         Assert.assertNotNull(fridge.fruit);
         Assert.assertTrue(fridge.fruit == fridge1.fruit);
     }
+
+    static class BadComponent extends Component{
+        @Provides
+        public Food providesFood() {
+            return null;
+        }
+    }
+
+    @Test (expected = ProvideException.class)
+    public void should_detect_ProvideException_with_providers_return_void ()
+            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+        SimpleGraph graph = new SimpleGraph();
+        graph.register(new BadComponent());
+
+        class Fridge {
+            @MyInject
+            private Food myFood;
+        }
+
+        Fridge fridge = new Fridge();
+        graph.inject(fridge, MyInject.class);
+    }
 }
