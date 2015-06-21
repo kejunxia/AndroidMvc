@@ -78,10 +78,23 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictProviderException() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
-
         providerFinder.register(Os.class, iOs.class);
         providerFinder.register(Os.class, Android.class);
         providerFinder.register(Os.class, Android.class);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void should_detect_unregister_null_implementationClassName_error() throws ProviderConflictException,
+            ProvideException, CircularDependenciesException, ProviderMissingException, ClassNotFoundException {
+        String impl = null;
+        providerFinder.unregister(Os.class, impl);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void should_detect_unregister_null_implementationClass_error() throws ProviderConflictException,
+            ProvideException, CircularDependenciesException, ProviderMissingException, ClassNotFoundException {
+        Class impl = null;
+        providerFinder.unregister(Os.class, impl);
     }
 
     private static class Container {

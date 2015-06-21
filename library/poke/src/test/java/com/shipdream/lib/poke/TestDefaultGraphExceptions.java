@@ -33,6 +33,11 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     static class Dog implements Pet {
     }
 
+    @Test
+    public void suppress_constructor_miss_coverage_of_pokerHelper() {
+        new PokeHelper();
+    }
+
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingClassRegistry() throws ProviderConflictException {
         SimpleGraph graph = new SimpleGraph();
