@@ -34,6 +34,10 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 public class TestProviderFinderByRegistry extends BaseTestCases {
     private Graph graph;
@@ -78,10 +82,23 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictProviderException() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
-
         providerFinder.register(Os.class, iOs.class);
         providerFinder.register(Os.class, Android.class);
         providerFinder.register(Os.class, Android.class);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void should_detect_unregister_null_implementationClassName_error() throws ProviderConflictException,
+            ProvideException, CircularDependenciesException, ProviderMissingException, ClassNotFoundException {
+        String impl = null;
+        providerFinder.unregister(Os.class, impl);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void should_detect_unregister_null_implementationClass_error() throws ProviderConflictException,
+            ProvideException, CircularDependenciesException, ProviderMissingException, ClassNotFoundException {
+        Class impl = null;
+        providerFinder.unregister(Os.class, impl);
     }
 
     private static class Container {
@@ -340,7 +357,9 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         Basket basket = new Basket();
 
-        providerFinder.register(Food.class, Rice.class.getName());
+        ScopeCache scopeCache = new ScopeCache();
+
+        providerFinder.register(Food.class, Rice.class.getName(), scopeCache);
         providerFinder.register(Food.class, Wheat.class.getName());
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Rice.class);
@@ -828,4 +847,110 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
         return null;
     }
+
+    interface Contract {
+
+    }
+
+    class Execution implements Contract {
+
+    }
+
+    @Test
+    public void should_be_able_to_register_implementation_into_simple_graph ()
+            throws ClassNotFoundException, ProviderConflictException, ProvideException {
+        ProviderFinderByRegistry registry = mock(ProviderFinderByRegistry.class);
+
+        SimpleGraph graph = new SimpleGraph(registry);
+
+        //Register by name
+        reset(registry);
+        graph.register(String.class, "Impl1");
+        verify(registry).register(eq(String.class), eq("Impl1"));
+
+        reset(registry);
+        ScopeCache cache = mock(ScopeCache.class);
+        graph.register(String.class, "Impl2", cache);
+        verify(registry).register(eq(String.class), eq("Impl2"), eq(cache));
+
+        reset(registry);
+        graph.register(String.class, "Impl3", cache, true);
+        verify(registry).register(eq(String.class), eq("Impl3"), eq(cache), eq(true));
+
+        reset(registry);
+        graph.register(String.class, "Impl4", cache, false);
+        verify(registry).register(eq(String.class), eq("Impl4"), eq(cache), eq(false));
+
+        //Register by class
+        reset(registry);
+        graph.register(Contract.class, Execution.class);
+        verify(registry).register(eq(Contract.class), eq(Execution.class));
+
+        reset(registry);
+        graph.register(Contract.class, Execution.class, cache);
+        verify(registry).register(eq(Contract.class), eq(Execution.class), eq(cache));
+
+        reset(registry);
+        graph.register(Contract.class, Execution.class, cache, true);
+        verify(registry).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(true));
+
+        reset(registry);
+        graph.register(Contract.class, Execution.class, cache, false);
+        verify(registry).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(false));
+
+        //Register by component
+        Component component = mock(Component.class);
+        reset(registry);
+        graph.register(component);
+        verify(registry).register(eq(component));
+
+        reset(registry);
+        graph.register(component, true);
+        verify(registry).register(eq(component), eq(true));
+
+        reset(registry);
+        graph.register(component, false);
+        verify(registry).register(eq(component), eq(false));
+
+        //Register by provider
+        Provider provider = mock(Provider.class);
+        reset(registry);
+        graph.register(provider);
+        verify(registry).register(eq(provider));
+
+        reset(registry);
+        graph.register(provider, true);
+        verify(registry).register(eq(provider), eq(true));
+
+        reset(registry);
+        graph.register(provider, false);
+        verify(registry).register(eq(provider), eq(false));
+    }
+
+    @Test
+    public void should_be_able_to_unregister_implementation_into_simple_graph ()
+            throws ClassNotFoundException, ProviderConflictException, ProvideException {
+        ProviderFinderByRegistry registry = mock(ProviderFinderByRegistry.class);
+
+        SimpleGraph graph = new SimpleGraph(registry);
+
+        reset(registry);
+        graph.unregister(String.class, "Impl1");
+        verify(registry).unregister(eq(String.class), eq("Impl1"));
+
+        reset(registry);
+        graph.unregister(Contract.class, Execution.class);
+        verify(registry).unregister(eq(Contract.class), eq(Execution.class));
+
+        Component component = mock(Component.class);
+        reset(registry);
+        graph.unregister(component);
+        verify(registry).unregister(eq(component));
+
+        Provider provider = mock(Provider.class);
+        reset(registry);
+        graph.unregister(provider);
+        verify(registry).unregister(eq(provider));
+    }
+
 }

@@ -18,6 +18,15 @@ package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.event.BaseEventC2V;
 
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import java.util.concurrent.ExecutorService;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
+
 public class MyControllerImpl extends BaseControllerImpl {
     public static final long LONG_TASK_DURATION = 100;
 
@@ -26,7 +35,27 @@ public class MyControllerImpl extends BaseControllerImpl {
         return null;
     }
 
-    public AsyncTask loadHeavyResourceSuccessfully(final Object sender) {
+    public AsyncTask loadHeavyResourceSuccessfullyWithoutErrorHandler(final Object sender) {
+        ExecutorService executorService = mock(ExecutorService.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Runnable runnable = (Runnable) invocation.getArguments()[0];
+                runnable.run();
+                return null;
+            }
+        }).when(executorService).submit(any(Runnable.class));
+
+        return runAsyncTask(this, executorService, new AsyncTask() {
+            @Override
+            public void execute() throws Exception {
+                Thread.sleep(LONG_TASK_DURATION);
+                postC2VEvent(new ResourceLoaded(sender));
+            }
+        });
+    }
+
+    public AsyncTask loadHeavyResourceSuccessfullyWithErrorHandler(final Object sender) {
         return runAsyncTask(this, new AsyncTask() {
             @Override
             public void execute() throws Exception {

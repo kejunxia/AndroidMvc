@@ -17,10 +17,6 @@
 package com.shipdream.lib.poke;
 
 public class LocateClassException extends Exception {
-    public LocateClassException(String message) {
-        super(message);
-    }
-
     public LocateClassException(String message, Throwable cause) {
         super(message, cause);
     }

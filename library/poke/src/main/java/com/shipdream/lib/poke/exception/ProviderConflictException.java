@@ -27,8 +27,4 @@ public class ProviderConflictException extends PokeException {
     public ProviderConflictException(String message) {
         super(message);
     }
-
-    public ProviderConflictException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

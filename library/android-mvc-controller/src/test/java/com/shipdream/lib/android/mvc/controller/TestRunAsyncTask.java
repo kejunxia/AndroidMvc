@@ -58,8 +58,21 @@ public class TestRunAsyncTask extends BaseControllerTest {
     }
 
     @Test
+    public void should_be_able_to_run_async_task_without_error_handler() throws Exception {
+        AsyncTask asyncTask = controller.loadHeavyResourceSuccessfullyWithoutErrorHandler(this);
+
+        Thread.sleep(WAIT_DURATION);
+
+        ArgumentCaptor<MyControllerImpl.ResourceLoaded> eventResourceLoaded
+                = ArgumentCaptor.forClass(MyControllerImpl.ResourceLoaded.class);
+        verify(eventMonitor, times(1)).onEvent(eventResourceLoaded.capture());
+
+        Assert.assertEquals(asyncTask.getState(), AsyncTask.State.DONE);
+    }
+
+    @Test
     public void shouldBeAbleToRunAsyncTaskSuccessfully() throws Exception {
-        AsyncTask asyncTask = controller.loadHeavyResourceSuccessfully(this);
+        AsyncTask asyncTask = controller.loadHeavyResourceSuccessfullyWithErrorHandler(this);
 
         Thread.sleep(WAIT_DURATION);
 

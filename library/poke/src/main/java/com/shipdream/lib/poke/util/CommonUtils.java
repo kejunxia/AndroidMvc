@@ -34,10 +34,6 @@ public class CommonUtils {
                 if(obj1.equals(obj2)) {
                     equal = true;
                 }
-            } else {
-                if(obj2.equals(obj1)) {
-                    equal = true;
-                }
             }
         }
         return equal;

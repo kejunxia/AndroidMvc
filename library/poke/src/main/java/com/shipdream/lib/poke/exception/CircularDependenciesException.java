@@ -20,8 +20,4 @@ public class CircularDependenciesException extends PokeException {
     public CircularDependenciesException(String message) {
         super(message);
     }
-
-    public CircularDependenciesException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }
