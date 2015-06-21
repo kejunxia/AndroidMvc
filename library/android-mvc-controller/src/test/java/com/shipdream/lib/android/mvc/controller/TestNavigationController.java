@@ -18,6 +18,7 @@ package com.shipdream.lib.android.mvc.controller;
 
 import com.shipdream.lib.android.mvc.NavLocation;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -127,6 +128,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId2);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation().getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation().getPreviousLocation(), null);
+        Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
         navigationController.navigateBack(this);
@@ -138,6 +140,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(currentLoc.getLocationId(), locId2);
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation(), null);
+        Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
         navigationController.navigateBack(this);
@@ -148,6 +151,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         currentLoc = navigationController.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation(), null);
+        Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
         navigationController.navigateBack(this);
@@ -157,6 +161,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(event.getValue().getCurrentValue(), null);
         currentLoc = navigationController.getModel().getCurrentLocation();
         assertEquals(currentLoc, null);
+        Assert.assertFalse(event.getValue().isFastRewind());
 
         //has already reached the start of the navigation, should not be able to navigate back any more
         reset(backListener);
@@ -184,6 +189,8 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(currentLoc.getLocationId(), locId2);
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation(), null);
+
+        Assert.assertTrue(event.getValue().isFastRewind());
     }
 
     @Test
@@ -204,6 +211,8 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation(), null);
+
+        Assert.assertTrue(event.getValue().isFastRewind());
     }
 
     /**
