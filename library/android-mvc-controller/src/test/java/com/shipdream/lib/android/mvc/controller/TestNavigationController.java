@@ -215,6 +215,55 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         Assert.assertTrue(event.getValue().isFastRewind());
     }
 
+    @Test
+         public void should_not_raise_navigate_back_event_when_navigate_to_first_location_from_the_first_location() throws Exception {
+        // Arrange
+        BackListener backListener = mock(BackListener.class);
+        eventBusC2V.register(backListener);
+
+        navigationController.navigateTo(this, locId1);
+
+        // Arrange
+        navigationController.navigateBack(this, null);
+
+        // Verify
+        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        verify(backListener, times(0)).onEvent(event.capture());
+    }
+
+    @Test
+    public void should_not_raise_navigate_back_event_when_navigate_to_unknown_location() throws Exception {
+        // Arrange
+        BackListener backListener = mock(BackListener.class);
+        eventBusC2V.register(backListener);
+
+        prepareLocationHistory();
+
+        // Arrange
+        navigationController.navigateBack(this, "Bad Location");
+
+        // Verify
+        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        verify(backListener, times(0)).onEvent(event.capture());
+    }
+
+    @Test
+    public void should_not_raise_navigate_back_event_when_fast_back_navigate_from_null_location() throws Exception {
+        // Arrange
+        BackListener backListener = mock(BackListener.class);
+        eventBusC2V.register(backListener);
+
+        // Arrange
+        navigationController.navigateBack(this, "any location");
+
+        // Verify
+        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        verify(backListener, times(0)).onEvent(event.capture());
+    }
+
     /**
      * Prepare 4 locations in the history
      */

@@ -20,13 +20,15 @@ import com.shipdream.lib.android.mvc.controller.internal.AsyncTask;
 import com.shipdream.lib.android.mvc.controller.internal.MyControllerImpl;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.Logger;
 
 import java.util.concurrent.Executors;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -58,6 +60,19 @@ public class TestRunAsyncTask extends BaseControllerTest {
     }
 
     @Test
+    public void should_be_able_to_run_async_task_without_error_handler_with_default_executorService() throws Exception {
+        AsyncTask asyncTask = controller.loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(this);
+
+        Thread.sleep(WAIT_DURATION);
+
+        ArgumentCaptor<MyControllerImpl.ResourceLoaded> eventResourceLoaded
+                = ArgumentCaptor.forClass(MyControllerImpl.ResourceLoaded.class);
+        verify(eventMonitor, times(1)).onEvent(eventResourceLoaded.capture());
+
+        Assert.assertEquals(asyncTask.getState(), AsyncTask.State.DONE);
+    }
+
+    @Test
     public void should_be_able_to_run_async_task_without_error_handler() throws Exception {
         AsyncTask asyncTask = controller.loadHeavyResourceSuccessfullyWithoutErrorHandler(this);
 
@@ -68,6 +83,17 @@ public class TestRunAsyncTask extends BaseControllerTest {
         verify(eventMonitor, times(1)).onEvent(eventResourceLoaded.capture());
 
         Assert.assertEquals(asyncTask.getState(), AsyncTask.State.DONE);
+    }
+
+    @Test
+    public void should_log_error_without_error_handler() throws Exception {
+        Logger logger = mock(Logger.class);
+        controller.setLogger(logger);
+        controller.loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(this);
+
+        Thread.sleep(WAIT_DURATION);
+
+        verify(logger, times(1)).warn(anyString(), any(Exception.class));
     }
 
     @Test

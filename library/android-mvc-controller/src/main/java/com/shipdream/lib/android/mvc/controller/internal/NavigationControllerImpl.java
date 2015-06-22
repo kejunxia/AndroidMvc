@@ -129,6 +129,11 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
             return;
         }
 
+        if (currentLoc.getPreviousLocation() == null) {
+            //Has already been the first location, don't do anything
+            return;
+        }
+
         boolean success = false;
         NavLocation previousLoc = currentLoc;
 

@@ -74,12 +74,12 @@ import javax.inject.Singleton;
  * <p/>
  */
 public class MvcGraph {
-    private ScopeCache singletonScopeCache;
-    private DefaultProviderFinder defaultProviderFinder;
-    private List<StateManaged> stateManagedObjects = new ArrayList<>();
+    ScopeCache singletonScopeCache;
+    DefaultProviderFinder defaultProviderFinder;
+    List<StateManaged> stateManagedObjects = new ArrayList<>();
 
     //Composite graph to hide methods
-    private Graph graph;
+    Graph graph;
 
     public MvcGraph(BaseDependencies baseDependencies)
             throws ProvideException, ProviderConflictException {
@@ -313,7 +313,7 @@ public class MvcGraph {
         }
     }
 
-    private static class DefaultProviderFinder extends ProviderFinderByRegistry {
+    static class DefaultProviderFinder extends ProviderFinderByRegistry {
         private final MvcGraph mvcGraph;
         private final ImplClassLocator defaultImplClassLocator;
         private Map<Class, Provider> providers = new HashMap<>();
