@@ -8,6 +8,26 @@
   - Improved Fragment life cycles - e.g. Differentiate why view is created: 1. __NewlyCreated__, 2. __Rotated__ or 3. __StateRestored__
   - Automatically save restore instance state
 
+## Download
+The library is currently release to jCenter and MavenCentral
+
+**Maven:**
+```xml
+<dependency>
+    <groupId>com.shipdream</groupId>
+    <artifactId>android-mvc</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+**Gradle:**
+```groovy
+compile "com.shipdream:android-mvc:1.0"
+```
+
+## Samples APKs
+ - **[Counter](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
+ - **[Note](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)** - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
 
 ## Overview
 Unlike iOS development, Android doesn't come with design pattern out of box and the SDK doesn't enforce any design pattern too. To apply design pattern to Android development is not straight forward due to the hard coupling of Android objects to all Android components. This hurdle not just makes coding less well organized but also harder unit testable.
@@ -35,14 +55,6 @@ Models in AndroidMVC design represent the state of controllers. So each controll
 #### Events
 Views should be updated by events sent from controllers. When methods of controllers get invoked by views, data will be loaded and updated in controllers followed by wrapping the updated data into events sending back to views. Therefore, the events can also be seen as **ViewModel** to update entire or partial view. In this way, the testing against views could be little because all data bound to views are formatted in the event by controllers. And the logic should be tested can be moved to controller unit tests which decouples the tests from Android SDK and can be run on JVM. Hence, the pattern could be considered as **MVVM** as well.
 
-
-## Download
-The library is currently release to jCenter and MavenCentral
-
-Gradle dependency is 
-```groovy
-compile "com.shipdream:android-mvc:1.0"
-```
 
 ## Using AndroidMvc
 
@@ -753,16 +765,3 @@ public class NoteApp extends Application {
     }
 }
 ````
-
-## Download
-The library is currently release to jCenter and MavenCentral
-
-Gradle dependency is
-```groovy
-compile "com.shipdream:android-mvc:1.0"
-```
-
-## Samples APKs
- - [Counter](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk) - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
- - [Note](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk) - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
-

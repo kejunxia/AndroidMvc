@@ -16,8 +16,8 @@
   - Automatically save restore instance state
 
 ## Samples APKs
- - **[Counter](https://drive.google.com/open?id=0BwcZml9gnwoZRS1pYURMMVRzdHM&authuser=0)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
- - **[Note](https://drive.google.com/open?id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&authuser=0)** - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
+ - **[Counter](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
+ - **[Note](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)** - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
 
 ## Download
 The library is currently release to jCenter and MavenCentral
