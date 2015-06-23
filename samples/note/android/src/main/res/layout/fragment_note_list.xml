@@ -39,6 +39,6 @@
         android:layout_centerInParent="true"
         android:textSize="20sp"
         android:gravity="center"
-        android:text="No notes found. Press Add to create a new one."
+        android:text="No notes found. Press Add to create a new one.\n\n(Rotate to set Tablet view)"
         android:id="@+id/fragment_note_list_listViewEmpty"/>
 </RelativeLayout>
