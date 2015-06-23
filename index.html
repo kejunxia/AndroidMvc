@@ -1,25 +1,37 @@
 <!DOCTYPE html>
-<html lang="en-us">
-  <head>
-    <meta charset="UTF-8">
-    <title>Android Mvc Framework by kejunxia</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
-    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
-  </head>
-  <body>
-    <section class="page-header">
-      <h1 class="project-name">Android Mvc Framework</h1>
-      <h2 class="project-tagline">Android, MVC, MVVM, Unit Test, EventBus, Android MVC Framework</h2>
-      <a href="https://github.com/kejunxia/AndroidMvc" class="btn">View on GitHub</a>
-      <a href="https://github.com/kejunxia/AndroidMvc/zipball/master" class="btn">Download .zip</a>
-      <a href="https://github.com/kejunxia/AndroidMvc/tarball/master" class="btn">Download .tar.gz</a>
-    </section>
+<html>
 
-    <section class="main-content">
-      <h1>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Android Mvc Framework : Android, MVC, MVVM, Unit Test, EventBus, Android MVC Framework">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Android Mvc Framework</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/kejunxia/AndroidMvc">View on GitHub</a>
+
+          <h1 id="project_title">Android Mvc Framework</h1>
+          <h2 id="project_tagline">Android, MVC, MVVM, Unit Test, EventBus, Android MVC Framework</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/kejunxia/AndroidMvc/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/kejunxia/AndroidMvc/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
 <a id="androidmvc-framework" class="anchor" href="#androidmvc-framework" aria-hidden="true"><span class="octicon octicon-link"></span></a>AndroidMvc Framework</h1>
 
 <h2>
@@ -37,23 +49,31 @@
 </ul>
 
 <h2>
-<a id="samples-apks" class="anchor" href="#samples-apks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples APKs</h2>
-
-<ul>
-<li>
-<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk">Counter</a> - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.</li>
-<li>
-<a href="https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk">Note</a> - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.</li>
-</ul>
-
-<h2>
 <a id="download" class="anchor" href="#download" aria-hidden="true"><span class="octicon octicon-link"></span></a>Download</h2>
 
 <p>The library is currently release to jCenter and MavenCentral</p>
 
-<p>Gradle dependency is</p>
+<p><strong>Maven:</strong></p>
+
+<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+    &lt;<span class="pl-ent">groupId</span>&gt;com.shipdream&lt;/<span class="pl-ent">groupId</span>&gt;
+    &lt;<span class="pl-ent">artifactId</span>&gt;android-mvc&lt;/<span class="pl-ent">artifactId</span>&gt;
+    &lt;<span class="pl-ent">version</span>&gt;1.0&lt;/<span class="pl-ent">version</span>&gt;
+&lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
+
+<p><strong>Gradle:</strong></p>
 
 <div class="highlight highlight-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.0<span class="pl-pds">"</span></span></pre></div>
+
+<h2>
+<a id="samples-apks" class="anchor" href="#samples-apks" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples APKs</h2>
+
+<ul>
+<li>
+<strong><a href="https://docs.google.com/uc?authuser=0&amp;id=0BwcZml9gnwoZRS1pYURMMVRzdHM&amp;export=download">Counter</a></strong> - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.</li>
+<li>
+<strong><a href="https://docs.google.com/uc?authuser=0&amp;id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&amp;export=download">Note</a></strong> - A more complex sample to make notes and query weathers with slide menu and also demonstrates how consume network resources (<a href="http://openweathermap.org/api">public weather API</a>) and test the async task without depending on Android SDK on pure JVM.</li>
+</ul>
 
 <h2>
 <a id="overview" class="anchor" href="#overview" aria-hidden="true"><span class="octicon octicon-link"></span></a>Overview</h2>
@@ -840,16 +860,18 @@ So when WeatherController#updateAllCities(Object) is called, we can verify wheth
         });
     }
 }</pre></div>
+      </section>
+    </div>
 
-      <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/kejunxia/AndroidMvc">Android Mvc Framework</a> is maintained by <a href="https://github.com/kejunxia">kejunxia</a>.</span>
-
-        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Android Mvc Framework maintained by <a href="https://github.com/kejunxia">kejunxia</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
+    </div>
 
-    </section>
-
-            <script type="text/javascript">
+              <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -860,6 +882,6 @@ So when WeatherController#updateAllCities(Object) is called, we can verify wheth
             } catch(err) {}
           </script>
 
+
   </body>
 </html>
-
