@@ -16,8 +16,8 @@
   - Automatically save restore instance state
 
 ## Samples APKs
- - **[Counter](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/simple-counter.apk)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
- - **[Note](https://github.com/kejunxia/AndroidMvc/blob/master/documents/apks/samples/notes.apk)** - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
+ - **[Counter](https://drive.google.com/open?id=0BwcZml9gnwoZRS1pYURMMVRzdHM&authuser=0)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
+ - **[Note](https://drive.google.com/open?id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&authuser=0)** - Another more complex sample also demonstrates how to use async tasks to get network resources and test the async task without Android SDK on pure JVM.
 
 ## Download
 The library is currently release to jCenter and MavenCentral

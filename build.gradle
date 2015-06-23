@@ -57,8 +57,13 @@ allprojects{
 ext {
     siteUrl = 'https://github.com/kejunxia/AndroidMvc'      // Homepage URL of the library
     gitUrl = 'https://github.com/kejunxia/AndroidMvc.git'   // Git repository URL
+    version = [
+        major: 1,
+        minor: 0,
+        patch : 1
+    ]
     libGroup = 'com.shipdream'
-    libVersion = "1.0"
+    libVersion = "${version.major}.${version.minor}.${version.patch}"
     shouldPublish = false
 
     androidMinSdkVersion = 14
