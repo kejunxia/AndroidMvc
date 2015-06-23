@@ -32,6 +32,7 @@ import java.lang.annotation.Retention;
 
 import javax.inject.Named;
 import javax.inject.Qualifier;
+import javax.inject.Singleton;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.mockito.Matchers.eq;
@@ -409,6 +410,80 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             shouldCatchProviderMissingException = true;
         }
         Assert.assertTrue(shouldCatchProviderMissingException);
+    }
+
+    static class BadComponent extends Component{
+        @Provides
+        void provideNothing() {
+            return;
+        }
+    }
+
+    @Test
+    public void should_throw_exception_when_there_is_void_function_in_component()
+            throws ProvideException, ProviderConflictException {
+        BadComponent badComponent = new BadComponent();
+
+        try {
+            providerFinder.register(badComponent);
+        } catch (ProvideException e) {
+            Assert.assertTrue(e.getMessage().contains("must not return void"));
+            return;
+        }
+        Assert.fail("Should raise ProvideException for provider returning void");
+    }
+
+    @Qualifier @Retention(RUNTIME) @interface Qualifier1 {}
+
+    @Qualifier @Retention(RUNTIME) @interface Qualifier2 {}
+
+    static class DuplicateComponent extends Component{
+        @Provides @Qualifier1 @Qualifier2
+        String provideText() {
+            return "123";
+        }
+    }
+
+    @Test
+    public void should_throw_exception_when_provider_has_more_than_one_qualifier()
+            throws ProvideException, ProviderConflictException {
+        DuplicateComponent duplicateComponent = new DuplicateComponent();
+        try {
+            providerFinder.register(duplicateComponent);
+        } catch (ProvideException e) {
+            Assert.assertTrue(e.getMessage().contains("Only one Qualifier"));
+            return;
+        }
+        Assert.fail("Should raise ProvideException for provider with multiple qualifier");
+    }
+
+    @Test
+    public void should_throw_exception_if_provider_returns_null()
+            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+        Provider<String> provider = new Provider(String.class) {
+            @Override
+            protected String createInstance() throws ProvideException {
+                return null;
+            }
+        };
+        provider.setScopeCache(new ScopeCache());
+        providerFinder.register(provider);
+
+        class Container {
+            @MyInject
+            @Singleton
+            private String name;
+        }
+
+        Container container = new Container();
+
+        try {
+            graph.inject(container, MyInject.class);
+        } catch (ProvideException e) {
+            Assert.assertTrue(e.getMessage().contains("should not provide NULL as instance"));
+            return;
+        }
+        Assert.fail("Should raise ProvideException for provider returns null");
     }
 
     @Test

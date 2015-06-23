@@ -336,7 +336,7 @@ public class ProviderFinderByRegistry implements ProviderFinder {
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
                 Class<?> returnType = method.getReturnType();
-                if (returnType != Void.class) {
+                if (returnType != void.class) {
                     Annotation qualifier = null;
                     Annotation[] annotations = method.getAnnotations();
                     for (Annotation a : annotations) {
@@ -355,7 +355,7 @@ public class ProviderFinderByRegistry implements ProviderFinder {
     private void registerProvides(final Component component, final Method method, boolean allowOverride)
             throws ProvideException, ProviderConflictException {
         Class<?> returnType = method.getReturnType();
-        if (returnType == Void.class) {
+        if (returnType == void.class) {
             throw new ProvideException(String.format("Provides method %s must not return void.",
                     method.getName()));
         } else {
