@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.controller;
+package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.NavLocation;
+import com.shipdream.lib.android.mvc.controller.BaseNavigationControllerTest;
+import com.shipdream.lib.android.mvc.controller.NavigationController;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.Logger;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
@@ -262,6 +267,48 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
                 = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
+    }
+
+    @Test
+    public void should_be_able_to_log_navigation_history() throws Exception {
+        // Arrange
+        Logger logger = mock(Logger.class);
+        ((NavigationControllerImpl)navigationController).dumpHistoryOnLocationChange = true;
+        ((NavigationControllerImpl) navigationController).mLogger = logger;
+
+        // Act
+        navigationController.navigateTo(this, "any location", "back to location");
+
+        // Verify
+        verify(logger, atLeast(1)).trace(anyString());
+
+        // Arrange
+        reset(logger);
+
+        // Act
+        navigationController.navigateTo(this, "any location");
+
+        // Verify
+        verify(logger, atLeast(1)).trace(anyString());
+
+        // Arrange
+        reset(logger);
+
+        // Act
+        navigationController.navigateBack(this);
+
+        // Verify
+        verify(logger, atLeast(1)).trace(anyString());
+
+        // Arrange
+        reset(logger);
+        navigationController.navigateTo(this, "some location");
+
+        // Act
+        navigationController.navigateBack(this, null);
+
+        // Verify
+        verify(logger, atLeast(1)).trace(anyString());
     }
 
     /**
