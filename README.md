@@ -27,11 +27,11 @@ The library is currently release to jCenter and MavenCentral
 <dependency>
     <groupId>com.shipdream</groupId>
     <artifactId>android-mvc</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-compile "com.shipdream:android-mvc:1.0.1"
+compile "com.shipdream:android-mvc:1.0.2"
 ```
