@@ -21,6 +21,7 @@ import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -102,11 +103,14 @@ public class EventBusImpl implements EventBus {
         Map<Object, Method> subs = subscribers.get(event.getClass());
         if(subs != null) {
             for (Map.Entry<Object, Method> entry : subs.entrySet()) {
+                entry.getValue().setAccessible(true);
                 try {
-                    entry.getValue().setAccessible(true);
                     entry.getValue().invoke(entry.getKey(), event);
-                } catch (Exception e) {
+                } catch (IllegalAccessException e) {
                     logger.warn(e.getMessage(), e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException("Not able to post event - "
+                            + event.getClass().getName() + " due to error: " + e.getMessage(), e);
                 }
             }
         }
