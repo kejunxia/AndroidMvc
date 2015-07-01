@@ -81,7 +81,8 @@ ext {
             slf4jLog: "org.slf4j:slf4j-log4j12:$log4jVersion",
             slf4jJcl: "org.slf4j:jcl-over-slf4j:$log4jVersion",
             logbackAndroidCore: "com.github.tony19:logback-android-core:$logbackAndroidVersion",
-            logbackAndroidClassic: "com.github.tony19:logback-android-classic:$logbackAndroidVersion"
+            logbackAndroidClassic: "com.github.tony19:logback-android-classic:$logbackAndroidVersion",
+            robolectric: "org.robolectric:robolectric:3.0-rc3"
     ]
 }
 

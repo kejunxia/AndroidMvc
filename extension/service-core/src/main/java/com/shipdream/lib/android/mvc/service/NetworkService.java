@@ -29,7 +29,7 @@ public interface NetworkService {
          * On WIFI
          */
         WIFI,
-        /**
+        status, /**
          * Not connected
          */
         NOT_CONNECTED

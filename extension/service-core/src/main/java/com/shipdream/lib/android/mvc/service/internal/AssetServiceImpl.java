@@ -40,20 +40,18 @@ public class AssetServiceImpl implements AssetService {
     public String getStringFromAssets(String assetPath) throws IOException {
         StringBuilder sb = new StringBuilder();
         BufferedReader bufferedReader = null;
-        try{
-
+        try {
             InputStream inputStream = mContext.getAssets().open(assetPath);
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String str;
             while ((str = bufferedReader.readLine()) != null) {
                 sb.append(str);
             }
-        }finally {
+        } finally {
             if(bufferedReader != null){
                 bufferedReader.close();
             }
         }
-
 
         return sb.toString();
     }
