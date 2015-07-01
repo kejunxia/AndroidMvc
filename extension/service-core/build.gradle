@@ -31,3 +31,56 @@ sourceSets {
 dependencies {
     compile rootProject.ext.lib.androidMinSdk
 }
+
+install {
+    repositories.mavenInstaller {
+        // This generates POM.xml with proper parameters
+        pom {
+            project {
+                packaging 'jar'
+
+                // Add your description here
+                name 'android-mvc-service-core'
+                description 'Core Android services for Android MVC framework'
+                url rootProject.ext.siteUrl
+
+                // Set your license
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'kejunxia'
+                        name 'Kejun Xia'
+                        email 'ideablast@gmail.com'
+                    }
+                }
+                scm {
+                    connection rootProject.ext.gitUrl
+                    developerConnection rootProject.ext.gitUrl
+                    url rootProject.ext.siteUrl
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.properties['bintray.user']
+    key = System.properties["bintray.apiKey"]
+    configure(subprojects.findAll { new File(it.projectDir, 'src').directory }) {
+        apply plugin: 'java'
+    }
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "android-mvc-service-core"
+        websiteUrl = rootProject.ext.siteUrl
+        vcsUrl = rootProject.ext.gitUrl
+        licenses = ["Apache-2.0"]
+        publish = rootProject.ext.shouldPublish
+    }
+}
