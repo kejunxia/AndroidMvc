@@ -18,6 +18,22 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'com.jfrog.bintray'
 
+task sourceJar(type: Jar) {
+    from sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+// Add the sourceJars to non-extractor modules
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
 sourceSets {
     main {
         java.srcDir 'src/main/java'
@@ -48,7 +64,7 @@ install {
                 packaging 'jar'
 
                 // Add your description here
-                name 'android-mvc-controler-retrofit'
+                name 'android-mvc-controller-retrofit'
                 description 'Http controller implementations with Retrofit'
                 url rootProject.ext.siteUrl
 
@@ -85,7 +101,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "android-mvc-controler-retrofit"
+        name = "android-mvc-controller-retrofit"
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]
