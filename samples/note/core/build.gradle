@@ -16,6 +16,10 @@
 
 apply plugin: 'java'
 
+configurations {
+    provided
+}
+
 sourceSets {
     main {
         java.srcDir 'src/main/java'
@@ -29,8 +33,9 @@ sourceSets {
 }
 
 dependencies {
+    provided 'org.parceler:parceler:0.2.16'
+    compile 'org.parceler:parceler-api:0.2.16'
     compile project(':library:android-mvc-controller')
-    compile project(':samples:note:model')
 
     testCompile rootProject.ext.lib.junit
     testCompile rootProject.ext.lib.mokito

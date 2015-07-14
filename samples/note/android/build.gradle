@@ -24,7 +24,7 @@ dependencies {
 
     compile project(':library:android-mvc')
 
-    compile (project(':samples:note:controllers')){
+    compile (project(':samples:note:core')){
         exclude(group:'org.apache.httpcomponents', module:'httpclient')
         exclude group: 'org.slf4j'
     }
@@ -34,7 +34,7 @@ dependencies {
     provided 'org.parceler:parceler:0.2.16'
 }
 
-//Enforce tests of controller to be run before assembling each variant.
+//Enforce tests of controller to be run before assembling each variant.Merge module controller and model of sample note to module coreMerge module controller and model of sample note to module coreMerge module controller and model of sample note to module core
 android.applicationVariants.all {
     variant -> variant.assemble.dependsOn(":samples:note:controllers:test")
 }
