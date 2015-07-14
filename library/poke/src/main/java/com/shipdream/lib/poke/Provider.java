@@ -33,11 +33,12 @@ import java.util.Map;
  */
 public abstract class Provider<T> {
     /**
-     * Listener when the given object is fully injected
+     * Listener monitoring when the provider is referenced for the first time
      */
     public interface OnInjectedListener<T> {
         /**
-         * Called when the given object is fully injected
+         * Called provider is first time used to inject its content. The call is guaranteed to be
+         * invoked after all injectable fields of its content is fully injected.
          * @param object Who is fully injected
          */
         void onInjected(T object);
