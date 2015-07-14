@@ -20,6 +20,7 @@ import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 import com.shipdream.lib.poke.util.ReflectUtils;
+import com.shipdream.lib.poke.Provider.OnFreedListener;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -39,18 +40,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class Graph {
     private List<ProviderFinder> providerFinders;
     private Map<Class, ProviderFinder> finderCache = new HashMap<>();
-    private List<OnProviderFreedListener> onProviderFreedListeners;
+    private List<OnFreedListener> onProviderFreedListeners;
     private List<Monitor> monitors;
     private String revisitedNode = null;
     private Set<String> visitedInjectNodes = new LinkedHashSet<>();
     private Map<Object, Set<String>> visitedFields = new HashMap<>();
 
     /**
-     * Register {@link OnProviderFreedListener} which will be called when the provider
+     * Register {@link OnFreedListener} which will be called when the provider
      *
      * @param onProviderFreedListener The listener
      */
-    public void registerProviderFreedListener(OnProviderFreedListener onProviderFreedListener) {
+    public void registerProviderFreedListener(OnFreedListener onProviderFreedListener) {
         if (onProviderFreedListeners == null) {
             onProviderFreedListeners = new CopyOnWriteArrayList<>();
         }
@@ -58,12 +59,12 @@ public abstract class Graph {
     }
 
     /**
-     * Unregister {@link OnProviderFreedListener} which will be called when the last cached
+     * Unregister {@link OnFreedListener} which will be called when the last cached
      * instance of an injected contract is freed.
      *
      * @param onProviderFreedListener The listener
      */
-    public void unregisterProviderFreedListener(OnProviderFreedListener onProviderFreedListener) {
+    public void unregisterProviderFreedListener(OnFreedListener onProviderFreedListener) {
         if (onProviderFreedListeners != null) {
             onProviderFreedListeners.remove(onProviderFreedListener);
             if (onProviderFreedListeners.isEmpty()) {
@@ -73,7 +74,7 @@ public abstract class Graph {
     }
 
     /**
-     * Clear {@link OnProviderFreedListener}s which will be called when the last cached
+     * Clear {@link OnFreedListener}s which will be called when the last cached
      * instance of an injected contract is freed.
      */
     public void clearOnProviderFreedListeners() {
@@ -142,7 +143,7 @@ public abstract class Graph {
     /**
      * Release cached instances held by fields of target object. References of cache of the
      * instances will be decremented. Once the reference count of a controller reaches 0, it will
-     * be removed from the cache and raise {@link OnProviderFreedListener}.
+     * be removed from the cache and raise {@link OnFreedListener}.
      *
      * @param target           Whose fields will be injected
      * @param injectAnnotation Annotated which a field will be recognize
@@ -369,19 +370,6 @@ public abstract class Graph {
         }
         msg += tab.substring(2) + "->" + revisitedNode + "\n";
         throw new CircularDependenciesException(msg);
-    }
-
-    /**
-     * Listener will be called when the given provider is not referenced by any objects. The
-     * callback will be called before its cached instance is freed if there is a cache associated.
-     */
-    public interface OnProviderFreedListener {
-        /**
-         * Callback to be invoked when when the given provider is not referenced by any objects.
-         *
-         * @param provider  The provider whose content is not referenced by any objects.
-         */
-        void onFreed(Provider provider);
     }
 
     /**

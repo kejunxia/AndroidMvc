@@ -33,14 +33,27 @@ import java.util.Map;
  */
 public abstract class Provider<T> {
     /**
-     * Callback when the given object is fully injected
+     * Listener when the given object is fully injected
      */
-    public interface OnInjected<T> {
+    public interface OnInjectedListener<T> {
         /**
          * Called when the given object is fully injected
          * @param object Who is fully injected
          */
         void onInjected(T object);
+    }
+
+    /**
+     * Listener will be called when the given provider is not referenced by any objects. The
+     * listener will be called before its cached instance is freed if there is a cache associated.
+     */
+    public interface OnFreedListener {
+        /**
+         * listener to be invoked when when the given provider is not referenced by any objects.
+         *
+         * @param provider  The provider whose content is not referenced by any objects.
+         */
+        void onFreed(Provider provider);
     }
 
     private final Class<T> type;
@@ -106,15 +119,14 @@ public abstract class Provider<T> {
     }
 
     /**
-     * The callbacks when the instance is injected. The reason of using callback is the that call
-     * would be invoked until the recursive injection of its nested field finishes.
+     * The listeners when the instance is injected.
      */
-    private List<OnInjected<T>> onInjectedCallbacks;
+    private List<OnInjectedListener<T>> onInjectedListeners;
     /**
-     * Hold the removing callbacks as removal logic may be called in an iteration of
-     * {@link #onInjectedCallbacks} which would cause a {@link java.util.ConcurrentModificationException}.
+     * Hold the removing listeners as removal logic may be called in an iteration of
+     * {@link #onInjectedListeners} which would cause a {@link java.util.ConcurrentModificationException}.
      */
-    private List<OnInjected<T>> removingCallbacks;
+    private List<OnInjectedListener<T>> removingOnInjectedListeners;
 
     /**
      * Construct non-overriding provider without qualifier
@@ -178,25 +190,24 @@ public abstract class Provider<T> {
     }
 
     /**
-     * Register callback which will be invoked when the instance is injected. The reason of
-     * using callback is the that call would be invoked until the recursive injection of its
-     * nested field finishes.
+     * Register listener which will be called back when the instance is injected. It will called
+     * until all injectable fields of the object are fully and recursively if needed injected.
      */
-    public void registerInjectedCallback(OnInjected<T> callback) {
-        if(onInjectedCallbacks == null) {
-            onInjectedCallbacks = new ArrayList<>();
+    public void registerOnInjectedListener(OnInjectedListener<T> listener) {
+        if(onInjectedListeners == null) {
+            onInjectedListeners = new ArrayList<>();
         }
-        onInjectedCallbacks.add(callback);
+        onInjectedListeners.add(listener);
     }
 
     /**
-     * Unregister callback which will be invoked when the instance is injected.
+     * Unregister listener which will be called back when the instance is injected.
      */
-    public void unregisterInjectedCallback(OnInjected<T> callback) {
-        if(removingCallbacks == null) {
-            removingCallbacks = new ArrayList<>();
+    public void unregisterOnInjectedListener(OnInjectedListener<T> listener) {
+        if(removingOnInjectedListeners == null) {
+            removingOnInjectedListeners = new ArrayList<>();
         }
-        removingCallbacks.add(callback);
+        removingOnInjectedListeners.add(listener);
     }
 
     /**
@@ -231,26 +242,26 @@ public abstract class Provider<T> {
      * @param object Who just get fully injected
      */
     void notifyInjected(T object) {
-        if (onInjectedCallbacks != null) {
-            int len = onInjectedCallbacks.size();
+        if (onInjectedListeners != null) {
+            int len = onInjectedListeners.size();
             for(int i = 0; i < len; i++) {
-                onInjectedCallbacks.get(i).onInjected(object);
+                onInjectedListeners.get(i).onInjected(object);
             }
         }
 
-        //Check the held callbacks need to be removed. If exist remove them.
-        if(removingCallbacks != null && onInjectedCallbacks != null) {
-            int len = removingCallbacks.size();
+        //Check the held listeners need to be removed. If exist remove them.
+        if(removingOnInjectedListeners != null && onInjectedListeners != null) {
+            int len = removingOnInjectedListeners.size();
             for(int i = 0; i < len; i++) {
-                onInjectedCallbacks.remove(removingCallbacks.get(i));
+                onInjectedListeners.remove(removingOnInjectedListeners.get(i));
             }
 
-            if(removingCallbacks.isEmpty()) {
-                removingCallbacks = null;
+            if(removingOnInjectedListeners.isEmpty()) {
+                removingOnInjectedListeners = null;
             }
 
-            if(onInjectedCallbacks.isEmpty()) {
-                onInjectedCallbacks = null;
+            if(onInjectedListeners.isEmpty()) {
+                onInjectedListeners = null;
             }
         }
     }
