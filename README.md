@@ -15,9 +15,15 @@
   - Improved Fragment life cycles - e.g. Differentiate why view is created: 1. __NewlyCreated__, 2. __Rotated__ or 3. __StateRestored__
   - Automatically save restore instance state
 
-## Samples APKs
+## Samples
  - **[Counter](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
+         
+   See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)
+   
+   
  - **[Note](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)** - A more complex sample to make notes and query weathers with slide menu and also demonstrates how consume network resources ([public weather API](http://openweathermap.org/api)) and test the async task without depending on Android SDK on pure JVM.
+
+   See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/note) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)
 
 ## Download
 The library is currently release to jCenter and MavenCentral
@@ -27,13 +33,13 @@ The library is currently release to jCenter and MavenCentral
 <dependency>
     <groupId>com.shipdream</groupId>
     <artifactId>android-mvc</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-compile "com.shipdream:android-mvc:1.1.0"
+compile "com.shipdream:android-mvc:1.1.1"
 ```
 
 ## Dependency injection with reference count
