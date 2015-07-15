@@ -1,3 +1,6 @@
+Version: 1.1.1
+Refactor library Poke by moving Graph.OnFreedListener to Provider.OnFreedListener and some document updates.
+
 Version: 1.1.0
 Publish below extensions
 * android-mvc-service-core
