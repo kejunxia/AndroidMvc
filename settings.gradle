@@ -26,7 +26,6 @@ include ':extension:service-mediastore'
 include 'samples:benchmark'
 
 include 'samples:note:android'
-include 'samples:note:controllers'
-include 'samples:note:model'
+include 'samples:note:core'
 
 include 'samples:simple'

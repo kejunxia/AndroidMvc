@@ -3,14 +3,14 @@
 [![Coverage Status](https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg)](https://coveralls.io/r/kejunxia/AndroidMvc)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc)
 
-#Website
+# Website
 [http://kejunxia.github.io/AndroidMvc](http://kejunxia.github.io/AndroidMvc)
 
 ## Features
   - Easy to apply MVC/MVVM pattern for Android development
   - Event driven
   - Easy testing for controllers on JVM without Android dependency
-  - Dependency injection to make mock easy
+  - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
   - Manage navigation by NavigationController which is also testable
   - Improved Fragment life cycles - e.g. Differentiate why view is created: 1. __NewlyCreated__, 2. __Rotated__ or 3. __StateRestored__
   - Automatically save restore instance state
@@ -35,3 +35,6 @@ The library is currently release to jCenter and MavenCentral
 ```groovy
 compile "com.shipdream:android-mvc:1.1.0"
 ```
+
+## Dependency injection with reference count
+[See the documentation of Poke](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
