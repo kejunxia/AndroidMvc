@@ -19,3 +19,6 @@ public String convertNumberToEnglish(int number){}
 @Test
 public void should_navigate_to_locationB_when_go_to_advance_view_and_back_to_locationA_after_go_to_basic_view()
 ```
+
+## Download APK
+[Click to download sample APK](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)

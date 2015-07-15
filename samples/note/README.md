@@ -16,3 +16,6 @@ There are 2 modules:
 7. How to consume http service - [WeatherControllerImpl](https://github.com/kejunxia/AndroidMvc/blob/master/samples/note/core/src/main/java/com/shipdream/lib/android/mvc/samples/note/controller/internal/WeatherControllerImpl.java)
 8. How to do unit tests - [TestNoteController](https://github.com/kejunxia/AndroidMvc/blob/master/samples/note/core/src/test/java/com/shipdream/lib/android/mvc/samples/note/controller/internal/TestNoteController.java)
 9. How to mock http service without real network in unit tests - [TestWeatherController](https://github.com/kejunxia/AndroidMvc/blob/master/samples/note/core/src/test/java/com/shipdream/lib/android/mvc/samples/note/controller/internal/TestWeatherController.java)
+
+## Download APK
+[Click to download sample APK](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)
