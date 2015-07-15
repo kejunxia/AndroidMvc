@@ -54,6 +54,8 @@
 <strong>Tedious to manage app instance state</strong>. App is likely to crash when relaunch an activity that has been killed by OS. This doesn't have to happen if all state the activity is referencing is carefully saved and restored. But it is painful as it requires a lot of boilerplate code in onSaveInstanceState and onCreate and still easy to break if anything is missing.</li>
 <li>
 <strong>Not easy to share state during navigation.</strong> When navigate from one activity to another, if the app needs to share data the data has to be put into Bundle. If the data is not primitive, it needs to be serialised or parceled. Furthermore, this is not fun and mistake prone because it's all key-value pair based which loses the compile time strong type check.</li>
+<li>
+<strong>Large memory consumption with deep fragments back stack</strong> Android doesn't call onDestroy of fragments if they are pushed into back stack and will hold the memory they used. If we have a deep fragment back stack, it will be a huge waste of memory and the worst to cause out of memory crash! So when a fragment is pushed into back stack, the instances of its holding members could be released as long as it's saved by onSaveInstanceState and restored properly when the fragment is resuming after popped out from the back stack.</li>
 </ul>
 
 <p><strong>AndroidMvc framework comes to tackle the problems above and provides more</strong></p>
@@ -76,15 +78,16 @@
 <li>
 <strong>onOrientationChanged(int lastOrientation, int currentOrientation):</strong> When app rotated</li>
 <li>
-<strong>onPushingToBackStack():</strong> When current page is pushed into backstack and navigate to next page</li>
+<strong>onPushingToBackStack():</strong> When current page is pushed into back stack and navigate to next page</li>
 <li>
 <strong>onPoppedOutToFront():</strong> When last page is becomes the top page on backwards navigation</li>
 </ul>
 </li>
 <li>Manage navigation by NavigationController which is also testable</li>
 <li>Event driven views</li>
-<li>Dependency injection to make mock easy</li>
-<li>Well tested by jUnit and instrument test with Expresso</li>
+<li><a href="https://github.com/kejunxia/AndroidMvc/tree/master/library/poke">Dependency injection to make mock easy</a></li>
+<li>Optimized memory consumption. Since most data are abstracted out to models, fragments are much leaner. When fragments are pushed to back stack, AndroidMvc will release controllers the fragments hold. Therefore most of the memory used by the models of the controllers will be freed. When the fragments are popped out of the back stack, AndroidMvc will resume the models of their controllers automatically.</li>
+<li>Well tested by jUnit and instrument test with Espresso.</li>
 </ul>
 
 <h2>
@@ -644,29 +647,15 @@ the graph will automatically save and restore injected objects implementing Stat
 <p>to dereference them. Fortunately, all MvcFragment will do the injection and releasing in their
 Android lifecycle - onCreate and onDestroy. So we don't need to do this manually for fragments.</p>
 
-<h5>
-<a id="provides" class="anchor" href="#provides" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://github.com/Provides" class="user-mention">@Provides</a>
-</h5>
+<p>**But why do we release? Isn't Java managing garbage collection automatically?</p>
 
-<p>To provide the instance to inject the
-fields, there are 2 ways.</p>
+<p>Yes java does it. But since all controllers of AndroidMvc are singleton to assure the single source of truth, if there are used by multiple consumers, the shared instance of the controller will be held by a cache. And the model of the controller will be automatically saved and restored on demand of recreation and destroy of fragments. So if a controller is not used anymore, we can dereference the controller. Then AndroidMvc will stop managing its model.</p>
 
-<ol>
-<li><p><strong>Name pattern</strong>. The implementation of the injecting class will be located by file structure and
-file name. A default implementation will be looked for in the sub folder - internal from the parent
-folder of the interface and the name of the file should be [InterfaceName]Impl. For example, we
-define a controller LoginController in folder /controllers/LoginController then the implementation
-should be placed under /controllers/internal and named as LoginControllerImpl. So the implementation
-should be at /controllers/internal/LoginControllerImpl</p></li>
-<li><p><strong>Register providers</strong> by extending a Component and annotate the methods providing the instance by
-<strong><a href="https://github.com/Provides" class="user-mention">@Provides</a></strong>. This can be used to replace the implementation located by the name pattern described
-above for the unit testing. Also the component can be unregistered from <strong><a href="https://github.com/Singleton" class="user-mention">@Singleton</a></strong> can
-be used if singleton is required. Beware singleton is relative to the ScopeCache associated to the
-Component. So to make the instance absolute singleton, either guarantee the Component is the unique
-or the ScopeCache associated to the Component is unique. In other words, if the component is
-recreated or the cache of it is recreated it new instance will be provided and cached sharing the
-same time span as the component or its cache again.</p></li>
-</ol>
+<p>In addition, instances of fragments in their back stack will be held by OS until they are killed. This holds up a lot memory if the back stack is deep. Since those fragments are not visible, there is no point to hold the data they are referencing any longer. To release reference of controllers will help AndroidMvc be aware which controllers are not used anymore, thereafter AndroidMvc can free up the memory holding their models. What about if those fragments want to resume by popping out from the back stack? As mentioned before, AndroidMvc will restore the state/model of the controllers the fragments reference which are saved when the fragments are pushed into the back stack.**</p>
+
+<h4>
+<a id="more-details-about-dependency-injection-with-poke-see-its-documentation-here" class="anchor" href="#more-details-about-dependency-injection-with-poke-see-its-documentation-here" aria-hidden="true"><span class="octicon octicon-link"></span></a><a href="https://github.com/kejunxia/AndroidMvc/tree/master/library/poke">More details about dependency injection with Poke, see its documentation here</a>
+</h4>
 
 <h3>
 <a id="2-unit-testing-on-asynchronous-actions-eg-http-requests" class="anchor" href="#2-unit-testing-on-asynchronous-actions-eg-http-requests" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Unit testing on asynchronous actions, e.g. Http requests</h3>
