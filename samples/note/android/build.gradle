@@ -91,11 +91,5 @@ android {
         exclude 'META-INF/DEPENDENCIES'
         exclude 'META-INF/services/javax.annotation.processing.Processor'
         exclude 'LICENSE.txt'
-
-        /** exclude some more lombok files */
-        exclude 'AUTHORS'
-        exclude 'changelog.txt'
-        exclude 'release-timestamp.txt'
-        exclude 'LICENSE'
     }
 }
