@@ -21,6 +21,7 @@ import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.Provider.OnFreedListener;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -93,7 +94,7 @@ public class TestMvcGraph {
 
         // Arrange
         reset(graphMock);
-        Graph.OnProviderFreedListener providerFreedListener = mock(Graph.OnProviderFreedListener.class);
+        OnFreedListener providerFreedListener = mock(OnFreedListener.class);
         // Act
         mvcGraph.registerProviderFreedListener(providerFreedListener);
         // Verify

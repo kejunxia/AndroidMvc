@@ -38,6 +38,7 @@ import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
+import com.shipdream.lib.poke.Provider.OnFreedListener;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -89,7 +90,7 @@ public class MvcGraph {
 
         graph = new SimpleGraph(defaultProviderFinder);
 
-        graph.registerProviderFreedListener(new Graph.OnProviderFreedListener() {
+        graph.registerProviderFreedListener(new OnFreedListener() {
             @Override
             public void onFreed(Provider provider) {
                 Object obj = provider.findCachedInstance();
@@ -143,27 +144,27 @@ public class MvcGraph {
     }
 
     /**
-     * Register {@link Graph.OnProviderFreedListener} which will be called when the last cached
+     * Register {@link OnFreedListener} which will be called when the last cached
      * instance of an injected contract is freed.
      *
      * @param onProviderFreedListener The listener
      */
-    public void registerProviderFreedListener(Graph.OnProviderFreedListener onProviderFreedListener) {
+    public void registerProviderFreedListener(OnFreedListener onProviderFreedListener) {
         graph.registerProviderFreedListener(onProviderFreedListener);
     }
 
     /**
-     * Unregister {@link Graph.OnProviderFreedListener} which will be called when the last cached
+     * Unregister {@link OnFreedListener} which will be called when the last cached
      * instance of an injected contract is freed.
      *
      * @param onProviderFreedListener The listener
      */
-    public void unregisterProviderFreedListener(Graph.OnProviderFreedListener onProviderFreedListener) {
+    public void unregisterProviderFreedListener(OnFreedListener onProviderFreedListener) {
         graph.unregisterProviderFreedListener(onProviderFreedListener);
     }
 
     /**
-     * Clear {@link Graph.OnProviderFreedListener}s which will be called when the last cached
+     * Clear {@link OnFreedListener}s which will be called when the last cached
      * instance of an injected contract is freed.
      */
     public void clearOnProviderFreedListeners() {
@@ -358,14 +359,14 @@ public class MvcGraph {
             final T newInstance = (T) super.createInstance();
 
             if (newInstance instanceof BaseController) {
-                registerInjectedCallback(new OnInjected() {
+                registerOnInjectedListener(new OnInjectedListener() {
                     @Override
                     public void onInjected(Object object) {
-                        if(object instanceof BaseController) {
+                        if (object instanceof BaseController) {
                             BaseController controller = (BaseController) object;
                             controller.init();
                         }
-                        unregisterInjectedCallback(this);
+                        unregisterOnInjectedListener(this);
                     }
                 });
             }

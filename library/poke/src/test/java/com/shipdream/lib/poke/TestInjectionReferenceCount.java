@@ -20,6 +20,7 @@ import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
+import com.shipdream.lib.poke.Provider.OnFreedListener;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -221,7 +222,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        Graph.OnProviderFreedListener onFreed = new Graph.OnProviderFreedListener() {
+        OnFreedListener onFreed = new OnFreedListener() {
             @Override
             public void onFreed(Provider provider) {
                 proxy.onFreed(provider.type());
@@ -263,7 +264,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        Graph.OnProviderFreedListener onFreed = new Graph.OnProviderFreedListener() {
+        OnFreedListener onFreed = new OnFreedListener() {
             @Override
             public void onFreed(Provider provider) {
                 proxy.onFreed(provider.type());
@@ -294,7 +295,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        Graph.OnProviderFreedListener onFreed = new Graph.OnProviderFreedListener() {
+        OnFreedListener onFreed = new OnFreedListener() {
             @Override
             public void onFreed(Provider provider) {
                 proxy.onFreed(provider.type());
@@ -326,7 +327,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        Graph.OnProviderFreedListener onFreed = new Graph.OnProviderFreedListener() {
+        OnFreedListener onFreed = new OnFreedListener() {
             @Override
             public void onFreed(Provider provider) {
                 proxy.onFreed(provider.type());
