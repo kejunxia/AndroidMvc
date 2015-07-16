@@ -218,7 +218,11 @@ public class AndroidMvc {
             if (type != null) {
                 long ts = System.currentTimeMillis();
                 String stateKey = getStateKey(type.getName());
-                Parcelable parcelable = bundle.getParcelable(stateKey);
+                Object value = bundle.get(stateKey);
+                Parcelable parcelable = null;
+                if (value instanceof Parcelable) {
+                    parcelable = (Parcelable) value;
+                }
                 if (NavigationController.Model.class == type) {
                     //Use navigation model keeper to restore state
                     state = (T) navigationModelKeeper.getState(parcelable, type);
