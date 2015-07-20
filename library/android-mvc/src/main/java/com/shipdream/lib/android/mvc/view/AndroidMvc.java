@@ -26,6 +26,7 @@ import com.google.gson.JsonSyntaxException;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
@@ -67,6 +68,8 @@ public class AndroidMvc {
         configGraph(new DefaultControllerDependencies());
         sStateManager = new DefaultStateKeeper();
         eventBusV2V = new EventBusImpl();
+
+        AndroidPosterImpl.init();
     }
 
     private AndroidMvc() {

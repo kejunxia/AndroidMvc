@@ -19,23 +19,20 @@ package com.shipdream.lib.android.mvc.samples.note.service.http.internal;
 import com.google.gson.Gson;
 import com.shipdream.lib.android.mvc.samples.note.model.dto.WeatherListResponse;
 import com.shipdream.lib.android.mvc.samples.note.service.http.WeatherService;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
 
 public class WeatherServiceImpl implements WeatherService{
-    private HttpClient httpClient;
+    private OkHttpClient httpClient;
     private Gson gson;
 
     public WeatherServiceImpl() {
-        httpClient = new DefaultHttpClient();
+        httpClient = new OkHttpClient();
         gson = new Gson();
     }
 
@@ -50,9 +47,12 @@ public class WeatherServiceImpl implements WeatherService{
         }
         String url = String.format("http://api.openweathermap.org/data/2.5/group?id=%s&units=metric",
                 URLEncoder.encode(idsStr, "UTF-8"));
-        HttpGet get = new HttpGet(url);
-        HttpResponse resp = httpClient.execute(get);
-        String responseStr = EntityUtils.toString(resp.getEntity());
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Response resp = httpClient.newCall(request).execute();
+        String responseStr = resp.toString();
         return gson.fromJson(responseStr, WeatherListResponse.class);
     }
 }

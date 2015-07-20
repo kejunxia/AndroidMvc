@@ -1,3 +1,7 @@
+Version: 1.1.3
+* Broke Android SDK dependency out from Android Mvc Controller module
+* Update Espresso to 2.2
+
 Version: 1.1.2
 Prevent a warning about failed cast to save and restore controller state which is deliberate.
 

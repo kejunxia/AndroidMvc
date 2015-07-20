@@ -17,10 +17,6 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
 
-import android.os.Build;
-import android.os.Handler;
-import android.os.Looper;
-
 import com.shipdream.lib.android.mvc.Disposable;
 import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.StateManaged;
@@ -44,7 +40,11 @@ import javax.inject.Inject;
  */
 public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>,
         StateManaged<MODEL>, Disposable {
-    private static Handler sHandler;
+    interface AndroidPoster {
+        void post(EventBus eventBusC2V, BaseEventC2V eventC2V);
+    }
+
+    static AndroidPoster androidPoster;
     protected Logger mLogger = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -58,19 +58,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     @Inject
     ExecutorService mExecutorService;
 
-    private Boolean sIsAndroid = null;
     private MODEL mModel;
-
-    public BaseControllerImpl() {
-        if (sIsAndroid == null) {
-            try {
-                Class.forName("android.os.Build");
-                sIsAndroid = Build.VERSION.SDK_INT != 0;
-            } catch (Exception e) {
-                sIsAndroid = false;
-            }
-        }
-    }
 
     @Override
     public void init() {
@@ -187,47 +175,31 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      * <li>Same thread of caller -- if on usual JVM</li>
      * </ul>
      *
-     * @param c2vEvent Controller to View event to be broadcast
+     * @param eventC2V Controller to View event to be broadcast
      */
-    protected void postC2VEvent(final BaseEventC2V c2vEvent) {
-        if (mEventBusC2V != null) {
-            if (sIsAndroid) {
-                if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                    mEventBusC2V.post(c2vEvent);
-                } else {
-                    //Android handler is presented, posting to the main thread on Android.
-                    if (sHandler == null) {
-                        sHandler = new Handler(Looper.getMainLooper());
-                    }
-                    sHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (mEventBusC2V != null) {
-                                mEventBusC2V.post(c2vEvent);
-                            } else {
-                                mLogger.warn("Trying to post event {} to EventBusC2V which is null", c2vEvent.getClass().getName());
-                            }
-                        }
-                    });
-                }
-            } else {
-                mEventBusC2V.post(c2vEvent);
-            }
+    protected void postC2VEvent(final BaseEventC2V eventC2V) {
+        if (androidPoster != null) {
+            //Run on android OS
+            androidPoster.post(mEventBusC2V, eventC2V);
         } else {
-            mLogger.warn("Trying to post event {} to EventBusC2V which is null", c2vEvent.getClass().getName());
+            if (mEventBusC2V != null) {
+                mEventBusC2V.post(eventC2V);
+            } else {
+                mLogger.warn("Trying to post event {} to EventBusC2V which is null", eventC2V.getClass().getName());
+            }
         }
     }
 
     /**
      * Help function to post events to other controllers
      *
-     * @param c2cEvent Controller to Controller event to be broadcast
+     * @param eventC2C Controller to Controller event to be broadcast
      */
-    protected void postC2CEvent(final BaseEventC2C c2cEvent) {
+    protected void postC2CEvent(final BaseEventC2C eventC2C) {
         if (mEventBusC2C != null) {
-            mEventBusC2C.post(c2cEvent);
+            mEventBusC2C.post(eventC2C);
         } else {
-            mLogger.warn("Trying to post event {} to EventBusC2C which is null", c2cEvent.getClass().getName());
+            mLogger.warn("Trying to post event {} to EventBusC2C which is null", eventC2C.getClass().getName());
         }
     }
 
