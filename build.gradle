@@ -75,7 +75,7 @@ ext {
     lib = [
             androidMinSdk: 'com.google.android:android:4.0.1.2',
             androidSupportLib: "com.android.support:appcompat-v7:$supportLibVersion",
-            androidBuildToolVersion: "23.0.0 rc2",
+            androidBuildToolVersion: "22.0.1",
             junit: 'junit:junit:4.12',
             mokito: 'org.mockito:mockito-core:1.9.5',
             slf4jApi: "org.slf4j:slf4j-api:$log4jVersion",
