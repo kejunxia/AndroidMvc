@@ -53,7 +53,7 @@ sourceSets {
 dependencies {
     compile project(':library:poke')
 
-    compile "org.slf4j:slf4j-api:1.7.4"
+    compile rootProject.lib.slf4jApi
     compile 'com.google.code.gson:gson:2.3.1'
 
     testCompile rootProject.ext.lib.junit
