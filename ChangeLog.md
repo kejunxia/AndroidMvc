@@ -1,3 +1,6 @@
+Version: 1.1.2
+Prevent a warning about failed cast to save and restore controller state which is deliberate.
+
 Version: 1.1.1
 Refactor library Poke by moving Graph.OnFreedListener to Provider.OnFreedListener and some document updates.
 

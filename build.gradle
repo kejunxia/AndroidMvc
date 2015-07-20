@@ -62,7 +62,7 @@ ext {
     version = [
         major: 1,
         minor: 1,
-        patch : 1
+        patch : 2
     ]
     libGroup = 'com.shipdream'
     libVersion = "${version.major}.${version.minor}.${version.patch}"
@@ -78,7 +78,6 @@ ext {
             androidBuildToolVersion: "23.0.0 rc2",
             junit: 'junit:junit:4.12',
             mokito: 'org.mockito:mockito-core:1.9.5',
-            lombok: 'org.projectlombok:lombok:1.14.6',
             slf4jApi: "org.slf4j:slf4j-api:$log4jVersion",
             slf4jLog: "org.slf4j:slf4j-log4j12:$log4jVersion",
             logbackAndroidCore: "com.github.tony19:logback-android-core:$logbackAndroidVersion",
