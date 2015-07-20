@@ -53,7 +53,6 @@ sourceSets {
 dependencies {
     compile project(':library:poke')
 
-    compile rootProject.ext.lib.androidMinSdk
     compile "org.slf4j:slf4j-api:1.7.4"
     compile 'com.google.code.gson:gson:2.3.1'
 
@@ -71,7 +70,7 @@ install {
 
                 // Add your description here
                 name 'android-mvc-controller'
-                description 'Controller component of Android MVC framework'
+                description "Controller module for AndroidMvc Framework. It doesn't depend on Android SDK thus app controller module depending on this module would do jUnit test easily on pure JVM."
                 url rootProject.ext.siteUrl
 
                 // Set your license

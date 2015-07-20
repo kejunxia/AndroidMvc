@@ -36,6 +36,7 @@ dependencies {
     provided 'org.parceler:parceler:0.2.16'
     compile 'org.parceler:parceler-api:0.2.16'
     compile project(':library:android-mvc-controller')
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     testCompile rootProject.ext.lib.junit
     testCompile rootProject.ext.lib.mokito

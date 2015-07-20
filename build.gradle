@@ -19,8 +19,8 @@ apply plugin: 'com.github.kt3k.coveralls'
 apply plugin: 'jacoco'
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
-def log4jVersion = '1.7.4'
-def logbackAndroidVersion = '1.1.1-1'
+def log4jVersion = '1.7.6'
+def logbackAndroidVersion = '1.1.1-4'
 
 buildscript {
     repositories {
@@ -75,13 +75,12 @@ ext {
     lib = [
             androidMinSdk: 'com.google.android:android:4.0.1.2',
             androidSupportLib: "com.android.support:appcompat-v7:$supportLibVersion",
-            androidBuildToolVersion: "$androidCompileSdkVersion.0.1",
+            androidBuildToolVersion: "23.0.0 rc2",
             junit: 'junit:junit:4.12',
             mokito: 'org.mockito:mockito-core:1.9.5',
             lombok: 'org.projectlombok:lombok:1.14.6',
             slf4jApi: "org.slf4j:slf4j-api:$log4jVersion",
             slf4jLog: "org.slf4j:slf4j-log4j12:$log4jVersion",
-            slf4jJcl: "org.slf4j:jcl-over-slf4j:$log4jVersion",
             logbackAndroidCore: "com.github.tony19:logback-android-core:$logbackAndroidVersion",
             logbackAndroidClassic: "com.github.tony19:logback-android-classic:$logbackAndroidVersion",
             robolectric: "org.robolectric:robolectric:3.0-rc3"

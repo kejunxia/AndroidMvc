@@ -17,8 +17,8 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    def libVersion = "${rootProject.ext.version.major}.${rootProject.ext.version.minor}.+"
-    compile "com.shipdream:android-mvc:${libVersion}"
+    compile project(':library:android-mvc')
+    compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     testCompile rootProject.ext.lib.junit
     testCompile rootProject.ext.lib.mokito
