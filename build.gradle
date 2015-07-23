@@ -44,7 +44,7 @@ def jacocoCoveredProjects = [
         project(":library:android-mvc-controller")
 ]
 
-allprojects{
+allprojects {
     repositories {
         jcenter()
         mavenLocal()
@@ -62,7 +62,7 @@ ext {
     version = [
         major: 1,
         minor: 1,
-        patch : 3
+        patch : 4
     ]
     libGroup = 'com.shipdream'
     libVersion = "${version.major}.${version.minor}.${version.patch}"

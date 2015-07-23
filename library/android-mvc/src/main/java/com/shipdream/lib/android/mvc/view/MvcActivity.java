@@ -110,8 +110,8 @@ public abstract class MvcActivity extends AppCompatActivity {
     public static abstract class DelegateFragment extends MvcFragment {
         private static final String MVC_STATE_BUNDLE_KEY = AndroidMvc.MVC_SATE_PREFIX + "RootBundle";
         private Logger mLogger = LoggerFactory.getLogger(getClass());
-        //Mimic the behavior of Android framework to manage the state save state
-        private boolean mStateSaved = false;
+        //Track if the state is saved and not able to commit fragment transaction
+        private boolean canCommitFragmentTransaction = false;
         private List<Runnable> mPendingNavActions = new ArrayList<>();
         private List<Runnable> mPendingOnViewReadyActions = new ArrayList<>();
 
@@ -325,9 +325,10 @@ public abstract class MvcActivity extends AppCompatActivity {
         protected abstract void onStartUp();
 
         @Override
-        public void onStart() {
-            super.onStart();
-            mStateSaved = false;
+        public void onResume() {
+            super.onResume();
+            canCommitFragmentTransaction = true;
+
             runPendingNavigationActions();
         }
 
@@ -341,9 +342,9 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onStop() {
-            super.onStop();
-            mStateSaved = true;
+        public void onPause() {
+            super.onPause();
+            canCommitFragmentTransaction = false;
         }
 
         @Override
@@ -357,9 +358,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         public void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
-            if (mStateSaved) {
-                //TODO: seems will have potential problem when the app is killed. Should
-                //respond back to nav controller to issue the back action action when the app restarts.
+            if (!canCommitFragmentTransaction) {
                 mPendingNavActions.add(new Runnable() {
                     @Override
                     public void run() {
@@ -428,7 +427,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         public void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
-            if (mStateSaved) {
+            if (!canCommitFragmentTransaction) {
                 mPendingNavActions.add(new Runnable() {
                     @Override
                     public void run() {

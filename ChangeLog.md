@@ -1,3 +1,6 @@
+Version: 1.1.4
+Fix the bug that navigation may crash the app when the app just resumes from other app such as facebook login
+
 Version: 1.1.3
 * Broke Android SDK dependency out from Android Mvc Controller module
 * Update Espresso to 2.2
