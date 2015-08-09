@@ -160,17 +160,17 @@ public class RetrofitServiceFactory {
     }
 
     public static class FlexibleConverter extends GsonConverter {
-        private Logger mLogger = LoggerFactory.getLogger(getClass());
-        private Gson mGson;
-        private List<OnSuccessListener> mOnSuccessListeners;
-        private String mEncoding = "UTF-8";
+        private Logger logger = LoggerFactory.getLogger(getClass());
+        private Gson gson;
+        private List<OnSuccessListener> onSuccessListeners;
+        private String encoding = "UTF-8";
         public FlexibleConverter(Gson gson, String encoding, List<OnSuccessListener> onSuccessListeners) {
             super(gson, encoding);
-            if(mEncoding != null) {
-                mEncoding = encoding;
+            if(this.encoding != null) {
+                this.encoding = encoding;
             }
-            mOnSuccessListeners = onSuccessListeners;
-            mGson = gson;
+            this.onSuccessListeners = onSuccessListeners;
+            this.gson = gson;
         }
 
         @Override
@@ -180,9 +180,9 @@ public class RetrofitServiceFactory {
                 //return raw response string
                 try {
                     String content = inputStreamToString(body.in(), charset);
-                    mLogger.debug("Responding json to raw string : {}", content);
+                    logger.debug("Responding json to raw string : {}", content);
 
-                    for(OnSuccessListener listener : mOnSuccessListeners) {
+                    for(OnSuccessListener listener : onSuccessListeners) {
                         listener.onSuccessfulResponse();
                     }
 
@@ -199,16 +199,16 @@ public class RetrofitServiceFactory {
                 InputStreamReader isr = null;
                 try {
                     Object response = null;
-                    if(mLogger.isDebugEnabled()) {
+                    if(logger.isDebugEnabled()) {
                         String content = inputStreamToString(body.in(), charset);
-                        mLogger.debug("Responding json to object: {}", content);
-                        response = mGson.fromJson(content, type);
+                        logger.debug("Responding json to object: {}", content);
+                        response = gson.fromJson(content, type);
                     } else {
                         isr = new InputStreamReader(body.in(), charset);
-                        response = mGson.fromJson(isr, type);
+                        response = gson.fromJson(isr, type);
                     }
 
-                    for(OnSuccessListener listener : mOnSuccessListeners) {
+                    for(OnSuccessListener listener : onSuccessListeners) {
                         listener.onSuccessfulResponse();
                     }
 

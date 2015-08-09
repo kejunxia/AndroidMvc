@@ -140,7 +140,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         }
 
         void setLogger(Logger logger) {
-            mLogger = logger;
+            this.logger = logger;
         }
     }
 
@@ -153,7 +153,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         graph.inject(controller);
         controller.init();
         controller.setLogger(loggerMock);
-        controller.mEventBusC2C = null;
+        controller.eventBusC2C = null;
 
         BaseEventC2C event = new BaseEventC2C(this);
 

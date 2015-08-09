@@ -38,7 +38,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 public abstract class MvcActivity extends AppCompatActivity {
-    private DelegateFragment mDelegateFragment;
+    private DelegateFragment delegateFragment;
 
     String getDelegateFragmentTag() {
         return AndroidMvc.FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
@@ -50,19 +50,19 @@ public abstract class MvcActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.mvc_activity);
-        mDelegateFragment = (DelegateFragment) getSupportFragmentManager().findFragmentByTag(
+        delegateFragment = (DelegateFragment) getSupportFragmentManager().findFragmentByTag(
                 getDelegateFragmentTag());
 
-        if (mDelegateFragment == null) {
+        if (delegateFragment == null) {
             //Brand new container fragment
             try {
-                mDelegateFragment = (DelegateFragment) new ReflectUtils.newObjectByType(
+                delegateFragment = (DelegateFragment) new ReflectUtils.newObjectByType(
                         getDelegateFragmentClass()).newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Failed to instantiate delegate fragment.", e);
             }
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.android_mvc_activity_root, mDelegateFragment, getDelegateFragmentTag());
+            trans.replace(R.id.android_mvc_activity_root, delegateFragment, getDelegateFragmentTag());
             trans.commit();
         }
     }
@@ -90,7 +90,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        mDelegateFragment.onBackButtonPressed();
+        delegateFragment.onBackButtonPressed();
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class MvcActivity extends AppCompatActivity {
      * @param runnable The delayed onViewReady callbacks
      */
     void addPendingOnViewReadyActions(Runnable runnable) {
-        mDelegateFragment.mPendingOnViewReadyActions.add(runnable);
+        delegateFragment.pendingOnViewReadyActions.add(runnable);
     }
 
     /**
@@ -109,14 +109,14 @@ public abstract class MvcActivity extends AppCompatActivity {
      */
     public static abstract class DelegateFragment extends MvcFragment {
         private static final String MVC_STATE_BUNDLE_KEY = AndroidMvc.MVC_SATE_PREFIX + "RootBundle";
-        private Logger mLogger = LoggerFactory.getLogger(getClass());
+        private Logger logger = LoggerFactory.getLogger(getClass());
         //Track if the state is saved and not able to commit fragment transaction
         private boolean canCommitFragmentTransaction = false;
-        private List<Runnable> mPendingNavActions = new ArrayList<>();
-        private List<Runnable> mPendingOnViewReadyActions = new ArrayList<>();
+        private List<Runnable> pendingNavActions = new ArrayList<>();
+        private List<Runnable> pendingOnViewReadyActions = new ArrayList<>();
 
         @Inject
-        private NavigationController mNavigationController;
+        private NavigationController navigationController;
 
         /**
          * Hack to fix this <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a>
@@ -155,7 +155,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     childFMField.setAccessible(true);
                     childFMField.set(this, mRetainedChildFragmentManager);
                 } catch (Exception e) {
-                    mLogger.warn(e.getMessage(), e);
+                    logger.warn(e.getMessage(), e);
                 }
             } else {
                 //If the child fragment manager has not been retained yet, let it hold the internal
@@ -217,14 +217,14 @@ public abstract class MvcActivity extends AppCompatActivity {
          * all injected controllers would be singleton across the whole application.
          */
         public NavigationController getNavigationController() {
-            return mNavigationController;
+            return navigationController;
         }
 
         @Override
         public boolean onBackButtonPressed() {
             MvcFragment topFragment = null;
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-            NavLocation curLoc = mNavigationController.getModel().getCurrentLocation();
+            NavLocation curLoc = navigationController.getModel().getCurrentLocation();
             if (curLoc != null && curLoc.getLocationId() != null) {
                 topFragment = (MvcFragment) childFragmentManager().findFragmentByTag(
                         getFragmentTag(curLoc.getLocationId()));
@@ -235,7 +235,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                mNavigationController.navigateBack(this);
+                navigationController.navigateBack(this);
             }
             return true;
         }
@@ -255,7 +255,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             //mContainerFragment.getControllersInjector() will return null.This will crash other fragments to inject
             //their controllers
             MvcActivity activity = ((MvcActivity) getActivity());
-            activity.mDelegateFragment = this;
+            activity.delegateFragment = this;
         }
 
         @Override
@@ -299,14 +299,14 @@ public abstract class MvcActivity extends AppCompatActivity {
                 Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
                 long ts = System.currentTimeMillis();
                 AndroidMvc.restoreStateOfControllers(mvcOutState);
-                mLogger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
+                logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
-                if (mPendingOnViewReadyActions != null) {
-                    int size = mPendingOnViewReadyActions.size();
+                if (pendingOnViewReadyActions != null) {
+                    int size = pendingOnViewReadyActions.size();
                     for (int i = 0; i < size; i++) {
-                        mPendingOnViewReadyActions.get(i).run();
+                        pendingOnViewReadyActions.get(i).run();
                     }
-                    mPendingOnViewReadyActions.clear();
+                    pendingOnViewReadyActions.clear();
                 }
             }
         }
@@ -333,11 +333,11 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         private void runPendingNavigationActions() {
-            if (!mPendingNavActions.isEmpty()) {
-                for (Runnable r : mPendingNavActions) {
+            if (!pendingNavActions.isEmpty()) {
+                for (Runnable r : pendingNavActions) {
                     r.run();
                 }
-                mPendingNavActions.clear();
+                pendingNavActions.clear();
             }
         }
 
@@ -354,12 +354,12 @@ public abstract class MvcActivity extends AppCompatActivity {
             Bundle mvcOutState = new Bundle();
             AndroidMvc.saveStateOfControllers(mvcOutState);
             outState.putBundle(MVC_STATE_BUNDLE_KEY, mvcOutState);
-            mLogger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
+            logger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
         }
 
         public void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
             if (!canCommitFragmentTransaction) {
-                mPendingNavActions.add(new Runnable() {
+                pendingNavActions.add(new Runnable() {
                     @Override
                     public void run() {
                         performForwardNav(event);
@@ -417,7 +417,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                         fm.popBackStack(tagPopTo, 0);
                     }
 
-                    mLogger.trace("Cleared fragment back stack up to {}", tagPopTo);
+                    logger.trace("Cleared fragment back stack up to {}", tagPopTo);
                 }
 
                 transaction.replace(getContentLayoutResId(), fragment, fragmentTag);
@@ -428,7 +428,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         public void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
             if (!canCommitFragmentTransaction) {
-                mPendingNavActions.add(new Runnable() {
+                pendingNavActions.add(new Runnable() {
                     @Override
                     public void run() {
                         performBackNav(event);
@@ -485,15 +485,15 @@ public abstract class MvcActivity extends AppCompatActivity {
                         } else {
                             fm.popBackStack(currentFragTag, 0);
                         }
-                        mLogger.trace("Navigation back: Fast rewind to home location {}", currentLoc.getLocationId());
+                        logger.trace("Navigation back: Fast rewind to home location {}", currentLoc.getLocationId());
                     } else {
                         String tag = getFragmentTag(currentLoc.getLocationId());
                         fm.popBackStack(tag, 0);
-                        mLogger.trace("Navigation back: Fast rewind to given location {}", currentLoc.getLocationId());
+                        logger.trace("Navigation back: Fast rewind to given location {}", currentLoc.getLocationId());
                     }
                 } else {
                     fm.popBackStack();
-                    mLogger.trace("Navigation back: On step back to location {}", currentLoc.getLocationId());
+                    logger.trace("Navigation back: On step back to location {}", currentLoc.getLocationId());
                 }
             }
         }

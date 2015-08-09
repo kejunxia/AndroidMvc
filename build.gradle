@@ -54,6 +54,15 @@ allprojects {
         apply plugin: 'java'
         apply plugin: 'jacoco'
     }
+
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = "1.7"
+        targetCompatibility = "1.7"
+    }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
 }
 
 ext {

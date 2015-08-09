@@ -74,11 +74,11 @@ public abstract class MvcFragment extends Fragment {
     }
 
     private final static String STATE_LAST_ORIENTATION = AndroidMvc.MVC_SATE_PREFIX + "LastOrientation--__";
-    private EventRegister mEventRegister;
-    private CopyOnWriteArrayList<Runnable> mOnViewReadyListeners;
-    private boolean mFragmentJustCreatedFromSavedState = false;
-    private boolean mViewJustCreated = false;
-    private int mLastOrientation;
+    private EventRegister eventRegister;
+    private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
+    private boolean fragmentJustCreatedFromSavedState = false;
+    private boolean viewJustCreated = false;
+    private int lastOrientation;
     private boolean dependenciesInjected = false;
     /**
      *
@@ -89,7 +89,7 @@ public abstract class MvcFragment extends Fragment {
      * @return orientation before last orientation change.
      */
     protected int getLastOrientation() {
-        return mLastOrientation;
+        return lastOrientation;
     }
 
     /**
@@ -137,12 +137,12 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mFragmentJustCreatedFromSavedState = savedInstanceState != null;
+        fragmentJustCreatedFromSavedState = savedInstanceState != null;
 
         if(savedInstanceState == null) {
-            mLastOrientation = getResources().getConfiguration().orientation;
+            lastOrientation = getResources().getConfiguration().orientation;
         } else {
-            mLastOrientation = savedInstanceState.getInt(STATE_LAST_ORIENTATION);
+            lastOrientation = savedInstanceState.getInt(STATE_LAST_ORIENTATION);
         }
 
         if (getParentFragment() == null) {
@@ -178,8 +178,8 @@ public abstract class MvcFragment extends Fragment {
      */
     @Override
     final public void onViewCreated(final View view, final Bundle savedInstanceState) {
-        mEventRegister = new EventRegister(this);
-        mEventRegister.registerEventBuses();
+        eventRegister = new EventRegister(this);
+        eventRegister.registerEventBuses();
 
         preInvokeCallbackOnViewCreated(view, savedInstanceState);
         if (!delayOnViewReady) {
@@ -201,7 +201,7 @@ public abstract class MvcFragment extends Fragment {
 
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState) {
         int currentOrientation = getResources().getConfiguration().orientation;
-        boolean orientationChanged = currentOrientation != mLastOrientation;
+        boolean orientationChanged = currentOrientation != lastOrientation;
         Reason reason;
         if (savedInstanceState == null) {
             if (orientationChanged) {
@@ -214,18 +214,18 @@ public abstract class MvcFragment extends Fragment {
         }
 
         onViewReady(view, savedInstanceState, reason);
-        if (mOnViewReadyListeners != null) {
-            for (Runnable r : mOnViewReadyListeners) {
+        if (onViewReadyListeners != null) {
+            for (Runnable r : onViewReadyListeners) {
                 r.run();
             }
         }
 
         if (orientationChanged) {
-            onOrientationChanged(mLastOrientation, getResources().getConfiguration().orientation);
+            onOrientationChanged(lastOrientation, getResources().getConfiguration().orientation);
         }
 
-        mViewJustCreated = true;
-        mLastOrientation = currentOrientation;
+        viewJustCreated = true;
+        lastOrientation = currentOrientation;
     }
 
     /**
@@ -252,15 +252,15 @@ public abstract class MvcFragment extends Fragment {
     }
 
     private void checkWhetherReturnFromForeground() {
-        if(mFragmentJustCreatedFromSavedState) {
+        if(fragmentJustCreatedFromSavedState) {
             onReturnForeground();
         } else {
-            if(!mViewJustCreated) {
+            if(!viewJustCreated) {
                 onReturnForeground();
             }
         }
-        mViewJustCreated = false;
-        mFragmentJustCreatedFromSavedState = false;
+        viewJustCreated = false;
+        fragmentJustCreatedFromSavedState = false;
     }
 
     /**
@@ -295,8 +295,8 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mEventRegister.unregisterEventBuses();
-        mEventRegister = null;
+        eventRegister.unregisterEventBuses();
+        eventRegister = null;
     }
 
     /**
@@ -316,7 +316,7 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt(STATE_LAST_ORIENTATION, mLastOrientation);
+        outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
     }
 
     /**
@@ -328,10 +328,10 @@ public abstract class MvcFragment extends Fragment {
      * @param onCreateViewAction The action to register
      */
     public void registerOnViewReadyListener(Runnable onCreateViewAction) {
-        if (mOnViewReadyListeners == null) {
-            mOnViewReadyListeners = new CopyOnWriteArrayList<>();
+        if (onViewReadyListeners == null) {
+            onViewReadyListeners = new CopyOnWriteArrayList<>();
         }
-        mOnViewReadyListeners.add(onCreateViewAction);
+        onViewReadyListeners.add(onCreateViewAction);
     }
 
     /**
@@ -340,8 +340,8 @@ public abstract class MvcFragment extends Fragment {
      * @param onResumeAction The action to run in onResume callback
      */
     public void unregisterOnViewReadyListener(Runnable onResumeAction) {
-        if (mOnViewReadyListeners != null) {
-            mOnViewReadyListeners.remove(onResumeAction);
+        if (onViewReadyListeners != null) {
+            onViewReadyListeners.remove(onResumeAction);
         }
     }
 
@@ -349,8 +349,8 @@ public abstract class MvcFragment extends Fragment {
      * Unregister callbacks that to be called after {@link #onViewReady(View, Bundle, Reason)}
      */
     public void clearOnViewReadyListener() {
-        if (mOnViewReadyListeners != null) {
-            mOnViewReadyListeners.clear();
+        if (onViewReadyListeners != null) {
+            onViewReadyListeners.clear();
         }
     }
 

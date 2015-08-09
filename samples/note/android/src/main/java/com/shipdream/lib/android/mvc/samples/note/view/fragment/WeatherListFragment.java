@@ -41,9 +41,9 @@ public class WeatherListFragment extends BaseFragment {
     private Button buttonAddWeather;
     private Button buttonRefresh;
     private View emptyView;
-    private RecyclerView mListView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView listView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
     private ProgressDialog progressDialog;
 
     @Inject
@@ -77,9 +77,9 @@ public class WeatherListFragment extends BaseFragment {
             }
         });
 
-        mListView = (RecyclerView) view.findViewById(R.id.fragment_weather_list_listView);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mListView.setLayoutManager(mLayoutManager);
+        listView = (RecyclerView) view.findViewById(R.id.fragment_weather_list_listView);
+        layoutManager = new LinearLayoutManager(getActivity());
+        listView.setLayoutManager(layoutManager);
 
         updateList();
 
@@ -123,15 +123,15 @@ public class WeatherListFragment extends BaseFragment {
     }
 
     private void updateList() {
-        mAdapter = new WeatherAdapter(this);
-        mListView.setAdapter(mAdapter);
+        adapter = new WeatherAdapter(this);
+        listView.setAdapter(adapter);
 
-        if (mAdapter.getItemCount() > 0) {
+        if (adapter.getItemCount() > 0) {
             emptyView.setVisibility(View.GONE);
-            mListView.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
         } else {
             emptyView.setVisibility(View.VISIBLE);
-            mListView.setVisibility(View.GONE);
+            listView.setVisibility(View.GONE);
         }
     }
 

@@ -31,7 +31,7 @@ import com.shipdream.lib.poke.exception.PokeException;
  * <p/>
  */
 public class MvcDialogFragment extends DialogFragment {
-    private EventRegister mEventRegister;
+    private EventRegister eventRegister;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,8 +46,8 @@ public class MvcDialogFragment extends DialogFragment {
         } catch (PokeException e) {
             throw new RuntimeException(e);
         }
-        mEventRegister = new EventRegister(this);
-        mEventRegister.registerEventBuses();
+        eventRegister = new EventRegister(this);
+        eventRegister.registerEventBuses();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MvcDialogFragment extends DialogFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mEventRegister.unregisterEventBuses();
+        eventRegister.unregisterEventBuses();
         AndroidMvc.graph().release(this);
     }
 

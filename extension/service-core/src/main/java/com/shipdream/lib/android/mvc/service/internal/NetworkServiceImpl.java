@@ -25,15 +25,15 @@ import com.shipdream.lib.android.mvc.service.NetworkService;
  *
  */
 public class NetworkServiceImpl implements NetworkService {
-    private Context mContext;
+    private Context context;
 
     public NetworkServiceImpl(Context context){
-        mContext = context;
+        this.context = context;
     }
 
     @Override
     public NetworkStatus getCurrentNetworkStatus() {
-        ConnectivityManager cm = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (null != activeNetwork) {

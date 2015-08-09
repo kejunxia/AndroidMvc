@@ -38,9 +38,9 @@ import javax.inject.Inject;
 public class NoteListFragment extends BaseFragment {
     private Button buttonAddNote;
     private View emptyView;
-    private RecyclerView mListView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private RecyclerView listView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
     private ActionMode actionMode;
 
     @Inject
@@ -71,9 +71,9 @@ public class NoteListFragment extends BaseFragment {
             }
         });
 
-        mListView = (RecyclerView) view.findViewById(R.id.fragment_note_list_listView);
-        mLayoutManager = new LinearLayoutManager(getActivity());
-        mListView.setLayoutManager(mLayoutManager);
+        listView = (RecyclerView) view.findViewById(R.id.fragment_note_list_listView);
+        layoutManager = new LinearLayoutManager(getActivity());
+        listView.setLayoutManager(layoutManager);
 
         if (reason != Reason.ROTATE) {
             updateList();
@@ -145,15 +145,15 @@ public class NoteListFragment extends BaseFragment {
     }
 
     private void updateList() {
-        mAdapter = new NoteAdapter(this);
-        mListView.setAdapter(mAdapter);
+        adapter = new NoteAdapter(this);
+        listView.setAdapter(adapter);
 
-        if (mAdapter.getItemCount() > 0) {
+        if (adapter.getItemCount() > 0) {
             emptyView.setVisibility(View.GONE);
-            mListView.setVisibility(View.VISIBLE);
+            listView.setVisibility(View.VISIBLE);
         } else {
             emptyView.setVisibility(View.VISIBLE);
-            mListView.setVisibility(View.GONE);
+            listView.setVisibility(View.GONE);
         }
 
         if(actionMode != null && !noteController.inSelectionMode()) {

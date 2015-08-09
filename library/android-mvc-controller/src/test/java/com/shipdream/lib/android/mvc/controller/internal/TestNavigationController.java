@@ -274,7 +274,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         // Arrange
         Logger logger = mock(Logger.class);
         ((NavigationControllerImpl)navigationController).dumpHistoryOnLocationChange = true;
-        ((NavigationControllerImpl) navigationController).mLogger = logger;
+        ((NavigationControllerImpl) navigationController).logger = logger;
 
         // Act
         navigationController.navigateTo(this, "any location", "back to location");

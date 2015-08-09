@@ -28,9 +28,9 @@ import retrofit.client.Client;
  */
 public abstract class AbstractRetrofitMultiEndpointsController<MODEL> extends AbstractRetrofitController<MODEL> {
     @Inject
-    Client mClient;
+    Client client;
 
-    private Map<String, RetrofitServiceFactory> mHttpServiceFactoryCache = new HashMap<>();
+    private Map<String, RetrofitServiceFactory> httpServiceFactoryCache = new HashMap<>();
 
     /**
      * Get a service for a specific endpoint. A new service will be created if not cached yet, otherwise cached service
@@ -52,11 +52,11 @@ public abstract class AbstractRetrofitMultiEndpointsController<MODEL> extends Ab
 
     private RetrofitServiceFactory getHttpServiceFactory(String endpoint) {
         //Cache service factory
-        if(mHttpServiceFactoryCache.get(endpoint) == null) {
-            RetrofitServiceFactory factory = new RetrofitServiceFactory(endpoint, mClient);
+        if(httpServiceFactoryCache.get(endpoint) == null) {
+            RetrofitServiceFactory factory = new RetrofitServiceFactory(endpoint, client);
             onCreateNewHttpRetrofitServiceFactory(factory, endpoint);
-            mHttpServiceFactoryCache.put(endpoint, factory);
+            httpServiceFactoryCache.put(endpoint, factory);
         }
-        return mHttpServiceFactoryCache.get(endpoint);
+        return httpServiceFactoryCache.get(endpoint);
     }
 }

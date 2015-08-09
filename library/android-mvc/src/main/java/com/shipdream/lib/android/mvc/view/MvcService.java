@@ -26,7 +26,7 @@ import com.shipdream.lib.poke.exception.PokeException;
  * manage the state of the app.
  */
 public abstract class MvcService extends Service{
-    private EventRegister mEventRegister;
+    private EventRegister eventRegister;
 
     /**
      * Callback of creating a service
@@ -39,8 +39,8 @@ public abstract class MvcService extends Service{
         } catch (PokeException e) {
             throw new RuntimeException(e);
         }
-        mEventRegister = new EventRegister(this);
-        mEventRegister.registerEventBuses();
+        eventRegister = new EventRegister(this);
+        eventRegister.registerEventBuses();
     }
 
     /**
@@ -49,7 +49,7 @@ public abstract class MvcService extends Service{
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mEventRegister.unregisterEventBuses();
+        eventRegister.unregisterEventBuses();
         AndroidMvc.graph().release(this);
     }
 
