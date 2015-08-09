@@ -45,6 +45,11 @@ def jacocoCoveredProjects = [
 ]
 
 allprojects {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = 1.7
+        targetCompatibility = 1.7
+    }
+
     repositories {
         jcenter()
         mavenLocal()
@@ -54,14 +59,13 @@ allprojects {
         apply plugin: 'java'
         apply plugin: 'jacoco'
     }
+}
 
-    tasks.withType(JavaCompile) {
-        sourceCompatibility = "1.7"
-        targetCompatibility = "1.7"
-    }
-
-    tasks.withType(Javadoc) {
-        options.addStringOption('Xdoclint:none', '-quiet')
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
     }
 }
 
