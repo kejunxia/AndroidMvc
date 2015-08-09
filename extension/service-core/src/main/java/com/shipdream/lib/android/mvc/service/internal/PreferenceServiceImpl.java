@@ -25,92 +25,104 @@ import com.shipdream.lib.android.mvc.service.PreferenceService;
  * Wrapper to use real Android Preference
  */
 public class PreferenceServiceImpl implements PreferenceService {
-    private SharedPreferences mPrefs;
+    private SharedPreferences sharedPreferences;
 
 
     public PreferenceServiceImpl(Context context, String preferenceName, int mode){
-        mPrefs = context.getSharedPreferences(preferenceName, mode);
+        sharedPreferences = context.getSharedPreferences(preferenceName, mode);
     }
 
     @Override
     public boolean contains(String key) {
-        return mPrefs.contains(key);
+        return sharedPreferences.contains(key);
     }
 
     @Override
     public int getInt(String key, int defaultValue) {
-        return mPrefs.getInt(key, defaultValue);
+        return sharedPreferences.getInt(key, defaultValue);
     }
 
     @Override
     public long getLong(String key, long defaultValue) {
-        return mPrefs.getLong(key, defaultValue);
+        return sharedPreferences.getLong(key, defaultValue);
     }
 
     @Override
     public float getFloat(String key, float defaultValue) {
-        return mPrefs.getFloat(key, defaultValue);
+        return sharedPreferences.getFloat(key, defaultValue);
     }
 
     @Override
     public boolean getBoolean(String key, boolean defaultValue) {
-        return mPrefs.getBoolean(key, defaultValue);
+        return sharedPreferences.getBoolean(key, defaultValue);
     }
 
     @Override
     public String getString(String key, String defaultValue) {
-        return mPrefs.getString(key, defaultValue);
+        return sharedPreferences.getString(key, defaultValue);
     }
 
     @Override
     public Editor edit() {
-        return new AndroidPreferenceEditor(mPrefs.edit());
+        return new AndroidPreferenceEditor(sharedPreferences.edit());
     }
 
     private static class AndroidPreferenceEditor implements Editor{
-        private SharedPreferences.Editor mEditor;
+        private SharedPreferences.Editor editor;
         AndroidPreferenceEditor(SharedPreferences.Editor andEditor){
-            mEditor = andEditor;
+            editor = andEditor;
         }
 
         @Override
         public Editor putInt(String key, int value) {
-            return new AndroidPreferenceEditor(mEditor.putInt(key, value));
+            editor.putInt(key, value);
+            return this;
         }
 
         @Override
         public Editor putLong(String key, long value) {
-            return new AndroidPreferenceEditor(mEditor.putLong(key, value));
+            editor.putLong(key, value);
+            return this;
         }
 
         @Override
         public Editor putFloat(String key, float value) {
-            return new AndroidPreferenceEditor(mEditor.putFloat(key, value));
+            editor.putFloat(key, value);
+            return this;
         }
 
         @Override
         public Editor putBoolean(String key, boolean value) {
-            return new AndroidPreferenceEditor(mEditor.putBoolean(key, value));
+            editor.putBoolean(key, value);
+            return this;
         }
 
         @Override
         public Editor putString(String key, String value) {
-            return new AndroidPreferenceEditor(mEditor.putString(key, value));
+            editor.putString(key, value);
+            return this;
+        }
+
+        @Override
+        public Editor remove(String key) {
+            editor.remove(key);
+            return this;
         }
 
         @Override
         public Editor clear() {
-            return new AndroidPreferenceEditor(mEditor.clear());
+            editor.clear();
+            return this;
         }
 
         @Override
         public boolean commit() {
-            return mEditor.commit();
+            return editor.commit();
         }
 
         @Override
         public void apply() {
-            mEditor.apply();
+            editor.apply();
         }
     }
 }
