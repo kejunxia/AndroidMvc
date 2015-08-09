@@ -123,7 +123,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          * with this <a href='http://ideaventure.blogspot.com.au/2014/10/nested-retained-fragment-lost-state.html'>solution</a>
          * FIXME: ChildFragmentManager hack - remove this method when the bug is fixed in future android support library
          */
-        private FragmentManager mRetainedChildFragmentManager;
+        private FragmentManager retainedChildFragmentManager;
 
         /**
          * Get child fragment manager with android support lib rev20/rev21 which has a the
@@ -132,10 +132,10 @@ public abstract class MvcActivity extends AppCompatActivity {
          * FIXME: ChildFragmentManager hack - remove this method when the bug is fixed in future android support library
          */
         protected FragmentManager childFragmentManager() {
-            if (mRetainedChildFragmentManager == null) {
-                mRetainedChildFragmentManager = getChildFragmentManager();
+            if (retainedChildFragmentManager == null) {
+                retainedChildFragmentManager = getChildFragmentManager();
             }
-            return mRetainedChildFragmentManager;
+            return retainedChildFragmentManager;
         }
 
         /**
@@ -147,13 +147,13 @@ public abstract class MvcActivity extends AppCompatActivity {
         public void onAttach(Activity activity) {
             super.onAttach(activity);
 
-            if (mRetainedChildFragmentManager != null) {
+            if (retainedChildFragmentManager != null) {
                 //restore the last retained child fragment manager to the new
                 //created fragment
                 try {
                     Field childFMField = Fragment.class.getDeclaredField("mChildFragmentManager");
                     childFMField.setAccessible(true);
-                    childFMField.set(this, mRetainedChildFragmentManager);
+                    childFMField.set(this, retainedChildFragmentManager);
                 } catch (Exception e) {
                     logger.warn(e.getMessage(), e);
                 }
@@ -165,7 +165,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 //but childFragmentManager() may not be called so mRetainedChildFragmentManager is
                 //yet set. If the fragment is rotated, the state of child fragment manager will be
                 //lost since mRetainedChildFragmentManager hasn't set to be retained by the OS.
-                mRetainedChildFragmentManager = getChildFragmentManager();
+                retainedChildFragmentManager = getChildFragmentManager();
             }
         }
 
