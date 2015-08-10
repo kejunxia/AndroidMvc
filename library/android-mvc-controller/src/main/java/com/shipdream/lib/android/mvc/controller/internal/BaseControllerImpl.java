@@ -45,7 +45,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     }
 
     static AndroidPoster androidPoster;
-    protected Logger mLogger = LoggerFactory.getLogger(getClass());
+    protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
     @EventBusC2V
@@ -53,17 +53,17 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
 
     @Inject
     @EventBusC2C
-    EventBus mEventBusC2C;
+    EventBus eventBusC2C;
 
     @Inject
     ExecutorService mExecutorService;
 
-    private MODEL mModel;
+    private MODEL model;
 
     @Override
     public void init() {
-        mModel = createModelInstance();
-        mEventBusC2C.register(this);
+        model = createModelInstance();
+        eventBusC2C.register(this);
         onInitialized();
     }
 
@@ -91,8 +91,8 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      */
     @Override
     public void onDisposed() {
-        mEventBusC2C.unregister(this);
-        mLogger.trace("-Event bus unregistered for Controller - '{}'.", getClass().getName());
+        eventBusC2C.unregister(this);
+        logger.trace("-Event bus unregistered for Controller - '{}'.", getClass().getName());
     }
 
     /**
@@ -103,7 +103,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      */
     @Override
     public MODEL getModel() {
-        return mModel;
+        return model;
     }
 
     /**
@@ -116,7 +116,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      */
     @Override
     final public MODEL getState() {
-        return mModel;
+        return model;
     }
 
     /**
@@ -164,7 +164,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
         if (model == null) {
             throw new IllegalArgumentException("Can't bind a null model to a controller explicitly.");
         }
-        mModel = model;
+        this.model = model;
     }
 
     /**
@@ -185,7 +185,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
             if (mEventBusC2V != null) {
                 mEventBusC2V.post(eventC2V);
             } else {
-                mLogger.warn("Trying to post event {} to EventBusC2V which is null", eventC2V.getClass().getName());
+                logger.warn("Trying to post event {} to EventBusC2V which is null", eventC2V.getClass().getName());
             }
         }
     }
@@ -196,10 +196,10 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      * @param eventC2C Controller to Controller event to be broadcast
      */
     protected void postC2CEvent(final BaseEventC2C eventC2C) {
-        if (mEventBusC2C != null) {
-            mEventBusC2C.post(eventC2C);
+        if (eventBusC2C != null) {
+            eventBusC2C.post(eventC2C);
         } else {
-            mLogger.warn("Trying to post event {} to EventBusC2C which is null", eventC2C.getClass().getName());
+            logger.warn("Trying to post event {} to EventBusC2C which is null", eventC2C.getClass().getName());
         }
     }
 
@@ -278,7 +278,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
                 } catch (Exception e) {
                     asyncTask.state = AsyncTask.State.ERRED;
                     if (asyncExceptionHandler == null) {
-                        mLogger.warn(e.getMessage(), e);
+                        logger.warn(e.getMessage(), e);
                     } else {
                         asyncExceptionHandler.handleException(e);
                     }

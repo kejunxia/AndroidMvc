@@ -41,6 +41,7 @@ public interface PreferenceService {
         Editor putFloat(String key, float value);
         Editor putBoolean(String key, boolean value);
         Editor putString(String key, String value);
+        Editor remove(String key);
         Editor clear();
 
         /**

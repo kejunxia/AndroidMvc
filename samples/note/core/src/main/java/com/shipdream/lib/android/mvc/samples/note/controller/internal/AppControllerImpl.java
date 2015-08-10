@@ -29,7 +29,7 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
     private Orientation currentOrientation;
 
     @Inject
-    private NavigationController mNavigationController;
+    private NavigationController navigationController;
 
     @Inject
     private NoteController noteController;
@@ -41,8 +41,8 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
 
     @Override
     public void navigateToInitialLocation() {
-        if(mNavigationController.getModel().getCurrentLocation() == null) {
-            mNavigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST);
+        if(navigationController.getModel().getCurrentLocation() == null) {
+            navigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST);
         }
     }
 
@@ -67,32 +67,32 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
     }
 
     private void showPortrait() {
-        NavigationController.Model navModel = mNavigationController.getModel();
+        NavigationController.Model navModel = navigationController.getModel();
         String curLocId = navModel.getCurrentLocation().getLocationId();
         //If we are viewing note, update the navigation history and navigate to proper location
         if(curLocId.equals(LocId.NOTE_HANDSET_DETAIL)
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)
                 || curLocId.equals(LocId.NOTE_TABLET_LANDSCAPE)) {
             //Clear history and go to note list
-            mNavigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST, null);
+            navigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST, null);
 
             NoteModel noteModel = noteController.getModel();
             if(null != noteModel.getViewingNote()) {
                 //Was viewing note details, stack the detail location on top of note list
-                mNavigationController.navigateTo(this, LocId.NOTE_HANDSET_DETAIL);
+                navigationController.navigateTo(this, LocId.NOTE_HANDSET_DETAIL);
             }
         }
     }
 
     private void showLandscape() {
-        NavigationController.Model navModel = mNavigationController.getModel();
+        NavigationController.Model navModel = navigationController.getModel();
         String curLocId = navModel.getCurrentLocation().getLocationId();
         //If we are viewing note, use landscape location only and clear history locations
         if(curLocId.equals(LocId.NOTE_HANDSET_DETAIL)
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)
                 || curLocId.equals(LocId.NOTE_TABLET_LANDSCAPE)) {
             //Clear history and go to note landscape location
-            mNavigationController.navigateTo(this, LocId.NOTE_TABLET_LANDSCAPE, null);
+            navigationController.navigateTo(this, LocId.NOTE_TABLET_LANDSCAPE, null);
         }
     }
 }

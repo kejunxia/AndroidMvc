@@ -32,11 +32,11 @@ public class MyControllerImpl extends BaseControllerImpl {
     public static final long LONG_TASK_DURATION = 100;
 
     public void setLogger(Logger logger) {
-        mLogger = logger;
+        this.logger = logger;
     }
 
     public Logger getLogger() {
-        return mLogger;
+        return logger;
     }
 
     @Override

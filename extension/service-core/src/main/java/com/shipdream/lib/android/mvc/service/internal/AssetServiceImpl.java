@@ -25,15 +25,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class AssetServiceImpl implements AssetService {
-    private Context mContext;
+    private Context context;
 
     public AssetServiceImpl(Context context){
-        mContext = context;
+        this.context = context;
     }
 
     @Override
     public InputStream getAsset(String path) throws IOException {
-        return mContext.getAssets().open(path);
+        return context.getAssets().open(path);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class AssetServiceImpl implements AssetService {
         StringBuilder sb = new StringBuilder();
         BufferedReader bufferedReader = null;
         try {
-            InputStream inputStream = mContext.getAssets().open(assetPath);
+            InputStream inputStream = context.getAssets().open(assetPath);
             bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String str;
             while ((str = bufferedReader.readLine()) != null) {

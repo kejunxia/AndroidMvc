@@ -1,3 +1,7 @@
+Version: 1.1.5
+Allow remove preference key from SharedPreferenceService
+Naming convention cleaning up
+
 Version: 1.1.4
 Fix the bug that navigation may crash the app when the app just resumes from other app such as facebook login
 

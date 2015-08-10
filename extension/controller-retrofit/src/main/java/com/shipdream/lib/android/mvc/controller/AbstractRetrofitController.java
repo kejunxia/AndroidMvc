@@ -103,7 +103,7 @@ public abstract class AbstractRetrofitController<MODEL> extends BaseControllerIm
             }
         } else{
             if (nonRetrofitErrorHandler == null){
-                mLogger.warn("Unhandled exception detected: {}", e.getMessage(), e);
+                logger.warn("Unhandled exception detected: {}", e.getMessage(), e);
             } else{
                 nonRetrofitErrorHandler.handleException(e);
             }

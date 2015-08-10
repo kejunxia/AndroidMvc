@@ -17,14 +17,23 @@
 package com.shipdream.lib.android.mvc.inject;
 
 import com.shipdream.lib.android.mvc.MvcGraph;
+import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.PrinterController2;
+import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.internal.AndroidPartImpl;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.manager.internal.InkManagerImpl;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.service.Cartridge;
+import com.shipdream.lib.poke.Component;
+import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 public class TestInjectCustomControllerDependencies extends BaseTestCases {
     private static class PaperView {
@@ -55,6 +64,41 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
         Assert.assertNotNull(cartridge.getInkManager());
 
         testView.show();
+    }
+
+
+    private static class AndroidView {
+        @Inject
+        private AndroidPart androidPart;
+    }
+
+    public class AndroidComponent extends Component {
+        @Provides
+        @Singleton
+        public AndroidPart provideAndroidPart() {
+            Object fakeContext = new Object();
+            return new AndroidPartImpl(fakeContext);
+        }
+    }
+
+    @Test
+    public void should_be_able_to_reinject_new_instance_without_default_constructor()
+            throws ProvideException, ProviderConflictException, ProviderMissingException, CircularDependenciesException {
+        AndroidComponent component = new AndroidComponent();
+
+        MvcGraph graph = new MvcGraph(new BaseControllerDependencies());
+        graph.register(component);
+
+        AndroidView androidView = new AndroidView();
+        Assert.assertNull(androidView.androidPart);
+
+        graph.inject(androidView);
+        Assert.assertNotNull(androidView.androidPart);
+
+        graph.release(androidView);
+
+        graph.inject(androidView);
+        Assert.assertNotNull(androidView.androidPart);
     }
 
 }

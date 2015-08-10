@@ -97,7 +97,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
             postC2VEvent(new EventC2V.OnLocationForward(sender, lastLoc, currentLoc, clearTop,
                     clearedTopToLocation));
 
-            mLogger.debug("Nav Controller: Forward: {} -> {}", lastLocId, currentLoc.getLocationId());
+            logger.debug("Nav Controller: Forward: {} -> {}", lastLocId, currentLoc.getLocationId());
         }
 
         dumpHistory();
@@ -107,7 +107,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     public void navigateBack(Object sender) {
         NavLocation currentLoc = getModel().getCurrentLocation();
         if (currentLoc == null) {
-            mLogger.warn("Current location should never be null before navigating backwards.");
+            logger.warn("Current location should never be null before navigating backwards.");
             return;
         }
 
@@ -115,7 +115,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
         getModel().setCurrentLocation(previousLoc);
         postC2VEvent(new EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false));
 
-        mLogger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
+        logger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
                 previousLoc == null ? "null" : previousLoc.getLocationId());
 
         dumpHistory();
@@ -125,7 +125,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     public void navigateBack(Object sender, String toLocationId) {
         NavLocation currentLoc = getModel().getCurrentLocation();
         if (currentLoc == null) {
-            mLogger.warn("Current location should never be null before navigating backwards.");
+            logger.warn("Current location should never be null before navigating backwards.");
             return;
         }
 
@@ -156,7 +156,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
         if(success) {
             getModel().setCurrentLocation(currentLoc);
             postC2VEvent(new EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true));
-            mLogger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
+            logger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
                     previousLoc.getLocationId());
 
             dumpHistory();
@@ -165,15 +165,15 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 
     private void dumpHistory() {
         if (dumpHistoryOnLocationChange) {
-            mLogger.trace("");
-            mLogger.trace("Nav Controller: dump: begin ---------------------------------------------->");
+            logger.trace("");
+            logger.trace("Nav Controller: dump: begin ---------------------------------------------->");
             NavLocation curLoc = getModel().getCurrentLocation();
             while (curLoc != null) {
-                mLogger.trace("Nav Controller: dump: {}({})", curLoc.getLocationId());
+                logger.trace("Nav Controller: dump: {}({})", curLoc.getLocationId());
                 curLoc = curLoc.getPreviousLocation();
             }
-            mLogger.trace("Nav Controller: dump: end   ---------------------------------------------->");
-            mLogger.trace("");
+            logger.trace("Nav Controller: dump: end   ---------------------------------------------->");
+            logger.trace("");
         }
     }
 

@@ -20,27 +20,27 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class EventRegister {
-    private Logger mLogger = LoggerFactory.getLogger(getClass());
-    private Object mAndroidComponent;
-    private boolean mEventsRegistered = false;
+    private Logger logger = LoggerFactory.getLogger(getClass());
+    private Object androidComponent;
+    private boolean eventsRegistered = false;
 
     public EventRegister(Object androidComponent) {
-        mAndroidComponent = androidComponent;
+        this.androidComponent = androidComponent;
     }
 
     /**
      * Register c2v and v2v event buses. This method should be called on view's onCreate life cycle callback.
      */
     public void registerEventBuses() {
-        if (!mEventsRegistered) {
-            AndroidMvc.getEventBusC2V().register(mAndroidComponent);
-            AndroidMvc.getEventBusV2V().register(mAndroidComponent);
-            mEventsRegistered = true;
-            mLogger.trace("+Event bus registered for view - '{}'.",
-                    mAndroidComponent.getClass().getSimpleName());
+        if (!eventsRegistered) {
+            AndroidMvc.getEventBusC2V().register(androidComponent);
+            AndroidMvc.getEventBusV2V().register(androidComponent);
+            eventsRegistered = true;
+            logger.trace("+Event bus registered for view - '{}'.",
+                    androidComponent.getClass().getSimpleName());
         } else {
-            mLogger.trace("!Event bus already registered for view - '{}' and its controllers.",
-                    mAndroidComponent.getClass().getSimpleName());
+            logger.trace("!Event bus already registered for view - '{}' and its controllers.",
+                    androidComponent.getClass().getSimpleName());
         }
     }
 
@@ -48,15 +48,15 @@ class EventRegister {
      * Unregister c2v and v2v event buses. This method should be called on view's onDestroy life cycle callback.
      */
     public void unregisterEventBuses() {
-        if (mEventsRegistered) {
-            AndroidMvc.getEventBusC2V().unregister(mAndroidComponent);
-            AndroidMvc.getEventBusV2V().unregister(mAndroidComponent);
-            mEventsRegistered = false;
-            mLogger.trace("-Event bus unregistered for view - '{}' and its controllers.",
-                    mAndroidComponent.getClass().getSimpleName());
+        if (eventsRegistered) {
+            AndroidMvc.getEventBusC2V().unregister(androidComponent);
+            AndroidMvc.getEventBusV2V().unregister(androidComponent);
+            eventsRegistered = false;
+            logger.trace("-Event bus unregistered for view - '{}' and its controllers.",
+                    androidComponent.getClass().getSimpleName());
         } else {
-            mLogger.trace("!Event bus already unregistered for view - '{}'.",
-                    mAndroidComponent.getClass().getSimpleName());
+            logger.trace("!Event bus already unregistered for view - '{}'.",
+                    androidComponent.getClass().getSimpleName());
         }
     }
 

@@ -36,7 +36,7 @@ import javax.inject.Inject;
 
 public class MainFragment extends MvcActivity.DelegateFragment {
     @Inject
-    AppController mAppController;
+    AppController appController;
     private DrawerLayout drawerLayout;
     private ViewGroup mainContainer;
     private ViewGroup navContainer;
@@ -100,7 +100,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
         switch (reason) {
             case FIRST_TIME:
             case RESTORE:
-                mAppController.notifyOrientationChanged(
+                appController.notifyOrientationChanged(
                         convertOrientation(Configuration.ORIENTATION_UNDEFINED),
                         convertOrientation(getCurrentOrientation()));
                 break;
@@ -109,13 +109,13 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
     @Override
     protected void onStartUp() {
-        mAppController.navigateToInitialLocation();
+        appController.navigateToInitialLocation();
     }
 
     @Override
     protected void onOrientationChanged(int lastOrientation, int currentOrientation) {
         super.onOrientationChanged(lastOrientation, currentOrientation);
-        mAppController.notifyOrientationChanged(
+        appController.notifyOrientationChanged(
                 convertOrientation(lastOrientation), convertOrientation(currentOrientation));
     }
 

@@ -46,10 +46,10 @@ public class MediaStoreServiceImpl implements MediaStoreService {
     private static final String TAG = MediaStoreServiceImpl.class.getName();
     public static final String MediaStore_Media_WIDTH = "width";
     public static final String MediaStore_Media_HEIGHT = "height";
-    protected Context mContext;
+    protected Context context;
 
     public MediaStoreServiceImpl(Context context) {
-        mContext = context;
+        this.context = context;
     }
 
     /**
@@ -189,7 +189,7 @@ public class MediaStoreServiceImpl implements MediaStoreService {
             selectionArgs = null;
         }
 
-        final Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 getImageProjection(), selection, selectionArgs, orderBy);
 
         if(cursor == null) {
@@ -304,7 +304,7 @@ public class MediaStoreServiceImpl implements MediaStoreService {
         final String[] projection = {MediaStore.Images.Media._ID, MediaStore.Images.Media.DATA};
         final String selection = MediaStore.Images.Media._ID + " = ?";
         final String[] selectionArgs = {imageId};
-        final Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection, selection, selectionArgs, null);
         if (cursor != null) {
             final int dataCol = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
@@ -344,7 +344,7 @@ public class MediaStoreServiceImpl implements MediaStoreService {
         final String[] selectionArgs = {String.valueOf(imageId), kindInString};
 
         ThumbnailDTO thumbnail = null;
-        final Cursor cursor = mContext.getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(MediaStore.Images.Thumbnails.EXTERNAL_CONTENT_URI,
                 projection, selection, selectionArgs, null);
         try {
             if (cursor != null && cursor.getCount() > 0) {
@@ -424,7 +424,7 @@ public class MediaStoreServiceImpl implements MediaStoreService {
             selection = null;
             selectionArgs = null;
         }
-        final Cursor cursor = mContext.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 getVideoProjection(), selection, selectionArgs, orderBy);
         if(cursor == null) {
             Log.w(TAG, "Failed to get cursor of all video of bucket " + bucketId);
@@ -546,7 +546,7 @@ public class MediaStoreServiceImpl implements MediaStoreService {
         final String[] projection = {MediaStore.Video.Media._ID, MediaStore.Video.Media.DATA};
         final String selection = MediaStore.Video.Media._ID + " = ?";
         final String[] selectionArgs = {videoId};
-        final Cursor cursor = mContext.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
                 projection, selection, selectionArgs, null);
 
         if (cursor == null) {
@@ -588,7 +588,7 @@ public class MediaStoreServiceImpl implements MediaStoreService {
         final String[] selectionArgs = {String.valueOf(videoId), kindInString};
 
         ThumbnailDTO thumbnail = null;
-        final Cursor cursor = mContext.getContentResolver().query(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI,
+        final Cursor cursor = context.getContentResolver().query(MediaStore.Video.Thumbnails.EXTERNAL_CONTENT_URI,
                 projection, selection, selectionArgs, null);
         try {
             if (cursor != null && cursor.getCount() > 0) {
@@ -617,7 +617,7 @@ public class MediaStoreServiceImpl implements MediaStoreService {
     public void deleteFiles(long[] deletingFileIds) {
         for (int i = 0; i < deletingFileIds.length; i++) {
             Uri uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, deletingFileIds[i]);
-            mContext.getContentResolver().delete(uri, null, null);
+            context.getContentResolver().delete(uri, null, null);
         }
     }
 

@@ -29,13 +29,13 @@ public class ReflectUtils {
      * @param <T>
      */
     public static class newObjectByType<T>{
-        private Class<T> mClass;
+        private Class<T> clazz;
         public newObjectByType(Class<T> cls){
-            mClass = cls;
+            clazz = cls;
         }
 
         public T newInstance() throws IllegalAccessException, InstantiationException {
-            return mClass.newInstance();
+            return clazz.newInstance();
         }
     }
 
