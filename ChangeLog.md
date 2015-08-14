@@ -1,3 +1,6 @@
+Version: 1.1.6
+Fix issue that onViewReady is called with incorrect reason - RESTORE which should be FIRST_TIME when the fragment is a page and recreated by FragmentStatePagerAdapter
+
 Version: 1.1.5
 Allow remove preference key from SharedPreferenceService
 Naming convention cleaning up
