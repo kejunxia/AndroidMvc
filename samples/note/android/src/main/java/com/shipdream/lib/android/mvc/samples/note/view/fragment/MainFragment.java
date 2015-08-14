@@ -18,10 +18,10 @@ package com.shipdream.lib.android.mvc.samples.note.view.fragment;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -65,7 +65,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
         mainContainer = (ViewGroup) view.findViewById(R.id.main_container);
         navContainer = (ViewGroup) view.findViewById(R.id.nav_container);
         drawerToggle = new ActionBarDrawerToggle(this.getActivity(), drawerLayout,
-                R.drawable.ic_action_navigation_menu, R.drawable.ic_action_navigation_menu);
+                R.string.app_name, R.string.app_name);
         drawerLayout.setDrawerListener(drawerToggle);
 
         navHome = navContainer.findViewById(R.id.nav_item_home);
@@ -99,6 +99,8 @@ public class MainFragment extends MvcActivity.DelegateFragment {
         //When app starts or restore, notify the app controller the original orientation
         switch (reason) {
             case FIRST_TIME:
+                appController.navigateToInitialLocation();
+                break;
             case RESTORE:
                 appController.notifyOrientationChanged(
                         convertOrientation(Configuration.ORIENTATION_UNDEFINED),
@@ -109,7 +111,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
     @Override
     protected void onStartUp() {
-        appController.navigateToInitialLocation();
+
     }
 
     @Override
@@ -160,10 +162,10 @@ public class MainFragment extends MvcActivity.DelegateFragment {
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (drawerLayout.isDrawerOpen(Gravity.START)) {
-                        drawerLayout.closeDrawer(Gravity.START);
+                    if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                        drawerLayout.closeDrawer(GravityCompat.START);
                     } else {
-                        drawerLayout.openDrawer(Gravity.START);
+                        drawerLayout.openDrawer(GravityCompat.START);
                     }
                 }
             });

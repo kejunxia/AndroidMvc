@@ -24,6 +24,7 @@ sourceSets {
     main {
         java.srcDir 'src/main/java'
         resources.srcDir 'src/main/resources'
+        compileClasspath += configurations.provided
     }
 
     test {
@@ -33,8 +34,9 @@ sourceSets {
 }
 
 dependencies {
-    provided 'org.parceler:parceler:0.2.16'
-    compile 'org.parceler:parceler-api:0.2.16'
+    compile 'org.parceler:parceler-api:1.0.3'
+    provided 'org.parceler:parceler:1.0.3'
+    provided rootProject.lib.androidMinSdk
     compile project(':library:android-mvc-controller')
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 

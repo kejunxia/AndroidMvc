@@ -83,7 +83,7 @@ public abstract class MvcFragment extends Fragment {
     /**
      *
      */
-    boolean delayOnViewReady = false;
+    boolean restoring = false;
 
     /**
      * @return orientation before last orientation change.
@@ -182,14 +182,14 @@ public abstract class MvcFragment extends Fragment {
         eventRegister.registerEventBuses();
 
         preInvokeCallbackOnViewCreated(view, savedInstanceState);
-        if (!delayOnViewReady) {
-            doOnViewCreatedCallBack(view, savedInstanceState);
+        if (!restoring) {
+            doOnViewCreatedCallBack(view, savedInstanceState, false);
         } else {
             ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
                 @Override
                 public void run() {
-                    doOnViewCreatedCallBack(view, savedInstanceState);
-                    delayOnViewReady = false;
+                    doOnViewCreatedCallBack(view, savedInstanceState, true);
+                    restoring = false;
                 }
             });
         }
@@ -199,18 +199,18 @@ public abstract class MvcFragment extends Fragment {
     void preInvokeCallbackOnViewCreated(final View view, final Bundle savedInstanceState) {
     }
 
-    private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState) {
+    private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
         int currentOrientation = getResources().getConfiguration().orientation;
         boolean orientationChanged = currentOrientation != lastOrientation;
         Reason reason;
-        if (savedInstanceState == null) {
+        if (restoring) {
+            reason = Reason.RESTORE;
+        } else {
             if (orientationChanged) {
                 reason = Reason.ROTATE;
             } else {
                 reason = Reason.FIRST_TIME;
             }
-        } else {
-            reason = Reason.RESTORE;
         }
 
         onViewReady(view, savedInstanceState, reason);
