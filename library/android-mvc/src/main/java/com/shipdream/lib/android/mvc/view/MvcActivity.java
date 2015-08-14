@@ -256,14 +256,14 @@ public abstract class MvcActivity extends AppCompatActivity {
             //their controllers
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.delegateFragment = this;
+
+            restoring = savedInstanceState != null;
         }
 
         @Override
         void preInvokeCallbackOnViewCreated(final View view, final Bundle savedInstanceState) {
             super.preInvokeCallbackOnViewCreated(view, savedInstanceState);
-            if (savedInstanceState != null) {
-                delayOnViewReady = true;
-
+            if (restoring) {
                 //When the delegate fragment is restoring it should notify all visible fragments
                 //to hold to call their onViewReady callback until state is restored. Because Android
                 //calls onViewStateRestored of DelegateFragment after all nested fragments call
@@ -277,7 +277,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 for (int i = 0; i < size; i++) {
                     Fragment frag = frags.get(i);
                     if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
-                        ((MvcFragment) frag).delayOnViewReady = true;
+                        ((MvcFragment) frag).restoring = true;
                     }
                 }
             }
