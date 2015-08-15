@@ -25,6 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.NavLocation;
+import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
@@ -248,39 +249,8 @@ public abstract class MvcActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setHasOptionsMenu(true);
-            //make sure the base activity has the reference to this container fragment before restoring other fragments..
-            //When the activity gets killed by the OS and recreated then all fragments contained by the activity will be
-            //recreated. All these will happen before BaseActivity.super.onCreate() finishes when findFragmentById
-            //has not been ready to work thus the mContainerFragment would be null for BaseActivity and
-            //mContainerFragment.getControllersInjector() will return null.This will crash other fragments to inject
-            //their controllers
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.delegateFragment = this;
-
-            restoring = savedInstanceState != null;
-        }
-
-        @Override
-        void preInvokeCallbackOnViewCreated(final View view, final Bundle savedInstanceState) {
-            super.preInvokeCallbackOnViewCreated(view, savedInstanceState);
-            if (restoring) {
-                //When the delegate fragment is restoring it should notify all visible fragments
-                //to hold to call their onViewReady callback until state is restored. Because Android
-                //calls onViewStateRestored of DelegateFragment after all nested fragments call
-                //their onViewCreated life cycle, but onViewReady inside onViewCreated should
-                //guarantee when onViewReady of nested fragments get called, all state of them should
-                //be restored which is done this onViewStateRestored of this DelegateFragment. So
-                //we need to call onViewReady of nested fragments when onViewStateRestored of this
-                //DelegateFragment finishes.
-                List<Fragment> frags = childFragmentManager().getFragments();
-                int size = frags.size();
-                for (int i = 0; i < size; i++) {
-                    Fragment frag = frags.get(i);
-                    if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
-                        ((MvcFragment) frag).restoring = true;
-                    }
-                }
-            }
         }
 
         @Override
@@ -298,7 +268,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             if (savedInstanceState != null) {
                 Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
                 long ts = System.currentTimeMillis();
-                AndroidMvc.restoreStateOfControllers(mvcOutState);
+                AndroidMvc.restoreStateOfAllControllers(mvcOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
                 if (pendingOnViewReadyActions != null) {
@@ -349,12 +319,38 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         @Override
         public void onSaveInstanceState(Bundle outState) {
+            isStateManagedByHoldingRootFragment = true;
             super.onSaveInstanceState(outState);
+
+            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this);
+
             long ts = System.currentTimeMillis();
             Bundle mvcOutState = new Bundle();
-            AndroidMvc.saveStateOfControllers(mvcOutState);
+            AndroidMvc.saveStateOfAllControllers(mvcOutState);
             outState.putBundle(MVC_STATE_BUNDLE_KEY, mvcOutState);
             logger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
+        }
+
+        /**
+         * Notify all sub MvcFragments theirs state is managed by this root fragment. So all
+         * {@link StateManaged} objects those fragments holding will be saved into this root
+         * fragment's outState bundle.
+         */
+        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(Fragment fragment) {
+            if (fragment != null) {
+                List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
+                if (frags != null) {
+                    int size = frags.size();
+                    for (int i = 0; i < size; i++) {
+                        Fragment frag = frags.get(i);
+                        if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
+                            ((MvcFragment) frag).isStateManagedByHoldingRootFragment = true;
+                        }
+
+                        notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag);
+                    }
+                }
+            }
         }
 
         public void onEvent(final NavigationController.EventC2V.OnLocationForward event) {

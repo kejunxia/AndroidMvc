@@ -100,12 +100,12 @@ public class AndroidMvc {
         }
     }
 
-    static void saveStateOfControllers(Bundle savedState) {
+    static void saveStateOfAllControllers(Bundle savedState) {
         sStateManager.bundle = savedState;
         mvcGraph.saveAllStates(sStateManager);
     }
 
-    static void restoreStateOfControllers(Bundle outState) {
+    static void restoreStateOfAllControllers(Bundle outState) {
         sStateManager.bundle = outState;
         mvcGraph.restoreAllStates(sStateManager);
     }
