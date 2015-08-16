@@ -319,7 +319,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         @Override
         public void onSaveInstanceState(Bundle outState) {
-            isStateManagedByHoldingRootFragment = true;
+            isStateManagedByRootDelegateFragment = true;
             super.onSaveInstanceState(outState);
 
             notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this);
@@ -344,7 +344,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     for (int i = 0; i < size; i++) {
                         Fragment frag = frags.get(i);
                         if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
-                            ((MvcFragment) frag).isStateManagedByHoldingRootFragment = true;
+                            ((MvcFragment) frag).isStateManagedByRootDelegateFragment = true;
                         }
 
                         notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag);

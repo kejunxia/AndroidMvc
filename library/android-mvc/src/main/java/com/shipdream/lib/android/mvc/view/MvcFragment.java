@@ -82,7 +82,7 @@ public abstract class MvcFragment extends Fragment {
     private int lastOrientation;
     private boolean dependenciesInjected = false;
 
-    boolean isStateManagedByHoldingRootFragment = false;
+    boolean isStateManagedByRootDelegateFragment = false;
 
     /**
      * @return orientation before last orientation change.
@@ -142,13 +142,17 @@ public abstract class MvcFragment extends Fragment {
             lastOrientation = getResources().getConfiguration().orientation;
         } else {
             lastOrientation = savedInstanceState.getInt(STATE_LAST_ORIENTATION);
-            isStateManagedByHoldingRootFragment = savedInstanceState.getBoolean(STATE_MANAGED_BY_HOLDING_ROOT_FRAGMENT);
+            isStateManagedByRootDelegateFragment = savedInstanceState.getBoolean(STATE_MANAGED_BY_HOLDING_ROOT_FRAGMENT);
         }
 
         if (getParentFragment() == null) {
             setRetainInstance(true);
         }
         injectDependencies();
+
+        if (savedInstanceState != null && !isStateManagedByRootDelegateFragment) {
+            AndroidMvc.restoreControllerStateByTheirOwn(savedInstanceState, this);
+        }
     }
 
     /**
@@ -182,14 +186,14 @@ public abstract class MvcFragment extends Fragment {
         eventRegister.registerEventBuses();
 
         final boolean restoring = savedInstanceState != null;
-        if (!isStateManagedByHoldingRootFragment) {
+        if (!isStateManagedByRootDelegateFragment) {
             doOnViewCreatedCallBack(view, savedInstanceState, restoring);
         } else {
             ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
                 @Override
                 public void run() {
                     doOnViewCreatedCallBack(view, savedInstanceState, restoring);
-                    isStateManagedByHoldingRootFragment = false;
+                    isStateManagedByRootDelegateFragment = false;
                 }
             });
         }
@@ -230,7 +234,7 @@ public abstract class MvcFragment extends Fragment {
      * why this callback is invoked.
      *
      * <p>Note: When savedInstanceState is non-null, causedByRotation will <b>always be false</b> as the
-     * recreation is not just caused by rotation but isStateManagedByHoldingRootFragment the view killed by OS, since the
+     * recreation is not just caused by rotation but isStateManagedByRootDelegateFragment the view killed by OS, since the
      * fragment retains instance.</p>
      * @param view The root view of the fragment
      * @param savedInstanceState The savedInstanceState when the fragment is being recreated after
@@ -313,7 +317,11 @@ public abstract class MvcFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
-        outState.putBoolean(STATE_MANAGED_BY_HOLDING_ROOT_FRAGMENT, isStateManagedByHoldingRootFragment);
+        outState.putBoolean(STATE_MANAGED_BY_HOLDING_ROOT_FRAGMENT, isStateManagedByRootDelegateFragment);
+
+        if (!isStateManagedByRootDelegateFragment) {
+            AndroidMvc.saveControllerStateOfTheirOwn(outState, this);
+        }
     }
 
     /**
