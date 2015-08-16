@@ -30,6 +30,10 @@
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
+        <activity android:name="com.shipdream.lib.android.mvc.view.viewpager.ViewPagerTestActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+
         <activity android:name="com.shipdream.lib.android.mvc.view.injection.InjectionTestActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>

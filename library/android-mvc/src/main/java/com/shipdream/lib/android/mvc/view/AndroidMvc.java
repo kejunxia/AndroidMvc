@@ -25,6 +25,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.StateKeeper;
+import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
@@ -36,6 +38,7 @@ import com.shipdream.lib.poke.exception.PokeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
@@ -100,14 +103,52 @@ public class AndroidMvc {
         }
     }
 
-    static void saveStateOfControllers(Bundle savedState) {
-        sStateManager.bundle = savedState;
+    static void saveStateOfAllControllers(Bundle outState) {
+        sStateManager.bundle = outState;
         mvcGraph.saveAllStates(sStateManager);
+        sStateManager.bundle = null;
     }
 
-    static void restoreStateOfControllers(Bundle outState) {
-        sStateManager.bundle = outState;
+    static void restoreStateOfAllControllers(Bundle savedState) {
+        sStateManager.bundle = savedState;
         mvcGraph.restoreAllStates(sStateManager);
+        sStateManager.bundle = null;
+    }
+
+    static void saveControllerStateOfTheirOwn(Bundle outState, Object object) {
+        Field[] fields = object.getClass().getDeclaredFields();
+        sStateManager.bundle = outState;
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            if (BaseController.class.isAssignableFrom(field.getType())) {
+                StateManaged stateManaged = null;
+                try {
+                    field.setAccessible(true);
+                    stateManaged = (StateManaged) field.get(object);
+                } catch (IllegalAccessException e) {
+                    //ignore
+                }
+                sStateManager.saveState(stateManaged.getState(), stateManaged.getStateType());
+            }
+        }
+    }
+
+    static void restoreControllerStateByTheirOwn(Bundle savedState, Object object) {
+        Field[] fields = object.getClass().getDeclaredFields();
+        sStateManager.bundle = savedState;
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            if (BaseController.class.isAssignableFrom(field.getType())) {
+                try {
+                    field.setAccessible(true);
+                    StateManaged stateManaged = (StateManaged) field.get(object);
+                    Object value = sStateManager.getState(stateManaged.getStateType());
+                    stateManaged.restoreState(value);
+                } catch (IllegalAccessException e) {
+                    //ignore
+                }
+            }
+        }
     }
 
     /**
