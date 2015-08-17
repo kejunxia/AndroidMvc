@@ -279,6 +279,8 @@ public abstract class MvcActivity extends AppCompatActivity {
                     pendingOnViewReadyActions.clear();
                 }
             }
+
+            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, false);
         }
 
         /**
@@ -322,7 +324,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             isStateManagedByRootDelegateFragment = true;
             super.onSaveInstanceState(outState);
 
-            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this);
+            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
 
             long ts = System.currentTimeMillis();
             Bundle mvcOutState = new Bundle();
@@ -336,7 +338,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          * {@link StateManaged} objects those fragments holding will be saved into this root
          * fragment's outState bundle.
          */
-        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(Fragment fragment) {
+        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(Fragment fragment, boolean selfManaged) {
             if (fragment != null) {
                 List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
                 if (frags != null) {
@@ -344,10 +346,10 @@ public abstract class MvcActivity extends AppCompatActivity {
                     for (int i = 0; i < size; i++) {
                         Fragment frag = frags.get(i);
                         if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
-                            ((MvcFragment) frag).isStateManagedByRootDelegateFragment = true;
+                            ((MvcFragment) frag).isStateManagedByRootDelegateFragment = selfManaged;
                         }
 
-                        notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag);
+                        notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag, selfManaged);
                     }
                 }
             }
