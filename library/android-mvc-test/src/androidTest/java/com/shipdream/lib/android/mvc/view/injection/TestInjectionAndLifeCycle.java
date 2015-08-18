@@ -162,37 +162,4 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textC)).check(matches(withText("")));
     }
 
-    @Test
-    public void should_call_onViewReady_when_restored_fragment_pops_out() throws Throwable {
-        if (!isDontKeepActivities()) {
-            Log.i(getClass().getSimpleName(), "testLifeCyclesWhenKeepActivities not tested as Don't Keep Activities setting is disabled");
-            return;
-        }
-
-        //=============================> At A
-        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
-
-        //=============================> At B
-        navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.B);
-        waitTest();
-        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
-
-        pressHome();
-        waitTest(1200);
-
-        bringBack();
-        waitTest(1200);
-
-        //=============================> At A
-        navigationController.navigateBack(this);
-        waitTest();
-        lifeCycleValidatorA.expect(
-                LifeCycle.onDestroy,
-                LifeCycle.onCreateNotNull,
-                LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyRestore,
-                LifeCycle.onPoppedOutToFront);
-    }
 }

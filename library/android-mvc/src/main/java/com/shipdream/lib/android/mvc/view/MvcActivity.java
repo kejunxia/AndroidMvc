@@ -355,6 +355,26 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
+        /**
+         * Notify all sub MvcFragments the given fragments they are popping out along with the given holding fragment.
+         */
+        private void notifyAllSubMvcFragmentsTheyArePoppingOut(Fragment fragment, boolean poppingOut) {
+            if (fragment != null) {
+                List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
+                if (frags != null) {
+                    int size = frags.size();
+                    for (int i = 0; i < size; i++) {
+                        Fragment frag = frags.get(i);
+                        if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
+                            ((MvcFragment) frag).isPoppingOut = poppingOut;
+                        }
+
+                        notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag, poppingOut);
+                    }
+                }
+            }
+        }
+
         public void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
@@ -450,10 +470,11 @@ public abstract class MvcActivity extends AppCompatActivity {
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
                     currentFrag.injectDependencies();
+                    currentFrag.isPoppingOut = true;
+                    notifyAllSubMvcFragmentsTheyArePoppingOut(currentFrag, true);
                     currentFrag.registerOnViewReadyListener(new Runnable() {
                         @Override
                         public void run() {
-                            currentFrag.isPoppingOut = true;
                             currentFrag.onPoppedOutToFront();
                             unregisterOnViewReadyListener(this);
                         }

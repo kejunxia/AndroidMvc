@@ -82,7 +82,7 @@ ext {
     shouldPublish = false
 
     androidMinSdkVersion = 14
-    androidCompileSdkVersion = 23
+    androidCompileSdkVersion = 22
     supportLibVersion = "22.2.1"
     androidTargetSdkVersion = androidCompileSdkVersion
     lib = [
