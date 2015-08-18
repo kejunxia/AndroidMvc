@@ -82,8 +82,8 @@ ext {
     shouldPublish = false
 
     androidMinSdkVersion = 14
-    androidCompileSdkVersion = 22
-    supportLibVersion = "22.2.0"
+    androidCompileSdkVersion = 23
+    supportLibVersion = "22.2.1"
     androidTargetSdkVersion = androidCompileSdkVersion
     lib = [
             androidMinSdk: 'com.google.android:android:4.0.1.2',
@@ -95,7 +95,7 @@ ext {
             slf4jLog: "org.slf4j:slf4j-log4j12:$log4jVersion",
             logbackAndroidCore: "com.github.tony19:logback-android-core:$logbackAndroidVersion",
             logbackAndroidClassic: "com.github.tony19:logback-android-classic:$logbackAndroidVersion",
-            robolectric: "org.robolectric:robolectric:3.0-rc3"
+            robolectric: "org.robolectric:robolectric:3.0"
     ]
 }
 
