@@ -83,6 +83,7 @@ public abstract class MvcFragment extends Fragment {
     private boolean dependenciesInjected = false;
 
     boolean isStateManagedByRootDelegateFragment = false;
+    boolean isPoppingOut = false;
 
     /**
      * @return orientation before last orientation change.
@@ -253,13 +254,16 @@ public abstract class MvcFragment extends Fragment {
 
     private void checkWhetherReturnFromForeground() {
         if(fragmentJustCreatedFromSavedState) {
-            onReturnForeground();
+            if (!isPoppingOut) {
+                onReturnForeground();
+            }
         } else {
             if(!viewJustCreated) {
                 onReturnForeground();
             }
         }
         viewJustCreated = false;
+        isPoppingOut = false;
         fragmentJustCreatedFromSavedState = false;
     }
 

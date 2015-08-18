@@ -453,6 +453,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     currentFrag.registerOnViewReadyListener(new Runnable() {
                         @Override
                         public void run() {
+                            currentFrag.isPoppingOut = true;
                             currentFrag.onPoppedOutToFront();
                             unregisterOnViewReadyListener(this);
                         }
