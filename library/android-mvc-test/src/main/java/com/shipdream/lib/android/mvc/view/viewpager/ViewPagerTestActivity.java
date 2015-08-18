@@ -23,6 +23,9 @@ public class ViewPagerTestActivity extends MvcActivity {
 
     @Override
     protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
+        if (locationId.equals(SubFragment.class.getSimpleName())) {
+            return SubFragment.class;
+        }
         return ViewPagerHomeFragment.class;
     }
 
@@ -34,7 +37,7 @@ public class ViewPagerTestActivity extends MvcActivity {
     public static class HomeFragment extends DelegateFragment {
         @Override
         protected void onStartUp() {
-            getNavigationController().navigateTo(this, "ViewPagerHomeFragment", null);
+            getNavigationController().navigateTo(this, ViewPagerHomeFragment.class.getSimpleName(), null);
         }
     }
 

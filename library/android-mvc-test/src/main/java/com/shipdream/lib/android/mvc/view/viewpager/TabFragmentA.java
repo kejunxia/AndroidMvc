@@ -4,13 +4,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
 import com.shipdream.lib.android.mvc.view.viewpager.controller.TabController;
 
 import javax.inject.Inject;
 
-public class TabFragmentA extends MvcFragment {
+public class TabFragmentA extends BaseTabFragment {
     static final String INIT_TEXT = "Tab A";
     static final String RESTORE_TEXT = "Restored TabA";
 
@@ -19,9 +21,17 @@ public class TabFragmentA extends MvcFragment {
 
     private TextView textView;
 
+    @Inject
+    private NavigationController navigationController;
+
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_view_pager_tab;
+    }
+
+    @Override
+    protected LifeCycleMonitor getLifeCycleMonitor() {
+        return MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorA();
     }
 
     @Override
@@ -35,6 +45,13 @@ public class TabFragmentA extends MvcFragment {
         } else if (reason == Reason.RESTORE) {
             textView.setText(tabController.getModel().getName());
         }
+
+        textView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigationController.navigateTo(v, SubFragment.class.getSimpleName());
+            }
+        });
     }
 
     @Override

@@ -4,15 +4,21 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-public class TabFragmentB extends MvcFragment {
+public class TabFragmentB extends BaseTabFragment {
     private TextView textView;
 
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_view_pager_tab;
+    }
+
+    @Override
+    protected LifeCycleMonitor getLifeCycleMonitor() {
+        return MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorB();
     }
 
     @Override

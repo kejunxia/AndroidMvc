@@ -16,7 +16,10 @@
 
 package com.shipdream.lib.android.mvc.view.viewpager;
 
+import android.util.Log;
+
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
+import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
@@ -56,5 +59,72 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void should_call_onViewReady_in_tab_fragments_when_restored_hosting_fragment_pops_out() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
 
+        //=============================> At Home
+        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorC.expect();
+
+        //=============================> At Sub Fragment
+        navigationController.navigateTo(this, SubFragment.class.getSimpleName());
+        waitTest(1200);
+
+        lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onDestroyView);
+        lifeCycleValidatorC.expect();
+
+        pressHome();
+        waitTest(1200);
+
+        bringBack();
+        waitTest(1200);
+        lifeCycleValidator.expect(
+                LifeCycle.onDestroy,
+                LifeCycle.onCreateNotNull);
+
+        lifeCycleValidatorA.expect(
+                LifeCycle.onDestroy,
+                LifeCycle.onCreateNotNull);
+
+        lifeCycleValidatorB.expect(
+                LifeCycle.onDestroy,
+                LifeCycle.onCreateNotNull);
+
+        lifeCycleValidatorC.expect();
+
+        //=============================> At A
+        navigationController.navigateBack(this);
+        waitTest(1200);
+        lifeCycleValidator.expect(
+                LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyRestore,
+                LifeCycle.onPoppedOutToFront);
+
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyRestore);
+
+        lifeCycleValidatorB.expect(
+                LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyRestore);
+
+        lifeCycleValidatorC.expect();
+    }
 }
