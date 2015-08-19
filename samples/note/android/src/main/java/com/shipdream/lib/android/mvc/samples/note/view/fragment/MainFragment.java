@@ -98,9 +98,6 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
         //When app starts or restore, notify the app controller the original orientation
         switch (reason) {
-            case FIRST_TIME:
-                appController.navigateToInitialLocation();
-                break;
             case RESTORE:
                 appController.notifyOrientationChanged(
                         convertOrientation(Configuration.ORIENTATION_UNDEFINED),
@@ -111,7 +108,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
     @Override
     protected void onStartUp() {
-
+        appController.navigateToInitialLocation();
     }
 
     @Override

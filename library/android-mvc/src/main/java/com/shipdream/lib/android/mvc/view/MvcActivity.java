@@ -253,11 +253,13 @@ public abstract class MvcActivity extends AppCompatActivity {
             activity.delegateFragment = this;
         }
 
+        private boolean firstTimeRun = false;
+
         @Override
         public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
             super.onViewReady(view, savedInstanceState, reason);
             if (reason == Reason.FIRST_TIME) {
-                onStartUp();
+                firstTimeRun = true;
             }
         }
 
@@ -300,8 +302,14 @@ public abstract class MvcActivity extends AppCompatActivity {
         public void onResume() {
             super.onResume();
             canCommitFragmentTransaction = true;
-
             runPendingNavigationActions();
+
+            if (firstTimeRun) {
+                //Run onStartUp() in onResume after onViewReady to make sure the extending fragments
+                //views are ready before do the startup action
+                onStartUp();
+            }
+            firstTimeRun = false;
         }
 
         private void runPendingNavigationActions() {
