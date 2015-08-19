@@ -187,9 +187,7 @@ public abstract class MvcFragment extends Fragment {
         eventRegister.registerEventBuses();
 
         final boolean restoring = savedInstanceState != null;
-        if (!isStateManagedByRootDelegateFragment) {
-            doOnViewCreatedCallBack(view, savedInstanceState, restoring);
-        } else {
+        if (restoring && isStateManagedByRootDelegateFragment) {
             ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
                 @Override
                 public void run() {
@@ -197,6 +195,8 @@ public abstract class MvcFragment extends Fragment {
                     isStateManagedByRootDelegateFragment = false;
                 }
             });
+        } else {
+            doOnViewCreatedCallBack(view, savedInstanceState, restoring);
         }
     }
 

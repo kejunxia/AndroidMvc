@@ -60,6 +60,69 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
+    public void should_call_onViewReady_in_tab_fragments_when_resumed_hosting_fragment_pops_out() throws Throwable {
+        if (isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is not disabled");
+            return;
+        }
+
+        //=============================> At Home
+        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorC.expect();
+
+        //=============================> At Sub Fragment
+        navigationController.navigateTo(this, SubFragment.class.getSimpleName());
+        waitTest(1200);
+
+        lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onDestroyView);
+        lifeCycleValidatorC.expect();
+
+        pressHome();
+        waitTest(1200);
+
+        bringBack();
+        waitTest(1200);
+        lifeCycleValidator.expect();
+
+        lifeCycleValidatorA.expect();
+
+        lifeCycleValidatorB.expect();
+
+        lifeCycleValidatorC.expect();
+
+        //=============================> At A
+        navigationController.navigateBack(this);
+        waitTest(1200);
+        lifeCycleValidator.expect(
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime,
+                LifeCycle.onPoppedOutToFront);
+
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorB.expect(
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorC.expect();
+    }
+
+    @Test
     public void should_call_onViewReady_in_tab_fragments_when_restored_hosting_fragment_pops_out() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
