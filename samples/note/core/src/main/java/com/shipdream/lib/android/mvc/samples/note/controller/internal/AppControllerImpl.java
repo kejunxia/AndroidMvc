@@ -86,9 +86,10 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
 
     private void showLandscape() {
         NavigationController.Model navModel = navigationController.getModel();
-        String curLocId = navModel.getCurrentLocation().getLocationId();
+        String curLocId = navModel.getCurrentLocation() == null ? null : navModel.getCurrentLocation().getLocationId();
         //If we are viewing note, use landscape location only and clear history locations
-        if(curLocId.equals(LocId.NOTE_HANDSET_DETAIL)
+        if(curLocId == null
+                || curLocId.equals(LocId.NOTE_HANDSET_DETAIL)
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)
                 || curLocId.equals(LocId.NOTE_TABLET_LANDSCAPE)) {
             //Clear history and go to note landscape location
