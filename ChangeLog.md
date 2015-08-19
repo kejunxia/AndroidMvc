@@ -1,3 +1,7 @@
+Version: 1.1.8
+Fix issue that onViewReady not called in nested fragment of the popping out fragment when the activity is not killed by OS
+Make sure onStartUp is called after onViewReady is finished for fragment extends DelegateFragment
+
 Version: 1.1.7
 Once root fragment is restored, it should notify all nested fragments they are not managed by the root fragment any more
 Fix issue that nested fragments of popping out fragment won't call onReturnFromBackground incorrectly
