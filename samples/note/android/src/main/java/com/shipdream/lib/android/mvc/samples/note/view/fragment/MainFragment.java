@@ -96,22 +96,14 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
         updateNavigationUi();
 
-        //When app starts or restore, notify the app controller the original orientation
-        switch (reason) {
-            case FIRST_TIME:
-                appController.navigateToInitialLocation();
-                break;
-            case RESTORE:
-                appController.notifyOrientationChanged(
-                        convertOrientation(Configuration.ORIENTATION_UNDEFINED),
-                        convertOrientation(getCurrentOrientation()));
-                break;
-        }
+        appController.notifyOrientationChanged(
+                convertOrientation(Configuration.ORIENTATION_UNDEFINED),
+                convertOrientation(getCurrentOrientation()));
     }
 
     @Override
     protected void onStartUp() {
-
+        appController.navigateToInitialLocation();
     }
 
     @Override
