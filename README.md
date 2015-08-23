@@ -12,7 +12,7 @@
   - Easy testing for controllers on JVM without Android dependency
   - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
   - Manage navigation by NavigationController which is also testable
-  - Improved Fragment life cycles - e.g. Differentiate why view is created: 1. __NewlyCreated__, 2. __Rotated__ or 3. __StateRestored__
+  - Improved Fragment life cycles - e.g. Differentiate why view is created: 1. __FIRST_TIME__, 2. __ROTATE__, 3. __RESTORE__
   - Automatically save restore instance state
 
 ## Samples
@@ -33,13 +33,13 @@ The library is currently release to jCenter and MavenCentral
 <dependency>
     <groupId>com.shipdream</groupId>
     <artifactId>android-mvc</artifactId>
-    <version>1.1.7</version>
+    <version>1.1.8</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-compile "com.shipdream:android-mvc:1.1.7"
+compile "com.shipdream:android-mvc:1.1.8"
 ```
 
 ## Dependency injection with reference count
