@@ -1,3 +1,8 @@
+Version: 1.1.9
+Fix bug
+* When a recovering fragment in view pager its onViewReady is not called when its holding activity resume by popping out from another above activity.
+* Correct the logic how to detect onReturnFromBackground
+
 Version: 1.1.8
 Fix issue that onViewReady not called in nested fragment of the popping out fragment when the activity is not killed by OS
 Make sure onStartUp is called after onViewReady is finished for fragment extends DelegateFragment

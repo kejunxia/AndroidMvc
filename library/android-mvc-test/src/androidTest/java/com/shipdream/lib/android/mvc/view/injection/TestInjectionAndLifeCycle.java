@@ -17,18 +17,13 @@
 package com.shipdream.lib.android.mvc.view.injection;
 
 import android.util.Log;
-import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-import org.junit.Before;
 import org.junit.Test;
-
-import javax.inject.Inject;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -36,8 +31,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivity> {
-    @Inject
-    private NavigationController navigationController;
 
     @Override
     protected void waitTest() throws InterruptedException {
@@ -48,15 +41,10 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         super(InjectionTestActivity.class);
     }
 
-    protected TextView textA, textB, textC;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-
-        textA = (TextView) activity.findViewById(R.id.textA);
-        textB = (TextView) activity.findViewById(R.id.textB);
-        textC = (TextView) activity.findViewById(R.id.textC);
+    @Override
+    public void tearDown() throws Exception {
+        super.tearDown();
+        waitTest();
     }
 
     @Test

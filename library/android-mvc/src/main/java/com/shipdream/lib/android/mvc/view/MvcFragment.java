@@ -74,16 +74,13 @@ public abstract class MvcFragment extends Fragment {
     }
 
     private final static String STATE_LAST_ORIENTATION = AndroidMvc.MVC_SATE_PREFIX + "LastOrientation--__";
-    private final static String STATE_MANAGED_BY_HOLDING_ROOT_FRAGMENT = AndroidMvc.MVC_SATE_PREFIX + "ManagedByHoldingRootFragment--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
-    private boolean fragmentJustCreatedFromSavedState = false;
-    private boolean viewJustCreated = false;
+    private boolean fragmentComesBackFromBackground = false;
     private int lastOrientation;
     private boolean dependenciesInjected = false;
 
     boolean isStateManagedByRootDelegateFragment = false;
-    boolean isPoppingOut = false;
 
     /**
      * @return orientation before last orientation change.
@@ -137,13 +134,11 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        fragmentJustCreatedFromSavedState = savedInstanceState != null;
 
         if(savedInstanceState == null) {
             lastOrientation = getResources().getConfiguration().orientation;
         } else {
             lastOrientation = savedInstanceState.getInt(STATE_LAST_ORIENTATION);
-            isStateManagedByRootDelegateFragment = savedInstanceState.getBoolean(STATE_MANAGED_BY_HOLDING_ROOT_FRAGMENT);
         }
 
         if (getParentFragment() == null) {
@@ -183,6 +178,7 @@ public abstract class MvcFragment extends Fragment {
      */
     @Override
     final public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        fragmentComesBackFromBackground = false;
         eventRegister = new EventRegister(this);
         eventRegister.registerEventBuses();
 
@@ -225,7 +221,6 @@ public abstract class MvcFragment extends Fragment {
             onOrientationChanged(lastOrientation, getResources().getConfiguration().orientation);
         }
 
-        viewJustCreated = true;
         lastOrientation = currentOrientation;
     }
 
@@ -247,28 +242,22 @@ public abstract class MvcFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onResume() {
+        super.onResume();
         checkWhetherReturnFromForeground();
     }
 
     private void checkWhetherReturnFromForeground() {
-        if(fragmentJustCreatedFromSavedState) {
-            if (!isPoppingOut) {
-                onReturnForeground();
-            }
-        } else {
-            if(!viewJustCreated) {
-                onReturnForeground();
-            }
+        if(fragmentComesBackFromBackground) {
+            onReturnForeground();
         }
-        viewJustCreated = false;
-        isPoppingOut = false;
-        fragmentJustCreatedFromSavedState = false;
+        fragmentComesBackFromBackground = false;
     }
 
     /**
-     * Called in {@link #onResume()} when the fragment comes back to foreground from background
+     * Called when the fragment resumes without a new view being created. For example, press home
+     * button and then bring the app back foreground without rotation or being killed by OS.
+     * This method is called after {@link #onResume}
      */
     protected void onReturnForeground() {
     }
@@ -297,6 +286,12 @@ public abstract class MvcFragment extends Fragment {
     }
 
     @Override
+    public void onPause() {
+        super.onPause();
+        fragmentComesBackFromBackground = true;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         eventRegister.unregisterEventBuses();
@@ -321,7 +316,6 @@ public abstract class MvcFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
-        outState.putBoolean(STATE_MANAGED_BY_HOLDING_ROOT_FRAGMENT, isStateManagedByRootDelegateFragment);
 
         if (!isStateManagedByRootDelegateFragment) {
             AndroidMvc.saveControllerStateOfTheirOwn(outState, this);

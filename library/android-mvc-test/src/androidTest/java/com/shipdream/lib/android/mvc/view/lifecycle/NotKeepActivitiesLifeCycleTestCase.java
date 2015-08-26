@@ -53,8 +53,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull,
                 LifeCycle.onCreateViewNotNull, LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyRestore,
-                LifeCycle.onReturnForeground);
+                LifeCycle.onViewReadyRestore);
 
         pressHome();
         waitTest();
@@ -65,8 +64,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull,
                 LifeCycle.onCreateViewNotNull, LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyRestore,
-                LifeCycle.onReturnForeground);
+                LifeCycle.onViewReadyRestore);
 
         pressHome();
         waitTest();
@@ -151,7 +149,6 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyRestore,
-                LifeCycle.onReturnForeground,
                 LifeCycle.onOrientationChanged);
 
         pressHome();
@@ -164,7 +161,6 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyRestore,
-                LifeCycle.onReturnForeground,
                 LifeCycle.onOrientationChanged);
 
         onView(withText(R.string.mvc_fragment_text)).check(matches(isDisplayed()));

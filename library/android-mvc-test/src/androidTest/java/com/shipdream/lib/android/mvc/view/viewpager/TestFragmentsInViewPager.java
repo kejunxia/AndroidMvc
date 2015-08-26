@@ -25,6 +25,7 @@ import com.shipdream.lib.android.mvc.view.test.R;
 import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.Espresso.pressBack;
 import static android.support.test.espresso.action.ViewActions.swipeLeft;
 import static android.support.test.espresso.action.ViewActions.swipeRight;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
@@ -190,4 +191,107 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         lifeCycleValidatorC.expect();
     }
+
+    @Test
+    public void should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity() throws Throwable {
+        if (isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is enabled");
+            return;
+        }
+
+        //=============================> At Home
+        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorC.expect();
+
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab A")).check(matches(not(isDisplayed())));
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        //=============================> At Sub Fragment
+        getActivity().launchAnotherActivity();
+        waitTest(1200);
+        pressBack();
+        waitTest(1200);
+        lifeCycleValidatorA.expect(LifeCycle.onReturnForeground);
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab B")).check(matches(not(isDisplayed())));
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+        waitTest(1000);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Tab C")).check(matches(not(isDisplayed())));
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Tab B")).check(matches(not(isDisplayed())));
+        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
+
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull, LifeCycle.onViewReadyRestore);
+    }
+
+    @Test
+    public void should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity_after_being_killed() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
+
+        //=============================> At Home
+        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+
+        lifeCycleValidatorC.expect();
+
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab A")).check(matches(not(isDisplayed())));
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        //=============================> At Sub Fragment
+        getActivity().launchAnotherActivity();
+        waitTest(1200);
+        pressBack();
+        waitTest(1200);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy,
+                LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull, LifeCycle.onViewReadyRestore);
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab B")).check(matches(not(isDisplayed())));
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+        waitTest(1000);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Tab C")).check(matches(not(isDisplayed())));
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Tab B")).check(matches(not(isDisplayed())));
+        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
+
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull, LifeCycle.onViewReadyRestore);
+    }
+
 }

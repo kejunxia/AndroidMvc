@@ -251,6 +251,15 @@ public abstract class MvcActivity extends AppCompatActivity {
             setHasOptionsMenu(true);
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.delegateFragment = this;
+
+            if (savedInstanceState != null) {
+                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
+
+                Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
+                long ts = System.currentTimeMillis();
+                AndroidMvc.restoreStateOfAllControllers(mvcOutState);
+                logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
+            }
         }
 
         private boolean firstTimeRun = false;
@@ -267,22 +276,13 @@ public abstract class MvcActivity extends AppCompatActivity {
         public void onViewStateRestored(Bundle savedInstanceState) {
             super.onViewStateRestored(savedInstanceState);
 
-            if (savedInstanceState != null) {
-                Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
-                long ts = System.currentTimeMillis();
-                AndroidMvc.restoreStateOfAllControllers(mvcOutState);
-                logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
-
-                if (pendingOnViewReadyActions != null) {
-                    int size = pendingOnViewReadyActions.size();
-                    for (int i = 0; i < size; i++) {
-                        pendingOnViewReadyActions.get(i).run();
-                    }
-                    pendingOnViewReadyActions.clear();
+            if (savedInstanceState != null && pendingOnViewReadyActions != null) {
+                int size = pendingOnViewReadyActions.size();
+                for (int i = 0; i < size; i++) {
+                    pendingOnViewReadyActions.get(i).run();
                 }
+                pendingOnViewReadyActions.clear();
             }
-
-            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, false);
         }
 
         /**
@@ -329,10 +329,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         @Override
         public void onSaveInstanceState(Bundle outState) {
-            isStateManagedByRootDelegateFragment = true;
             super.onSaveInstanceState(outState);
-
-            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
 
             long ts = System.currentTimeMillis();
             Bundle mvcOutState = new Bundle();
@@ -346,38 +343,21 @@ public abstract class MvcActivity extends AppCompatActivity {
          * {@link StateManaged} objects those fragments holding will be saved into this root
          * fragment's outState bundle.
          */
-        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(Fragment fragment, boolean selfManaged) {
+        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(MvcFragment fragment, boolean selfManaged) {
             if (fragment != null) {
+                fragment.isStateManagedByRootDelegateFragment = selfManaged;
+
                 List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
                 if (frags != null) {
                     int size = frags.size();
                     for (int i = 0; i < size; i++) {
-                        Fragment frag = frags.get(i);
-                        if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
-                            ((MvcFragment) frag).isStateManagedByRootDelegateFragment = selfManaged;
+                        MvcFragment frag = (MvcFragment) frags.get(i);
+                        if (frag != null) {
+                            if(frag.isAdded() && frag instanceof MvcFragment) {
+                                frag.isStateManagedByRootDelegateFragment = selfManaged;
+                            }
+                            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag, selfManaged);
                         }
-
-                        notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag, selfManaged);
-                    }
-                }
-            }
-        }
-
-        /**
-         * Notify all sub MvcFragments the given fragments they are popping out along with the given holding fragment.
-         */
-        private void notifyAllSubMvcFragmentsTheyArePoppingOut(Fragment fragment, boolean poppingOut) {
-            if (fragment != null) {
-                List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
-                if (frags != null) {
-                    int size = frags.size();
-                    for (int i = 0; i < size; i++) {
-                        Fragment frag = frags.get(i);
-                        if (frag != null && frag.isAdded() && frag instanceof MvcFragment) {
-                            ((MvcFragment) frag).isPoppingOut = poppingOut;
-                        }
-
-                        notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag, poppingOut);
                     }
                 }
             }
@@ -478,8 +458,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
                     currentFrag.injectDependencies();
-                    currentFrag.isPoppingOut = true;
-                    notifyAllSubMvcFragmentsTheyArePoppingOut(currentFrag, true);
                     currentFrag.registerOnViewReadyListener(new Runnable() {
                         @Override
                         public void run() {

@@ -45,6 +45,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -199,12 +200,9 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         Assert.assertTrue(scopeCache.getCacheMap().size() == 0);
 
         activity.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //Make sure delegate fragment is removed from support fragment manager before
-                //starting next test case
+            private void clearStateOfFragments(Fragment fragment) {
                 FragmentManager fm = activity.getSupportFragmentManager();
-                Fragment fragment = fm.findFragmentByTag(activity.getDelegateFragmentTag());
+
                 if (fragment != null) {
                     AndroidMvc.graph().release(fragment);
                     try {
@@ -212,7 +210,34 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
                     } catch (Exception e) {
                         LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
                     }
+
+                    List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
+                    if (frags != null) {
+                        int size = frags.size();
+                        for (int i = 0; i < size; i++) {
+                            Fragment frag = frags.get(i);
+                            if (frag != null) {
+                                AndroidMvc.graph().release(frag);
+                                try {
+                                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+                                } catch (Exception e) {
+                                    LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
+                                }
+
+                                clearStateOfFragments(frag);
+                            }
+                        }
+                    }
                 }
+            }
+
+            @Override
+            public void run() {
+                //Make sure delegate fragment is removed from support fragment manager before
+                //starting next test case
+                FragmentManager fm = activity.getSupportFragmentManager();
+                Fragment fragment = fm.findFragmentByTag(activity.getDelegateFragmentTag());
+                clearStateOfFragments(fragment);
             }
         });
         super.tearDown();

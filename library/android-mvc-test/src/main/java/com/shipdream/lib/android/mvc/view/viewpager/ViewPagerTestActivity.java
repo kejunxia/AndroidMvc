@@ -16,6 +16,8 @@
 
 package com.shipdream.lib.android.mvc.view.viewpager;
 
+import android.content.Intent;
+
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
@@ -41,4 +43,8 @@ public class ViewPagerTestActivity extends MvcActivity {
         }
     }
 
+    void launchAnotherActivity() {
+        Intent intent = new Intent(this, ViewPagerTestActivityTop.class);
+        startActivity(intent);
+    }
 }
