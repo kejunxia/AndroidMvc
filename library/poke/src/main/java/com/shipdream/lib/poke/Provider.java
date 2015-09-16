@@ -76,7 +76,7 @@ public abstract class Provider<T> {
         return 0;
     }
 
-    int retain(Object owner, Field field) {
+    void retain(Object owner, Field field) {
         totalRefCount++;
         Map<String, Integer> fields = owners.get(owner);
         if (fields == null) {
@@ -87,15 +87,13 @@ public abstract class Provider<T> {
         Integer count = fields.get(field.getName());
         if (count == null) {
             fields.put(field.getName(), 1);
-            return 1;
         } else {
             count++;
             fields.put(field.getName(), count);
-            return count;
         }
     }
 
-    int release(Object owner, Field field) {
+    void release(Object owner, Field field) {
         Map<String, Integer> fields = owners.get(owner);
         if(fields!= null) {
             totalRefCount--;
@@ -103,7 +101,6 @@ public abstract class Provider<T> {
             Integer count = fields.get(field.getName());
             if(--count > 0) {
                 fields.put(field.getName(), count);
-                return count;
             } else {
                 fields.remove(field.getName());
             }
@@ -111,8 +108,6 @@ public abstract class Provider<T> {
         if(fields != null && fields.isEmpty()) {
             owners.remove(owner);
         }
-
-        return 0;
     }
 
     int totalReference() {
