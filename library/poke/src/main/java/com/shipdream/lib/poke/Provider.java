@@ -216,7 +216,7 @@ public abstract class Provider<T> {
      * @throws CircularDependenciesException Exception thrown if nested injection has circular dependencies
      * @throws ProviderMissingException Exception thrown if nested injection misses dependencies
      */
-    public final T get() throws ProvideException, CircularDependenciesException, ProviderMissingException {
+    final T get() throws ProvideException, CircularDependenciesException, ProviderMissingException {
         if(scopeCache == null) {
             T impl = createInstance();
             if(impl == null) {
@@ -224,6 +224,7 @@ public abstract class Provider<T> {
                 throw new ProvideException(String.format("Provider (type: %s, qualifier: " +
                         "%s) should not provide NULL as instance", type.getName(), qualifierName));
             }
+
             return impl;
         } else {
             return scopeCache.get(this);

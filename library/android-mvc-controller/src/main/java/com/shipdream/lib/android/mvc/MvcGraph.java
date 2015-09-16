@@ -172,21 +172,24 @@ public class MvcGraph {
     }
 
     /**
-     * Get a cached instance matching the type and qualifier. This method will <b>NOT</b> increment
-     * the reference matching the type and qualifier. Different from using a injected field of an
-     * object, this method should be used to temporarily get the reference of the object but not
-     * retain it since it's only in the scope of the function body in which this method is called.
+     * Get an instance matching the type and qualifier. If there is an instance cached, the cached
+     * instance will be returned otherwise a new instance will be created.
      *
-     * <p>Make sure there is at least one cached instance is live, otherwise null will be returned.</p>
-     * @param requiredType the type of the object
-     * @param qualifier the qualifier of the injected object
-     * @return The cached object or null if no cached object is found.
-     * @throws ProviderMissingException throw if the provider matching the requiredType and qualifier is not found.
+     * <p>Note that, not like {@link #inject(Object)} (Object)} this method will <b>NOT</b> increment
+     * reference count for the injectable object with the same type and qualifier.</p>
+     * @param type the type of the object
+     * @param qualifier the qualifier of the injected object. Null is allowed if no qualifier is specified
+     * @return The cached object or a new instance matching the type and qualifier
+     * @throws MvcGraphException throw if exception occurs during getting the instance
      */
-    public <T> T getCachedObject(Class<T> requiredType, Annotation qualifier) {
+    public <T> T get(Class<T> type, Annotation qualifier) {
         try {
-            return graph.getCachedObject(requiredType, qualifier);
+            return graph.get(type, qualifier, Inject.class);
         } catch (ProviderMissingException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (ProvideException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (CircularDependenciesException e) {
             throw new MvcGraphException(e.getMessage(), e);
         }
     }
