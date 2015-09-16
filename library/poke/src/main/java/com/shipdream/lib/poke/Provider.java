@@ -105,8 +105,18 @@ public abstract class Provider<T> {
                 fields.remove(field.getName());
             }
         }
+
         if(fields != null && fields.isEmpty()) {
             owners.remove(owner);
+        }
+    }
+
+    void freeCache() {
+        if (scopeCache != null) {
+            ScopeCache.CachedItem cachedItem = scopeCache.findCacheItem(type, qualifier);
+            if (cachedItem != null) {
+                scopeCache.removeCache(cachedItem.type, cachedItem.qualifier);
+            }
         }
     }
 
@@ -174,15 +184,6 @@ public abstract class Provider<T> {
             }
         }
         return null;
-    }
-
-    void freeCache() {
-        if (scopeCache != null) {
-            ScopeCache.CachedItem cachedItem = scopeCache.findCacheItem(type, qualifier);
-            if (cachedItem != null) {
-                scopeCache.removeCache(cachedItem.type, cachedItem.qualifier);
-            }
-        }
     }
 
     /**

@@ -36,13 +36,13 @@ public class ImplClassLocatorByPattern extends ImplClassLocator {
     }
 
     @Override
-    public <T, S extends T> Class<S> locateImpl(Class<T> contract) throws LocateClassException {
+    public <T, S extends T> Class<S> locateImpl(Class<T> contract) throws ImplClassNotFoundException {
         String pkg = contract.getPackage().getName();
         String implClassName = pkg + ".internal." + contract.getSimpleName() + "Impl";
         try {
             return (Class<S>) Class.forName(implClassName);
         } catch (ClassNotFoundException e) {
-            throw new LocateClassException("Can't locate implementation class for " + contract.getName(), e);
+            throw new ImplClassNotFoundException("Can't find implementation class for " + contract.getName(), e);
         }
     }
 

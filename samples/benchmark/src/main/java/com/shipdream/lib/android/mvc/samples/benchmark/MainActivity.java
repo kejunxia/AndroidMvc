@@ -65,7 +65,7 @@ import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ImplClassLocator;
 import com.shipdream.lib.poke.ImplClassLocatorByPattern;
-import com.shipdream.lib.poke.LocateClassException;
+import com.shipdream.lib.poke.ImplClassNotFoundException;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ProviderByClassType;
 import com.shipdream.lib.poke.ProviderFinder;
@@ -217,8 +217,8 @@ public class MainActivity extends Activity {
                                 try {
                                     Class impl = implClassLocatorByPattern.locateImpl(type);
                                     return new ProviderByClassType(type, impl);
-                                } catch (LocateClassException e) {
-                                    throw new RuntimeException(e);
+                                } catch (ImplClassNotFoundException e) {
+                                    throw new ProviderMissingException(type, qualifier, e);
                                 }
                             }
                         });
@@ -252,8 +252,8 @@ public class MainActivity extends Activity {
                                 try {
                                     Class impl = implClassLocatorByPattern.locateImpl(type);
                                     return new ProviderByClassType(type, impl);
-                                } catch (LocateClassException e) {
-                                    throw new RuntimeException(e);
+                                } catch (ImplClassNotFoundException e) {
+                                    throw new ProviderMissingException(type, qualifier, e);
                                 }
                             }
                         });

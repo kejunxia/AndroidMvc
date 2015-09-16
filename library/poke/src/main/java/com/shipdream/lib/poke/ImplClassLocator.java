@@ -27,7 +27,7 @@ public abstract class ImplClassLocator {
      * @param <S>
      * @return
      */
-    public abstract <T, S extends T> Class<S> locateImpl(Class<T> contract) throws LocateClassException;
+    public abstract <T, S extends T> Class<S> locateImpl(Class<T> contract) throws ImplClassNotFoundException;
 
     /**
      * Define the {@link ScopeCache} for the injectable contract located by this

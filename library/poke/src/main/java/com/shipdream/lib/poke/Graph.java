@@ -16,11 +16,11 @@
 
 package com.shipdream.lib.poke;
 
+import com.shipdream.lib.poke.Provider.OnFreedListener;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 import com.shipdream.lib.poke.util.ReflectUtils;
-import com.shipdream.lib.poke.Provider.OnFreedListener;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -121,47 +121,6 @@ public abstract class Graph {
     }
 
     /**
-     * Inject all fields annotated by the given injectAnnotation
-     *
-     * @param target           Whose fields will be injected
-     * @param injectAnnotation Annotated which a field will be recognize
-     * @throws ProvideException
-     */
-    public void inject(Object target, Class<? extends Annotation> injectAnnotation) throws ProvideException, ProviderMissingException, CircularDependenciesException {
-        if (monitors != null) {
-            int size = monitors.size();
-            for (int i = 0; i < size; i++) {
-                monitors.get(i).onInject(target);
-            }
-        }
-        doInject(target, null, null, injectAnnotation);
-        visitedInjectNodes.clear();
-        revisitedNode = null;
-        visitedFields.clear();
-    }
-
-    /**
-     * Release cached instances held by fields of target object. References of cache of the
-     * instances will be decremented. Once the reference count of a controller reaches 0, it will
-     * be removed from the cache and raise {@link OnFreedListener}.
-     *
-     * @param target           Whose fields will be injected
-     * @param injectAnnotation Annotated which a field will be recognize
-     */
-    public void release(Object target, Class<? extends Annotation> injectAnnotation) {
-        if (monitors != null) {
-            int size = monitors.size();
-            for (int i = 0; i < size; i++) {
-                monitors.get(i).onRelease(target);
-            }
-        }
-        doRelease(target, null, null, injectAnnotation);
-        visitedInjectNodes.clear();
-        revisitedNode = null;
-        visitedFields.clear();
-    }
-
-    /**
      * Add {@link ProviderFinder} to the graph directly. Eg. if manual provider registration
      * is needed, a {@link com.shipdream.lib.poke.ProviderFinderByRegistry} can be added.
      * <p/>
@@ -175,6 +134,44 @@ public abstract class Graph {
             this.providerFinders = new ArrayList<>();
         }
         this.providerFinders.addAll(Arrays.asList(providerFinders));
+    }
+
+    /**
+     * Inject all fields annotated by the given injectAnnotation
+     *
+     * @param target           Whose fields will be injected
+     * @param injectAnnotation Annotated which a field will be recognize
+     * @throws ProvideException
+     */
+    public void inject(Object target, Class<? extends Annotation> injectAnnotation)
+            throws ProvideException, ProviderMissingException, CircularDependenciesException {
+        if (monitors != null) {
+            int size = monitors.size();
+            for (int i = 0; i < size; i++) {
+                monitors.get(i).onInject(target);
+            }
+        }
+        doInject(target, null, null, injectAnnotation);
+        visitedInjectNodes.clear();
+        revisitedNode = null;
+        visitedFields.clear();
+    }
+
+    /**
+     * Get a cached instance matching the type and qualifier. This method will <b>NOT</b> increment
+     * the reference matching the type and qualifier. Different from using a injected field of an
+     * object, this method should be used to temporarily get the reference of the object but not
+     * retain it since it's only in the scope of the function body in which this method is called.
+     *
+     * <p>Make sure there is at least one cached instance is live, otherwise null will be returned.</p>
+     * @param requiredType the type of the object
+     * @param qualifier the qualifier of the injected object
+     * @return The cached object or null if no cached object is found.
+     * @throws ProviderMissingException throw if the provider matching the requiredType and qualifier is not found.
+     */
+    public <T> T getCachedObject(Class<T> requiredType, Annotation qualifier) throws ProviderMissingException {
+        Provider<T> provider = getProvider(requiredType, qualifier);
+        return provider.findCachedInstance();
     }
 
     @SuppressWarnings("unchecked")
@@ -212,22 +209,20 @@ public abstract class Graph {
                         Class fieldType = field.getType();
                         Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
                         Provider provider = getProvider(fieldType, fieldQualifier);
-                        if (provider != null) {
-                            Object impl = provider.get();
-                            ReflectUtils.setField(target, field, impl);
-                            provider.retain(target, field);
-                            boolean firstTimeInject = provider.totalReference() == 1;
-                            if (!isFieldVisited(impl, field)) {
-                                doInject(impl, fieldType, fieldQualifier, injectAnnotation);
-                            }
-                            if (firstTimeInject) {
-                                provider.notifyInjected(impl);
-                            }
-                            recordVisitField(impl, field);
-                        } else {
-                            throw new ProviderMissingException(String.format("Provider for %s is missing. Make " +
-                                    "sure the provider is registered in advance.", fieldType));
+
+                        Object impl = provider.get();
+                        ReflectUtils.setField(target, field, impl);
+                        provider.retain(target, field);
+                        boolean firstTimeInject = provider.totalReference() == 1;
+                        if (!isFieldVisited(impl, field)) {
+                            doInject(impl, fieldType, fieldQualifier, injectAnnotation);
                         }
+
+                        if (firstTimeInject) {
+                            provider.notifyInjected(impl);
+                        }
+
+                        recordVisitField(impl, field);
                     }
                 }
                 clazz = clazz.getSuperclass();
@@ -239,8 +234,29 @@ public abstract class Graph {
         }
     }
 
+    /**
+     * Release cached instances held by fields of target object. References of cache of the
+     * instances will be decremented. Once the reference count of a controller reaches 0, it will
+     * be removed from the cache and raise {@link OnFreedListener}.
+     *
+     * @param target           Whose fields will be injected
+     * @param injectAnnotation Annotated which a field will be recognize
+     */
+    public void release(Object target, Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
+        if (monitors != null) {
+            int size = monitors.size();
+            for (int i = 0; i < size; i++) {
+                monitors.get(i).onRelease(target);
+            }
+        }
+        doRelease(target, null, null, injectAnnotation);
+        visitedInjectNodes.clear();
+        revisitedNode = null;
+        visitedFields.clear();
+    }
+
     private void doRelease(Object target, Class targetType, Annotation targetQualifier,
-                           final Class<? extends Annotation> injectAnnotation) {
+                           final Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
         Class<?> clazz = target.getClass();
 
         boolean circularDetected = false;
@@ -258,14 +274,7 @@ public abstract class Graph {
                         if(fieldValue != null) {
                             final Class<?> fieldType = field.getType();
                             Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
-                            Provider provider;
-                            try {
-                                provider = getProvider(fieldType, fieldQualifier);
-                            } catch (ProviderMissingException e) {
-                                throw new RuntimeException(String.format("Can't find provider " +
-                                        "for %s with qualifier %s", fieldType.getName(), "@"
-                                        + (targetQualifier == null ? "null" : targetQualifier.toString())));
-                            }
+                            Provider provider = getProvider(fieldType, fieldQualifier);
 
                             boolean stillReferenced = provider.getReferenceCount(target, field) > 0;
                             if (!isFieldVisited(target, field) && stillReferenced) {
@@ -281,6 +290,7 @@ public abstract class Graph {
                                             onProviderFreedListeners.get(k).onFreed(provider);
                                         }
                                     }
+
                                     provider.freeCache();
                                 }
                             }

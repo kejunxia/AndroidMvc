@@ -18,6 +18,7 @@ package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import java.lang.annotation.Annotation;
@@ -42,14 +43,22 @@ public class ProviderFinderByRegistry implements ProviderFinder {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
+    public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
         ProviderHolder providerHolder = providers.get(PokeHelper.makeProviderKey(type, qualifier));
 
         if (providerHolder != null) {
-            return providerHolder.overrider == null ?
-                    providerHolder.original : providerHolder.overrider;
+            if (providerHolder.overrider == null) {
+                if (providerHolder.original == null) {
+                    throw new ProviderMissingException(type, qualifier);
+                } else {
+                    return providerHolder.original;
+                }
+            } else {
+                return providerHolder.overrider;
+            }
+        } else {
+            return null;
         }
-        return null;
     }
 
     /**

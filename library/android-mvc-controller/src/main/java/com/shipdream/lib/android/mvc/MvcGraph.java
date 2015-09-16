@@ -27,7 +27,7 @@ import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ImplClassLocator;
 import com.shipdream.lib.poke.ImplClassLocatorByPattern;
-import com.shipdream.lib.poke.LocateClassException;
+import com.shipdream.lib.poke.ImplClassNotFoundException;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ProviderByClassType;
 import com.shipdream.lib.poke.ProviderFinderByRegistry;
@@ -172,14 +172,41 @@ public class MvcGraph {
     }
 
     /**
+     * Get a cached instance matching the type and qualifier. This method will <b>NOT</b> increment
+     * the reference matching the type and qualifier. Different from using a injected field of an
+     * object, this method should be used to temporarily get the reference of the object but not
+     * retain it since it's only in the scope of the function body in which this method is called.
+     *
+     * <p>Make sure there is at least one cached instance is live, otherwise null will be returned.</p>
+     * @param requiredType the type of the object
+     * @param qualifier the qualifier of the injected object
+     * @return The cached object or null if no cached object is found.
+     * @throws ProviderMissingException throw if the provider matching the requiredType and qualifier is not found.
+     */
+    public <T> T getCachedObject(Class<T> requiredType, Annotation qualifier) {
+        try {
+            return graph.getCachedObject(requiredType, qualifier);
+        } catch (ProviderMissingException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Inject all fields annotated by {@link Inject}. References of controllers will be
      * incremented.
      *
      * @param target The target object whose fields annotated by {@link Inject} will be injected.
-     * @throws ProvideException
      */
-    public void inject(Object target) throws ProvideException, CircularDependenciesException, ProviderMissingException {
-        graph.inject(target, Inject.class);
+    public void inject(Object target) {
+        try {
+            graph.inject(target, Inject.class);
+        } catch (ProvideException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (ProviderMissingException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (CircularDependenciesException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -190,7 +217,11 @@ public class MvcGraph {
      * @param target of which the object fields will be released.
      */
     public void release(Object target) {
-        graph.release(target, Inject.class);
+        try {
+            graph.release(target, Inject.class);
+        } catch (ProviderMissingException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -326,7 +357,7 @@ public class MvcGraph {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
+        public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
             Provider<T> provider = super.findProvider(type, qualifier);
             if (provider == null) {
                 provider = providers.get(type);
@@ -336,8 +367,8 @@ public class MvcGraph {
                         provider = new MvcProvider<>(mvcGraph.stateManagedObjects, type, impClass);
                         provider.setScopeCache(defaultImplClassLocator.getScopeCache());
                         providers.put(type, provider);
-                    } catch (LocateClassException e) {
-                        throw new RuntimeException(new ProviderMissingException(e.getMessage(), e));
+                    } catch (ImplClassNotFoundException e) {
+                        throw new ProviderMissingException(type, qualifier, e);
                     }
                 }
             }
