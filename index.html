@@ -97,15 +97,15 @@
 
 <p><strong>Maven:</strong></p>
 
-<div class="highlight highlight-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
+<div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
     &lt;<span class="pl-ent">groupId</span>&gt;com.shipdream&lt;/<span class="pl-ent">groupId</span>&gt;
     &lt;<span class="pl-ent">artifactId</span>&gt;android-mvc&lt;/<span class="pl-ent">artifactId</span>&gt;
-    &lt;<span class="pl-ent">version</span>&gt;1.1.9&lt;/<span class="pl-ent">version</span>&gt;
+    &lt;<span class="pl-ent">version</span>&gt;1.2.0&lt;/<span class="pl-ent">version</span>&gt;
 &lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
 
 <p><strong>Gradle:</strong></p>
 
-<div class="highlight highlight-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.1.9<span class="pl-pds">"</span></span></pre></div>
+<div class="highlight highlight-source-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.2.0<span class="pl-pds">"</span></span></pre></div>
 
 <h2>
 <a id="samples" class="anchor" href="#samples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples</h2>
@@ -198,7 +198,7 @@
 <h5>
 <a id="1-extend-mvcactivity-for-the-single-activity" class="anchor" href="#1-extend-mvcactivity-for-the-single-activity" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Extend MvcActivity for the single Activity</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<div class="highlight highlight-source-java"><pre><span class="pl-c">/**</span>
 <span class="pl-c"> * Single activity for the app</span>
 <span class="pl-c"> */</span>
 <span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">MainActivity</span> <span class="pl-k">extends</span> <span class="pl-e">MvcActivity</span> {
@@ -249,7 +249,7 @@
 <h5>
 <a id="2-create-fragmenta-to-present-locationa" class="anchor" href="#2-create-fragmenta-to-present-locationa" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Create FragmentA to present "LocationA"</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
     <span class="pl-c">/**</span>
 <span class="pl-c">     * @return Layout id used to inflate the view of this MvcFragment.</span>
 <span class="pl-c">     */</span>
@@ -262,7 +262,7 @@
 <h5>
 <a id="3-create-a-controller-contract-and-the-model-its-managing" class="anchor" href="#3-create-a-controller-contract-and-the-model-its-managing" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Create a controller contract and the model it's managing</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.simple.controller</span>;
+<div class="highlight highlight-source-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.simple.controller</span>;
 
 <span class="pl-c">/**</span>
 <span class="pl-c"> * Define controller contract and its events. And specify which model it manages by binding the</span>
@@ -321,7 +321,7 @@
 
 <p><strong>Note that, to allow AndroidMvc to find the default implementation of injectable object, the implementation class must be under the sub-package "internal" which resides in the same parent package as the interface and the name must be [InterfaceName]Impl.</strong> For this example, say CounterController is under package samples.simple.controller the  implementation must be named as CounterControllerImpl and placed under package samples.simple.controller.internal</p>
 
-<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<div class="highlight highlight-source-java"><pre><span class="pl-c">/**</span>
 <span class="pl-c"> * Note the structure of the package name. It is in a subpackage(internal) sharing the same parent</span>
 <span class="pl-c"> * package as the controller interface CounterController</span>
 <span class="pl-c"> */</span>
@@ -383,7 +383,7 @@
 <h5>
 <a id="4-inject-controller-into-views-setup-views-and-handle-c2v-events-from-controllers" class="anchor" href="#4-inject-controller-into-views-setup-views-and-handle-c2v-events-from-controllers" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Inject Controller into Views, setup views and handle C2V events from controllers</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
     <span class="pl-k">@Inject</span>
     <span class="pl-k">private</span> <span class="pl-smi">CounterController</span> counterController;
 
@@ -462,7 +462,7 @@
 
 <p>As discussed before, business logic should be decoupled from view(Android components) and abstracted to controllers, then we can pretty much test most logic just on controllers without dependencies of any Android components. Views just need to make sure data carried back from controllers are displayed correctly. Whether or not the data is processed correctly is completely controllers' responsibilities that is what is being tested here.</p>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TestCounterController</span> {
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TestCounterController</span> {
     <span class="pl-c1">..</span><span class="pl-k">.</span>other dependencies are omitted here
 
     <span class="pl-k">private</span> <span class="pl-smi">CounterController</span> counterController;
@@ -515,7 +515,7 @@
 <h5>
 <a id="51-add-two-methods-to-countercontroller-to-wrap-navigation-logic" class="anchor" href="#51-add-two-methods-to-countercontroller-to-wrap-navigation-logic" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.1. Add two methods to CounterController to wrap navigation logic</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">CounterController</span> <span class="pl-k">extends</span> <span class="pl-e">BaseController&lt;<span class="pl-smi">CounterModel</span>&gt;</span> {
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">CounterController</span> <span class="pl-k">extends</span> <span class="pl-e">BaseController&lt;<span class="pl-smi">CounterModel</span>&gt;</span> {
     <span class="pl-c1">...</span> other methods
 
     <span class="pl-c">/**</span>
@@ -537,7 +537,7 @@
 <h5>
 <a id="52-inject-navigationcontroller-to-countercontrollerimpl-and-implement-navigation-methods" class="anchor" href="#52-inject-navigationcontroller-to-countercontrollerimpl-and-implement-navigation-methods" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.2. Inject NavigationController to CounterControllerImpl and implement navigation methods</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">CounterControllerImpl</span> <span class="pl-k">extends</span> <span class="pl-e">BaseControllerImpl&lt;<span class="pl-smi">CounterModel</span>&gt;</span> <span class="pl-k">implements</span> <span class="pl-e">CounterController</span>{
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">CounterControllerImpl</span> <span class="pl-k">extends</span> <span class="pl-e">BaseControllerImpl&lt;<span class="pl-smi">CounterModel</span>&gt;</span> <span class="pl-k">implements</span> <span class="pl-e">CounterController</span>{
     <span class="pl-c1">...</span> other methods
 
     <span class="pl-k">@Inject</span>
@@ -559,7 +559,7 @@
 <h5>
 <a id="53-invoke-countercontroller-methods-wrapping-navigation-in-views" class="anchor" href="#53-invoke-countercontroller-methods-wrapping-navigation-in-views" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.3. Invoke CounterController methods wrapping navigation in views</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">FragmentA</span> <span class="pl-k">extends</span> <span class="pl-e">MvcFragment</span> {
     <span class="pl-c1">...</span>
 
     <span class="pl-k">@Override</span>
@@ -606,7 +606,7 @@
 <h5>
 <a id="54-able-to-test-navigation-on-countercontroller" class="anchor" href="#54-able-to-test-navigation-on-countercontroller" aria-hidden="true"><span class="octicon octicon-link"></span></a>5.4. Able to test navigation on CounterController</h5>
 
-<div class="highlight highlight-java"><pre>    @<span class="pl-smi">Test</span>
+<div class="highlight highlight-source-java"><pre>    @<span class="pl-smi">Test</span>
     <span class="pl-k">public</span> <span class="pl-k">void</span> should_navigate_to_locationB_when_go_to_advance_view_and_back_to_locationA_after_go_to_basic_view() {
         <span class="pl-c">//Prepare</span>
         <span class="pl-smi">NavigationController</span> navigationController <span class="pl-k">=</span> ((<span class="pl-smi">CounterControllerImpl</span>) counterController)<span class="pl-k">.</span>navigationController;
@@ -643,12 +643,12 @@
 
 <p>The framework currently only support field injection. To inject an object, use <a href="https://github.com/Inject" class="user-mention">@Inject</a> to annotate fields and then inject the object with those fields by</p>
 
-<div class="highlight highlight-java"><pre><span class="pl-smi">AndroidMvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>inject(<span class="pl-smi">ObjectToBeInjected</span>)</pre></div>
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">AndroidMvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>inject(<span class="pl-smi">ObjectToBeInjected</span>)</pre></div>
 
 <p>All injected objects will be reference counted. This is because
 the graph will automatically save and restore injected objects implementing StateManaged. For performance reasons the injected but not anymore referenced objects don't need to be saved and restored. So don't forget to call</p>
 
-<div class="highlight highlight-java"><pre><span class="pl-smi">AndroidMvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>release(<span class="pl-smi">ObjectBeenInjected</span>)</pre></div>
+<div class="highlight highlight-source-java"><pre><span class="pl-smi">AndroidMvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>release(<span class="pl-smi">ObjectBeenInjected</span>)</pre></div>
 
 <p>to dereference them. Fortunately, all MvcFragment will do the injection and releasing in their
 Android lifecycle - onCreate and onDestroy. So we don't need to do this manually for fragments.</p>
@@ -672,7 +672,7 @@ Android lifecycle - onCreate and onDestroy. So we don't need to do this manually
 
 <p><strong>Note that, BaseMvcControllerImpl provides protected methods to run actions asynchronously. The ExecutorService is injected into controllers. By default, AndroidMvc framework automatically injects with an implementation running tasks on non-main thread. Whereas in unit tests we can override the injection with an implementation runs the task on the same thread as the caller's so that the asynchronous actions can be tested easier.</strong></p>
 
-<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<div class="highlight highlight-source-java"><pre><span class="pl-c">/**</span>
 <span class="pl-c"> * Run async task on the default ExecutorService injected as a field of this class. Exceptions</span>
 <span class="pl-c"> * occur during running the task will be handled by the given {@link AsyncExceptionHandler}.</span>
 <span class="pl-c"> *</span>
@@ -686,7 +686,7 @@ Android lifecycle - onCreate and onDestroy. So we don't need to do this manually
 <h5>
 <a id="1-define-http-service-interface" class="anchor" href="#1-define-http-service-interface" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Define http service interface</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.note.service.http</span>;
+<div class="highlight highlight-source-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.shipdream.lib.android.mvc.samples.note.service.http</span>;
 
 <span class="pl-k">public</span> <span class="pl-k">interface</span> <span class="pl-en">WeatherService</span> {
     <span class="pl-c">/**</span>
@@ -700,7 +700,7 @@ Android lifecycle - onCreate and onDestroy. So we don't need to do this manually
 <h5>
 <a id="2-send-and-consume-real-http-service-in-implementation" class="anchor" href="#2-send-and-consume-real-http-service-in-implementation" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Send and consume real http service in implementation</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-c">/**</span>
+<div class="highlight highlight-source-java"><pre><span class="pl-c">/**</span>
 <span class="pl-c"> * Note the package structure which is under internal subpackage sharing the same parent package as</span>
 <span class="pl-c"> * WeatherService as above</span>
 <span class="pl-c"> */</span>
@@ -736,7 +736,7 @@ Android lifecycle - onCreate and onDestroy. So we don't need to do this manually
 <h5>
 <a id="3-inject-the-http-service-into-weathercontrollerimpl" class="anchor" href="#3-inject-the-http-service-into-weathercontrollerimpl" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. Inject the http service into WeatherControllerImpl</h5>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">WeatherControllerImpl</span> <span class="pl-k">extends</span> <span class="pl-e">BaseControllerImpl</span> &lt;<span class="pl-e">WeatherModel</span>&gt; <span class="pl-k">implements</span>
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">WeatherControllerImpl</span> <span class="pl-k">extends</span> <span class="pl-e">BaseControllerImpl</span> &lt;<span class="pl-e">WeatherModel</span>&gt; <span class="pl-k">implements</span>
         <span class="pl-e">WeatherController</span>{
     <span class="pl-c1">....</span>
 
@@ -752,7 +752,7 @@ Android lifecycle - onCreate and onDestroy. So we don't need to do this manually
 
 <p>Code below is partial implementation, see sample Note in the project for more details.</p>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TestWeatherController</span> <span class="pl-k">extends</span> <span class="pl-e">TestControllerBase&lt;<span class="pl-smi">WeatherController</span>&gt;</span> {
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">TestWeatherController</span> <span class="pl-k">extends</span> <span class="pl-e">TestControllerBase&lt;<span class="pl-smi">WeatherController</span>&gt;</span> {
 <span class="pl-k">@Override</span>
 <span class="pl-k">protected</span> <span class="pl-k">void</span> <span class="pl-en">registerDependencies</span>(<span class="pl-smi">MvcGraph</span> <span class="pl-v">mvcGraph</span>) {
     <span class="pl-c1">...</span>
@@ -784,7 +784,7 @@ Android lifecycle - onCreate and onDestroy. So we don't need to do this manually
 2. Event monitor to subscribe to the successful event
 So when WeatherController#updateAllCities(Object) is called, we can verify whether the mocked monitor receives the successful event.</p>
 
-<div class="highlight highlight-java"><pre>@<span class="pl-smi">Test</span>
+<div class="highlight highlight-source-java"><pre>@<span class="pl-smi">Test</span>
 <span class="pl-k">public</span> <span class="pl-k">void</span> shouldRaiseSuccessEventForGoodUpdateWeathers() throws <span class="pl-smi">IOException</span> {
     <span class="pl-c">//---Arrange---</span>
     <span class="pl-c">//Define a subscriber class</span>
@@ -825,7 +825,7 @@ So when WeatherController#updateAllCities(Object) is called, we can verify wheth
 2. Event monitor to subscribe to the failed event
 So when WeatherController#updateAllCities(Object) is called, we can verify whether the mocked monitor receives the failed event.</p>
 
-<div class="highlight highlight-java"><pre>@<span class="pl-smi">Test</span>
+<div class="highlight highlight-source-java"><pre>@<span class="pl-smi">Test</span>
 <span class="pl-k">public</span> <span class="pl-k">void</span> shouldRaiseFailEventForNetworkErrorToUpdateWeathers() throws <span class="pl-smi">IOException</span> {
     <span class="pl-c">//---Arrange---</span>
     <span class="pl-c">//Define a subscriber class</span>
@@ -866,7 +866,7 @@ So when WeatherController#updateAllCities(Object) is called, we can verify wheth
 
 <p>Check out more details in the sample code - Note</p>
 
-<div class="highlight highlight-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">NoteApp</span> <span class="pl-k">extends</span> <span class="pl-e">Application</span> {
+<div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">NoteApp</span> <span class="pl-k">extends</span> <span class="pl-e">Application</span> {
     <span class="pl-k">@Override</span>
     <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">onCreate</span>() {
         <span class="pl-v">super</span><span class="pl-k">.</span>onCreate();
