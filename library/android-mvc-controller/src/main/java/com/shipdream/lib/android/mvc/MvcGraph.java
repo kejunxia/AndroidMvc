@@ -27,7 +27,7 @@ import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ImplClassLocator;
 import com.shipdream.lib.poke.ImplClassLocatorByPattern;
-import com.shipdream.lib.poke.LocateClassException;
+import com.shipdream.lib.poke.ImplClassNotFoundException;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ProviderByClassType;
 import com.shipdream.lib.poke.ProviderFinderByRegistry;
@@ -172,14 +172,44 @@ public class MvcGraph {
     }
 
     /**
+     * Get an instance matching the type and qualifier. If there is an instance cached, the cached
+     * instance will be returned otherwise a new instance will be created.
+     *
+     * <p>Note that, not like {@link #inject(Object)} (Object)} this method will <b>NOT</b> increment
+     * reference count for the injectable object with the same type and qualifier.</p>
+     * @param type the type of the object
+     * @param qualifier the qualifier of the injected object. Null is allowed if no qualifier is specified
+     * @return The cached object or a new instance matching the type and qualifier
+     * @throws MvcGraphException throw if exception occurs during getting the instance
+     */
+    public <T> T get(Class<T> type, Annotation qualifier) {
+        try {
+            return graph.get(type, qualifier, Inject.class);
+        } catch (ProviderMissingException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (ProvideException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (CircularDependenciesException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Inject all fields annotated by {@link Inject}. References of controllers will be
      * incremented.
      *
      * @param target The target object whose fields annotated by {@link Inject} will be injected.
-     * @throws ProvideException
      */
-    public void inject(Object target) throws ProvideException, CircularDependenciesException, ProviderMissingException {
-        graph.inject(target, Inject.class);
+    public void inject(Object target) {
+        try {
+            graph.inject(target, Inject.class);
+        } catch (ProvideException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (ProviderMissingException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (CircularDependenciesException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -190,7 +220,11 @@ public class MvcGraph {
      * @param target of which the object fields will be released.
      */
     public void release(Object target) {
-        graph.release(target, Inject.class);
+        try {
+            graph.release(target, Inject.class);
+        } catch (ProviderMissingException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
     }
 
     /**
@@ -326,7 +360,7 @@ public class MvcGraph {
 
         @SuppressWarnings("unchecked")
         @Override
-        public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
+        public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
             Provider<T> provider = super.findProvider(type, qualifier);
             if (provider == null) {
                 provider = providers.get(type);
@@ -336,8 +370,8 @@ public class MvcGraph {
                         provider = new MvcProvider<>(mvcGraph.stateManagedObjects, type, impClass);
                         provider.setScopeCache(defaultImplClassLocator.getScopeCache());
                         providers.put(type, provider);
-                    } catch (LocateClassException e) {
-                        throw new RuntimeException(new ProviderMissingException(e.getMessage(), e));
+                    } catch (ImplClassNotFoundException e) {
+                        throw new ProviderMissingException(type, qualifier, e);
                     }
                 }
             }

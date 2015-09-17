@@ -76,7 +76,7 @@ public abstract class Provider<T> {
         return 0;
     }
 
-    int retain(Object owner, Field field) {
+    void retain(Object owner, Field field) {
         totalRefCount++;
         Map<String, Integer> fields = owners.get(owner);
         if (fields == null) {
@@ -87,15 +87,13 @@ public abstract class Provider<T> {
         Integer count = fields.get(field.getName());
         if (count == null) {
             fields.put(field.getName(), 1);
-            return 1;
         } else {
             count++;
             fields.put(field.getName(), count);
-            return count;
         }
     }
 
-    int release(Object owner, Field field) {
+    void release(Object owner, Field field) {
         Map<String, Integer> fields = owners.get(owner);
         if(fields!= null) {
             totalRefCount--;
@@ -103,16 +101,23 @@ public abstract class Provider<T> {
             Integer count = fields.get(field.getName());
             if(--count > 0) {
                 fields.put(field.getName(), count);
-                return count;
             } else {
                 fields.remove(field.getName());
             }
         }
+
         if(fields != null && fields.isEmpty()) {
             owners.remove(owner);
         }
+    }
 
-        return 0;
+    void freeCache() {
+        if (scopeCache != null) {
+            ScopeCache.CachedItem cachedItem = scopeCache.findCacheItem(type, qualifier);
+            if (cachedItem != null) {
+                scopeCache.removeCache(cachedItem.type, cachedItem.qualifier);
+            }
+        }
     }
 
     int totalReference() {
@@ -181,15 +186,6 @@ public abstract class Provider<T> {
         return null;
     }
 
-    void freeCache() {
-        if (scopeCache != null) {
-            ScopeCache.CachedItem cachedItem = scopeCache.findCacheItem(type, qualifier);
-            if (cachedItem != null) {
-                scopeCache.removeCache(cachedItem.type, cachedItem.qualifier);
-            }
-        }
-    }
-
     /**
      * Register listener which will be called back when the instance is injected. It will called
      * until all injectable fields of the object are fully and recursively if needed injected.
@@ -220,7 +216,7 @@ public abstract class Provider<T> {
      * @throws CircularDependenciesException Exception thrown if nested injection has circular dependencies
      * @throws ProviderMissingException Exception thrown if nested injection misses dependencies
      */
-    public final T get() throws ProvideException, CircularDependenciesException, ProviderMissingException {
+    final T get() throws ProvideException {
         if(scopeCache == null) {
             T impl = createInstance();
             if(impl == null) {
@@ -228,6 +224,7 @@ public abstract class Provider<T> {
                 throw new ProvideException(String.format("Provider (type: %s, qualifier: " +
                         "%s) should not provide NULL as instance", type.getName(), qualifierName));
             }
+
             return impl;
         } else {
             return scopeCache.get(this);

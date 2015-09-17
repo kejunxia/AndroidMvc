@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.event;
 
 public class BaseEvent {
-    private Object sender;
+    private final Object sender;
 
     public BaseEvent(Object sender) {
         this.sender = sender;

@@ -17,8 +17,8 @@
 package com.shipdream.lib.android.mvc.event;
 
 public class ValueChangeEventV2V<T> extends BaseEventV2V{
-    private T lastValue;
-    private T currentValue;
+    private final T lastValue;
+    private final T currentValue;
 
     public ValueChangeEventV2V(Object sender, T lastValue, T currentValue) {
         super(sender);

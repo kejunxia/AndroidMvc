@@ -16,8 +16,8 @@
 
 package com.shipdream.lib.poke;
 
-public class LocateClassException extends Exception {
-    public LocateClassException(String message, Throwable cause) {
+public class ImplClassNotFoundException extends Exception {
+    public ImplClassNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }

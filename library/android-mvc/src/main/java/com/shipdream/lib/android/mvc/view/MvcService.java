@@ -19,7 +19,6 @@ package com.shipdream.lib.android.mvc.view;
 import android.app.Service;
 
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
-import com.shipdream.lib.poke.exception.PokeException;
 
 /**
  * Android service can be thought as a kind of view sitting on top and driven by controller which
@@ -34,11 +33,9 @@ public abstract class MvcService extends Service{
     @Override
     public void onCreate() {
         super.onCreate();
-        try {
-            AndroidMvc.graph().inject(this);
-        } catch (PokeException e) {
-            throw new RuntimeException(e);
-        }
+
+        AndroidMvc.graph().inject(this);
+
         eventRegister = new EventRegister(this);
         eventRegister.registerEventBuses();
     }

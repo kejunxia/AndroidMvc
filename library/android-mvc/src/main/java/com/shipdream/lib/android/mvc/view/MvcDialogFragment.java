@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
-import com.shipdream.lib.poke.exception.PokeException;
 
 /**
  * This dialog fragment can either use {@link AlertDialog.Builder} to build a alert dialog or use
@@ -41,11 +40,8 @@ public class MvcDialogFragment extends DialogFragment {
             setRetainInstance(true);
         }
 
-        try {
-            AndroidMvc.graph().inject(this);
-        } catch (PokeException e) {
-            throw new RuntimeException(e);
-        }
+        AndroidMvc.graph().inject(this);
+
         eventRegister = new EventRegister(this);
         eventRegister.registerEventBuses();
     }

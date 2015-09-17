@@ -16,9 +16,7 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -38,8 +36,7 @@ public class ScopeCache {
     protected Map<String, CachedItem> cache = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    <T> T get(Provider<T> provider) throws ProvideException, ProviderMissingException,
-            CircularDependenciesException {
+    <T> T get(Provider<T> provider) throws ProvideException {
         String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());
         CachedItem<T> item = cache.get(key);
         if (item == null) {

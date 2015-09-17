@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
-import com.shipdream.lib.poke.exception.PokeException;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -108,12 +107,8 @@ public abstract class MvcFragment extends Fragment {
 
     void injectDependencies() {
         if (!dependenciesInjected) {
-            try {
-                AndroidMvc.graph().inject(this);
-                dependenciesInjected = true;
-            } catch (PokeException e) {
-                throw new RuntimeException(e);
-            }
+            AndroidMvc.graph().inject(this);
+            dependenciesInjected = true;
         }
     }
 
