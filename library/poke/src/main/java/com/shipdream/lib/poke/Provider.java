@@ -216,7 +216,7 @@ public abstract class Provider<T> {
      * @throws CircularDependenciesException Exception thrown if nested injection has circular dependencies
      * @throws ProviderMissingException Exception thrown if nested injection misses dependencies
      */
-    final T get() throws ProvideException, CircularDependenciesException, ProviderMissingException {
+    final T get() throws ProvideException {
         if(scopeCache == null) {
             T impl = createInstance();
             if(impl == null) {

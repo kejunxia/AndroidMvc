@@ -211,7 +211,7 @@ public abstract class Graph {
             }
         }
 
-        if (!circularDetected) {
+        if (!circularDetected && target != null) {
             Class<?> clazz = target.getClass();
             while (clazz != null) {
                 Field[] fields = clazz.getDeclaredFields();
@@ -221,12 +221,15 @@ public abstract class Graph {
                         Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
                         Provider provider = getProvider(fieldType, fieldQualifier);
 
-                        Object impl = provider.get();
-                        ReflectUtils.setField(target, field, impl);
-
+                        Object impl;
                         if (retainReference) {
+                            impl = provider.get();
                             provider.retain(target, field);
+                        } else {
+                            impl = provider.createInstance();
                         }
+
+                        ReflectUtils.setField(target, field, impl);
 
                         boolean firstTimeInject = provider.totalReference() == 1;
                         if (!isFieldVisited(impl, field)) {
@@ -371,6 +374,10 @@ public abstract class Graph {
             }
         } else {
             provider = providerFinder.findProvider(type, qualifier);
+        }
+
+        if (provider == null) {
+            throw new ProviderMissingException(type, qualifier);
         }
 
         return provider;
