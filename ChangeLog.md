@@ -1,3 +1,8 @@
+Version: 1.2.0
+* MvcGraph.inject throws runtime exception - MvcGraphException now. So no need to catch poke exceptions any more.
+* MvcGraph.get method to get an instance. It provides cached instance if there is already an existing one, otherwise the newly created instance.
+* Improve exception handling in library poke.
+
 Version: 1.1.9
 Fix bug
 * When a recovering fragment in view pager its onViewReady is not called when its holding activity resume by popping out from another above activity.
