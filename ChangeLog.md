@@ -1,3 +1,6 @@
+Version: 1.2.1
+* Fix issue that MvcFragment and MvcDialogFragment post V2V events to C2V event bus.
+
 Version: 1.2.0
 * MvcGraph.inject throws runtime exception - MvcGraphException now. So no need to catch poke exceptions any more.
 * MvcGraph.get method to get an instance. It provides cached instance if there is already an existing one, otherwise the newly created instance.
