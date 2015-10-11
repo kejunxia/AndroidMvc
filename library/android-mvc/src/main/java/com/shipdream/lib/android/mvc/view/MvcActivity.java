@@ -363,7 +363,11 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        public void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
+        /**
+         * Handle the forward navigation event call back
+         * @param event The forward navigation event
+         */
+        protected void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -432,7 +436,11 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        public void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
+        /**
+         * Handle the backward navigation event call back
+         * @param event The backward navigation event
+         */
+        protected void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
