@@ -118,6 +118,8 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
         logger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
                 previousLoc == null ? "null" : previousLoc.getLocationId());
 
+        checkAppExit(sender);
+
         dumpHistory();
     }
 
@@ -159,7 +161,16 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
             logger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
                     previousLoc.getLocationId());
 
+            checkAppExit(sender);
+
             dumpHistory();
+        }
+    }
+
+    private void checkAppExit(Object sender) {
+        NavLocation curLocation = getModel().getCurrentLocation();
+        if (curLocation == null) {
+            postC2CEvent(new EventC2C.OnAppExit(sender));
         }
     }
 

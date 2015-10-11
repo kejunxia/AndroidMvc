@@ -221,6 +221,58 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     }
 
     @Test
+    public void should_post_app_exit_event_on_the_last_back_of_linear_back_navigation() {
+        //mock the subscriber
+        class AppExitListener {
+            public void onEvent(NavigationController.EventC2C.OnAppExit event) {}
+        }
+
+        ArgumentCaptor<NavigationController.EventC2C.OnAppExit> event
+                = ArgumentCaptor.forClass(NavigationController.EventC2C.OnAppExit.class);
+
+        AppExitListener exitListener = mock(AppExitListener.class);
+        eventBusC2C.register(exitListener);
+
+        prepareLocationHistory();
+
+        reset(exitListener);
+        navigationController.navigateBack(this);
+        verify(exitListener, times(0)).onEvent(event.capture());
+
+        navigationController.navigateBack(this);
+        verify(exitListener, times(0)).onEvent(event.capture());
+
+        navigationController.navigateBack(this);
+        verify(exitListener, times(0)).onEvent(event.capture());
+
+        navigationController.navigateBack(this);
+        verify(exitListener, times(1)).onEvent(event.capture());
+    }
+
+    @Test
+    public void should_post_app_exit_event_on_the_last_back_of_fast_back_navigation() {
+        //mock the subscriber
+        class AppExitListener {
+            public void onEvent(NavigationController.EventC2C.OnAppExit event) {}
+        }
+
+        ArgumentCaptor<NavigationController.EventC2C.OnAppExit> event
+                = ArgumentCaptor.forClass(NavigationController.EventC2C.OnAppExit.class);
+
+        AppExitListener exitListener = mock(AppExitListener.class);
+        eventBusC2C.register(exitListener);
+
+        prepareLocationHistory();
+
+        reset(exitListener);
+        navigationController.navigateBack(this, null);
+        verify(exitListener, times(0)).onEvent(event.capture());
+
+        navigationController.navigateBack(this);
+        verify(exitListener, times(1)).onEvent(event.capture());
+    }
+
+    @Test
          public void should_not_raise_navigate_back_event_when_navigate_to_first_location_from_the_first_location() throws Exception {
         // Arrange
         BackListener backListener = mock(BackListener.class);
