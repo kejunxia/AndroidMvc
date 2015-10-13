@@ -466,13 +466,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
                     currentFrag.injectDependencies();
-                    currentFrag.registerOnViewReadyListener(new Runnable() {
-                        @Override
-                        public void run() {
-                            currentFrag.onPoppedOutToFront();
-                            unregisterOnViewReadyListener(this);
-                        }
-                    });
+                    currentFrag.aboutToPopOut = true;
                 }
 
                 if (event.isFastRewind()) {

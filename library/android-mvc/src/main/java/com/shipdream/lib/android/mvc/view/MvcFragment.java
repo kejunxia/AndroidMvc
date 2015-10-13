@@ -260,24 +260,32 @@ public abstract class MvcFragment extends Fragment {
     }
 
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
+
         int currentOrientation = getResources().getConfiguration().orientation;
         boolean orientationChanged = currentOrientation != lastOrientation;
         Reason reason = new Reason();
+
+        if (orientationChanged) {
+            reason.setRotated(true);
+        }
+
         if (restoring) {
             reason.setRestored(true);
         } else {
-            if (orientationChanged) {
-                reason.setRotated(true);
+            if (aboutToPopOut) {
+                reason.setPoppedOut(true);
+                aboutToPopOut = false;
             } else {
-                reason.setFirstTime(true);
+                if (!orientationChanged) {
+                    reason.setFirstTime(true);
+                }
             }
         }
 
         onViewReady(view, savedInstanceState, reason);
-        if (onViewReadyListeners != null) {
-            for (Runnable r : onViewReadyListeners) {
-                r.run();
-            }
+
+        if (reason.isPoppedOut()) {
+            onPoppedOutToFront();
         }
 
         if (orientationChanged) {
@@ -285,6 +293,12 @@ public abstract class MvcFragment extends Fragment {
         }
 
         lastOrientation = currentOrientation;
+
+        if (onViewReadyListeners != null) {
+            for (Runnable r : onViewReadyListeners) {
+                r.run();
+            }
+        }
     }
 
     /**
@@ -331,6 +345,8 @@ public abstract class MvcFragment extends Fragment {
      */
     protected void onPushingToBackStack() {
     }
+
+    boolean aboutToPopOut = false;
 
     /**
      * Called when this fragment is popped out from fragment back stack. This callback will be
