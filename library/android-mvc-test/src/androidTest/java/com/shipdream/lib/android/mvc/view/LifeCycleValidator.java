@@ -21,11 +21,12 @@ import android.view.View;
 
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.times;
@@ -114,9 +115,16 @@ public class LifeCycleValidator {
         verify(lifeCycleMonitorMock, times(onCreateViewCountNotNull)).onCreateView(any(View.class), isNotNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNull)).onViewCreated(any(View.class), isNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
-        verify(lifeCycleMonitorMock, times(onViewReadyFirstTime)).onViewReady(any(View.class), any(Bundle.class), eq(MvcFragment.Reason.FIRST_TIME));
-        verify(lifeCycleMonitorMock, times(onViewReadyRotation)).onViewReady(any(View.class), any(Bundle.class), eq(MvcFragment.Reason.ROTATE));
-        verify(lifeCycleMonitorMock, times(onViewReadyRestore)).onViewReady(any(View.class), any(Bundle.class), eq(MvcFragment.Reason.RESTORE));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyFirstTime)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new FirstTimeMatcher()));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyRotation)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new RotateMatcher()));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyRestore)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new RestoreMatcher()));
+
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onPushingToBackStackCount)).onPushingToBackStack();
         verify(lifeCycleMonitorMock, times(onPoppedOutToFrontCount)).onPoppedOutToFront();
@@ -126,6 +134,42 @@ public class LifeCycleValidator {
         verify(lifeCycleMonitorMock, times(onDestroyCount)).onDestroy();
 
         reset();
+    }
+
+    private class FirstTimeMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isFirstTime()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class RestoreMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isRestored()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class RotateMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isRotated()) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     public void reset() {

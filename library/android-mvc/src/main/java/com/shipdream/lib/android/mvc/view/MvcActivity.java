@@ -267,7 +267,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         @Override
         public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
             super.onViewReady(view, savedInstanceState, reason);
-            if (reason == Reason.FIRST_TIME) {
+            if (reason.isFirstTime()) {
                 firstTimeRun = true;
             }
         }

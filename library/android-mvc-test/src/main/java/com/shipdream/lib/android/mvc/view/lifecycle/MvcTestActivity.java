@@ -46,7 +46,7 @@ public class MvcTestActivity extends MvcActivity {
         public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
             super.onViewReady(view, savedInstanceState, reason);
 
-            if (reason == Reason.RESTORE) {
+            if (reason.isRestored()) {
                 if (!onViewStateRestoredCalled) {
                     throw new IllegalStateException("When activity is restoring, onViewReady must be called after onViewStateRestored to guarantee all state of this fragment is ready to use.");
                 }

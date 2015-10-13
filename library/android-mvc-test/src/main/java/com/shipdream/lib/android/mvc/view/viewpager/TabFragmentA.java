@@ -39,10 +39,10 @@ public class TabFragmentA extends BaseTabFragment {
         super.onViewReady(view, savedInstanceState, reason);
 
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
-        if (reason == Reason.FIRST_TIME) {
+        if (reason.isFirstTime()) {
             textView.setText(INIT_TEXT);
             tabController.setName(RESTORE_TEXT);
-        } else if (reason == Reason.RESTORE) {
+        } else if (reason.isRestored()) {
             textView.setText(tabController.getModel().getName());
         }
 
