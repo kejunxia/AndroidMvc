@@ -26,6 +26,7 @@ public enum LifeCycle {
     onViewReadyFirstTime,
     onViewReadyRotate,
     onViewReadyRestore,
+    onViewReadyPopOut,
     onPushingToBackStack,
     onPoppedOutToFront,
     onReturnForeground,

@@ -48,6 +48,7 @@ public class LifeCycleValidator {
     protected int onViewReadyFirstTime;
     protected int onViewReadyRotation;
     protected int onViewReadyRestore;
+    protected int onViewReadyPopOut;
     protected int onPushingToBackStackCount;
     protected int onPoppedOutToFrontCount;
     protected int onReturnForegroundCount;
@@ -87,6 +88,9 @@ public class LifeCycleValidator {
                     case onViewReadyRestore:
                         onViewReadyRestore++;
                         break;
+                    case onViewReadyPopOut:
+                        onViewReadyPopOut++;
+                        break;
                     case onPushingToBackStack:
                         onPushingToBackStackCount++;
                         break;
@@ -124,6 +128,9 @@ public class LifeCycleValidator {
 
         verify(lifeCycleMonitorMock, times(onViewReadyRestore)).onViewReady(any(View.class),
                 any(Bundle.class), argThat(new RestoreMatcher()));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyPopOut)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new PopOutMatcher()));
 
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onPushingToBackStackCount)).onPushingToBackStack();
@@ -172,6 +179,18 @@ public class LifeCycleValidator {
         }
     }
 
+    private class PopOutMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isPoppedOut()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public void reset() {
         onCreateCountNull = 0;
         onCreateCountNotNull = 0;
@@ -182,6 +201,7 @@ public class LifeCycleValidator {
         onViewReadyFirstTime = 0;
         onViewReadyRotation = 0;
         onViewReadyRestore = 0;
+        onViewReadyPopOut = 0;
         onPushingToBackStackCount = 0;
         onPoppedOutToFrontCount = 0;
         onReturnForegroundCount = 0;

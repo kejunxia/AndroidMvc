@@ -149,6 +149,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyRestore,
+                LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged);
 
         pressHome();
@@ -161,6 +162,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyRestore,
+                LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged);
 
         onView(withText(R.string.mvc_fragment_text)).check(matches(isDisplayed()));
