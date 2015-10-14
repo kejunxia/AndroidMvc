@@ -133,9 +133,9 @@ public abstract class MvcFragment extends Fragment {
         public String toString() {
             return "Reason: {" +
                     "firstTime: " + isFirstTime() +
-                    "restore: " + isRestored() +
-                    "popOut: " + isPoppedOut() +
-                    "rotate: " + isRotated() +
+                    ", restore: " + isRestored() +
+                    ", popOut: " + isPoppedOut() +
+                    ", rotate: " + isRotated() +
                     '}';
         }
     }

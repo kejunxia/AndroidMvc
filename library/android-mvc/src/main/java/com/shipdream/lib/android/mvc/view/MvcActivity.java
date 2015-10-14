@@ -290,7 +290,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          * navigate to the initial fragment in this callback. {@link NavigationController} can be
          * obtained by {@link #getNavigationController()} or even be injected again. This callback is
          * equivalent to override {@link #onViewReady(View, Bundle, Reason)} and perform action when
-         * reason of view ready of this {@link DelegateFragment} is {@link Reason#FIRST_TIME}.
+         * reason of view ready of this {@link DelegateFragment} is {@link Reason#isFirstTime()}.
          *
          * <p>
          * Note this callback will NOT be invoked on restoration after the app is killed by the OS from background.
@@ -467,6 +467,15 @@ public abstract class MvcActivity extends AppCompatActivity {
                 if (currentFrag != null) {
                     currentFrag.injectDependencies();
                     currentFrag.aboutToPopOut = true;
+
+                    List<Fragment> subFragments = currentFrag.getChildFragmentManager().getFragments();
+                    if (subFragments != null && !subFragments.isEmpty()) {
+                        for (Fragment fragment : subFragments) {
+                            if (fragment instanceof MvcFragment) {
+                                ((MvcFragment)fragment).aboutToPopOut = true;
+                            }
+                        }
+                    }
                 }
 
                 if (event.isFastRewind()) {
