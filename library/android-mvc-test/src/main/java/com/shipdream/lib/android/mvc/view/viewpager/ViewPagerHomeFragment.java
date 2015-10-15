@@ -34,11 +34,9 @@ public class ViewPagerHomeFragment extends MvcFragment {
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
         if (reason.isFirstTime() || reason.isRestored()) {
             pagerAdapter = new PagerAdapter(getChildFragmentManager());
+            viewPager.setAdapter(pagerAdapter);
         }
-
-        viewPager.setAdapter(pagerAdapter);
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

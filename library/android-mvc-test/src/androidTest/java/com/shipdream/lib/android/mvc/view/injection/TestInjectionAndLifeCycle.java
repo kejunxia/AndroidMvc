@@ -88,8 +88,12 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         lifeCycleValidatorC.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
         //View is newly created again
         //onPoppedOutToFront is called when the fragment pops out from back stack
-        lifeCycleValidatorB.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyPopOut, LifeCycle.onPoppedOutToFront);
+        lifeCycleValidatorB.expect(
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime,
+                LifeCycle.onViewReadyPopOut,
+                LifeCycle.onPoppedOutToFront);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
                 "Added by FragmentB\n" +
@@ -104,8 +108,12 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         lifeCycleValidatorB.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
         //View is newly created again
         //onPoppedOutToFront is called when the fragment pops out from back stack
-        lifeCycleValidatorA.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyPopOut, LifeCycle.onPoppedOutToFront);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime,
+                LifeCycle.onViewReadyPopOut,
+                LifeCycle.onPoppedOutToFront);
         onView(withId(R.id.textA)).check(matches(withText(
                 "Added by FragmentB\n" +
                 "Added by FragmentA")));

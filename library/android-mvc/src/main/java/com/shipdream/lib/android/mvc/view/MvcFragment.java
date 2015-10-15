@@ -269,17 +269,15 @@ public abstract class MvcFragment extends Fragment {
             reason.setRotated(true);
         }
 
+        if (aboutToPopOut) {
+            reason.setPoppedOut(true);
+            aboutToPopOut = false;
+        }
+
         if (restoring) {
             reason.setRestored(true);
-        } else {
-            if (aboutToPopOut) {
-                reason.setPoppedOut(true);
-                aboutToPopOut = false;
-            } else {
-                if (!orientationChanged) {
-                    reason.setFirstTime(true);
-                }
-            }
+        } else if (!orientationChanged) {
+            reason.setFirstTime(true);
         }
 
         onViewReady(view, savedInstanceState, reason);
