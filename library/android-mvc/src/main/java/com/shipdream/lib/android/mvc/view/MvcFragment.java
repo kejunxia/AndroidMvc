@@ -61,28 +61,6 @@ public abstract class MvcFragment extends Fragment {
      * Reason of creating the view of the fragment
      */
     public static class Reason {
-//        /**
-//         * The view of the fragment is newly created for the first time
-//         */
-//        FIRST_TIME,
-//        /**
-//         * The view of the fragment is recreated on restoration after the activity of the fragment
-//         * is killed and recreated by the OS. Note that RESTORE takes higher priority to be
-//         * considered as the reason of the creation of the fragment view than ROTATE when they occur
-//         * at the same time.
-//         */
-//        RESTORE,
-//        /**
-//         * The view of the fragment is recreated because it's popped out by a back navigation. Note
-//         * that POP_OUT takes higher priority to be considered as the reason of the creation of the
-//         * fragment view than ROTATE when they occur at the same time.
-//         */
-//        POP_OUT,
-//        /**
-//         * The view of the fragment is recreated due to rotation
-//         */
-//        ROTATE;
-
         private int value;
 
         private void setValue(boolean trueOrFalse, int mask) {
@@ -113,18 +91,33 @@ public abstract class MvcFragment extends Fragment {
             return (value & mask) == mask;
         }
 
+        /**
+         * @return Indicates whether the fragment view is created when the fragment is created for
+         * the first time.
+         */
         public boolean isFirstTime() {
             return getValue(REASON_FIRST_TIME);
         }
 
+        /**
+         * @return Indicates whether the fragment view is created after the activity is killed by
+         * OS and restored.
+         */
         public boolean isRestored() {
             return getValue(REASON_RESTORE);
         }
 
+        /**
+         * @return Indicates whether the fragment view is created when the fragment was pushed to
+         * backstack and just popped out.
+         */
         public boolean isPoppedOut() {
             return getValue(REASON_POP_OUT);
         }
 
+        /**
+         * @return Indicates whether the fragment view is created after its orientation changed.
+         */
         public boolean isRotated() {
             return getValue(REASON_ROTATE);
         }
