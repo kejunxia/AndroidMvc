@@ -51,7 +51,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
     public void testShouldRetainInjectionsOfFragmentAAfterNavigatedToFragmentB() throws Throwable {
         //=============================> At A
         lifeCycleValidatorA.expect(LifeCycle.onCreateNull,
-                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
@@ -63,7 +64,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //BUT onDestroy of previous Fragment(FragmentA) is not called when it's pushed to back stack
         lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorB.expect(LifeCycle.onCreateNull,
-                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
                 "Added by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
@@ -75,7 +77,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //=============================> At C
         lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
         onView(withId(R.id.textA)).check(matches(withText("")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
                 "Added by FragmentB\n" +

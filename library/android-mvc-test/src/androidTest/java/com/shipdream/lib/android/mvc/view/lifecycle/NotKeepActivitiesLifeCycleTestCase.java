@@ -43,7 +43,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
 
         lifeCycleValidator.expect(LifeCycle.onCreateNull,
                 LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyFirstTime);
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
         pressHome();
         waitTest(1200);
@@ -53,7 +53,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull,
                 LifeCycle.onCreateViewNotNull, LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyRestore);
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyRestore);
 
         pressHome();
         waitTest();
@@ -64,7 +64,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull,
                 LifeCycle.onCreateViewNotNull, LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyRestore);
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyRestore);
 
         pressHome();
         waitTest();
@@ -83,7 +83,8 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         onView(withText("MvcTest")).check(matches(isDisplayed()));
 
         lifeCycleValidator.expect(LifeCycle.onCreateNull,
-                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
         //If not on portrait mode rotate it to portrait
         int currentOrientation = activity.getResources().getConfiguration().orientation;
@@ -148,6 +149,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
                 LifeCycle.onViewReadyRestore,
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged);
@@ -161,6 +163,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
                 LifeCycle.onViewReadyRestore,
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged);
