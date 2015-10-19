@@ -68,14 +68,26 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         }
 
         //=============================> At Home
-        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidator.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorB.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
         lifeCycleValidatorC.expect();
 
@@ -136,14 +148,26 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         }
 
         //=============================> At Home
-        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidator.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorB.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
         lifeCycleValidatorC.expect();
 
@@ -178,9 +202,11 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         //=============================> At A
         navigationController.navigateBack(this);
         waitTest(1200);
+
         lifeCycleValidator.expect(
                 LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
                 LifeCycle.onViewReadyRestore,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
@@ -188,6 +214,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorA.expect(
                 LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
                 LifeCycle.onViewReadyRestore,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
@@ -195,6 +222,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorB.expect(
                 LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
                 LifeCycle.onViewReadyRestore,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
@@ -210,14 +238,26 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         }
 
         //=============================> At Home
-        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidator.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorB.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
         lifeCycleValidatorC.expect();
 
@@ -248,8 +288,12 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
 
-        lifeCycleValidatorA.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull, LifeCycle.onViewReadyRestore);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateNotNull,
+                LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyRestore);
     }
 
     @Test
@@ -260,14 +304,26 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         }
 
         //=============================> At Home
-        lifeCycleValidator.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidator.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorA.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
-        lifeCycleValidatorB.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+        lifeCycleValidatorB.expect(
+                LifeCycle.onCreateNull,
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyFirstTime);
 
         lifeCycleValidatorC.expect();
 
@@ -282,9 +338,14 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         waitTest(1200);
         pressBack();
         waitTest(1200);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy,
-                LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull, LifeCycle.onViewReadyRestore);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onDestroyView,
+                LifeCycle.onDestroy,
+                LifeCycle.onCreateNotNull,
+                LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyRestore);
 
         onView(withId(R.id.viewpager)).perform(swipeLeft());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
@@ -300,8 +361,32 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
 
-        lifeCycleValidatorA.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull, LifeCycle.onViewReadyRestore);
+        lifeCycleValidatorA.expect(
+                LifeCycle.onCreateNotNull,
+                LifeCycle.onCreateViewNotNull,
+                LifeCycle.onViewCreatedNotNull,
+                LifeCycle.onViewReadyNewInstance,
+                LifeCycle.onViewReadyRestore);
+    }
+
+    @Test
+    public void should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
+        //=============================> At Sub Fragment
+        navigationController.navigateTo(this, SubFragment.class.getSimpleName());
+        waitTest(1200);
+
+        lifeCycleValidator.reset();
+
+        //=============================> At A
+        navigationController.navigateBack(this);
+        waitTest(1200);
+
+        lifeCycleValidator.expect(
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime,
+                LifeCycle.onViewReadyPopOut,
+                LifeCycle.onPoppedOutToFront);
     }
 
 }
