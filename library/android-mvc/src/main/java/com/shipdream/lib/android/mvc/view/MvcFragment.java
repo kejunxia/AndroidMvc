@@ -90,6 +90,14 @@ public abstract class MvcFragment extends Fragment {
          * reinitialized and configured. This could happen when a fragment is created for the first
          * time (when {@link #isFirstTime()} = true) or the fragment is recreated on restoration
          * after its holding activity was killed by OS (when {@link #isRestored()} = true).
+         *
+         * <p>Note that even this flag is true, widgets of the view of the fragment still need to be
+         * reconfigured whenever {@link #onViewReady(View, Bundle, Reason)} is called. For example,
+         * onClickListener of a Button still need be set regardless inNewStance() is true or false.
+         * But a view pager adapter as a field of the fragment doesn't need to be re-instantiated
+         * because as a fragment instance field, it is still held by the fragment when
+         * isNewInstance() is false. This usually happens when the fragment is popped out on back
+         * navigation.</p>
          */
         public boolean isNewInstance() {
             return this.isNewInstance;
