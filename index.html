@@ -1,37 +1,25 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Android Mvc Framework : Android, Design Pattern, MVC, MVVM, Unit Test, EventBus, Android MVC Framework">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Android Mvc Framework</title>
+    <meta charset="UTF-8">
+    <title>Android Mvc Framework by kejunxia</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Android Mvc Framework</h1>
+      <h2 class="project-tagline">Android, Design Pattern, MVC, MVVM, Unit Test, EventBus, Android MVC Framework</h2>
+      <a href="https://github.com/kejunxia/AndroidMvc" class="btn">View on GitHub</a>
+      <a href="https://github.com/kejunxia/AndroidMvc/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/kejunxia/AndroidMvc/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/kejunxia/AndroidMvc">View on GitHub</a>
-
-          <h1 id="project_title">Android Mvc Framework</h1>
-          <h2 id="project_tagline">Android, Design Pattern, MVC, MVVM, Unit Test, EventBus, Android MVC Framework</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/kejunxia/AndroidMvc/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/kejunxia/AndroidMvc/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
+    <section class="main-content">
+      <h1>
 <a id="androidmvc-framework" class="anchor" href="#androidmvc-framework" aria-hidden="true"><span class="octicon octicon-link"></span></a>AndroidMvc Framework</h1>
 
 <h2>
@@ -71,8 +59,7 @@
 
 <ul>
 <li>
-<strong>onViewReady(View view, Bundle savedInstanceState, Reason reason):</strong> Where reason differentiates the cause of creation of view: 1. <strong>FIRST_TIME</strong>, 2. <strong>ROTATE</strong>, 3. <strong>RESTORE</strong>
-</li>
+<strong>onViewReady(View view, Bundle savedInstanceState, Reason reason):</strong> Where reason differentiates the cause of creation of view: 1. Reason.isNewInstance(), 2. Reason.isFirstTime(), 3. Reason.isRestored(), 4 Reason.isRotated()</li>
 <li>
 <strong>onReturnForeground():</strong> When app resume from background</li>
 <li>
@@ -100,12 +87,12 @@
 <div class="highlight highlight-text-xml"><pre>&lt;<span class="pl-ent">dependency</span>&gt;
     &lt;<span class="pl-ent">groupId</span>&gt;com.shipdream&lt;/<span class="pl-ent">groupId</span>&gt;
     &lt;<span class="pl-ent">artifactId</span>&gt;android-mvc&lt;/<span class="pl-ent">artifactId</span>&gt;
-    &lt;<span class="pl-ent">version</span>&gt;1.2.1&lt;/<span class="pl-ent">version</span>&gt;
+    &lt;<span class="pl-ent">version</span>&gt;1.3.0&lt;/<span class="pl-ent">version</span>&gt;
 &lt;/<span class="pl-ent">dependency</span>&gt;</pre></div>
 
 <p><strong>Gradle:</strong></p>
 
-<div class="highlight highlight-source-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.2.1<span class="pl-pds">"</span></span></pre></div>
+<div class="highlight highlight-source-groovy"><pre>compile <span class="pl-s"><span class="pl-pds">"</span>com.shipdream:android-mvc:1.3.0<span class="pl-pds">"</span></span></pre></div>
 
 <h2>
 <a id="samples" class="anchor" href="#samples" aria-hidden="true"><span class="octicon octicon-link"></span></a>Samples</h2>
@@ -901,18 +888,16 @@ So when WeatherController#updateAllCities(Object) is called, we can verify wheth
         });
     }
 }</pre></div>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Android Mvc Framework maintained by <a href="https://github.com/kejunxia">kejunxia</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/kejunxia/AndroidMvc">Android Mvc Framework</a> is maintained by <a href="https://github.com/kejunxia">kejunxia</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-              <script type="text/javascript">
+    </section>
+
+            <script type="text/javascript">
             var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
             document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
           </script>
@@ -922,7 +907,6 @@ So when WeatherController#updateAllCities(Object) is called, we can verify wheth
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
-
 
   </body>
 </html>
