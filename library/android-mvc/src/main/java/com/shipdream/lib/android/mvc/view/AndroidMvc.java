@@ -31,7 +31,6 @@ import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.exception.PokeException;
 
@@ -43,8 +42,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import javax.inject.Inject;
-
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
 /**
@@ -54,16 +51,9 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
  * {@link MvcGraph} how it works.
  */
 public class AndroidMvc {
-    private static class EventBusC2VHolder {
-        @Inject
-        @EventBusC2V
-        EventBus eventBusC2V;
-    }
-
     static final String MVC_SATE_PREFIX = "__--AndroidMvc:State:";
     static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
     private static MvcGraph mvcGraph;
-    private static EventBusC2VHolder eventBusC2VHolder;
     private static EventBus eventBusV2V;
     private static DefaultStateKeeper sStateManager;
 
@@ -96,8 +86,6 @@ public class AndroidMvc {
     public static void configGraph(MvcGraph.BaseDependencies baseDependencies) {
         try {
             mvcGraph = new MvcGraph(baseDependencies);
-            eventBusC2VHolder = new EventBusC2VHolder();
-            mvcGraph.inject(eventBusC2VHolder);
         } catch (PokeException e) {
             throw new RuntimeException(e);
         }
@@ -149,14 +137,6 @@ public class AndroidMvc {
                 }
             }
         }
-    }
-
-    /**
-     * Gets Controllers to Views event bus. Internal use by AndroidMvc library only.
-     * @return The event bus
-     */
-    static EventBus getEventBusC2V() {
-        return eventBusC2VHolder.eventBusC2V;
     }
 
     /**

@@ -16,10 +16,31 @@
 
 package com.shipdream.lib.android.mvc.view;
 
+import com.shipdream.lib.android.mvc.event.bus.EventBus;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+
 class EventRegister {
+    private static class C2VBusHolder {
+        @Inject
+        @EventBusC2V
+        private EventBus eventBusC2V;
+
+        private static C2VBusHolder instance;
+
+        private static C2VBusHolder getInstance() {
+            if (instance == null) {
+                instance = new C2VBusHolder();
+                AndroidMvc.graph().inject(instance);
+            }
+            return instance;
+        }
+    }
+
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Object androidComponent;
     private boolean eventsRegistered = false;
@@ -33,7 +54,7 @@ class EventRegister {
      */
     public void registerEventBuses() {
         if (!eventsRegistered) {
-            AndroidMvc.getEventBusC2V().register(androidComponent);
+            C2VBusHolder.getInstance().eventBusC2V.register(androidComponent);
             AndroidMvc.getEventBusV2V().register(androidComponent);
             eventsRegistered = true;
             logger.trace("+Event bus registered for view - '{}'.",
@@ -49,7 +70,7 @@ class EventRegister {
      */
     public void unregisterEventBuses() {
         if (eventsRegistered) {
-            AndroidMvc.getEventBusC2V().unregister(androidComponent);
+            C2VBusHolder.getInstance().eventBusC2V.unregister(androidComponent);
             AndroidMvc.getEventBusV2V().unregister(androidComponent);
             eventsRegistered = false;
             logger.trace("-Event bus unregistered for view - '{}' and its controllers.",
