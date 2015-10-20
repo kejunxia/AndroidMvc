@@ -75,7 +75,7 @@ public class NoteListFragment extends BaseFragment {
         layoutManager = new LinearLayoutManager(getActivity());
         listView.setLayoutManager(layoutManager);
 
-        if (reason != Reason.ROTATE) {
+        if (!reason.isRotated()) {
             updateList();
         }
 

@@ -45,7 +45,7 @@ public class LifeCycleMonitorImpl implements LifeCycleMonitor {
 
     @Override
     public void onViewReady(View rootView, Bundle savedInstanceState, MvcFragment.Reason reason) {
-        logger.info("Lifecycle method invoked: onViewReady, reason?: " + reason.name());
+        logger.info("Lifecycle method invoked: onViewReady, reason?: " + reason.toString());
     }
 
     @Override

@@ -84,7 +84,7 @@ public class WeatherListFragment extends BaseFragment {
         updateList();
 
         //Automatically update weathers of all cities on first creation.
-        if (reason == Reason.FIRST_TIME) {
+        if (reason.isFirstTime()) {
             weatherController.updateAllCities(this);
         }
     }

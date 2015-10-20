@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.controller;
 
 import com.shipdream.lib.android.mvc.NavLocation;
+import com.shipdream.lib.android.mvc.event.BaseEventC2C;
 import com.shipdream.lib.android.mvc.event.ValueChangeEventC2V;
 
 /**
@@ -130,6 +131,22 @@ public interface NavigationController extends BaseController<NavigationControlle
              */
             public boolean isFastRewind() {
                 return fastRewind;
+            }
+        }
+
+    }
+
+    interface EventC2C {
+        /**
+         * Event to notify the controllers the app exists, for example by back button. Be aware, this
+         * doesn't mean the process of the application is killed but only all navigable fragments
+         * and their containing activity are destroyed since there might be services still running.
+         *
+         * <p><b>This is a good point to notify controllers to clear the their state.</b></p>
+         */
+        class OnAppExit extends BaseEventC2C {
+            public OnAppExit(Object sender) {
+                super(sender);
             }
         }
     }

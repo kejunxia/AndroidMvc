@@ -21,11 +21,12 @@ import android.view.View;
 
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.isNotNull;
 import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.times;
@@ -44,9 +45,11 @@ public class LifeCycleValidator {
     protected int onCreateViewCountNotNull;
     protected int onViewCreatedCountNull;
     protected int onViewCreatedCountNotNull;
+    protected int onViewReadyNewInstance;
     protected int onViewReadyFirstTime;
     protected int onViewReadyRotation;
     protected int onViewReadyRestore;
+    protected int onViewReadyPopOut;
     protected int onPushingToBackStackCount;
     protected int onPoppedOutToFrontCount;
     protected int onReturnForegroundCount;
@@ -77,6 +80,9 @@ public class LifeCycleValidator {
                     case onViewCreatedNotNull:
                         onViewCreatedCountNotNull++;
                         break;
+                    case onViewReadyNewInstance:
+                        onViewReadyNewInstance++;
+                        break;
                     case onViewReadyFirstTime:
                         onViewReadyFirstTime++;
                         break;
@@ -85,6 +91,9 @@ public class LifeCycleValidator {
                         break;
                     case onViewReadyRestore:
                         onViewReadyRestore++;
+                        break;
+                    case onViewReadyPopOut:
+                        onViewReadyPopOut++;
                         break;
                     case onPushingToBackStack:
                         onPushingToBackStackCount++;
@@ -114,9 +123,22 @@ public class LifeCycleValidator {
         verify(lifeCycleMonitorMock, times(onCreateViewCountNotNull)).onCreateView(any(View.class), isNotNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNull)).onViewCreated(any(View.class), isNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
-        verify(lifeCycleMonitorMock, times(onViewReadyFirstTime)).onViewReady(any(View.class), any(Bundle.class), eq(MvcFragment.Reason.FIRST_TIME));
-        verify(lifeCycleMonitorMock, times(onViewReadyRotation)).onViewReady(any(View.class), any(Bundle.class), eq(MvcFragment.Reason.ROTATE));
-        verify(lifeCycleMonitorMock, times(onViewReadyRestore)).onViewReady(any(View.class), any(Bundle.class), eq(MvcFragment.Reason.RESTORE));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyNewInstance)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new NewInstanceMatcher()));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyFirstTime)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new FirstTimeMatcher()));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyRotation)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new RotateMatcher()));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyRestore)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new RestoreMatcher()));
+
+        verify(lifeCycleMonitorMock, times(onViewReadyPopOut)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new PopOutMatcher()));
+
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onPushingToBackStackCount)).onPushingToBackStack();
         verify(lifeCycleMonitorMock, times(onPoppedOutToFrontCount)).onPoppedOutToFront();
@@ -128,6 +150,66 @@ public class LifeCycleValidator {
         reset();
     }
 
+    private class NewInstanceMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isNewInstance()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class FirstTimeMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isFirstTime()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class RestoreMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isRestored()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class RotateMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isRotated()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private class PopOutMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isPoppedOut()) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
     public void reset() {
         onCreateCountNull = 0;
         onCreateCountNotNull = 0;
@@ -135,9 +217,11 @@ public class LifeCycleValidator {
         onCreateViewCountNotNull = 0;
         onViewCreatedCountNull = 0;
         onViewCreatedCountNotNull = 0;
+        onViewReadyNewInstance = 0;
         onViewReadyFirstTime = 0;
         onViewReadyRotation = 0;
         onViewReadyRestore = 0;
+        onViewReadyPopOut = 0;
         onPushingToBackStackCount = 0;
         onPoppedOutToFrontCount = 0;
         onReturnForegroundCount = 0;

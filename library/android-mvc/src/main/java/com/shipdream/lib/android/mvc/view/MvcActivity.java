@@ -267,7 +267,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         @Override
         public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
             super.onViewReady(view, savedInstanceState, reason);
-            if (reason == Reason.FIRST_TIME) {
+            if (reason.isFirstTime()) {
                 firstTimeRun = true;
             }
         }
@@ -290,7 +290,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          * navigate to the initial fragment in this callback. {@link NavigationController} can be
          * obtained by {@link #getNavigationController()} or even be injected again. This callback is
          * equivalent to override {@link #onViewReady(View, Bundle, Reason)} and perform action when
-         * reason of view ready of this {@link DelegateFragment} is {@link Reason#FIRST_TIME}.
+         * reason of view ready of this {@link DelegateFragment} is {@link Reason#isFirstTime()}.
          *
          * <p>
          * Note this callback will NOT be invoked on restoration after the app is killed by the OS from background.
@@ -363,7 +363,11 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        public void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
+        /**
+         * Handle the forward navigation event call back
+         * @param event The forward navigation event
+         */
+        protected void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -432,7 +436,11 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        public void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
+        /**
+         * Handle the backward navigation event call back
+         * @param event The backward navigation event
+         */
+        protected void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -458,13 +466,16 @@ public abstract class MvcActivity extends AppCompatActivity {
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
                     currentFrag.injectDependencies();
-                    currentFrag.registerOnViewReadyListener(new Runnable() {
-                        @Override
-                        public void run() {
-                            currentFrag.onPoppedOutToFront();
-                            unregisterOnViewReadyListener(this);
+                    currentFrag.aboutToPopOut = true;
+
+                    List<Fragment> subFragments = currentFrag.getChildFragmentManager().getFragments();
+                    if (subFragments != null && !subFragments.isEmpty()) {
+                        for (Fragment fragment : subFragments) {
+                            if (fragment instanceof MvcFragment) {
+                                ((MvcFragment)fragment).aboutToPopOut = true;
+                            }
                         }
-                    });
+                    }
                 }
 
                 if (event.isFastRewind()) {

@@ -19,7 +19,6 @@ include ':library:android-mvc'
 include ':library:android-mvc-controller'
 include ':library:poke'
 
-include ':extension:controller-retrofit'
 include ':extension:service-core'
 include ':extension:service-mediastore'
 

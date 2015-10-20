@@ -21,7 +21,7 @@ First of all, let's look at some problems of the Android development below:
   - Easy testing for controllers on JVM without Android dependency
   - Automatically save restore instance state
   - Improved Fragment lifecycle
-    - __onViewReady(View view, Bundle savedInstanceState, Reason reason):__ Where reason differentiates the cause of creation of view: 1. __FIRST_TIME__, 2. __ROTATE__, 3. __RESTORE__
+    - __onViewReady(View view, Bundle savedInstanceState, Reason reason):__ Where reason differentiates the cause of creation of view: 1. Reason.isNewInstance(), 2. Reason.isFirstTime(), 3. Reason.isRestored(), 4 Reason.isRotated()
     - __onReturnForeground():__ When app resume from background
     - __onOrientationChanged(int lastOrientation, int currentOrientation):__ When app rotated
     - __onPushingToBackStack():__ When current page is pushed into back stack and navigate to next page
@@ -40,13 +40,13 @@ The library is currently release to jCenter and MavenCentral
 <dependency>
     <groupId>com.shipdream</groupId>
     <artifactId>android-mvc</artifactId>
-    <version>1.2.1</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-compile "com.shipdream:android-mvc:1.2.1"
+compile "com.shipdream:android-mvc:1.3.0"
 ```
 
 ## Samples

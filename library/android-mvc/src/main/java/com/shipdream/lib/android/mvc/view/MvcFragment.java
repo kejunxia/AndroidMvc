@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -52,24 +53,107 @@ import javax.inject.Inject;
  * </p>
  */
 public abstract class MvcFragment extends Fragment {
+    private Object newInstanceChecker;
+
     /**
      * Reason of creating the view of the fragment
      */
-    public enum Reason {
+    public static class Reason {
+        private boolean isNewInstance;
+        private boolean isFirstTime;
+        private boolean isRestored;
+        private boolean isRotated;
+        private boolean isPoppedOut;
+
+        void setNewInstance(boolean isNewInstance) {
+            this.isNewInstance = isNewInstance;
+        }
+
+        void setFirstTime(boolean isFirstTime) {
+            this.isFirstTime = isFirstTime;
+        }
+
+        void setRestored(boolean isRestored) {
+            this.isRestored = isRestored;
+        }
+
+        void setRotated(boolean isRotated) {
+            this.isRotated = isRotated;
+        }
+
+        void setPoppedOut(boolean isPoppedOut) {
+            this.isPoppedOut = isPoppedOut;
+        }
+
         /**
-         * The view of the fragment is newly created for the first time
+         * @return Indicates whether the fragment is a new instance that all its fields need to be
+         * reinitialized and configured. This could happen when a fragment is created for the first
+         * time (when {@link #isFirstTime()} = true) or the fragment is recreated on restoration
+         * after its holding activity was killed by OS (when {@link #isRestored()} = true).
+         *
+         * <p>Note that even this flag is true, widgets of the view of the fragment still need to be
+         * reconfigured whenever {@link #onViewReady(View, Bundle, Reason)} is called. For example,
+         * onClickListener of a Button still need be set regardless inNewStance() is true or false.
+         * But a view pager adapter as a field of the fragment doesn't need to be re-instantiated
+         * because as a fragment instance field, it is still held by the fragment when
+         * isNewInstance() is false. This usually happens when the fragment is popped out on back
+         * navigation.</p>
          */
-        FIRST_TIME,
+        public boolean isNewInstance() {
+            return this.isNewInstance;
+        }
+
         /**
-         * The view of the fragment is recreated due to rotation
+         * @return Indicates whether the fragment view is created when the fragment is created for
+         * the first time. When this flag is true it's a good time to initialize the state fragment.
          */
-        ROTATE,
+        public boolean isFirstTime() {
+            return this.isFirstTime;
+        }
+
         /**
-         * The view of the fragment is recreated on restoration after the activity of the fragment
-         * is killed and recreated by the OS. Note that even there is an orientation change along
-         * with the restoration only the reason will still be RESTORE.
+         * @return Indicates whether the fragment view is created after the activity is killed by
+         * OS and restored. <br><br>
+         *
+         * <p>Although when a fragment is restored all fields of the fragment will be recreated
+         * ({@link #isNewInstance()} = true), MVC framework will automatically restore the
+         * state(model) of injected controllers held by the fragment . So when a fragment is being
+         * restored, only re-instantiate its non-controller fields. All injected {@link StateManaged}
+         * including controllers will be restored by the framework itself.</p>
          */
-        RESTORE
+        public boolean isRestored() {
+            return this.isRestored;
+        }
+
+        /**
+         * @return Indicates whether the fragment view is created when the fragment was pushed to
+         * back stack and just popped out.
+         *
+         * <p>Note that, when a fragment is popped out, it will reuses its previous instance and the
+         * fields of the instance, so {@link #isNewInstance()} won't be true in this case. This is
+         * because Android OS won't call onDestroy when a fragment is pushed into back stack.</p>
+         */
+        public boolean isPoppedOut() {
+            return this.isPoppedOut;
+        }
+
+        /**
+         * @return Indicates whether the fragment view is created after its orientation changed.
+         */
+        public boolean isRotated() {
+            return this.isRotated;
+        }
+
+        @Override
+        public String toString() {
+            return "Reason: {" +
+                    "newInstance: " + isNewInstance() +
+                    ", firstTime: " + isFirstTime() +
+                    ", restore: " + isRestored() +
+                    ", popOut: " + isPoppedOut() +
+                    ", rotate: " + isRotated() +
+                    '}';
+        }
     }
 
     private final static String STATE_LAST_ORIENTATION = AndroidMvc.MVC_SATE_PREFIX + "LastOrientation--__";
@@ -194,22 +278,34 @@ public abstract class MvcFragment extends Fragment {
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
         int currentOrientation = getResources().getConfiguration().orientation;
         boolean orientationChanged = currentOrientation != lastOrientation;
-        Reason reason;
-        if (restoring) {
-            reason = Reason.RESTORE;
+        Reason reason = new Reason();
+
+        if (newInstanceChecker == null) {
+            newInstanceChecker = new Object();
+            reason.setNewInstance(true);
         } else {
-            if (orientationChanged) {
-                reason = Reason.ROTATE;
-            } else {
-                reason = Reason.FIRST_TIME;
-            }
+            reason.setNewInstance(false);
+        }
+
+        if (orientationChanged) {
+            reason.setRotated(true);
+        }
+
+        if (aboutToPopOut) {
+            reason.setPoppedOut(true);
+            aboutToPopOut = false;
+        }
+
+        if (restoring) {
+            reason.setRestored(true);
+        } else if (!orientationChanged) {
+            reason.setFirstTime(true);
         }
 
         onViewReady(view, savedInstanceState, reason);
-        if (onViewReadyListeners != null) {
-            for (Runnable r : onViewReadyListeners) {
-                r.run();
-            }
+
+        if (reason.isPoppedOut()) {
+            onPoppedOutToFront();
         }
 
         if (orientationChanged) {
@@ -217,6 +313,12 @@ public abstract class MvcFragment extends Fragment {
         }
 
         lastOrientation = currentOrientation;
+
+        if (onViewReadyListeners != null) {
+            for (Runnable r : onViewReadyListeners) {
+                r.run();
+            }
+        }
     }
 
     /**
@@ -263,6 +365,8 @@ public abstract class MvcFragment extends Fragment {
      */
     protected void onPushingToBackStack() {
     }
+
+    boolean aboutToPopOut = false;
 
     /**
      * Called when this fragment is popped out from fragment back stack. This callback will be

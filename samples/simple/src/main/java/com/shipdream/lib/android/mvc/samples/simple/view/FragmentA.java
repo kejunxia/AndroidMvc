@@ -92,7 +92,7 @@ public class FragmentA extends MvcFragment {
             }
         });
 
-        if (reason == Reason.FIRST_TIME) {
+        if (reason.isFirstTime()) {
             FragmentA_SubFragment f = new FragmentA_SubFragment();
 
             getChildFragmentManager().beginTransaction()

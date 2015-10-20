@@ -124,13 +124,13 @@ public class MainFragment extends MvcActivity.DelegateFragment {
     }
 
     @Override
-    public void onEvent(NavigationController.EventC2V.OnLocationForward event) {
+    protected void onEvent(NavigationController.EventC2V.OnLocationForward event) {
         super.onEvent(event);
         updateNavigationUi();
     }
 
     @Override
-    public void onEvent(NavigationController.EventC2V.OnLocationBack event) {
+    protected void onEvent(NavigationController.EventC2V.OnLocationBack event) {
         super.onEvent(event);
         updateNavigationUi();
     }

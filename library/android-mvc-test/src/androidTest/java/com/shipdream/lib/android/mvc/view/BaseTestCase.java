@@ -238,6 +238,12 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
                 FragmentManager fm = activity.getSupportFragmentManager();
                 Fragment fragment = fm.findFragmentByTag(activity.getDelegateFragmentTag());
                 clearStateOfFragments(fragment);
+
+                lifeCycleValidator.reset();
+                lifeCycleValidatorA.reset();
+                lifeCycleValidatorB.reset();
+                lifeCycleValidatorC.reset();
+                lifeCycleValidatorD.reset();
             }
         });
         super.tearDown();
