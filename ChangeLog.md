@@ -1,5 +1,6 @@
 Version: 1.3.0
 * Refactor the MvcFragment.Reason object.
+* Remove android-mvc-controller-retrofit
 
 Version: 1.2.1
 * Fix issue that MvcFragment and MvcDialogFragment post V2V events to C2V event bus.
