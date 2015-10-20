@@ -42,7 +42,8 @@ public class KeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         onView(withText("MvcTest")).check(matches(isDisplayed()));
 
         lifeCycleValidator.expect(LifeCycle.onCreateNull,
-                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
         pressHome();
         waitTest();
@@ -72,7 +73,8 @@ public class KeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         onView(withText("MvcTest")).check(matches(isDisplayed()));
 
         lifeCycleValidator.expect(LifeCycle.onCreateNull,
-                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull, LifeCycle.onViewReadyFirstTime);
+                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
         //If not on portrait mode rotate it to portrait
         int currentOrientation = activity.getResources().getConfiguration().orientation;
@@ -165,4 +167,5 @@ public class KeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
+    
 }

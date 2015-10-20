@@ -45,6 +45,7 @@ public class LifeCycleValidator {
     protected int onCreateViewCountNotNull;
     protected int onViewCreatedCountNull;
     protected int onViewCreatedCountNotNull;
+    protected int onViewReadyNewInstance;
     protected int onViewReadyFirstTime;
     protected int onViewReadyRotation;
     protected int onViewReadyRestore;
@@ -78,6 +79,9 @@ public class LifeCycleValidator {
                         break;
                     case onViewCreatedNotNull:
                         onViewCreatedCountNotNull++;
+                        break;
+                    case onViewReadyNewInstance:
+                        onViewReadyNewInstance++;
                         break;
                     case onViewReadyFirstTime:
                         onViewReadyFirstTime++;
@@ -120,6 +124,9 @@ public class LifeCycleValidator {
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNull)).onViewCreated(any(View.class), isNull(Bundle.class));
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
 
+        verify(lifeCycleMonitorMock, times(onViewReadyNewInstance)).onViewReady(any(View.class),
+                any(Bundle.class), argThat(new NewInstanceMatcher()));
+
         verify(lifeCycleMonitorMock, times(onViewReadyFirstTime)).onViewReady(any(View.class),
                 any(Bundle.class), argThat(new FirstTimeMatcher()));
 
@@ -141,6 +148,18 @@ public class LifeCycleValidator {
         verify(lifeCycleMonitorMock, times(onDestroyCount)).onDestroy();
 
         reset();
+    }
+
+    private class NewInstanceMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+        @Override
+        public boolean matches(Object argument) {
+            if (argument instanceof MvcFragment.Reason) {
+                if (((MvcFragment.Reason) argument).isNewInstance()) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 
     private class FirstTimeMatcher extends ArgumentMatcher<MvcFragment.Reason> {
@@ -198,6 +217,7 @@ public class LifeCycleValidator {
         onCreateViewCountNotNull = 0;
         onViewCreatedCountNull = 0;
         onViewCreatedCountNotNull = 0;
+        onViewReadyNewInstance = 0;
         onViewReadyFirstTime = 0;
         onViewReadyRotation = 0;
         onViewReadyRestore = 0;

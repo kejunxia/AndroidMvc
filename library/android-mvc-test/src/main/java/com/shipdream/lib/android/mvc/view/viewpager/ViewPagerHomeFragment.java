@@ -32,7 +32,7 @@ public class ViewPagerHomeFragment extends MvcFragment {
         lifeCycleMonitor.onViewReady(view, savedInstanceState, reason);
 
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        if (reason.isFirstTime() || reason.isRestored()) {
+        if (reason.isNewInstance()) {
             pagerAdapter = new PagerAdapter(getChildFragmentManager());
             viewPager.setAdapter(pagerAdapter);
         }

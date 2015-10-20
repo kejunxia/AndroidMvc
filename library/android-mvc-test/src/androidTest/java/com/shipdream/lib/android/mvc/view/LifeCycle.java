@@ -23,6 +23,7 @@ public enum LifeCycle {
     onCreateViewNotNull,
     onViewCreatedNull,
     onViewCreatedNotNull,
+    onViewReadyNewInstance,
     onViewReadyFirstTime,
     onViewReadyRotate,
     onViewReadyRestore,
