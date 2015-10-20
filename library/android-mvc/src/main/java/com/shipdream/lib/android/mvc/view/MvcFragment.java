@@ -156,7 +156,7 @@ public abstract class MvcFragment extends Fragment {
         }
     }
 
-    private final static String STATE_LAST_ORIENTATION = AndroidMvc.MVC_SATE_PREFIX + "LastOrientation--__";
+    private final static String STATE_LAST_ORIENTATION = DefaultStateKeeper.MVC_SATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
     private boolean fragmentComesBackFromBackground = false;
@@ -229,7 +229,7 @@ public abstract class MvcFragment extends Fragment {
         injectDependencies();
 
         if (savedInstanceState != null && !isStateManagedByRootDelegateFragment) {
-            AndroidMvc.restoreControllerStateByTheirOwn(savedInstanceState, this);
+            DefaultStateKeeperHolder.restoreControllerStateByTheirOwn(savedInstanceState, this);
         }
     }
 
@@ -420,7 +420,7 @@ public abstract class MvcFragment extends Fragment {
         outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
 
         if (!isStateManagedByRootDelegateFragment) {
-            AndroidMvc.saveControllerStateOfTheirOwn(outState, this);
+            DefaultStateKeeperHolder.saveControllerStateOfTheirOwn(outState, this);
         }
     }
 

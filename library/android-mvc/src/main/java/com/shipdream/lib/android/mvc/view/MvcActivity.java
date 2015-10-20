@@ -39,10 +39,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 public abstract class MvcActivity extends AppCompatActivity {
+    private static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
     private DelegateFragment delegateFragment;
 
     String getDelegateFragmentTag() {
-        return AndroidMvc.FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
+        return FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
     }
 
     @SuppressWarnings("unchecked")
@@ -109,7 +110,7 @@ public abstract class MvcActivity extends AppCompatActivity {
      * injected into any fragments extending {@link MvcFragment} by fields annotated by @Inject.
      */
     public static abstract class DelegateFragment extends MvcFragment {
-        private static final String MVC_STATE_BUNDLE_KEY = AndroidMvc.MVC_SATE_PREFIX + "RootBundle";
+        private static final String MVC_STATE_BUNDLE_KEY = DefaultStateKeeper.MVC_SATE_PREFIX + "RootBundle";
         private Logger logger = LoggerFactory.getLogger(getClass());
         //Track if the state is saved and not able to commit fragment transaction
         private boolean canCommitFragmentTransaction = false;
@@ -242,7 +243,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         private String getFragmentTag(String locationId) {
-            return AndroidMvc.FRAGMENT_TAG_PREFIX + locationId;
+            return FRAGMENT_TAG_PREFIX + locationId;
         }
 
         @Override
@@ -257,7 +258,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
                 Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
                 long ts = System.currentTimeMillis();
-                AndroidMvc.restoreStateOfAllControllers(mvcOutState);
+                DefaultStateKeeperHolder.restoreStateOfAllControllers(mvcOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
             }
         }
@@ -333,7 +334,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
             long ts = System.currentTimeMillis();
             Bundle mvcOutState = new Bundle();
-            AndroidMvc.saveStateOfAllControllers(mvcOutState);
+            DefaultStateKeeperHolder.saveStateOfAllControllers(mvcOutState);
             outState.putBundle(MVC_STATE_BUNDLE_KEY, mvcOutState);
             logger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
         }
