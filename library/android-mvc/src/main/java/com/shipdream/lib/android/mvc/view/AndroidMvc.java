@@ -23,6 +23,8 @@ import android.support.annotation.NonNull;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.MvcConfig;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.StateManaged;
@@ -32,7 +34,6 @@ import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.poke.exception.PokeException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,19 +47,42 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
 /**
  * {@link AndroidMvc} will generate a default {@link MvcGraph} for injection. To replace
- * {@link MvcGraph.BaseDependencies} use {@link #configGraph(MvcGraph.BaseDependencies)}.
+ * {@link MvcGraph.BaseDependencies} use {@link MvcConfig#configGraph(MvcGraph.BaseDependencies)}.
  * By default, the graph uses naming convention to locate the implementations of dependencies. See
  * {@link MvcGraph} how it works.
  */
 public class AndroidMvc {
     static final String MVC_SATE_PREFIX = "__--AndroidMvc:State:";
     static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
-    private static MvcGraph mvcGraph;
     private static EventBus eventBusV2V;
     private static DefaultStateKeeper sStateManager;
 
+    private static class DefaultControllerDependencies extends MvcGraph.BaseDependencies {
+        private static ExecutorService sNetworkExecutorService;
+        private final static String BACKGROUND_THREAD_NAME = "AndroidMvcDefaultBackgroundThread";
+
+        @Override
+        public ExecutorService createExecutorService() {
+            if (sNetworkExecutorService == null) {
+                sNetworkExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
+                    @Override
+                    public Thread newThread(final @NonNull Runnable r) {
+                        return new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                android.os.Process.setThreadPriority(THREAD_PRIORITY_BACKGROUND);
+                                r.run();
+                            }
+                        }, BACKGROUND_THREAD_NAME);
+                    }
+                });
+            }
+            return sNetworkExecutorService;
+        }
+    }
+
     static {
-        configGraph(new DefaultControllerDependencies());
+        MvcConfig.configGraph(new DefaultControllerDependencies());
         sStateManager = new DefaultStateKeeper();
         eventBusV2V = new EventBusImpl();
 
@@ -73,33 +97,18 @@ public class AndroidMvc {
      * @return The {@link MvcGraph}
      */
     public static MvcGraph graph() {
-        return mvcGraph;
-    }
-
-    /**
-     * Config the {@link MvcGraph} by custom dependencies.
-     * <p>Note that, the graph will be regenerated after config. In addition, it's cached instances
-     * will be regenerated such as cached singletons.</p>
-     *
-     * @param baseDependencies The dependencies of all controllers
-     */
-    public static void configGraph(MvcGraph.BaseDependencies baseDependencies) {
-        try {
-            mvcGraph = new MvcGraph(baseDependencies);
-        } catch (PokeException e) {
-            throw new RuntimeException(e);
-        }
+        return Injector.getGraph();
     }
 
     static void saveStateOfAllControllers(Bundle outState) {
         sStateManager.bundle = outState;
-        mvcGraph.saveAllStates(sStateManager);
+        Injector.getGraph().saveAllStates(sStateManager);
         sStateManager.bundle = null;
     }
 
     static void restoreStateOfAllControllers(Bundle savedState) {
         sStateManager.bundle = savedState;
-        mvcGraph.restoreAllStates(sStateManager);
+        Injector.getGraph().restoreAllStates(sStateManager);
         sStateManager.bundle = null;
     }
 
@@ -160,30 +169,6 @@ public class AndroidMvc {
      */
     public static void setCustomStateKeeper(AndroidStateKeeper customStateKeeper) {
         sStateManager.customStateKeeper = customStateKeeper;
-    }
-
-    private static class DefaultControllerDependencies extends MvcGraph.BaseDependencies {
-        private static ExecutorService sNetworkExecutorService;
-        private final static String BACKGROUND_THREAD_NAME = "AndroidMvcDefaultBackgroundThread";
-
-        @Override
-        public ExecutorService createExecutorService() {
-            if (sNetworkExecutorService == null) {
-                sNetworkExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
-                    @Override
-                    public Thread newThread(final @NonNull Runnable r) {
-                        return new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                android.os.Process.setThreadPriority(THREAD_PRIORITY_BACKGROUND);
-                                r.run();
-                            }
-                        }, BACKGROUND_THREAD_NAME);
-                    }
-                });
-            }
-            return sNetworkExecutorService;
-        }
     }
 
     private static class DefaultStateKeeper implements StateKeeper {
