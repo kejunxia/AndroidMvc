@@ -214,6 +214,9 @@ public abstract class MvcFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        eventRegister = new EventRegister(this);
+        eventRegister.onCreate();
+
         if(savedInstanceState == null) {
             lastOrientation = getResources().getConfiguration().orientation;
         } else {
@@ -258,7 +261,6 @@ public abstract class MvcFragment extends Fragment {
     @Override
     final public void onViewCreated(final View view, final Bundle savedInstanceState) {
         fragmentComesBackFromBackground = false;
-        eventRegister = new EventRegister(this);
         eventRegister.registerEventBuses();
 
         final boolean restoring = savedInstanceState != null;
@@ -394,7 +396,6 @@ public abstract class MvcFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         eventRegister.unregisterEventBuses();
-        eventRegister = null;
     }
 
     /**
@@ -409,6 +410,8 @@ public abstract class MvcFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         releaseDependencies();
+        eventRegister.onDestroy();
+        eventRegister = null;
     }
 
     @Override

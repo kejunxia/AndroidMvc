@@ -37,6 +37,7 @@ public abstract class MvcService extends Service{
         AndroidMvc.graph().inject(this);
 
         eventRegister = new EventRegister(this);
+        eventRegister.onCreate();
         eventRegister.registerEventBuses();
     }
 
@@ -47,6 +48,7 @@ public abstract class MvcService extends Service{
     public void onDestroy() {
         super.onDestroy();
         eventRegister.unregisterEventBuses();
+        eventRegister.onDestroy();
         AndroidMvc.graph().release(this);
     }
 

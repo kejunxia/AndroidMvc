@@ -19,6 +19,7 @@ package com.shipdream.lib.android.mvc.view;
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.View;
 
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 
@@ -43,6 +44,13 @@ public class MvcDialogFragment extends DialogFragment {
         AndroidMvc.graph().inject(this);
 
         eventRegister = new EventRegister(this);
+        eventRegister.onCreate();
+        eventRegister.registerEventBuses();
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         eventRegister.registerEventBuses();
     }
 
@@ -56,12 +64,14 @@ public class MvcDialogFragment extends DialogFragment {
         }
         //============================================
         super.onDestroyView();
+        eventRegister.unregisterEventBuses();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         eventRegister.unregisterEventBuses();
+        eventRegister.onDestroy();
         AndroidMvc.graph().release(this);
     }
 
