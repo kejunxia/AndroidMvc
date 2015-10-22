@@ -24,16 +24,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.shipdream.lib.android.mvc.Injector;
-import com.shipdream.lib.android.mvc.MvcConfig;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
-import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
+import com.shipdream.lib.poke.Component;
+import com.shipdream.lib.poke.Provides;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,18 +43,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
+import javax.inject.Singleton;
+
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
 /**
  * {@link AndroidMvc} will generate a default {@link MvcGraph} for injection. To replace
- * {@link MvcGraph.BaseDependencies} use {@link MvcConfig#configGraph(MvcGraph.BaseDependencies)}.
+ * {@link MvcGraph.BaseDependencies} use {@link Injector#configGraph(MvcGraph.BaseDependencies)}.
  * By default, the graph uses naming convention to locate the implementations of dependencies. See
  * {@link MvcGraph} how it works.
  */
 public class AndroidMvc {
     static final String MVC_SATE_PREFIX = "__--AndroidMvc:State:";
     static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
-    private static EventBus eventBusV2V;
     private static DefaultStateKeeper sStateManager;
 
     private static class DefaultControllerDependencies extends MvcGraph.BaseDependencies {
@@ -81,10 +82,19 @@ public class AndroidMvc {
         }
     }
 
+    static class ViewComponent extends Component {
+        @Provides
+        @EventBusV2V
+        @Singleton
+        public EventBus providesIEventBusC2V() {
+            return new EventBusImpl();
+        }
+    }
+
     static {
-        MvcConfig.configGraph(new DefaultControllerDependencies());
+        Injector.configGraph(new DefaultControllerDependencies());
+        Injector.getGraph().register(new ViewComponent());
         sStateManager = new DefaultStateKeeper();
-        eventBusV2V = new EventBusImpl();
 
         AndroidPosterImpl.init();
     }
@@ -146,17 +156,6 @@ public class AndroidMvc {
                 }
             }
         }
-    }
-
-    /**
-     * Gets the views to views event bus. By default all {@link MvcFragment}s,
-     * {@link MvcDialogFragment} and {@link MvcService} have registered to this event bus. They
-     * also have short cut methods to post {@link BaseEventV2V}. Custom views which need to use the
-     * event bus must register to this event respectively..
-     * @return The event bus
-     */
-    public static EventBus getEventBusV2V() {
-        return eventBusV2V;
     }
 
     /**

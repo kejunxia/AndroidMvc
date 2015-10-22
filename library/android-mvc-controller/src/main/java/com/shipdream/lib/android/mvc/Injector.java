@@ -5,9 +5,14 @@ import com.shipdream.lib.poke.exception.PokeException;
 public class Injector {
     private static MvcGraph mvcGraph;
 
-    static void configGraph(MvcGraph.BaseDependencies baseDependencies) {
+    /**
+     * Config the dependencies of MvcGraph. Be careful to use this method because it will dump the
+     * existing graph and all injectable instances managed by it
+     * @param dependencies the dependencies.
+     */
+    public static void configGraph(MvcGraph.BaseDependencies dependencies) {
         try {
-            mvcGraph = new MvcGraph(baseDependencies);
+            mvcGraph = new MvcGraph(dependencies);
         } catch (PokeException e) {
             throw new RuntimeException(e);
         }

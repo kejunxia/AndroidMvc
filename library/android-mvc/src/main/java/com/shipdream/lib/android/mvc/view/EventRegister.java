@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc.view;
 
+import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
 
@@ -25,16 +26,20 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 class EventRegister {
-    private static class C2VBusHolder {
+    private static class BusHolder {
         @Inject
         @EventBusC2V
         private EventBus eventBusC2V;
 
-        private static C2VBusHolder instance;
+        @Inject
+        @EventBusV2V
+        private EventBus eventBusV2V;
 
-        private static C2VBusHolder getInstance() {
+        private static BusHolder instance;
+
+        private static BusHolder getInstance() {
             if (instance == null) {
-                instance = new C2VBusHolder();
+                instance = new BusHolder();
                 AndroidMvc.graph().inject(instance);
             }
             return instance;
@@ -54,8 +59,8 @@ class EventRegister {
      */
     public void registerEventBuses() {
         if (!eventsRegistered) {
-            C2VBusHolder.getInstance().eventBusC2V.register(androidComponent);
-            AndroidMvc.getEventBusV2V().register(androidComponent);
+            BusHolder.getInstance().eventBusC2V.register(androidComponent);
+            BusHolder.getInstance().eventBusV2V.register(androidComponent);
             eventsRegistered = true;
             logger.trace("+Event bus registered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());
@@ -70,8 +75,8 @@ class EventRegister {
      */
     public void unregisterEventBuses() {
         if (eventsRegistered) {
-            C2VBusHolder.getInstance().eventBusC2V.unregister(androidComponent);
-            AndroidMvc.getEventBusV2V().unregister(androidComponent);
+            BusHolder.getInstance().eventBusC2V.unregister(androidComponent);
+            BusHolder.getInstance().eventBusV2V.unregister(androidComponent);
             eventsRegistered = false;
             logger.trace("-Event bus unregistered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
@@ -81,4 +86,7 @@ class EventRegister {
         }
     }
 
+    void postEventV2V(BaseEventV2V event) {
+        BusHolder.getInstance().eventBusV2V.post(event);
+    }
 }
