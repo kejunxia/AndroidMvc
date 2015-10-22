@@ -153,7 +153,7 @@ public abstract class Graph {
                 monitors.get(i).onInject(target);
             }
         }
-        doInject(target, null, null, injectAnnotation, true);
+        doInject(target, null, null, injectAnnotation);
         visitedInjectNodes.clear();
         revisitedNode = null;
         visitedFields.clear();
@@ -281,20 +281,26 @@ public abstract class Graph {
         } else {
             T newInstance = provider.get();
 
-            doInject(newInstance, null, null, injectAnnotation, false);
+            doInject(newInstance, type, qualifier, injectAnnotation);
 
             instance = newInstance;
         }
 
         provider.retain();
+        if (provider.totalReference() == 1) {
+            provider.notifyInjected(instance);
+        }
         consumer.consume(instance);
+
+        doRelease(instance, type, qualifier, injectAnnotation);
+
         provider.release();
         checkToFreeProvider(provider);
     }
 
     @SuppressWarnings("unchecked")
     private void doInject(Object target, Class targetType, Annotation targetQualifier,
-                          Class<? extends Annotation> injectAnnotation, boolean retainReference)
+                          Class<? extends Annotation> injectAnnotation)
             throws ProvideException, ProviderMissingException, CircularDependenciesException {
         boolean circularDetected = false;
         Provider targetProvider;
@@ -328,19 +334,14 @@ public abstract class Graph {
                         Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
                         Provider provider = getProvider(fieldType, fieldQualifier);
 
-                        Object impl;
-                        if (retainReference) {
-                            impl = provider.get();
-                            provider.retain(target, field);
-                        } else {
-                            impl = provider.createInstance();
-                        }
+                        Object impl = provider.get();
+                        provider.retain(target, field);
 
                         ReflectUtils.setField(target, field, impl);
 
                         boolean firstTimeInject = provider.totalReference() == 1;
                         if (!isFieldVisited(impl, field)) {
-                            doInject(impl, fieldType, fieldQualifier, injectAnnotation, retainReference);
+                            doInject(impl, fieldType, fieldQualifier, injectAnnotation);
                         }
 
                         if (firstTimeInject) {

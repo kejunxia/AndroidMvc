@@ -32,6 +32,9 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class TestInjectionWithQualifier extends BaseTestCases {
     @Qualifier
@@ -216,7 +219,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void should__be_able_to_use_instance_injected_with_qualifier() throws Exception {
+    public void should_be_able_to_use_instance_injected_with_qualifier() throws Exception {
         final SimpleGraph graph = new SimpleGraph();
         ScopeCache scopeCache = new ScopeCache();
         graph.register(Os.class, iOs.class, scopeCache);
@@ -240,6 +243,160 @@ public class TestInjectionWithQualifier extends BaseTestCases {
                 Assert.assertTrue(device.android == instance);
             }
         });
+    }
+
+    @Test
+    public void use_method_should_notify_injection_and_freed() throws
+            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+        final SimpleGraph graph = new SimpleGraph();
+        final Provider<Os> provider = new Provider<Os>(Os.class) {
+            @Override
+            protected Os createInstance() throws ProvideException {
+                return new Android();
+            }
+        };
+        provider.setScopeCache(new ScopeCache());
+        graph.register(provider);
+
+        class Phone {
+            @MyInject
+            private Os os;
+        }
+
+        final Provider.OnInjectedListener<Os> injectListener = mock(Provider.OnInjectedListener.class);
+        provider.registerOnInjectedListener(injectListener);
+
+        final Provider.OnFreedListener osOnFreedListener = mock(Provider.OnFreedListener.class);
+        graph.registerProviderFreedListener(osOnFreedListener);
+
+        final Phone phone = new Phone();
+
+        graph.inject(phone, MyInject.class);
+
+        graph.use(Os.class, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                verify(injectListener, times(1)).onInjected(phone.os);
+
+                Assert.assertTrue(phone.os == instance);
+                verify(osOnFreedListener, times(0)).onFreed(provider);
+
+                try {
+                    graph.release(phone, MyInject.class);
+                } catch (ProviderMissingException e) {
+                    throw new RuntimeException(e);
+                }
+
+                verify(osOnFreedListener, times(0)).onFreed(provider);
+            }
+        });
+
+        verify(injectListener, times(1)).onInjected(phone.os);
+
+        verify(osOnFreedListener, times(1)).onFreed(provider);
+    }
+
+    interface Connector{
+    }
+
+    static class SamSungOs implements Os {
+        @MyInject
+        Connector connector;
+    }
+
+    static class TypeC implements Connector{
+    }
+
+    @Test
+    public void use_method_should_inject_fields_recursively() throws
+            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+        final SimpleGraph graph = new SimpleGraph();
+        ScopeCache scopeCache = new ScopeCache();
+        graph.register(Os.class, SamSungOs.class, scopeCache);
+        graph.register(Connector.class, TypeC.class, scopeCache);
+
+        graph.use(Os.class, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertNotNull(((SamSungOs) instance).connector);
+            }
+        });
+    }
+
+    @Test
+    public void use_method_should_release_fields_recursively() throws
+            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+
+        final SimpleGraph graph = new SimpleGraph();
+        ScopeCache scopeCache = new ScopeCache();
+        graph.register(Os.class, SamSungOs.class, scopeCache);
+        graph.register(Connector.class, TypeC.class, scopeCache);
+
+        class Phone {
+            @MyInject
+            private Os os;
+        }
+
+        final Phone phone = new Phone();
+
+        class ConnectorHolder {
+            Connector connector;
+        }
+
+        final ConnectorHolder connectorHolder = new ConnectorHolder();
+
+        graph.use(Os.class, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertNotNull(((SamSungOs) instance).connector);
+
+                connectorHolder.connector = ((SamSungOs) instance).connector;
+            }
+        });
+
+        graph.inject(phone, MyInject.class);
+
+        Assert.assertTrue(connectorHolder.connector != ((SamSungOs) phone.os).connector);
+    }
+
+    @Test
+    public void inject_in_use_method_should_retain_instances() throws
+            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+
+        final SimpleGraph graph = new SimpleGraph();
+        ScopeCache scopeCache = new ScopeCache();
+        graph.register(Os.class, SamSungOs.class, scopeCache);
+        graph.register(Connector.class, TypeC.class, scopeCache);
+
+        class Phone {
+            @MyInject
+            private Os os;
+        }
+
+        final Phone phone = new Phone();
+
+        class ConnectorHolder {
+            Connector connector;
+        }
+
+        final ConnectorHolder connectorHolder = new ConnectorHolder();
+
+        graph.use(Os.class, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertNotNull(((SamSungOs) instance).connector);
+
+                try {
+                    graph.inject(phone, MyInject.class);
+                } catch (PokeException e) {
+                    throw new RuntimeException(e);
+                }
+
+                connectorHolder.connector = ((SamSungOs) instance).connector;
+            }
+        });
+
+        Assert.assertTrue(connectorHolder.connector == ((SamSungOs) phone.os).connector);
     }
 
     @Test
