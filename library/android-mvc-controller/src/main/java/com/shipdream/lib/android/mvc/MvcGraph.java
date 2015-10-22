@@ -173,6 +173,121 @@ public class MvcGraph {
         graph.clearOnProviderFreedListeners();
     }
 
+    /**
+     * Same as {@link #use(Class, Annotation, Consumer)} except using un-qualified injectable type.
+     * @param type The type of the injectable instance
+     * @param consumer Consume to use the instance
+     */
+    public <T> void use(Class<T> type, Consumer<T> consumer) {
+        try {
+            graph.use(type, Inject.class, consumer);
+        } catch (PokeException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Use an injectable instance in the scope of {@link Consumer#consume(Object)} without injecting
+     * it as a field of an object. This method will automatically retain the instance before
+     * {@link Consumer#consume(Object)} is called and released after it's returned. As a result,
+     * it doesn't hold the instance like the field marked by {@link Inject} that will retain the
+     * reference of the instance until {@link #release(Object)} is called. However, in the
+     * scope of {@link Consumer#consume(Object)} the instance will be held.
+     * <p>For example,</p>
+     * <pre>
+        interface Os {
+        }
+
+        static class DeviceComponent extends Component {
+            @Provides
+            @Singleton
+            public Os provide() {
+                return new Os(){
+                };
+            }
+        }
+    
+        class Device {
+            @Inject
+            private Os os;
+        }
+
+        mvcGraph.register(new DeviceComponent());
+
+        //OsReferenceCount = 0
+        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //First time to create the instance.
+                //OsReferenceCount = 1
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+
+        final Device device = new Device();
+        mvcGraph.inject(device);  //OsReferenceCount = 1
+        //New instance created and cached
+
+        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //Since reference count is greater than 0, cached instance will be reused
+                //OsReferenceCount = 2
+                Assert.assertTrue(device.os == instance);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 1
+
+        mvcGraph.release(device);  //OsReferenceCount = 0
+        //Last instance released, so next time a new instance will be created
+
+        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.os != instance);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+
+        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.os != instance);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+        //Cached instance cleared again
+
+        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                mvcGraph.inject(device);
+                //Injection will reuse the cached instance and increment the reference count
+                //OsReferenceCount = 2
+
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.os == instance);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 1
+
+        mvcGraph.release(device);  //OsReferenceCount = 0
+     * </pre>
+     * @param type The type of the injectable instance
+     * @param qualifier Qualifier for the injectable instance
+     * @param consumer Consume to use the instance
+     * @throws MvcGraphException throw when there are exceptions during the consumption of the instance
+     */
     public <T> void use(Class<T> type, Annotation qualifier, Consumer<T> consumer) {
         try {
             graph.use(type, qualifier, Inject.class, consumer);

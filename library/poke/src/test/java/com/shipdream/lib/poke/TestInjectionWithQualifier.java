@@ -28,7 +28,6 @@ import org.junit.Test;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 
@@ -70,7 +69,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         graph.register(Os.class, Android.class);
     }
 
-    private static class Container {
+    private static class Device {
         @MyInject
         private Os ios;
 
@@ -93,41 +92,41 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
         //Retain = 0
 
-        final Container container = new Container();
-        graph.inject(container, MyInject.class);
+        final Device device = new Device();
+        graph.inject(device, MyInject.class);
         //Retain  = 1
 
-        final Container container2 = new Container();
-        graph.inject(container2, MyInject.class);
+        final Device device2 = new Device();
+        graph.inject(device2, MyInject.class);
         //Retain = 2
 
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+        graph.use(Os.class, null, MyInject.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
-                Assert.assertTrue(container.ios == instance);
-                Assert.assertTrue(container2.ios == instance);
+                Assert.assertTrue(device.ios == instance);
+                Assert.assertTrue(device2.ios == instance);
             }
         });
 
-        graph.release(container, MyInject.class);
+        graph.release(device, MyInject.class);
         //Retain = 1
 
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+        graph.use(Os.class, null, MyInject.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
-                Assert.assertTrue(container.ios == instance);
-                Assert.assertTrue(container2.ios == instance);
+                Assert.assertTrue(device.ios == instance);
+                Assert.assertTrue(device2.ios == instance);
             }
         });
 
-        graph.release(container2, MyInject.class);
+        graph.release(device2, MyInject.class);
         //Retain = 0
 
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+        graph.use(Os.class, null, MyInject.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
-                Assert.assertTrue(container.ios != null);
-                Assert.assertTrue(container.ios != instance);
+                Assert.assertTrue(device.ios != null);
+                Assert.assertTrue(device.ios != instance);
             }
         });
     }
@@ -140,19 +139,78 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         graph.register(Os.class, Android.class, scopeCache);
         graph.register(Os.class, Windows.class, scopeCache);
 
-        final Container container = new Container();
+        final Device device = new Device();
 
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+        graph.use(Os.class, null, MyInject.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 try {
-                    graph.inject(container, MyInject.class);
+                    graph.inject(device, MyInject.class);
                 } catch (PokeException e) {
                     throw new RuntimeException(e);
                 }
 
-                Assert.assertTrue(container.ios != null);
-                Assert.assertTrue(container.ios == instance);
+                Assert.assertTrue(device.ios != null);
+                Assert.assertTrue(device.ios == instance);
+            }
+        });
+
+        graph.use(Os.class, null, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertTrue(device.ios == instance);
+            }
+        });
+
+        graph.release(device, MyInject.class);
+
+        graph.use(Os.class, null, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //New instance has created
+                Assert.assertTrue(device.ios != instance);
+            }
+        });
+    }
+
+    @Test
+    public void should_retain_instance_in_use_method_until_exit_without_qualifier() throws Exception {
+        final SimpleGraph graph = new SimpleGraph();
+        ScopeCache scopeCache = new ScopeCache();
+        graph.register(Os.class, iOs.class, scopeCache);
+        graph.register(Os.class, Android.class, scopeCache);
+        graph.register(Os.class, Windows.class, scopeCache);
+
+        final Device device = new Device();
+
+        graph.use(Os.class, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                try {
+                    graph.inject(device, MyInject.class);
+                } catch (PokeException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Assert.assertTrue(device.ios != null);
+                Assert.assertTrue(device.ios == instance);
+            }
+        });
+
+        graph.use(Os.class, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertTrue(device.ios == instance);
+            }
+        });
+
+        graph.release(device, MyInject.class);
+
+        graph.use(Os.class, MyInject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //New instance has created
+                Assert.assertTrue(device.ios != instance);
             }
         });
     }
@@ -165,21 +223,21 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         graph.register(Os.class, Android.class, scopeCache);
         graph.register(Os.class, Windows.class, scopeCache);
 
-        final Container container = new Container();
+        final Device device = new Device();
 
         @Google
         class GoogleHolder{}
 
-        graph.use(Os.class, GoogleHolder.class.getAnnotation(Google.class), Inject.class, new Consumer<Os>() {
+        graph.use(Os.class, GoogleHolder.class.getAnnotation(Google.class), MyInject.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 try {
-                    graph.inject(container, MyInject.class);
+                    graph.inject(device, MyInject.class);
                 } catch (PokeException e) {
                     throw new RuntimeException(e);
                 }
 
-                Assert.assertTrue(container.android == instance);
+                Assert.assertTrue(device.android == instance);
             }
         });
     }
@@ -192,19 +250,19 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         graph.register(Os.class, Android.class);
         graph.register(Os.class, Windows.class);
 
-        Container container = new Container();
-        graph.inject(container, MyInject.class);
+        Device device = new Device();
+        graph.inject(device, MyInject.class);
 
-        Container container2 = new Container();
-        graph.inject(container2, MyInject.class);
+        Device device2 = new Device();
+        graph.inject(device2, MyInject.class);
 
-        Assert.assertEquals(container.ios.getClass(), iOs.class);
-        Assert.assertEquals(container.android.getClass(), Android.class);
-        Assert.assertEquals(container.windows.getClass(), Windows.class);
+        Assert.assertEquals(device.ios.getClass(), iOs.class);
+        Assert.assertEquals(device.android.getClass(), Android.class);
+        Assert.assertEquals(device.windows.getClass(), Windows.class);
 
-        Assert.assertTrue(container.ios != container2.ios);
-        Assert.assertTrue(container.android != container2.android);
-        Assert.assertTrue(container.windows != container2.windows);
+        Assert.assertTrue(device.ios != device2.ios);
+        Assert.assertTrue(device.android != device2.android);
+        Assert.assertTrue(device.windows != device2.windows);
     }
 
     @Test
@@ -216,19 +274,19 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         graph.register(Os.class, Android.class, scopeCache);
         graph.register(Os.class, Windows.class, scopeCache);
 
-        Container container = new Container();
-        graph.inject(container, MyInject.class);
+        Device device = new Device();
+        graph.inject(device, MyInject.class);
 
-        Container container2 = new Container();
-        graph.inject(container2, MyInject.class);
+        Device device2 = new Device();
+        graph.inject(device2, MyInject.class);
 
-        Assert.assertEquals(container.ios.getClass(), iOs.class);
-        Assert.assertEquals(container.android.getClass(), Android.class);
-        Assert.assertEquals(container.windows.getClass(), Windows.class);
+        Assert.assertEquals(device.ios.getClass(), iOs.class);
+        Assert.assertEquals(device.android.getClass(), Android.class);
+        Assert.assertEquals(device.windows.getClass(), Windows.class);
 
-        Assert.assertTrue(container.ios == container2.ios);
-        Assert.assertTrue(container.android == container2.android);
-        Assert.assertTrue(container.windows == container2.windows);
+        Assert.assertTrue(device.ios == device2.ios);
+        Assert.assertTrue(device.android == device2.android);
+        Assert.assertTrue(device.windows == device2.windows);
     }
 
     static class ContainerComponent extends Component {
@@ -258,19 +316,19 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         SimpleGraph graph = new SimpleGraph();
         graph.register(new ContainerComponent());
 
-        Container container = new Container();
-        graph.inject(container, MyInject.class);
+        Device device = new Device();
+        graph.inject(device, MyInject.class);
 
-        Container container2 = new Container();
-        graph.inject(container2, MyInject.class);
+        Device device2 = new Device();
+        graph.inject(device2, MyInject.class);
 
-        Assert.assertEquals(container.ios.getClass(), iOs.class);
-        Assert.assertEquals(container.android.getClass(), Windows.class);
-        Assert.assertEquals(container.windows.getClass(), Android.class);
+        Assert.assertEquals(device.ios.getClass(), iOs.class);
+        Assert.assertEquals(device.android.getClass(), Windows.class);
+        Assert.assertEquals(device.windows.getClass(), Android.class);
 
-        Assert.assertTrue(container.ios != container2.ios);
-        Assert.assertTrue(container.android != container2.android);
-        Assert.assertTrue(container.windows != container2.windows);
+        Assert.assertTrue(device.ios != device2.ios);
+        Assert.assertTrue(device.android != device2.android);
+        Assert.assertTrue(device.windows != device2.windows);
     }
 
     interface Book {
