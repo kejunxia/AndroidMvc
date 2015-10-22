@@ -17,17 +17,18 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 
@@ -80,6 +81,107 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         @Microsoft
         @MyInject
         private Os windows;
+    }
+
+    @Test
+    public void should_use_cached_instance_if_inject_instance_is_referenced_more_then_once() throws Exception {
+        final SimpleGraph graph = new SimpleGraph();
+        ScopeCache scopeCache = new ScopeCache();
+        graph.register(Os.class, iOs.class, scopeCache);
+        graph.register(Os.class, Android.class, scopeCache);
+        graph.register(Os.class, Windows.class, scopeCache);
+
+        //Retain = 0
+
+        final Container container = new Container();
+        graph.inject(container, MyInject.class);
+        //Retain  = 1
+
+        final Container container2 = new Container();
+        graph.inject(container2, MyInject.class);
+        //Retain = 2
+
+        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertTrue(container.ios == instance);
+                Assert.assertTrue(container2.ios == instance);
+            }
+        });
+
+        graph.release(container, MyInject.class);
+        //Retain = 1
+
+        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertTrue(container.ios == instance);
+                Assert.assertTrue(container2.ios == instance);
+            }
+        });
+
+        graph.release(container2, MyInject.class);
+        //Retain = 0
+
+        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                Assert.assertTrue(container.ios != null);
+                Assert.assertTrue(container.ios != instance);
+            }
+        });
+    }
+
+    @Test
+    public void should_retain_instance_in_use_method_until_exit() throws Exception {
+        final SimpleGraph graph = new SimpleGraph();
+        ScopeCache scopeCache = new ScopeCache();
+        graph.register(Os.class, iOs.class, scopeCache);
+        graph.register(Os.class, Android.class, scopeCache);
+        graph.register(Os.class, Windows.class, scopeCache);
+
+        final Container container = new Container();
+
+        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                try {
+                    graph.inject(container, MyInject.class);
+                } catch (PokeException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Assert.assertTrue(container.ios != null);
+                Assert.assertTrue(container.ios == instance);
+            }
+        });
+    }
+
+    @Test
+    public void should__be_able_to_use_instance_injected_with_qualifier() throws Exception {
+        final SimpleGraph graph = new SimpleGraph();
+        ScopeCache scopeCache = new ScopeCache();
+        graph.register(Os.class, iOs.class, scopeCache);
+        graph.register(Os.class, Android.class, scopeCache);
+        graph.register(Os.class, Windows.class, scopeCache);
+
+        final Container container = new Container();
+
+        @Google
+        class GoogleHolder{}
+
+        graph.use(Os.class, GoogleHolder.class.getAnnotation(Google.class), Inject.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                try {
+                    graph.inject(container, MyInject.class);
+                } catch (PokeException e) {
+                    throw new RuntimeException(e);
+                }
+
+                Assert.assertTrue(container.android == instance);
+            }
+        });
     }
 
     @Test

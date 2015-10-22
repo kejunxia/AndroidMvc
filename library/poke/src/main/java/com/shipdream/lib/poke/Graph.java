@@ -157,32 +157,43 @@ public abstract class Graph {
         visitedFields.clear();
     }
 
+    public <T> void use(Class<T> type, Class<? extends Annotation> injectAnnotation, Consumer<T> consumer)
+            throws ProvideException, CircularDependenciesException, ProviderMissingException {
+        use(type, null, injectAnnotation, consumer);
+    }
+
     /**
-     * Get an instance matching the type and qualifier. If there is an instance cached, the cached
-     * instance will be returned otherwise a new instance will be created.
      *
-     * <p>Note that, not like {@link #inject(Object, Class)} this method will <b>NOT</b> increment
-     * reference count for the injectable object with the same type and qualifier.</p>
-     * @param type the type of the object
-     * @param qualifier the qualifier of the injected object. Null is allowed if no qualifier is specified
-     * @return The cached object or a new instance matching the type and qualifier
-     * @throws ProviderMissingException throw if the provider matching the requiredType and qualifier is not found
-     * @throws ProvideException throw when failed to create a new instance
-     * @throws CircularDependenciesException throw when circular dependency found during injecting the newly created instance
+     * @param type
+     * @param qualifier
+     * @param injectAnnotation
+     * @param consumer
+     * @param <T>
+     * @throws ProvideException
+     * @throws CircularDependenciesException
+     * @throws ProviderMissingException
      */
-    public <T> T get(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
-            throws ProviderMissingException, ProvideException, CircularDependenciesException {
+    public <T> void use(Class<T> type, Annotation qualifier,
+                        Class<? extends Annotation> injectAnnotation, Consumer<T> consumer)
+            throws ProvideException, CircularDependenciesException, ProviderMissingException {
+        T instance;
+
         Provider<T> provider = getProvider(type, qualifier);
         T cachedInstance = provider.findCachedInstance();
         if (cachedInstance != null) {
-            return cachedInstance;
+            instance = cachedInstance;
         } else {
-            T newInstance = provider.createInstance();
+            T newInstance = provider.get();
 
             doInject(newInstance, null, null, injectAnnotation, false);
 
-            return newInstance;
+            instance = newInstance;
         }
+
+        provider.retain();
+        consumer.consume(instance);
+        provider.release();
+        checkToFreeProvider(provider);
     }
 
     @SuppressWarnings("unchecked")
@@ -301,16 +312,7 @@ public abstract class Graph {
 
                                 provider.release(target, field);
 
-                                if (provider.totalReference() == 0) {
-                                    if (onProviderFreedListeners != null) {
-                                        int listenerSize = onProviderFreedListeners.size();
-                                        for (int k = 0; k < listenerSize; k++) {
-                                            onProviderFreedListeners.get(k).onFreed(provider);
-                                        }
-                                    }
-
-                                    provider.freeCache();
-                                }
+                                checkToFreeProvider(provider);
                             }
                         }
                     }
@@ -321,6 +323,19 @@ public abstract class Graph {
             if (targetType != null) {
                 unrecordVisit(targetType, targetQualifier);
             }
+        }
+    }
+
+    private void checkToFreeProvider(Provider provider) {
+        if (provider.totalReference() == 0) {
+            if (onProviderFreedListeners != null) {
+                int listenerSize = onProviderFreedListeners.size();
+                for (int k = 0; k < listenerSize; k++) {
+                    onProviderFreedListeners.get(k).onFreed(provider);
+                }
+            }
+
+            provider.freeCache();
         }
     }
 

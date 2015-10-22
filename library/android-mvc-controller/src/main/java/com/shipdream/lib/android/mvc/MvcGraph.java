@@ -24,21 +24,23 @@ import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Component;
+import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ImplClassLocator;
 import com.shipdream.lib.poke.ImplClassLocatorByPattern;
 import com.shipdream.lib.poke.ImplClassNotFoundException;
 import com.shipdream.lib.poke.Provider;
+import com.shipdream.lib.poke.Provider.OnFreedListener;
 import com.shipdream.lib.poke.ProviderByClassType;
 import com.shipdream.lib.poke.ProviderFinderByRegistry;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
-import com.shipdream.lib.poke.Provider.OnFreedListener;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -171,25 +173,10 @@ public class MvcGraph {
         graph.clearOnProviderFreedListeners();
     }
 
-    /**
-     * Get an instance matching the type and qualifier. If there is an instance cached, the cached
-     * instance will be returned otherwise a new instance will be created.
-     *
-     * <p>Note that, not like {@link #inject(Object)} (Object)} this method will <b>NOT</b> increment
-     * reference count for the injectable object with the same type and qualifier.</p>
-     * @param type the type of the object
-     * @param qualifier the qualifier of the injected object. Null is allowed if no qualifier is specified
-     * @return The cached object or a new instance matching the type and qualifier
-     * @throws MvcGraphException throw if exception occurs during getting the instance
-     */
-    public <T> T get(Class<T> type, Annotation qualifier) {
+    public <T> void use(Class<T> type, Annotation qualifier, Consumer<T> consumer) {
         try {
-            return graph.get(type, qualifier, Inject.class);
-        } catch (ProviderMissingException e) {
-            throw new MvcGraphException(e.getMessage(), e);
-        } catch (ProvideException e) {
-            throw new MvcGraphException(e.getMessage(), e);
-        } catch (CircularDependenciesException e) {
+            graph.use(type, qualifier, Inject.class, consumer);
+        } catch (PokeException e) {
             throw new MvcGraphException(e.getMessage(), e);
         }
     }
