@@ -1,3 +1,8 @@
+Version: 1.4.0
+* Refactor of class AndroidMvc so that controllers can access the MvcGraph
+* EventBusV2V is injectable same as EventBusC2V and EventBusC2C
+* Add method "use" in MvcGraph to consume an injectable classes which doesn't require a class field marked by @Inject
+
 Version: 1.3.0
 * Refactor the MvcFragment.Reason object.
 * Remove android-mvc-controller-retrofit

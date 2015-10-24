@@ -33,13 +33,13 @@ The library is currently release to jCenter and MavenCentral
 <dependency>
     <groupId>com.shipdream</groupId>
     <artifactId>android-mvc</artifactId>
-    <version>1.3.0</version>
+    <version>1.4.0</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-compile "com.shipdream:android-mvc:1.3.0"
+compile "com.shipdream:android-mvc:1.4.0"
 ```
 
 ## Dependency injection with reference count
