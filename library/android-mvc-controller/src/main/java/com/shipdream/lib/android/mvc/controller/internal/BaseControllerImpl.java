@@ -60,7 +60,6 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
 
     private MODEL model;
 
-    @Override
     public void init() {
         model = createModelInstance();
         eventBusC2C.register(this);

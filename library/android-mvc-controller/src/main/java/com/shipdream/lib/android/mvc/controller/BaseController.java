@@ -35,12 +35,6 @@ public interface BaseController<MODEL> {
     MODEL getModel();
 
     /**
-     * Initialized the controller and create an empty model. If a specific model needs to be bound
-     * to this controller use {@link #bindModel(Object, Object)}
-     */
-    void init();
-
-    /**
      * Bind a prepared non-null model to the controller
      * @param sender Who wants to bind it
      * @param model The model to bind to this controller. CANNOT be NULL otherwise a runtime

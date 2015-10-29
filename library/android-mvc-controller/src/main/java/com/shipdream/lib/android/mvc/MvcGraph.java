@@ -498,8 +498,8 @@ public class MvcGraph {
                 registerOnInjectedListener(new OnInjectedListener() {
                     @Override
                     public void onInjected(Object object) {
-                        if (object instanceof BaseController) {
-                            BaseController controller = (BaseController) object;
+                        if (object instanceof BaseControllerImpl) {
+                            BaseControllerImpl controller = (BaseControllerImpl) object;
                             controller.init();
                         }
                         unregisterOnInjectedListener(this);
