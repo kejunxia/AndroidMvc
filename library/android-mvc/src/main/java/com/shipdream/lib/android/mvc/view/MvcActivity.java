@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvc.view;
 
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -146,8 +146,8 @@ public abstract class MvcActivity extends AppCompatActivity {
          * FIXME: ChildFragmentManager hack - remove this method when the bug is fixed in future android support library
          */
         @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
+        public void onAttach(Context context) {
+            super.onAttach(context);
 
             if (retainedChildFragmentManager != null) {
                 //restore the last retained child fragment manager to the new
