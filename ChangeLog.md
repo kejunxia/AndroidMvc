@@ -29,7 +29,7 @@ Once root fragment is restored, it should notify all nested fragments they are n
 Fix issue that nested fragments of popping out fragment won't call onReturnFromBackground incorrectly
 
 Version: 1.1.6
-Fix issue that onViewReady is called with incorrect reason - RESTORE which should be FIRST_TIME when the fragment is a page and recreated by FragmentStatePagerAdapter
+Fix issue that onViewReady is called with incorrect reason - RESTORE which should be FIRST_TIME when the fragment is a page and recreated by FragmentPagerAdapter
 
 Version: 1.1.5
 Allow remove preference key from SharedPreferenceService
