@@ -65,26 +65,6 @@ public abstract class MvcFragment extends Fragment {
         private boolean isRotated;
         private boolean isPoppedOut;
 
-        void setNewInstance(boolean isNewInstance) {
-            this.isNewInstance = isNewInstance;
-        }
-
-        void setFirstTime(boolean isFirstTime) {
-            this.isFirstTime = isFirstTime;
-        }
-
-        void setRestored(boolean isRestored) {
-            this.isRestored = isRestored;
-        }
-
-        void setRotated(boolean isRotated) {
-            this.isRotated = isRotated;
-        }
-
-        void setPoppedOut(boolean isPoppedOut) {
-            this.isPoppedOut = isPoppedOut;
-        }
-
         /**
          * @return Indicates whether the fragment is a new instance that all its fields need to be
          * reinitialized and configured. This could happen when a fragment is created for the first
@@ -284,24 +264,24 @@ public abstract class MvcFragment extends Fragment {
 
         if (newInstanceChecker == null) {
             newInstanceChecker = new Object();
-            reason.setNewInstance(true);
+            reason.isNewInstance = true;
         } else {
-            reason.setNewInstance(false);
+            reason.isNewInstance = false;
         }
 
         if (orientationChanged) {
-            reason.setRotated(true);
+            reason.isRotated = true;
         }
 
         if (aboutToPopOut) {
-            reason.setPoppedOut(true);
+            reason.isPoppedOut = true;
             aboutToPopOut = false;
         }
 
         if (restoring) {
-            reason.setRestored(true);
+            reason.isRestored = true;
         } else if (!orientationChanged) {
-            reason.setFirstTime(true);
+            reason.isFirstTime = true;
         }
 
         onViewReady(view, savedInstanceState, reason);
