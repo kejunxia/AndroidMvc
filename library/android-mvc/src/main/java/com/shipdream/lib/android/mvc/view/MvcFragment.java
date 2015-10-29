@@ -208,8 +208,10 @@ public abstract class MvcFragment extends Fragment {
         }
         injectDependencies();
 
-        if (savedInstanceState != null && !isStateManagedByRootDelegateFragment) {
-            DefaultStateKeeperHolder.restoreControllerStateByTheirOwn(savedInstanceState, this);
+        if (!isStateManagedByRootDelegateFragment) {
+            if (savedInstanceState != null) {
+                DefaultStateKeeperHolder.restoreControllerStateByTheirOwn(savedInstanceState, this);
+            }
         }
     }
 

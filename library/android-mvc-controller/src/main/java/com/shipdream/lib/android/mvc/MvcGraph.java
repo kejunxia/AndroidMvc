@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.internal.AsyncTask;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
@@ -494,14 +493,12 @@ public class MvcGraph {
         public T createInstance() throws ProvideException {
             final T newInstance = (T) super.createInstance();
 
-            if (newInstance instanceof BaseController) {
+            if (newInstance instanceof BaseControllerImpl) {
                 registerOnInjectedListener(new OnInjectedListener() {
                     @Override
                     public void onInjected(Object object) {
-                        if (object instanceof BaseControllerImpl) {
-                            BaseControllerImpl controller = (BaseControllerImpl) object;
-                            controller.init();
-                        }
+                        BaseControllerImpl controller = (BaseControllerImpl) object;
+                        controller.onConstruct();
                         unregisterOnInjectedListener(this);
                     }
                 });

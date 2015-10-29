@@ -60,7 +60,7 @@ public abstract class TestControllerBase <Controller extends BaseController> ext
         registerDependencies(mvcGraph);
         controllerToTest = createTestingController();
         mvcGraph.inject(controllerToTest);
-        ((BaseControllerImpl)controllerToTest).init();
+        ((BaseControllerImpl)controllerToTest).onConstruct();
     }
 
     @After

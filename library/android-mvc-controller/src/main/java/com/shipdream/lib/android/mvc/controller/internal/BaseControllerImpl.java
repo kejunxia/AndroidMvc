@@ -60,9 +60,17 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
 
     private MODEL model;
 
-    public void init() {
+    /**
+     * Called when the controller is constructed. Note that it could be called either when the
+     * controller is instantiated for the first time or restored by views.
+     *
+     * See {@link #restoreState(Object)}.
+     */
+    public void onConstruct() {
         model = createModelInstance();
         eventBusC2C.register(this);
+
+        //FIXME: should not be called here
         onInitialized();
     }
 
