@@ -20,7 +20,7 @@ import com.shipdream.lib.android.mvc.controller.BaseController;
 
 public interface LifeCycleTestController extends BaseController {
     interface Proxy {
-        void initCalled();
+        void onConstructCalled();
         void disposeCalled();
     }
 }

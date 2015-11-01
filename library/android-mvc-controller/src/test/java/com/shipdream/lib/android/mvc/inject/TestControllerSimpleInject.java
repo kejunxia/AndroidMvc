@@ -123,9 +123,9 @@ public class TestControllerSimpleInject extends BaseTestCases {
         graph.register(new LifeCycleTestControllerComponent(lifeCycleProxy));
 
         TestLifCycleView testView = new TestLifCycleView();
-        verify(lifeCycleProxy, times(0)).initCalled();
+        verify(lifeCycleProxy, times(0)).onConstructCalled();
         graph.inject(testView);
-        verify(lifeCycleProxy, times(1)).initCalled();
+        verify(lifeCycleProxy, times(1)).onConstructCalled();
         verify(lifeCycleProxy, times(0)).disposeCalled();
 
         graph.release(testView);

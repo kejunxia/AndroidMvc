@@ -64,7 +64,7 @@ public interface NoteController extends BaseController<NoteModel> {
      * @param title The title
      * @param content The content
      */
-    void updateViewingNote(String title, String content);
+    void updateViewingNote(Object sender, String title, String content);
 
     /**
      * Removes all selected notes and raises {@link EventC2V.OnNoteRemoved}
