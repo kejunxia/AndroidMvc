@@ -86,8 +86,8 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     }
 
     /**
-     * Called when the controller is disposed. When the controller is not referenced any more this
-     * should be called.
+     * Called when the controller is disposed. This occurs when the controller is de-referenced and
+     * not retained by any objects.
      */
     @Override
     public void onDisposed() {
@@ -155,6 +155,13 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
         if (getModelClassType() != null) {
             bindModel(this, restoredState);
         }
+        onRestored();
+    }
+
+    /**
+     * Called when the controller is restored after {@link #restoreState(Object)} is called.
+     */
+    public void onRestored() {
     }
 
     @Override
