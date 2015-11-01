@@ -72,7 +72,9 @@ public class NoteDetailFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        noteController.updateViewingNote(this, title.getText().toString(), content.getText().toString());
+        if (isVisible()) {
+            noteController.updateViewingNote(this, title.getText().toString(), content.getText().toString());
+        }
     }
 
     private void onEvent(NoteController.EventC2V.OnNoteSelected event) {
