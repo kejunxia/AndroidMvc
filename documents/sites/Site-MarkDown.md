@@ -33,7 +33,9 @@ First of all, let's look at some problems of the Android development below:
   - Well tested by jUnit and instrument test with Espresso.
 
 ## Download
-The library is currently release to jCenter and MavenCentral
+The library is currently released to both
+* jCenter [![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
+* Maven Central [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc)
 
 **Maven:**
 ```xml
