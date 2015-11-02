@@ -131,3 +131,7 @@ bintray {
         publish = rootProject.ext.shouldPublish
     }
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.4'
+}
