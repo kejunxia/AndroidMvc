@@ -53,7 +53,7 @@ public class TestRunAsyncTask extends BaseControllerTest {
 
         controller = new MyControllerImpl();
         graph.inject(controller);
-        controller.init();
+        controller.onConstruct();
 
         eventMonitor = mock(EventMonitor.class);
         eventBusC2V.register(eventMonitor);

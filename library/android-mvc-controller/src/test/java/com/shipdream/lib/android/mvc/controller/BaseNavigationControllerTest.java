@@ -21,13 +21,13 @@ import com.shipdream.lib.android.mvc.controller.internal.NavigationControllerImp
 import org.junit.Before;
 
 public class BaseNavigationControllerTest extends BaseControllerTest{
-    protected NavigationController navigationController;
+    protected NavigationControllerImpl navigationController;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
         navigationController = new NavigationControllerImpl();
         graph.inject(navigationController);
-        navigationController.init();
+        navigationController.onConstruct();
     }
 }
