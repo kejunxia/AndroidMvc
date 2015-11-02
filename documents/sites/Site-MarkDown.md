@@ -42,13 +42,13 @@ The library is currently released to both
 <dependency>
     <groupId>com.shipdream</groupId>
     <artifactId>android-mvc</artifactId>
-    <version>1.4.0</version>
+    <version>[LatestVersion]</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-compile "com.shipdream:android-mvc:1.4.0"
+compile "com.shipdream:android-mvc:[LatestVersion]"
 ```
 
 ## Samples
