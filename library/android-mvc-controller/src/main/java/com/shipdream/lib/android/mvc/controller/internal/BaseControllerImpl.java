@@ -60,11 +60,17 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
 
     private MODEL model;
 
-    @Override
-    public void init() {
+    /**
+     * Called when the controller is constructed. Note that it could be called either when the
+     * controller is instantiated for the first time or restored by views.
+     *
+     * <p>The model of the controller will be instantiated by model's default no-argument constructor.
+     * However, if the controller needs to be restored, a new instance of model restored by
+     * {@link #restoreState(Object)} will replace the model created here.</p>
+     */
+    public void onConstruct() {
         model = createModelInstance();
         eventBusC2C.register(this);
-        onInitialized();
     }
 
     private MODEL createModelInstance() {
@@ -80,14 +86,8 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     }
 
     /**
-     * Called when the controller is newly initialized.
-     */
-    protected void onInitialized() {
-    }
-
-    /**
-     * Called when the controller is disposed. When the controller is not referenced any more this
-     * should be called.
+     * Called when the controller is disposed. This occurs when the controller is de-referenced and
+     * not retained by any objects.
      */
     @Override
     public void onDisposed() {
@@ -143,10 +143,8 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      * Method of {@link StateManaged} that allows {@link StateKeeper} to save and get the state of
      * which is also the model the controller.
      * <p>
-     * Note that if the controller doesn't need to get its state saved and restored
-     * automatically. e.g. The controller always loads resource from remote services so that
-     * its state can be thought persisted by the remote services when {@link #getModelClassType()}
-     * returns null, the method will have no effect.
+     * Note that if the controller doesn't need its state saved and restored automatically return
+     * null in {@link #getModelClassType()} and then this method will have no effect.
      * </p>
      *
      * @param restoredState The restored state by {@link StateKeeper} that will be bound to the
@@ -157,6 +155,13 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
         if (getModelClassType() != null) {
             bindModel(this, restoredState);
         }
+        onRestored();
+    }
+
+    /**
+     * Called when the controller is restored after {@link #restoreState(Object)} is called.
+     */
+    public void onRestored() {
     }
 
     @Override

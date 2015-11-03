@@ -18,6 +18,7 @@ package com.shipdream.lib.android.mvc.samples.note.controller.internal;
 
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.controller.BaseController;
+import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 
@@ -59,7 +60,7 @@ public abstract class TestControllerBase <Controller extends BaseController> ext
         registerDependencies(mvcGraph);
         controllerToTest = createTestingController();
         mvcGraph.inject(controllerToTest);
-        controllerToTest.init();
+        ((BaseControllerImpl)controllerToTest).onConstruct();
     }
 
     @After

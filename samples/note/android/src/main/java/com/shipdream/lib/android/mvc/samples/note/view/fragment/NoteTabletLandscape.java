@@ -25,6 +25,9 @@ import android.view.View;
 import com.shipdream.lib.android.mvc.samples.note.R;
 
 public class NoteTabletLandscape extends BaseFragment {
+    private final static String LIST_FRAG_TAG = NoteTabletLandscape.class.getSimpleName() + ":ListFrag";
+    private final static String DETAIL_FRAG_TAG = NoteTabletLandscape.class.getSimpleName() + ":DetailFrag";
+
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_note_large;
@@ -34,13 +37,20 @@ public class NoteTabletLandscape extends BaseFragment {
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
         if(getCurrentOrientation() == Configuration.ORIENTATION_LANDSCAPE) {
-            NoteListFragment noteListFragment = new NoteListFragment();
-            NoteDetailFragment noteDetailFragment = new NoteDetailFragment();
-
             FragmentManager fm = getChildFragmentManager();
+
+            NoteListFragment noteListFragment = (NoteListFragment) fm.findFragmentByTag(LIST_FRAG_TAG);
+            if (noteListFragment == null) {
+                noteListFragment = new NoteListFragment();
+            }
+            NoteDetailFragment noteDetailFragment = (NoteDetailFragment) fm.findFragmentByTag(DETAIL_FRAG_TAG);
+            if (noteDetailFragment == null) {
+                noteDetailFragment = new NoteDetailFragment();
+            }
+
             FragmentTransaction trans = fm.beginTransaction();
-            trans.replace(R.id.note_large_leftPane, noteListFragment);
-            trans.replace(R.id.note_large_rightPane, noteDetailFragment);
+            trans.replace(R.id.note_large_leftPane, noteListFragment, LIST_FRAG_TAG);
+            trans.replace(R.id.note_large_rightPane, noteDetailFragment, DETAIL_FRAG_TAG);
             trans.commit();
         }
     }

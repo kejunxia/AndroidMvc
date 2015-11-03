@@ -17,11 +17,13 @@
 package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.poke.Component;
+import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
+import com.shipdream.lib.poke.Provider.OnFreedListener;
+import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.Provider.OnFreedListener;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -29,10 +31,18 @@ import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 
+import javax.inject.Inject;
+import javax.inject.Qualifier;
+import javax.inject.Singleton;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -64,6 +74,225 @@ public class TestMvcGraph {
                 return executorService;
             }
         });
+    }
+
+    interface Os {
+    }
+
+    @Qualifier
+    @Documented
+    @Retention(RUNTIME)
+    @interface Apple {
+    }
+
+    @Qualifier
+    @Documented
+    @Retention(RUNTIME)
+    @interface Google {
+    }
+
+    static class iOS implements Os {
+
+    }
+
+    static class Android implements Os {
+
+    }
+
+    static class DeviceComponent extends Component {
+        @Provides
+        @Singleton
+        public Os provide() {
+            return new Android();
+        }
+
+        @Provides
+        @Singleton
+        @Apple
+        public Os provideIos() {
+            return new iOS();
+        }
+
+        @Provides
+        @Singleton
+        @Google
+        public Os provideAndroid() {
+            return new Android();
+        }
+    }
+
+    class Device {
+        @Inject
+        private Os android;
+
+        @Inject
+        @Apple
+        private Os os;
+    }
+
+    @Test
+    public void use_method_should_retain_and_release_instance_without_qualifier_correctly() {
+        mvcGraph.register(new DeviceComponent());
+
+        //OsReferenceCount = 0
+        mvcGraph.use(Os.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //First time to create the instance.
+                //OsReferenceCount = 1
+                Assert.assertTrue(instance instanceof Android);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+
+        final Device device = new Device();
+        mvcGraph.inject(device);  //OsReferenceCount = 1
+        //New instance created and cached
+
+        mvcGraph.use(Os.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //Since reference count is greater than 0, cached instance will be reused
+                //OsReferenceCount = 2
+                Assert.assertTrue(device.android == instance);
+                Assert.assertTrue(instance instanceof Android);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 1
+
+        mvcGraph.release(device);  //OsReferenceCount = 0
+        //Last instance released, so next time a new instance will be created
+
+        mvcGraph.use(Os.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.android != instance);
+                Assert.assertTrue(instance instanceof Android);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+
+        mvcGraph.use(Os.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.android != instance);
+                Assert.assertTrue(instance instanceof Android);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+        //Cached instance cleared again
+
+        mvcGraph.use(Os.class, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                mvcGraph.inject(device);
+                //Injection will reuse the cached instance and increment the reference count
+                //OsReferenceCount = 2
+
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.android == instance);
+                Assert.assertTrue(instance instanceof Android);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 1
+
+        mvcGraph.release(device);  //OsReferenceCount = 0
+    }
+
+    @Test
+    public void use_method_should_retain_and_release_instance_correctly() {
+        mvcGraph.register(new DeviceComponent());
+
+        @Apple
+        class NeedIoS {
+
+        }
+
+        Annotation iosQualifier = NeedIoS.class.getAnnotation(Apple.class);
+
+        //OsReferenceCount = 0
+        mvcGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //First time to create the instance.
+                //OsReferenceCount = 1
+                Assert.assertTrue(instance instanceof iOS);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+
+        final Device device = new Device();
+        mvcGraph.inject(device);  //OsReferenceCount = 1
+        //New instance created and cached
+
+        mvcGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //Since reference count is greater than 0, cached instance will be reused
+                //OsReferenceCount = 2
+                Assert.assertTrue(device.os == instance);
+                Assert.assertTrue(instance instanceof iOS);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 1
+
+        mvcGraph.release(device);  //OsReferenceCount = 0
+        //Last instance released, so next time a new instance will be created
+
+        mvcGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.os != instance);
+                Assert.assertTrue(instance instanceof iOS);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+
+        mvcGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.os != instance);
+                Assert.assertTrue(instance instanceof iOS);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 0
+        //Cached instance cleared again
+
+        mvcGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+            @Override
+            public void consume(Os instance) {
+                //OsReferenceCount = 1
+                mvcGraph.inject(device);
+                //Injection will reuse the cached instance and increment the reference count
+                //OsReferenceCount = 2
+
+                //Since the cached instance is cleared, the new instance is a newly created one.
+                Assert.assertTrue(device.os == instance);
+                Assert.assertTrue(instance instanceof iOS);
+            }
+        });
+        //Reference count decremented by use method automatically
+        //OsReferenceCount = 1
+
+        mvcGraph.release(device);  //OsReferenceCount = 0
     }
 
     @Test

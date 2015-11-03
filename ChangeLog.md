@@ -1,3 +1,10 @@
+Version: 1.4.0
+* Refactor of class AndroidMvc so that controllers can access the MvcGraph
+* EventBusV2V is injectable same as EventBusC2V and EventBusC2C
+* Add method "use" in MvcGraph to consume an injectable classes which doesn't require a class field marked by @Inject
+* Remove BaseControllerImpl.onInitialized and replaced by onConstruct since onInitialized is also called when the controller is restored
+* Add call back BaseControllerImpl.onRestored
+
 Version: 1.3.0
 * Refactor the MvcFragment.Reason object.
 * Remove android-mvc-controller-retrofit
@@ -24,7 +31,7 @@ Once root fragment is restored, it should notify all nested fragments they are n
 Fix issue that nested fragments of popping out fragment won't call onReturnFromBackground incorrectly
 
 Version: 1.1.6
-Fix issue that onViewReady is called with incorrect reason - RESTORE which should be FIRST_TIME when the fragment is a page and recreated by FragmentStatePagerAdapter
+Fix issue that onViewReady is called with incorrect reason - RESTORE which should be FIRST_TIME when the fragment is a page and recreated by FragmentPagerAdapter
 
 Version: 1.1.5
 Allow remove preference key from SharedPreferenceService

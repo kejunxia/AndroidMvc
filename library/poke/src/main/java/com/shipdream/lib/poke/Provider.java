@@ -76,8 +76,20 @@ public abstract class Provider<T> {
         return 0;
     }
 
-    void retain(Object owner, Field field) {
+    /**
+     * Increase reference count.
+     */
+    void retain() {
         totalRefCount++;
+    }
+
+    /**
+     * Retain an instance injected as a field of an object
+     * @param owner The owner of the field
+     * @param field The field
+     */
+    void retain(Object owner, Field field) {
+        retain();
         Map<String, Integer> fields = owners.get(owner);
         if (fields == null) {
             fields = new HashMap<>();
@@ -93,10 +105,22 @@ public abstract class Provider<T> {
         }
     }
 
+    /**
+     * Decrease reference count.
+     */
+    void release() {
+        totalRefCount--;
+    }
+
+    /**
+     * Release an instance injected as a field of an object
+     * @param owner The owner of the field
+     * @param field The field
+     */
     void release(Object owner, Field field) {
         Map<String, Integer> fields = owners.get(owner);
         if(fields!= null) {
-            totalRefCount--;
+            release();
 
             Integer count = fields.get(field.getName());
             if(--count > 0) {

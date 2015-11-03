@@ -23,13 +23,18 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.List;
 
 public class WeatherServiceImpl implements WeatherService{
+    private final static String APPKEY = "e28e969eb96b3d4929abd12d42a9513d";
     private OkHttpClient httpClient;
     private Gson gson;
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public WeatherServiceImpl() {
         httpClient = new OkHttpClient();
@@ -45,14 +50,15 @@ public class WeatherServiceImpl implements WeatherService{
             }
             idsStr += String.valueOf(id);
         }
-        String url = String.format("http://api.openweathermap.org/data/2.5/group?id=%s&units=metric",
-                URLEncoder.encode(idsStr, "UTF-8"));
+        String url = String.format("http://api.openweathermap.org/data/2.5/group?id=%s&appId=%s",
+                URLEncoder.encode(idsStr, "UTF-8"), APPKEY);
         Request request = new Request.Builder()
                 .url(url)
                 .get()
                 .build();
         Response resp = httpClient.newCall(request).execute();
-        String responseStr = resp.toString();
+        String responseStr = resp.body().string();
+        logger.debug("Weather Service Response: {}", responseStr);
         return gson.fromJson(responseStr, WeatherListResponse.class);
     }
 }

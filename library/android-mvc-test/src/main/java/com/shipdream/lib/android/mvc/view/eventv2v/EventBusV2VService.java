@@ -14,13 +14,23 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.inject.testNameMapping.controller;
+package com.shipdream.lib.android.mvc.view.eventv2v;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
+import android.content.Intent;
+import android.os.IBinder;
 
-public interface LifeCycleTestController extends BaseController {
-    interface Proxy {
-        void onConstructCalled();
-        void disposeCalled();
+import com.shipdream.lib.android.mvc.view.MvcService;
+
+public class EventBusV2VService extends MvcService {
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        postEventV2V(new Events.OnFragmentTextChanged(this, "Updated By Service"));
+        return START_STICKY;
     }
 }

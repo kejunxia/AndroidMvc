@@ -410,7 +410,16 @@ public class ProviderFinderByRegistry implements ProviderFinder {
         @Override
         protected Object createInstance() throws ProvideException {
             try {
-                return method.invoke(component);
+                boolean accessible = method.isAccessible();
+                if (!accessible) {
+                    method.setAccessible(true);
+                }
+
+                Object obj = method.invoke(component);
+
+                method.setAccessible(accessible);
+
+                return obj;
             } catch (IllegalAccessException e) {
                 throw new ProvideException(String.format("Provides method %s must " +
                         "be accessible.", method.getName()), e);  // $COVERAGE-IGNORE$

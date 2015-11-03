@@ -50,8 +50,8 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
     private NavigationController navigationController;
 
     @Override
-    protected void onInitialized() {
-        super.onInitialized();
+    public void onConstruct() {
+        super.onConstruct();
 
         String json = preferenceService.getString(PREF_KEY_NOTES, null);
         List<Note> notes;
@@ -122,14 +122,14 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
     }
 
     @Override
-    public void updateViewingNote(String title, String content) {
+    public void updateViewingNote(Object sender, String title, String content) {
         Note note = getModel().getViewingNote();
         if(note != null) {
             note.setTitle(title);
             note.setContent(content);
             note.setUpdateTime(System.currentTimeMillis());
             persistNotes();
-            postC2VEvent(new EventC2V.OnNoteUpdated(this));
+            postC2VEvent(new EventC2V.OnNoteUpdated(sender));
         }
     }
 

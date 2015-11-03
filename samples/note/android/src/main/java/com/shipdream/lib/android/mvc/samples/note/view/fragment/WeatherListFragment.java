@@ -113,11 +113,15 @@ public class WeatherListFragment extends BaseFragment {
 
     public void onEvent(WeatherController.EventC2V.OnWeathersUpdated event) {
         updateList();
-        progressDialog.dismiss();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 
     public void onEvent(WeatherController.EventC2V.OnWeathersUpdateFailed event) {
-        progressDialog.dismiss();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
         Toast.makeText(getActivity(), "Error:" + event.getException().getMessage(),
                 Toast.LENGTH_SHORT).show();
     }

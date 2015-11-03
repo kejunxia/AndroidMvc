@@ -68,7 +68,10 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
 
     private void showPortrait() {
         NavigationController.Model navModel = navigationController.getModel();
-        String curLocId = navModel.getCurrentLocation().getLocationId();
+        String curLocId = "";
+        if (navModel.getCurrentLocation() != null) {
+            curLocId = navModel.getCurrentLocation().getLocationId();
+        }
         //If we are viewing note, update the navigation history and navigate to proper location
         if(curLocId.equals(LocId.NOTE_HANDSET_DETAIL)
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)

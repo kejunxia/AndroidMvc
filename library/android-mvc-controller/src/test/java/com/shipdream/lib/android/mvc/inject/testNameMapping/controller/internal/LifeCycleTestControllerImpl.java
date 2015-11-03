@@ -31,9 +31,9 @@ public class LifeCycleTestControllerImpl extends BaseControllerImpl implements L
     }
 
     @Override
-    public void onInitialized() {
-        super.onInitialized();
-        proxy.initCalled();
+    public void onConstruct() {
+        super.onConstruct();
+        proxy.onConstructCalled();
     }
 
     @Override

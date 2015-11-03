@@ -118,10 +118,10 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
         Controller1 c1 = new Controller1();
         graph.inject(c1);
-        c1.init();
+        c1.onConstruct();
         Controller2 c2 = new Controller2();
         graph.inject(c2);
-        c2.init();
+        c2.onConstruct();
         c2.proxy = proxy;
 
         Event myEvent = new Event(this);
@@ -151,7 +151,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
         TestController controller = new TestController();
         graph.inject(controller);
-        controller.init();
+        controller.onConstruct();
         controller.setLogger(loggerMock);
         controller.eventBusC2C = null;
 
@@ -171,7 +171,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
         TestController controller = new TestController();
         graph.inject(controller);
-        controller.init();
+        controller.onConstruct();
         controller.setLogger(loggerMock);
         controller.mEventBusC2V = null;
 
@@ -199,6 +199,6 @@ public class TestBaseControllerImpl extends BaseControllerTest {
     public void should_throw_out_runtime_exception_when_unable_to_create_model_instance() throws Exception {
         BadController controller = new BadController();
         graph.inject(controller);
-        controller.init();
+        controller.onConstruct();
     }
 }

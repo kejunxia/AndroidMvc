@@ -45,6 +45,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="com.shipdream.lib.android.mvc.view.eventv2v.EventBusV2VActivity"
+                  android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+        </activity>
+
+        <service android:name="com.shipdream.lib.android.mvc.view.eventv2v.EventBusV2VService"/>
     </application>
 
 </manifest>

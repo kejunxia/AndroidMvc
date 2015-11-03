@@ -26,11 +26,15 @@ import com.shipdream.lib.android.mvc.samples.note.R;
 import com.shipdream.lib.android.mvc.samples.note.controller.NoteController;
 import com.shipdream.lib.android.mvc.samples.note.model.dto.Note;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 
 public class NoteDetailFragment extends BaseFragment {
     private TextView title;
     private TextView content;
+    private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
     private NoteController noteController;
@@ -68,7 +72,9 @@ public class NoteDetailFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        noteController.updateViewingNote(title.getText().toString(), content.getText().toString());
+        if (isVisible()) {
+            noteController.updateViewingNote(this, title.getText().toString(), content.getText().toString());
+        }
     }
 
     private void onEvent(NoteController.EventC2V.OnNoteSelected event) {
@@ -77,5 +83,6 @@ public class NoteDetailFragment extends BaseFragment {
 
     public void onEvent(NoteController.EventC2V.OnNoteUpdated event) {
         Toast.makeText(getActivity(), "Note updated.", Toast.LENGTH_SHORT).show();
+        logger.debug("Note updated by {}", event.getSender().hashCode());
     }
 }

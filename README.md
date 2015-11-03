@@ -1,6 +1,7 @@
 # AndroidMvc Framework
 [![Build Status](https://travis-ci.org/kejunxia/AndroidMvc.svg?branch=ci-travis)](https://travis-ci.org/kejunxia/AndroidMvc)
 [![Coverage Status](https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg)](https://coveralls.io/r/kejunxia/AndroidMvc)
+[![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc)
 
 # Website
@@ -26,20 +27,22 @@
    See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/note) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)
 
 ## Download
-The library is currently release to jCenter and MavenCentral
+The library is currently released to both
+* jCenter [![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
+* Maven Central [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc)
 
 **Maven:**
 ```xml
 <dependency>
     <groupId>com.shipdream</groupId>
     <artifactId>android-mvc</artifactId>
-    <version>1.3.0</version>
+    <version>[LatestVersion]</version>
 </dependency>
 ```
 
 **Gradle:**
 ```groovy
-compile "com.shipdream:android-mvc:1.3.0"
+compile "com.shipdream:android-mvc:[LatestVersion]"
 ```
 
 ## Dependency injection with reference count

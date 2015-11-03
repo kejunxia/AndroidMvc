@@ -65,26 +65,6 @@ public abstract class MvcFragment extends Fragment {
         private boolean isRotated;
         private boolean isPoppedOut;
 
-        void setNewInstance(boolean isNewInstance) {
-            this.isNewInstance = isNewInstance;
-        }
-
-        void setFirstTime(boolean isFirstTime) {
-            this.isFirstTime = isFirstTime;
-        }
-
-        void setRestored(boolean isRestored) {
-            this.isRestored = isRestored;
-        }
-
-        void setRotated(boolean isRotated) {
-            this.isRotated = isRotated;
-        }
-
-        void setPoppedOut(boolean isPoppedOut) {
-            this.isPoppedOut = isPoppedOut;
-        }
-
         /**
          * @return Indicates whether the fragment is a new instance that all its fields need to be
          * reinitialized and configured. This could happen when a fragment is created for the first
@@ -156,7 +136,7 @@ public abstract class MvcFragment extends Fragment {
         }
     }
 
-    private final static String STATE_LAST_ORIENTATION = AndroidMvc.MVC_SATE_PREFIX + "LastOrientation--__";
+    private final static String STATE_LAST_ORIENTATION = DefaultStateKeeper.MVC_SATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
     private boolean fragmentComesBackFromBackground = false;
@@ -214,6 +194,9 @@ public abstract class MvcFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        eventRegister = new EventRegister(this);
+        eventRegister.onCreate();
+
         if(savedInstanceState == null) {
             lastOrientation = getResources().getConfiguration().orientation;
         } else {
@@ -225,8 +208,10 @@ public abstract class MvcFragment extends Fragment {
         }
         injectDependencies();
 
-        if (savedInstanceState != null && !isStateManagedByRootDelegateFragment) {
-            AndroidMvc.restoreControllerStateByTheirOwn(savedInstanceState, this);
+        if (!isStateManagedByRootDelegateFragment) {
+            if (savedInstanceState != null) {
+                DefaultStateKeeperHolder.restoreControllerStateByTheirOwn(savedInstanceState, this);
+            }
         }
     }
 
@@ -258,7 +243,6 @@ public abstract class MvcFragment extends Fragment {
     @Override
     final public void onViewCreated(final View view, final Bundle savedInstanceState) {
         fragmentComesBackFromBackground = false;
-        eventRegister = new EventRegister(this);
         eventRegister.registerEventBuses();
 
         final boolean restoring = savedInstanceState != null;
@@ -282,24 +266,24 @@ public abstract class MvcFragment extends Fragment {
 
         if (newInstanceChecker == null) {
             newInstanceChecker = new Object();
-            reason.setNewInstance(true);
+            reason.isNewInstance = true;
         } else {
-            reason.setNewInstance(false);
+            reason.isNewInstance = false;
         }
 
         if (orientationChanged) {
-            reason.setRotated(true);
+            reason.isRotated = true;
         }
 
         if (aboutToPopOut) {
-            reason.setPoppedOut(true);
+            reason.isPoppedOut = true;
             aboutToPopOut = false;
         }
 
         if (restoring) {
-            reason.setRestored(true);
+            reason.isRestored = true;
         } else if (!orientationChanged) {
-            reason.setFirstTime(true);
+            reason.isFirstTime = true;
         }
 
         onViewReady(view, savedInstanceState, reason);
@@ -394,7 +378,6 @@ public abstract class MvcFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         eventRegister.unregisterEventBuses();
-        eventRegister = null;
     }
 
     /**
@@ -409,6 +392,8 @@ public abstract class MvcFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         releaseDependencies();
+        eventRegister.onDestroy();
+        eventRegister = null;
     }
 
     @Override
@@ -417,7 +402,7 @@ public abstract class MvcFragment extends Fragment {
         outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
 
         if (!isStateManagedByRootDelegateFragment) {
-            AndroidMvc.saveControllerStateOfTheirOwn(outState, this);
+            DefaultStateKeeperHolder.saveControllerStateOfTheirOwn(outState, this);
         }
     }
 
@@ -471,10 +456,18 @@ public abstract class MvcFragment extends Fragment {
     }
 
     /**
-     * Post an event from this view to other views
-     * @param event The view to view event
+     * Post an event from this view to other views. Using EventBusV2V is a handy way to
+     * inter-communicate among views but it's a little anti pattern. Best practice is that views
+     * communicates to other views through controllers and EventBusC2V. For example, if view1 wants
+     * to talk to view2, instead of sending V2V events, view1 can send a command to a controller and
+     * that controller will fire an C2VEvent that will be received by view2. In this way, more
+     * business logic can be wrapped into controllers rather than exposed to view1.
+     *
+     * <p>However, it's not absolute. If touching a controller is an overkill, sending events
+     * directly through V2V channel is still an option.</p>
+     * @param event
      */
     protected void postEventV2V(BaseEventV2V event) {
-        AndroidMvc.getEventBusV2V().post(event);
+        eventRegister.postEventV2V(event);
     }
 }

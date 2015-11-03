@@ -30,8 +30,8 @@ public class ControllerAImpl extends BaseControllerImpl<ControllerA.Model>
     }
 
     @Override
-    protected void onInitialized() {
-        super.onInitialized();
+    public void onConstruct() {
+        super.onConstruct();
         getModel().setTags(new ArrayList<String>());
     }
 

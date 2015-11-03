@@ -61,7 +61,7 @@ public class TestCounterController {
     //The graph used to inject
     private MvcGraph mvcGraph;
 
-    private CounterController counterController;
+    private CounterControllerImpl counterController;
 
     @Before
     public void setUp() throws Exception {
@@ -93,7 +93,7 @@ public class TestCounterController {
         mvcGraph.inject(counterController);
 
         //init controller
-        counterController.init();
+        counterController.onConstruct();
     }
 
     @Test

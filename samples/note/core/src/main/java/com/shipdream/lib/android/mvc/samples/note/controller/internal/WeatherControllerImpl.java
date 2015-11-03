@@ -52,8 +52,8 @@ public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> imp
     }
 
     @Override
-    public void init() {
-        super.init();
+    public void onConstruct() {
+        super.onConstruct();
         Map<WeatherModel.City, WeatherInfo> weatherWatchlist;
         String savedCities = preferenceService.getString(PREF_KEY_WEATHER_CITIES, null);
         if(savedCities != null) {
