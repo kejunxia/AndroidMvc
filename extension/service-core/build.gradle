@@ -23,6 +23,7 @@ apply plugin: 'maven'
 
 configurations {
     provided
+    compile.extendsFrom provided
 }
 
 task sourceJar(type: Jar) {

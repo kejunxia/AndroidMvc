@@ -18,6 +18,7 @@ apply plugin: 'java'
 
 configurations {
     provided
+    compile.extendsFrom provided
 }
 
 task sourceJar(type: Jar) {
@@ -49,5 +50,5 @@ sourceSets {
 }
 
 dependencies {
-    provided rootProject.ext.lib.androidMinSdk
+    provided rootProject.lib.androidMinSdk
 }

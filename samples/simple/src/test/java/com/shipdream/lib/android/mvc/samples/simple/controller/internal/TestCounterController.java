@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 
+import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
@@ -54,24 +55,21 @@ public class TestCounterController {
         Logger.getRootLogger().addAppender(console);
     }
 
-    //Dependencies of base controllers
-    protected EventBus eventBusC2C;
-    protected EventBus eventBusC2V;
-    protected ExecutorService executorService;
     //The graph used to inject
     private MvcGraph mvcGraph;
 
     private CounterControllerImpl counterController;
 
-    @Before
-    public void setUp() throws Exception {
-        //create instance of CounterController
-        counterController = new CounterControllerImpl();
+    protected EventBus eventBusC2C;
+    protected EventBus eventBusC2V;
+    protected ExecutorService executorService;
 
-        //Prepare dependencies for injection
+    private void prepareGraph() {
         eventBusC2C = new EventBusImpl();
         eventBusC2V = new EventBusImpl();
-        mvcGraph = new MvcGraph(new MvcGraph.BaseDependencies() {
+        executorService = mock(ExecutorService.class);
+
+        Injector.configGraph(new MvcGraph.BaseDependencies() {
             @Override
             public EventBus createEventBusC2C() {
                 return eventBusC2C;
@@ -87,7 +85,15 @@ public class TestCounterController {
                 return executorService;
             }
         });
-        executorService = mock(ExecutorService.class);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        prepareGraph();
+        mvcGraph = Injector.getGraph();
+
+        //create instance of CounterController
+        counterController = new CounterControllerImpl();
 
         //inject dependencies into controller
         mvcGraph.inject(counterController);
