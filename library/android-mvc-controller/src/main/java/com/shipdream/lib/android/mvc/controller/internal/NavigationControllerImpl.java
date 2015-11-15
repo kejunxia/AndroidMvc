@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
+import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 
@@ -94,10 +95,25 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
             getModel().setCurrentLocation(currentLoc);
 
             String lastLocId = lastLoc == null ? null : lastLoc.getLocationId();
+
+            /**
+             * Retain all cached state managed objects. They will be retained until the fragment is
+             * created and ready to show. They will be released by the view ready call back by the
+             * fragment navigating to.
+             *  fragment.registerOnViewReadyListener(new Runnable() {
+                    @Override
+                    public void run() {
+                    Injector.getGraph().releaseCachedItems();
+                    fragment.unregisterOnViewReadyListener(this);
+                    }
+                });
+             */
+            Injector.getGraph().retainCachedObjects();
+
             postC2VEvent(new EventC2V.OnLocationForward(sender, lastLoc, currentLoc, clearTop,
                     clearedTopToLocation));
 
-            logger.debug("Nav Controller: Forward: {} -> {}", lastLocId, currentLoc.getLocationId());
+            logger.trace("Nav Controller: Forward: {} -> {}", lastLocId, currentLoc.getLocationId());
         }
 
         dumpHistory();
@@ -115,7 +131,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
         getModel().setCurrentLocation(previousLoc);
         postC2VEvent(new EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false));
 
-        logger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
+        logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
                 previousLoc == null ? "null" : previousLoc.getLocationId());
 
         checkAppExit(sender);
@@ -158,7 +174,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
         if(success) {
             getModel().setCurrentLocation(currentLoc);
             postC2VEvent(new EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true));
-            logger.debug("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
+            logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
                     previousLoc.getLocationId());
 
             checkAppExit(sender);

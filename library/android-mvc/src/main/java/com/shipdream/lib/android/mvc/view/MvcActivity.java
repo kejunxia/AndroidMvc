@@ -24,6 +24,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
@@ -396,7 +397,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 FragmentTransaction transaction = fm.beginTransaction();
                 String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
 
-                MvcFragment fragment;
+                final MvcFragment fragment;
                 try {
                     fragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
                     fragment.injectDependencies();
@@ -431,6 +432,13 @@ public abstract class MvcActivity extends AppCompatActivity {
                     logger.trace("Cleared fragment back stack up to {}", tagPopTo);
                 }
 
+                fragment.registerOnViewReadyListener(new Runnable() {
+                    @Override
+                    public void run() {
+                        Injector.getGraph().releaseCachedItems();
+                        fragment.unregisterOnViewReadyListener(this);
+                    }
+                });
                 transaction.replace(getContentLayoutResId(), fragment, fragmentTag);
                 transaction.addToBackStack(fragmentTag);
                 transaction.commit();

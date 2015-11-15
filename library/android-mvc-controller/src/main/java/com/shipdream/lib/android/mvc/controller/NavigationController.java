@@ -16,9 +16,11 @@
 
 package com.shipdream.lib.android.mvc.controller;
 
+import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.event.BaseEventC2C;
 import com.shipdream.lib.android.mvc.event.ValueChangeEventC2V;
+import com.shipdream.lib.poke.Consumer;
 
 /**
  * Controller to navigate among different fragments in the SAME activity.
@@ -29,6 +31,20 @@ public interface NavigationController extends BaseController<NavigationControlle
      * popped out by {@link #navigateBack(Object, String)} or {@link #navigateTo(Object, String, String)}.
      * Navigation only takes effect when the given locationId is different from the current location
      * and raises {@link EventC2V.OnLocationForward}
+     *
+     * <p>
+     * Forward navigating will automatically manage continuity of state before and after the
+     * navigation is performed. This is useful when the next navigation location needs be configured
+     * with some initial state. <br>
+     *
+     * For example, when navigate to a fragment called TimerFragment which counts down from an
+     * initial time value. We can create a TimerController[TimerModel] with the initial time
+     * value and inject it into TimerFragment. Before we navigate to TimerFragment, we can set the
+     * initial time value in TimerController[TimerModel] either by an injected field in current
+     * object who is calling this method or use {@link MvcGraph#use(Class, Consumer)} to inject and
+     * set the value on the fly. This value will be carried on to TimerFragment when it's created
+     * and ready to show.
+     * </p>
      *
      * @param sender     Who wants to navigate
      * @param locationId The id of the location navigate to
@@ -42,6 +58,20 @@ public interface NavigationController extends BaseController<NavigationControlle
      * location will be the only location in the history stack and all other previous locations
      * will be cleared. Navigation only takes effect when the given locationId is different from the
      * current location and raises {@link EventC2V.OnLocationForward}
+     *
+     * <p>
+     * Forward navigating will automatically manage continuity of state before and after the
+     * navigation is performed. This is useful when the next navigation location needs be configured
+     * with some initial state. <br>
+     *
+     * For example, when navigate to a fragment called TimerFragment which counts down from an
+     * initial time value. We can create a TimerController[TimerModel] with the initial time
+     * value and inject it into TimerFragment. Before we navigate to TimerFragment, we can set the
+     * initial time value in TimerController[TimerModel] either by an injected field in current
+     * object who is calling this method or use {@link MvcGraph#use(Class, Consumer)} to inject and
+     * set the value on the fly. This value will be carried on to TimerFragment when it's created
+     * and ready to show.
+     * </p>
      *
      * @param sender               Who wants to navigate
      * @param locationId           The id of the location navigate to

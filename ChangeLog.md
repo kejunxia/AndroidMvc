@@ -1,3 +1,6 @@
+Version: 1.4.1
+* Navigation will retain the state of all injected state managed objects including controllers until the next fragment is ready and shown.
+
 Version: 1.4.0
 * Refactor of class AndroidMvc so that controllers can access the MvcGraph
 * EventBusV2V is injectable same as EventBusC2V and EventBusC2C

@@ -31,6 +31,7 @@ public class ScopeCache {
         Class<T> type;
         T instance;
         Annotation qualifier;
+        Provider<T> provider;
     }
 
     protected Map<String, CachedItem> cache = new HashMap<>();
@@ -43,6 +44,7 @@ public class ScopeCache {
             item = new CachedItem<>();
             item.type = provider.type();
             item.instance = provider.createInstance();
+            item.provider = provider;
             if(item.instance == null) {
                 String qualifierName = (provider.getQualifier() == null) ? "null" : provider.getQualifier().getClass().getName();
                 throw new ProvideException(String.format("Provider (type: %s, qualifier: " +
@@ -72,4 +74,21 @@ public class ScopeCache {
         cache.remove(PokeHelper.makeProviderKey(type, qualifier));
     }
 
+    /**
+     * Retain references of all cached items
+     */
+    public void retainAllCachedItems() {
+        for (CachedItem cachedItem : cache.values()) {
+            cachedItem.provider.retain();
+        }
+    }
+
+    /**
+     * Release references of all cached items
+     */
+    public void releaseAllCachedItems() {
+        for (CachedItem cachedItem : cache.values()) {
+            cachedItem.provider.release();
+        }
+    }
 }
