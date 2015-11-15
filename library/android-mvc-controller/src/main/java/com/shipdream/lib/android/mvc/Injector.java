@@ -23,6 +23,9 @@ public class Injector {
      * @return
      */
     public static MvcGraph getGraph() {
+        if (mvcGraph == null) {
+            throw new RuntimeException("In unit testing, the graph needs to be mocked before running tests. See how the graph is prepared by TestControllerBase#prepareGraph() in https://github.com/kejunxia/AndroidMvc/blob/master/samples/note/core/src/test/java/com/shipdream/lib/android/mvc/samples/note/controller/internal/TestControllerBase.java");
+        }
         return mvcGraph;
     }
 }

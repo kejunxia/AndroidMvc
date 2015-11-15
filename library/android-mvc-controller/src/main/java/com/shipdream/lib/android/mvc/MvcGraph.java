@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -401,6 +402,14 @@ public class MvcGraph {
     public void releaseCachedItems() {
         //Release all cached items after the fragment navigated to is ready to show.
         singletonScopeCache.releaseAllCachedItems();
+    }
+
+    /**
+     * Gets all cached items this cache still manages
+     * @return The collection of cached times
+     */
+    public Collection<ScopeCache.CachedItem> getAllCachedInstances() {
+        return singletonScopeCache.getCachedItems();
     }
 
     /**

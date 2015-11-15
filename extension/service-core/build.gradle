@@ -21,6 +21,10 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'maven'
 
+configurations {
+    provided
+}
+
 task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
     classifier = 'sources'
@@ -50,7 +54,7 @@ sourceSets {
 }
 
 dependencies {
-    compile rootProject.ext.lib.androidMinSdk
+    provided rootProject.ext.lib.androidMinSdk
 
     testCompile rootProject.ext.lib.junit
     testCompile rootProject.ext.lib.mokito
