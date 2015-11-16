@@ -114,10 +114,41 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Provider<Container> containerProvider = graph.getProvider(Container.class, null);
         Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
 
-        Assert.assertTrue(containerProvider.totalReference() == 1);
-        Assert.assertTrue(fruitProvider.totalReference() == 2);
+        Assert.assertTrue(containerProvider.getReferenceCount() == 1);
+        Assert.assertTrue(fruitProvider.getReferenceCount() == 2);
 
         graph.release(house, MyInject.class);
+        Assert.assertTrue(component.getScopeCache().cache.isEmpty());
+    }
+
+    static class Mansion extends House {
+        @MyInject
+        private Container container;
+    }
+
+    @Test
+    public void should_be_able_to_release_inherited_fields_with_same_name() throws ProvideException, ProviderConflictException,
+            CircularDependenciesException, ProviderMissingException {
+        SimpleGraph graph = new SimpleGraph();
+        Component component = new TestComp2();
+        graph.register(component);
+
+        Mansion mansion = new Mansion();
+        graph.inject(mansion, MyInject.class);
+
+        Assert.assertNotNull(mansion.container);
+        Assert.assertNotNull(((Fridge) mansion.container).a);
+        Assert.assertNotNull(((Fridge) mansion.container).b);
+        Assert.assertTrue(((Fridge) mansion.container).a == ((Fridge) mansion.container).b);
+
+        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+
+        //container has been referenced twice by the fields Mansion.container and Mansion.House.container
+        Assert.assertEquals(2, containerProvider.getReferenceCount());
+        Assert.assertEquals(4, fruitProvider.getReferenceCount());
+
+        graph.release(mansion, MyInject.class);
         Assert.assertTrue(component.getScopeCache().cache.isEmpty());
     }
 
@@ -153,8 +184,8 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Provider<Container> containerProvider = graph.getProvider(Container.class, null);
         Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
 
-        Assert.assertEquals(1, containerProvider.totalReference());
-        Assert.assertEquals(4, fruitProvider.totalReference());
+        Assert.assertEquals(1, containerProvider.getReferenceCount());
+        Assert.assertEquals(4, fruitProvider.getReferenceCount());
 
         graph.release(kitchen.container, MyInject.class);
         Assert.assertNotNull(kitchen.container);
@@ -162,14 +193,14 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertNotNull(kitchen.bOnFloor);
         Assert.assertNotNull(fridge.a);
         Assert.assertNotNull(fridge.b);
-        Assert.assertEquals(1, containerProvider.totalReference());
-        Assert.assertEquals(2, fruitProvider.totalReference());
+        Assert.assertEquals(1, containerProvider.getReferenceCount());
+        Assert.assertEquals(2, fruitProvider.getReferenceCount());
 
         graph.release(kitchen.container, MyInject.class);
         Assert.assertNotNull(fridge.a);
         Assert.assertNotNull(fridge.b);
-        Assert.assertEquals(1, containerProvider.totalReference());
-        Assert.assertEquals(2, fruitProvider.totalReference());
+        Assert.assertEquals(1, containerProvider.getReferenceCount());
+        Assert.assertEquals(2, fruitProvider.getReferenceCount());
     }
 
     @Test
@@ -186,16 +217,16 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
 
         graph.release(kitchen.container, MyInject.class);
-        Assert.assertEquals(1, containerProvider.totalReference());
-        Assert.assertEquals(2, fruitProvider.totalReference());
+        Assert.assertEquals(1, containerProvider.getReferenceCount());
+        Assert.assertEquals(2, fruitProvider.getReferenceCount());
 
         graph.release(kitchen.container, MyInject.class);
 
         Assert.assertNotNull(kitchen.aOnFloor);
         Assert.assertNotNull(kitchen.bOnFloor);
 
-        Assert.assertTrue(containerProvider.totalReference() == 1);
-        Assert.assertTrue(fruitProvider.totalReference() == 2);
+        Assert.assertTrue(containerProvider.getReferenceCount() == 1);
+        Assert.assertTrue(fruitProvider.getReferenceCount() == 2);
 
         graph.release(kitchen, MyInject.class);
 

@@ -92,24 +92,6 @@ public class ScopeCache {
     }
 
     /**
-     * Retains references of all cached items
-     */
-    public void retainAllCachedItems() {
-        for (CachedItem cachedItem : cache.values()) {
-            cachedItem.provider.retain();
-        }
-    }
-
-    /**
-     * Releases references of all cached items
-     */
-    public void releaseAllCachedItems() {
-        for (CachedItem cachedItem : cache.values()) {
-            cachedItem.provider.release();
-        }
-    }
-
-    /**
      * Gets all cached items this cache still manages
      * @return The collection of cached times
      */

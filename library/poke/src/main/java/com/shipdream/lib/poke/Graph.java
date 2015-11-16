@@ -46,7 +46,7 @@ public abstract class Graph {
     private List<Monitor> monitors;
     private String revisitedNode = null;
     private Set<String> visitedInjectNodes = new LinkedHashSet<>();
-    private Map<Object, Set<String>> visitedFields = new HashMap<>();
+    private Map<Object, Map<String, Set<String>>> visitedFields = new HashMap<>();
 
     /**
      * Register {@link OnFreedListener} which will be called when the provider
@@ -153,7 +153,7 @@ public abstract class Graph {
                 monitors.get(i).onInject(target);
             }
         }
-        doInject(target, null, null, injectAnnotation);
+        doInject(target, null, null, null, injectAnnotation);
         visitedInjectNodes.clear();
         revisitedNode = null;
         visitedFields.clear();
@@ -281,25 +281,29 @@ public abstract class Graph {
         } else {
             T newInstance = provider.get();
 
-            doInject(newInstance, type, qualifier, injectAnnotation);
+            doInject(newInstance, null, type, qualifier, injectAnnotation);
 
             instance = newInstance;
         }
 
         provider.retain();
-        if (provider.totalReference() == 1) {
+        if (provider.getReferenceCount() == 1) {
             provider.notifyInjected(instance);
         }
         consumer.consume(instance);
 
-        doRelease(instance, type, qualifier, injectAnnotation);
+        //Clear visiting records
+        visitedFields.clear();
+        visitedInjectNodes.clear();
+
+        doRelease(instance, null, type, qualifier, injectAnnotation);
 
         provider.release();
         checkToFreeProvider(provider);
     }
 
     @SuppressWarnings("unchecked")
-    private void doInject(Object target, Class targetType, Annotation targetQualifier,
+    private void doInject(Object target, Field targetField, Class targetType, Annotation targetQualifier,
                           Class<? extends Annotation> injectAnnotation)
             throws ProvideException, ProviderMissingException, CircularDependenciesException {
         boolean circularDetected = false;
@@ -339,16 +343,17 @@ public abstract class Graph {
 
                         ReflectUtils.setField(target, field, impl);
 
-                        boolean firstTimeInject = provider.totalReference() == 1;
-                        if (!isFieldVisited(impl, field)) {
-                            doInject(impl, fieldType, fieldQualifier, injectAnnotation);
+                        boolean firstTimeInject = provider.getReferenceCount() == 1;
+                        boolean visited = isFieldVisited(target, targetField, field);
+                        if (!visited) {
+                            doInject(impl, field, fieldType, fieldQualifier, injectAnnotation);
                         }
 
                         if (firstTimeInject) {
                             provider.notifyInjected(impl);
                         }
 
-                        recordVisitField(impl, field);
+                        recordVisitField(target, targetField, field);
                     }
                 }
                 clazz = clazz.getSuperclass();
@@ -375,13 +380,13 @@ public abstract class Graph {
                 monitors.get(i).onRelease(target);
             }
         }
-        doRelease(target, null, null, injectAnnotation);
+        doRelease(target, null, null, null, injectAnnotation);
         visitedInjectNodes.clear();
         revisitedNode = null;
         visitedFields.clear();
     }
 
-    private void doRelease(Object target, Class targetType, Annotation targetQualifier,
+    private void doRelease(Object target, Field targetField, Class targetType, Annotation targetQualifier,
                            final Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
         Class<?> clazz = target.getClass();
 
@@ -403,9 +408,10 @@ public abstract class Graph {
                             Provider provider = getProvider(fieldType, fieldQualifier);
 
                             boolean stillReferenced = provider.getReferenceCount(target, field) > 0;
-                            if (!isFieldVisited(target, field) && stillReferenced) {
-                                recordVisitField(target, field);
-                                doRelease(fieldValue, fieldType, fieldQualifier, injectAnnotation);
+                            boolean fieldVisited = isFieldVisited(target, targetField, field);
+                            if (!fieldVisited && stillReferenced) {
+                                recordVisitField(target, targetField, field);
+                                doRelease(fieldValue, field, fieldType, fieldQualifier, injectAnnotation);
 
                                 provider.release(target, field);
 
@@ -424,7 +430,7 @@ public abstract class Graph {
     }
 
     private void checkToFreeProvider(Provider provider) {
-        if (provider.totalReference() == 0) {
+        if (provider.getReferenceCount() == 0) {
             if (onProviderFreedListeners != null) {
                 int listenerSize = onProviderFreedListeners.size();
                 for (int k = 0; k < listenerSize; k++) {
@@ -436,18 +442,44 @@ public abstract class Graph {
         }
     }
 
-    private void recordVisitField(Object object, Field field) {
-        Set<String> fields = visitedFields.get(object);
+    /**
+     * Records the field of a target object is visited
+     * @param object The field holder
+     * @param objectField The field which holds the object in its parent
+     * @param field The field of the holder
+     */
+    private void recordVisitField(Object object, Field objectField, Field field) {
+        Map<String, Set<String>> bag = visitedFields.get(object);
+        if (bag == null) {
+            bag = new HashMap<>();
+            visitedFields.put(object, bag);
+        }
+        Set<String> fields = bag.get(objectField);
+
+        String objectFiledKey = objectField == null ? "" : objectField.toGenericString();
+
         if(fields == null) {
             fields = new HashSet<>();
-            visitedFields.put(object, fields);
+            bag.put(objectFiledKey, fields);
         }
-        fields.add(field.getName());
+        fields.add(field.toGenericString());
     }
 
-    private boolean isFieldVisited(Object object, Field field) {
-        Set<String> fields = visitedFields.get(object);
-        return fields != null && fields.contains(field.getName());
+    /**
+     * Indicates whether the field of a target object is visited
+     * @param object The field holder
+     * @param objectField The field which holds the object in its parent
+     * @param field The field of the holder
+     */
+    private boolean isFieldVisited(Object object, Field objectField, Field field) {
+        Map<String, Set<String>> bag = visitedFields.get(object);
+        if (bag == null) {
+            return false;
+        }
+
+        String objectFiledKey = objectField == null ? "" : objectField.toGenericString();
+        Set<String> fields = bag.get(objectFiledKey);
+        return fields != null && fields.contains(field);
     }
 
     private boolean recordVisit(Class classType, Annotation qualifier) {

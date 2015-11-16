@@ -405,15 +405,14 @@ public abstract class MvcActivity extends AppCompatActivity {
                     throw new RuntimeException("Failed to instantiate fragment: " + fragmentClass.getName(), e);
                 }
 
+                MvcFragment lastFrag = null;
                 if (!event.isClearHistory()) {
-                    MvcFragment lastFrag = null;
                     if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
                         lastFrag = (MvcFragment) fm.findFragmentByTag(
                                 getFragmentTag(event.getLastValue().getLocationId()));
                     }
                     if (lastFrag != null) {
                         lastFrag.onPushingToBackStack();
-                        lastFrag.releaseDependencies();
                     }
                 } else {
                     NavLocation clearTopToLocation = event.getLocationWhereHistoryClearedUpTo();
@@ -432,10 +431,18 @@ public abstract class MvcActivity extends AppCompatActivity {
                     logger.trace("Cleared fragment back stack up to {}", tagPopTo);
                 }
 
+                final MvcFragment finalLastFrag = lastFrag;
                 fragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
-                        Injector.getGraph().releaseCachedItems();
+                        //Release reference count to pair the retaining by NavigationControllerImpl
+                        // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
+                        Injector.getGraph().releaseCachedItemsAfterNavigation();
+
+                        if (finalLastFrag != null) {
+                            finalLastFrag.releaseDependencies();
+                        }
+
                         fragment.unregisterOnViewReadyListener(this);
                     }
                 });

@@ -108,7 +108,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
                     }
                 });
              */
-            Injector.getGraph().retainCachedObjects();
+            Injector.getGraph().retainCachedObjectsBeforeNavigation();
 
             postC2VEvent(new EventC2V.OnLocationForward(sender, lastLoc, currentLoc, clearTop,
                     clearedTopToLocation));

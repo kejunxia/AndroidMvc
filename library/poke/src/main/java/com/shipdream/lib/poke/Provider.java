@@ -61,13 +61,13 @@ public abstract class Provider<T> {
     ScopeCache scopeCache;
     private Annotation qualifier;
 
-    private Map<Object, Map<String, Integer>> owners = new HashMap<>();
+    Map<Object, Map<String, Integer>> owners = new HashMap<>();
     private int totalRefCount = 0;
 
     int getReferenceCount(Object owner, Field field) {
         Map<String, Integer> fields = owners.get(owner);
         if (fields != null) {
-            Integer count = fields.get(field.getName());
+            Integer count = fields.get(field.toGenericString());
             if(count != null) {
                 return count;
             }
@@ -79,7 +79,7 @@ public abstract class Provider<T> {
     /**
      * Increase reference count.
      */
-    void retain() {
+    public void retain() {
         totalRefCount++;
     }
 
@@ -96,19 +96,19 @@ public abstract class Provider<T> {
             owners.put(owner, fields);
         }
 
-        Integer count = fields.get(field.getName());
+        Integer count = fields.get(field.toGenericString());
         if (count == null) {
-            fields.put(field.getName(), 1);
+            fields.put(field.toGenericString(), 1);
         } else {
             count++;
-            fields.put(field.getName(), count);
+            fields.put(field.toGenericString(), count);
         }
     }
 
     /**
      * Decrease reference count.
      */
-    void release() {
+    public void release() {
         totalRefCount--;
     }
 
@@ -119,14 +119,14 @@ public abstract class Provider<T> {
      */
     void release(Object owner, Field field) {
         Map<String, Integer> fields = owners.get(owner);
-        if(fields!= null) {
+        if(fields != null) {
             release();
 
-            Integer count = fields.get(field.getName());
+            Integer count = fields.get(field.toGenericString());
             if(--count > 0) {
-                fields.put(field.getName(), count);
+                fields.put(field.toGenericString(), count);
             } else {
-                fields.remove(field.getName());
+                fields.remove(field.toGenericString());
             }
         }
 
@@ -144,7 +144,7 @@ public abstract class Provider<T> {
         }
     }
 
-    int totalReference() {
+    public int getReferenceCount() {
         return totalRefCount;
     }
 

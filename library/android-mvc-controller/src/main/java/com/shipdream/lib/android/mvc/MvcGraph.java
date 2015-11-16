@@ -388,20 +388,35 @@ public class MvcGraph {
         }
     }
 
+    private List<Provider> cachedInstancesBeforeNavigation = new ArrayList<>();
+
     /**
      * Internal use. Don't call it in app directly.
      */
-    public void retainCachedObjects() {
+    public void retainCachedObjectsBeforeNavigation() {
+        cachedInstancesBeforeNavigation.clear();
         //Retain all cached items before navigation.
-        singletonScopeCache.retainAllCachedItems();
+        Collection<ScopeCache.CachedItem> cachedItems = singletonScopeCache.getCachedItems();
+        for (ScopeCache.CachedItem cachedItem : cachedItems) {
+            Provider provider = cachedItem.getProvider();
+            if (provider != null) {
+                cachedInstancesBeforeNavigation.add(provider);
+                provider.retain();
+            }
+        }
     }
 
     /**
      * Internal use. Don't call it in app directly.
      */
-    public void releaseCachedItems() {
+    public void releaseCachedItemsAfterNavigation() {
         //Release all cached items after the fragment navigated to is ready to show.
-        singletonScopeCache.releaseAllCachedItems();
+        for (Provider provider : cachedInstancesBeforeNavigation) {
+            if (provider != null) {
+                provider.release();
+            }
+        }
+        cachedInstancesBeforeNavigation.clear();
     }
 
     /**
