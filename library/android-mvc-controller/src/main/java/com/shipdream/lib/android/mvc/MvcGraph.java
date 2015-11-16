@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -386,45 +385,6 @@ public class MvcGraph {
                 stateManagedObjects.get(i).restoreState(state);
             }
         }
-    }
-
-    private List<Provider> cachedInstancesBeforeNavigation = new ArrayList<>();
-
-    /**
-     * Internal use. Don't call it in app directly.
-     */
-    public void retainCachedObjectsBeforeNavigation() {
-        cachedInstancesBeforeNavigation.clear();
-        //Retain all cached items before navigation.
-        Collection<ScopeCache.CachedItem> cachedItems = singletonScopeCache.getCachedItems();
-        for (ScopeCache.CachedItem cachedItem : cachedItems) {
-            Provider provider = cachedItem.getProvider();
-            if (provider != null) {
-                cachedInstancesBeforeNavigation.add(provider);
-                provider.retain();
-            }
-        }
-    }
-
-    /**
-     * Internal use. Don't call it in app directly.
-     */
-    public void releaseCachedItemsAfterNavigation() {
-        //Release all cached items after the fragment navigated to is ready to show.
-        for (Provider provider : cachedInstancesBeforeNavigation) {
-            if (provider != null) {
-                provider.release();
-            }
-        }
-        cachedInstancesBeforeNavigation.clear();
-    }
-
-    /**
-     * Gets all cached items this cache still manages
-     * @return The collection of cached times
-     */
-    public Collection<ScopeCache.CachedItem> getAllCachedInstances() {
-        return singletonScopeCache.getCachedItems();
     }
 
     /**

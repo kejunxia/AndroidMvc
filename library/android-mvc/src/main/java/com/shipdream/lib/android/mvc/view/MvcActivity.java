@@ -24,7 +24,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
@@ -437,7 +437,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     public void run() {
                         //Release reference count to pair the retaining by NavigationControllerImpl
                         // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
-                        Injector.getGraph().releaseCachedItemsAfterNavigation();
+                        MvcGraphHelper.releaseCachedItemsAfterNavigation();
 
                         if (finalLastFrag != null) {
                             finalLastFrag.releaseDependencies();

@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 
@@ -108,7 +109,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
                     }
                 });
              */
-            Injector.getGraph().retainCachedObjectsBeforeNavigation();
+            MvcGraphHelper.retainCachedObjectsBeforeNavigation(Injector.getGraph());
 
             postC2VEvent(new EventC2V.OnLocationForward(sender, lastLoc, currentLoc, clearTop,
                     clearedTopToLocation));
