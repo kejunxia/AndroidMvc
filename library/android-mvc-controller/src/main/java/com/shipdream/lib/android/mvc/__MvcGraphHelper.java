@@ -3,24 +3,23 @@ package com.shipdream.lib.android.mvc;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ScopeCache;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-public class MvcGraphHelper {
-    private static List<Provider> cachedInstancesBeforeNavigation = new ArrayList<>();
-
+/**
+ * Helper class to work with MvcGraph. Internal use only. Don't use it in your app.
+ */
+public class __MvcGraphHelper {
     /**
      * Internal use. Don't call it in app directly.
      */
     public static void retainCachedObjectsBeforeNavigation(MvcGraph mvcGraph) {
-        cachedInstancesBeforeNavigation.clear();
+        mvcGraph.cachedInstancesBeforeNavigation.clear();
         //Retain all cached items before navigation.
         Collection<ScopeCache.CachedItem> cachedItems = mvcGraph.singletonScopeCache.getCachedItems();
         for (ScopeCache.CachedItem cachedItem : cachedItems) {
             Provider provider = cachedItem.getProvider();
             if (provider != null) {
-                cachedInstancesBeforeNavigation.add(provider);
+                mvcGraph.cachedInstancesBeforeNavigation.add(provider);
                 provider.retain();
             }
         }
@@ -29,14 +28,14 @@ public class MvcGraphHelper {
     /**
      * Internal use. Don't call it in app directly.
      */
-    public static void releaseCachedItemsAfterNavigation() {
+    public static void releaseCachedItemsAfterNavigation(MvcGraph mvcGraph) {
         //Release all cached items after the fragment navigated to is ready to show.
-        for (Provider provider : cachedInstancesBeforeNavigation) {
+        for (Provider provider : mvcGraph.cachedInstancesBeforeNavigation) {
             if (provider != null) {
                 provider.release();
             }
         }
-        cachedInstancesBeforeNavigation.clear();
+        mvcGraph.cachedInstancesBeforeNavigation.clear();
     }
 
     /**

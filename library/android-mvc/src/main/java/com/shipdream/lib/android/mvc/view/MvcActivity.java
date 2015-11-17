@@ -24,7 +24,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.MvcGraphHelper;
+import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
@@ -40,8 +41,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 public abstract class MvcActivity extends AppCompatActivity {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
     private DelegateFragment delegateFragment;
+    boolean toPrintAppExitMessage = false;
 
     String getDelegateFragmentTag() {
         return FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
@@ -67,6 +70,17 @@ public abstract class MvcActivity extends AppCompatActivity {
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.android_mvc_activity_root, delegateFragment, getDelegateFragmentTag());
             trans.commit();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (toPrintAppExitMessage && logger.isTraceEnabled()) {
+            logger.trace("App Exits(UI): {} injected objects are still cached.",
+                    __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+            toPrintAppExitMessage = false;
         }
     }
 
@@ -437,7 +451,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     public void run() {
                         //Release reference count to pair the retaining by NavigationControllerImpl
                         // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
-                        MvcGraphHelper.releaseCachedItemsAfterNavigation();
+                        __MvcGraphHelper.releaseCachedItemsAfterNavigation(Injector.getGraph());
 
                         if (finalLastFrag != null) {
                             finalLastFrag.releaseDependencies();
@@ -472,8 +486,10 @@ public abstract class MvcActivity extends AppCompatActivity {
         private void performBackNav(NavigationController.EventC2V.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
+                MvcActivity mvcActivity = ((MvcActivity) getActivity());
                 //Back to null which should finish the current activity
-                ((MvcActivity)getActivity()).performSuperBackKeyPressed();
+                mvcActivity.performSuperBackKeyPressed();
+                mvcActivity.toPrintAppExitMessage = true;
             } else {
                 //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
                 FragmentManager fm = childFragmentManager();
