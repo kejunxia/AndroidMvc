@@ -3,7 +3,7 @@ package com.shipdream.lib.android.mvc;
 import com.shipdream.lib.poke.exception.PokeException;
 
 public class Injector {
-    private static MvcGraph mvcGraph;
+    static MvcGraph mvcGraph;
 
     /**
      * Config the dependencies of MvcGraph. Be careful to use this method because it will dump the
