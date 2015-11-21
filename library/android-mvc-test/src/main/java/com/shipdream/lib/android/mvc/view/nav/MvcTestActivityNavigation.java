@@ -31,6 +31,7 @@ public class MvcTestActivityNavigation extends MvcActivity {
         public static final String B = "TestNavigationFragmentB";
         public static final String C = "TestNavigationFragmentC";
         public static final String D = "TestNavigationFragmentD";
+        public static final String E = "TestNavigationFragmentE";
     }
 
     @Override
@@ -44,6 +45,8 @@ public class MvcTestActivityNavigation extends MvcActivity {
                 return NavFragmentC.class;
             case Loc.D :
                 return NavFragmentD.class;
+            case Loc.E :
+                return NavFragmentE.class;
             default:
                 return null;
         }
