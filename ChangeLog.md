@@ -1,5 +1,6 @@
 Version: 1.4.1
-* Navigation will retain the state of all injected state managed objects including controllers until the next fragment is ready and shown.
+* Able to initialize the controller state referenced by next navigating fragment and retain the state until the navigation is fully performed when the navigation is requested directly via NavigationController in MvcGraph.use method.
+* Cached instances will be dereferenced and disposed when the instance is referenced by the fields with same variable name in both super and current class.
 
 Version: 1.4.0
 * Refactor of class AndroidMvc so that controllers can access the MvcGraph
