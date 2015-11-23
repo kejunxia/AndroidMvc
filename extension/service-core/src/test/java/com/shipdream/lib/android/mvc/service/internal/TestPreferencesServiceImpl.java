@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc.service.internal;
 
-
 import android.content.Context;
 
 import com.shipdream.lib.android.mvc.service.PreferenceService;

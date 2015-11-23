@@ -24,8 +24,6 @@ import com.shipdream.lib.poke.exception.ProviderMissingException;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.lang.annotation.Annotation;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -190,26 +188,26 @@ public class TestCircularDependencies extends BaseTestCases {
         Provider<Power> powerProvider = graph.getProvider(Power.class, null);
         Provider<Driver> driverProvider = graph.getProvider(Driver.class, null);
         Provider<Robot> robotProvider = graph.getProvider(Robot.class, null);
-        
-        assertReferenceCount(powerProvider, Power.class, null, 3);
-        assertReferenceCount(driverProvider, Driver.class, null, 3);
-        assertReferenceCount(robotProvider, Robot.class, null, 2);
+
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         graph.inject(factory2, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 6);
-        assertReferenceCount(driverProvider, Driver.class, null, 6);
-        assertReferenceCount(robotProvider, Robot.class, null, 4);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         graph.release(factory2, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 3);
-        assertReferenceCount(driverProvider, Driver.class, null, 3);
-        assertReferenceCount(robotProvider, Robot.class, null, 2);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         graph.release(factory1, MyInject.class);
         Assert.assertTrue(scopeCache.cache.isEmpty());
+
+        Assert.assertTrue(powerProvider.owners.isEmpty());
+        Assert.assertEquals(0, powerProvider.getReferenceCount());
+
+        Assert.assertTrue(driverProvider.owners.isEmpty());
+        Assert.assertEquals(0, driverProvider.getReferenceCount());
+
+        Assert.assertTrue(robotProvider.owners.isEmpty());
+        Assert.assertEquals(0, robotProvider.getReferenceCount());
     }
 
     @Test
@@ -226,25 +224,25 @@ public class TestCircularDependencies extends BaseTestCases {
         Provider<Driver> driverProvider = graph.getProvider(Driver.class, null);
         Provider<Robot> robotProvider = graph.getProvider(Robot.class, null);
 
-        assertReferenceCount(powerProvider, Power.class, null, 3);
-        assertReferenceCount(driverProvider, Driver.class, null, 3);
-        assertReferenceCount(robotProvider, Robot.class, null, 2);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         graph.inject(factory, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 6);
-        assertReferenceCount(driverProvider, Driver.class, null, 6);
-        assertReferenceCount(robotProvider, Robot.class, null, 4);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         graph.release(factory, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 3);
-        assertReferenceCount(driverProvider, Driver.class, null, 3);
-        assertReferenceCount(robotProvider, Robot.class, null, 2);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         graph.release(factory, MyInject.class);
         Assert.assertTrue(scopeCache.cache.isEmpty());
+
+        Assert.assertTrue(powerProvider.owners.isEmpty());
+        Assert.assertEquals(0, powerProvider.getReferenceCount());
+
+        Assert.assertTrue(driverProvider.owners.isEmpty());
+        Assert.assertEquals(0, driverProvider.getReferenceCount());
+
+        Assert.assertTrue(robotProvider.owners.isEmpty());
+        Assert.assertEquals(0, robotProvider.getReferenceCount());
     }
 
     @Test
@@ -260,23 +258,14 @@ public class TestCircularDependencies extends BaseTestCases {
         Provider<Power> powerProvider = graph.getProvider(Power.class, null);
         Provider<Driver> driverProvider = graph.getProvider(Driver.class, null);
         Provider<Robot> robotProvider = graph.getProvider(Robot.class, null);
-        
-        assertReferenceCount(powerProvider, Power.class, null, 3);
-        assertReferenceCount(driverProvider, Driver.class, null, 3);
-        assertReferenceCount(robotProvider, Robot.class, null, 2);
+
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         final Factory factory2 = new Factory();
         graph.inject(factory2, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 6);
-        assertReferenceCount(driverProvider, Driver.class, null, 6);
-        assertReferenceCount(robotProvider, Robot.class, null, 4);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         graph.inject(factory1, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 9);
-        assertReferenceCount(driverProvider, Driver.class, null, 9);
-        assertReferenceCount(robotProvider, Robot.class, null, 6);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         Assert.assertNotNull(factory1);
@@ -300,9 +289,6 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 6);
-        assertReferenceCount(driverProvider, Driver.class, null, 6);
-        assertReferenceCount(robotProvider, Robot.class, null, 4);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         Assert.assertNotNull(factory1);
@@ -326,9 +312,6 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 3);
-        assertReferenceCount(driverProvider, Driver.class, null, 3);
-        assertReferenceCount(robotProvider, Robot.class, null, 2);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         Assert.assertNotNull(factory1);
@@ -346,9 +329,6 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        assertReferenceCount(powerProvider, Power.class, null, 3);
-        assertReferenceCount(driverProvider, Driver.class, null, 3);
-        assertReferenceCount(robotProvider, Robot.class, null, 2);
         Assert.assertFalse(scopeCache.cache.isEmpty());
 
         Assert.assertNotNull(factory1);
@@ -367,14 +347,15 @@ public class TestCircularDependencies extends BaseTestCases {
 
         graph.release(factory2, MyInject.class);
         Assert.assertTrue(scopeCache.cache.isEmpty());
-    }
 
-    private void assertReferenceCount(Provider provider, Class type, Annotation qualifier, int count) {
-        if (provider != null) {
-            Assert.assertEquals(provider.totalReference(), count);
-        } else {
-            Assert.assertEquals(0, count);
-        }
+        Assert.assertTrue(powerProvider.owners.isEmpty());
+        Assert.assertEquals(0, powerProvider.getReferenceCount());
+
+        Assert.assertTrue(driverProvider.owners.isEmpty());
+        Assert.assertEquals(0, driverProvider.getReferenceCount());
+
+        Assert.assertTrue(robotProvider.owners.isEmpty());
+        Assert.assertEquals(0, robotProvider.getReferenceCount());
     }
 
     private void prepareInjection(ScopeCache scopeCache, SimpleGraph graph) throws ProviderConflictException {

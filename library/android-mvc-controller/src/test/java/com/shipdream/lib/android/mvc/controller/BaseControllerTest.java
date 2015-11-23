@@ -16,9 +16,10 @@
 
 package com.shipdream.lib.android.mvc.controller;
 
-import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.android.mvc.event.bus.EventBus;
+import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraph;
+import com.shipdream.lib.android.mvc.event.bus.EventBus;
+import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -26,20 +27,46 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.concurrent.ExecutorService;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 public class BaseControllerTest {
-    protected MvcGraph graph;
     protected EventBus eventBusC2C;
     protected EventBus eventBusC2V;
     protected ExecutorService executorService;
+
+    private void prepareGraph() {
+        eventBusC2C = new EventBusImpl();
+        eventBusC2V = new EventBusImpl();
+        executorService = mock(ExecutorService.class);
+
+        Injector.configGraph(new MvcGraph.BaseDependencies() {
+            @Override
+            public EventBus createEventBusC2C() {
+                return eventBusC2C;
+            }
+
+            @Override
+            public EventBus createEventBusC2V() {
+                return eventBusC2V;
+            }
+
+            @Override
+            public ExecutorService createExecutorService() {
+                return executorService;
+            }
+        });
+    }
+
+    protected MvcGraph graph;
+
+    @Before
+    public void setUp() throws Exception {
+        prepareGraph();
+        graph = Injector.getGraph();
+    }
 
     @BeforeClass
     public static void beforeClass() {
@@ -51,23 +78,6 @@ public class BaseControllerTest {
         console.activateOptions();
         //add appender to any Logger (here is root)
         Logger.getRootLogger().addAppender(console);
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        eventBusC2C = new EventBusImpl();
-        eventBusC2V = new EventBusImpl();
-        executorService = mock(ExecutorService.class);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Runnable runnable = (Runnable) invocation.getArguments()[0];
-                runnable.run();
-                return null;
-            }
-        }).when(executorService).submit(any(Runnable.class));
-
-        graph = new MvcGraph(new ControllerDependencies(this));
     }
 
     static class ControllerDependencies extends MvcGraph.BaseDependencies {

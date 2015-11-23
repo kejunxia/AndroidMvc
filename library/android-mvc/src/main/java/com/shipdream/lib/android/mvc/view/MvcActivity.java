@@ -24,6 +24,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
@@ -39,8 +41,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 public abstract class MvcActivity extends AppCompatActivity {
+    private Logger logger = LoggerFactory.getLogger(getClass());
     private static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
     private DelegateFragment delegateFragment;
+    boolean toPrintAppExitMessage = false;
 
     String getDelegateFragmentTag() {
         return FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
@@ -66,6 +70,17 @@ public abstract class MvcActivity extends AppCompatActivity {
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.android_mvc_activity_root, delegateFragment, getDelegateFragmentTag());
             trans.commit();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (toPrintAppExitMessage && logger.isTraceEnabled()) {
+            logger.trace("App Exits(UI): {} injected objects are still cached.",
+                    __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+            toPrintAppExitMessage = false;
         }
     }
 
@@ -396,7 +411,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 FragmentTransaction transaction = fm.beginTransaction();
                 String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
 
-                MvcFragment fragment;
+                final MvcFragment fragment;
                 try {
                     fragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
                     fragment.injectDependencies();
@@ -404,15 +419,14 @@ public abstract class MvcActivity extends AppCompatActivity {
                     throw new RuntimeException("Failed to instantiate fragment: " + fragmentClass.getName(), e);
                 }
 
+                MvcFragment lastFrag = null;
                 if (!event.isClearHistory()) {
-                    MvcFragment lastFrag = null;
                     if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
                         lastFrag = (MvcFragment) fm.findFragmentByTag(
                                 getFragmentTag(event.getLastValue().getLocationId()));
                     }
                     if (lastFrag != null) {
                         lastFrag.onPushingToBackStack();
-                        lastFrag.releaseDependencies();
                     }
                 } else {
                     NavLocation clearTopToLocation = event.getLocationWhereHistoryClearedUpTo();
@@ -431,6 +445,21 @@ public abstract class MvcActivity extends AppCompatActivity {
                     logger.trace("Cleared fragment back stack up to {}", tagPopTo);
                 }
 
+                final MvcFragment finalLastFrag = lastFrag;
+                fragment.registerOnViewReadyListener(new Runnable() {
+                    @Override
+                    public void run() {
+                        //Release reference count to pair the retaining by NavigationControllerImpl
+                        // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
+                        __MvcGraphHelper.releaseCachedItemsAfterNavigation(Injector.getGraph());
+
+                        if (finalLastFrag != null) {
+                            finalLastFrag.releaseDependencies();
+                        }
+
+                        fragment.unregisterOnViewReadyListener(this);
+                    }
+                });
                 transaction.replace(getContentLayoutResId(), fragment, fragmentTag);
                 transaction.addToBackStack(fragmentTag);
                 transaction.commit();
@@ -457,8 +486,10 @@ public abstract class MvcActivity extends AppCompatActivity {
         private void performBackNav(NavigationController.EventC2V.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
+                MvcActivity mvcActivity = ((MvcActivity) getActivity());
                 //Back to null which should finish the current activity
-                ((MvcActivity)getActivity()).performSuperBackKeyPressed();
+                mvcActivity.performSuperBackKeyPressed();
+                mvcActivity.toPrintAppExitMessage = true;
             } else {
                 //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
                 FragmentManager fm = childFragmentManager();

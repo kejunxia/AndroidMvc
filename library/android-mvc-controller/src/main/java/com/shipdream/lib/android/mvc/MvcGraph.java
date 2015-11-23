@@ -41,6 +41,9 @@ import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,6 +79,8 @@ import javax.inject.Singleton;
  * <p/>
  */
 public class MvcGraph {
+    List<Provider> cachedInstancesBeforeNavigation = new ArrayList<>();
+    private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
     List<StateManaged> stateManagedObjects = new ArrayList<>();
@@ -104,6 +109,11 @@ public class MvcGraph {
 
                     if (obj instanceof Disposable) {
                         ((Disposable) obj).onDisposed();
+                    }
+
+                    if (obj instanceof BaseControllerImpl) {
+                        logger.trace("--Controller freed - '{}'.",
+                                obj.getClass().getSimpleName());
                     }
                 }
             }
@@ -481,6 +491,7 @@ public class MvcGraph {
     }
 
     private static class MvcProvider<T> extends ProviderByClassType<T> {
+        private final Logger logger = LoggerFactory.getLogger(MvcGraph.class);
         private List<StateManaged> stateManagedObjects;
 
         public MvcProvider(List<StateManaged> stateManagedObjects, Class<T> type, Class<? extends T> implementationClass) {
@@ -500,6 +511,9 @@ public class MvcGraph {
                         BaseControllerImpl controller = (BaseControllerImpl) object;
                         controller.onConstruct();
                         unregisterOnInjectedListener(this);
+
+                        logger.trace("++Controller injected - '{}'.",
+                                object.getClass().getSimpleName());
                     }
                 });
             }

@@ -16,6 +16,11 @@
 
 apply plugin: 'java'
 
+configurations {
+    provided
+    compile.extendsFrom provided
+}
+
 task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
     classifier = 'sources'
@@ -45,5 +50,5 @@ sourceSets {
 }
 
 dependencies {
-    compile rootProject.ext.lib.androidMinSdk
+    provided rootProject.lib.androidMinSdk
 }

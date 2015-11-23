@@ -19,6 +19,7 @@ package com.shipdream.lib.poke;
 import com.shipdream.lib.poke.exception.ProvideException;
 
 import java.lang.annotation.Annotation;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,6 +32,23 @@ public class ScopeCache {
         Class<T> type;
         T instance;
         Annotation qualifier;
+        Provider<T> provider;
+
+        public Class<T> getType() {
+            return type;
+        }
+
+        public T getInstance() {
+            return instance;
+        }
+
+        public Annotation getQualifier() {
+            return qualifier;
+        }
+
+        public Provider<T> getProvider() {
+            return provider;
+        }
     }
 
     protected Map<String, CachedItem> cache = new HashMap<>();
@@ -43,6 +61,7 @@ public class ScopeCache {
             item = new CachedItem<>();
             item.type = provider.type();
             item.instance = provider.createInstance();
+            item.provider = provider;
             if(item.instance == null) {
                 String qualifierName = (provider.getQualifier() == null) ? "null" : provider.getQualifier().getClass().getName();
                 throw new ProvideException(String.format("Provider (type: %s, qualifier: " +
@@ -72,4 +91,11 @@ public class ScopeCache {
         cache.remove(PokeHelper.makeProviderKey(type, qualifier));
     }
 
+    /**
+     * Gets all cached items this cache still manages
+     * @return The collection of cached times
+     */
+    public Collection<CachedItem> getCachedItems() {
+        return cache.values();
+    }
 }

@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc.samples.note.controller.internal;
 
+import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
@@ -33,14 +34,14 @@ public abstract class TestControllerBase <Controller extends BaseController> ext
     protected EventBus eventBusC2C;
     protected EventBus eventBusC2V;
     protected ExecutorService executorService;
-    private MvcGraph mvcGraph;
     protected Controller controllerToTest;
 
-    @Before
-    public void setUp() throws Exception {
+    private void prepareGraph() {
         eventBusC2C = new EventBusImpl();
         eventBusC2V = new EventBusImpl();
-        mvcGraph = new MvcGraph(new MvcGraph.BaseDependencies() {
+        executorService = mock(ExecutorService.class);
+
+        Injector.configGraph(new MvcGraph.BaseDependencies() {
             @Override
             public EventBus createEventBusC2C() {
                 return eventBusC2C;
@@ -56,16 +57,21 @@ public abstract class TestControllerBase <Controller extends BaseController> ext
                 return executorService;
             }
         });
-        executorService = mock(ExecutorService.class);
-        registerDependencies(mvcGraph);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        prepareGraph();
+
+        registerDependencies(Injector.getGraph());
         controllerToTest = createTestingController();
-        mvcGraph.inject(controllerToTest);
+        Injector.getGraph().inject(controllerToTest);
         ((BaseControllerImpl)controllerToTest).onConstruct();
     }
 
     @After
     public void tearDown() throws Exception {
-        mvcGraph.release(controllerToTest);
+        Injector.getGraph().release(controllerToTest);
     }
 
     protected void registerDependencies(MvcGraph mvcGraph) {

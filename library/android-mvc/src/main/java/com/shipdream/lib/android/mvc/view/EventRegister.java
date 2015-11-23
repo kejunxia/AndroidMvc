@@ -50,10 +50,10 @@ class EventRegister {
             eventBusC2V.register(androidComponent);
             eventBusV2V.register(androidComponent);
             eventsRegistered = true;
-            logger.debug("+Event bus registered for view - '{}'.",
+            logger.trace("+Event bus registered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());
         } else {
-            logger.debug("!Event bus already registered for view - '{}' and its controllers.",
+            logger.trace("!Event bus already registered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
         }
     }
@@ -66,10 +66,10 @@ class EventRegister {
             eventBusC2V.unregister(androidComponent);
             eventBusV2V.unregister(androidComponent);
             eventsRegistered = false;
-            logger.debug("-Event bus unregistered for view - '{}' and its controllers.",
+            logger.trace("-Event bus unregistered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
         } else {
-            logger.debug("!Event bus already unregistered for view - '{}'.",
+            logger.trace("!Event bus already unregistered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());
         }
     }
