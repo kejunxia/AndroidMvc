@@ -40,10 +40,16 @@ public class TestMvcGraphHelper {
 
         int initSize = __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size();
 
-        __MvcGraphHelper.retainCachedObjectsBeforeNavigation(Injector.getGraph());
+        NavLocation lastValue = new NavLocation();
+        NavLocation currentValue = new NavLocation();
+
+        NavigationController.EventC2V.OnLocationForward event = new NavigationController.EventC2V.OnLocationForward(
+                this, lastValue, currentValue, false, null);
+
+        __MvcGraphHelper.retainCachedObjectsBeforeNavigation(event, Injector.getGraph());
         Assert.assertNotEquals(initSize, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()));
 
-        __MvcGraphHelper.releaseCachedItemsAfterNavigation(Injector.getGraph());
+        __MvcGraphHelper.releaseCachedItemsAfterNavigation(event, Injector.getGraph());
         Assert.assertEquals(initSize, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
     }
 

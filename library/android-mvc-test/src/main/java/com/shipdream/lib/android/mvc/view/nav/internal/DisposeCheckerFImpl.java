@@ -18,35 +18,11 @@ package com.shipdream.lib.android.mvc.view.nav.internal;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.view.nav.ControllerE;
 import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerE;
 
-import javax.inject.Inject;
-
-public class ControllerEImpl extends BaseControllerImpl<ControllerE.Model> implements ControllerE {
-    @Inject
-    private DisposeCheckerE disposeCheckerE;
-
+public class DisposeCheckerFImpl implements DisposeCheckerE {
     @Override
     public void onDisposed() {
-        Log.i("DisposeCheck", "Checker E disposed");
-        disposeCheckerE.onDisposed();
+        Log.i("DisposeCheck", "Checker F disposed");
     }
-
-    @Override
-    protected Class<Model> getModelClassType() {
-        return Model.class;
-    }
-
-    @Override
-    public void setValue(String value) {
-        getModel().value = value;
-    }
-
-    @Override
-    public String getValue() {
-        return getModel().value;
-    }
-
 }

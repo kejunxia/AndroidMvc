@@ -37,6 +37,7 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -46,6 +47,8 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
 
     private Comp comp;
     private DisposeCheckerE disposeCheckerEMock;
+    private DisposeCheckerF disposeCheckerFMock;
+    private DisposeCheckerG disposeCheckerGMock;
 
     public TestCaseNavigationFromController() {
         super(MvcTestActivityNavigation.class);
@@ -68,6 +71,18 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         public DisposeCheckerE providesDisposeCheckerE() {
             return testCaseNavigation.disposeCheckerEMock;
         }
+
+        @Singleton
+        @Provides
+        public DisposeCheckerF providesDisposeCheckerF() {
+            return testCaseNavigation.disposeCheckerFMock;
+        }
+
+        @Singleton
+        @Provides
+        public DisposeCheckerG providesDisposeCheckerG() {
+            return testCaseNavigation.disposeCheckerGMock;
+        }
     }
 
     @Override
@@ -75,6 +90,8 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         super.injectDependencies(mvcSingletonCache);
 
         disposeCheckerEMock = mock(DisposeCheckerE.class);
+        disposeCheckerFMock = mock(DisposeCheckerF.class);
+        disposeCheckerGMock = mock(DisposeCheckerG.class);
         comp = new Comp(mvcSingletonCache);
         comp.testCaseNavigation = this;
         AndroidMvc.graph().register(comp);
@@ -87,7 +104,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     }
 
     @Test
-    public void testShouldReleaseInjectionsAfterFragmentsArePoppedOut() throws Throwable {
+    public void should_release_injected_object_by_pure_navigation_controller_navigation() throws Throwable {
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
         final String val = "Value = " + new Random().nextInt();
@@ -112,6 +129,82 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         //Controller should be disposed after navigated away from fragment E
         waitTest();
         verify(disposeCheckerEMock, times(1)).onDisposed();
+    }
+
+    @Test
+    public void should_release_injected_object_by_chained_navigation_controller_navigation() throws Throwable {
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+
+        final String valE = "ValueE = " + new Random().nextInt();
+        final String valF = "ValueF = " + new Random().nextInt();
+        final String valG = "ValueG = " + new Random().nextInt();
+
+//        Injector.getGraph().use(ControllerE.class, new Consumer<ControllerE>() {
+//            @Override
+//            public void consume(ControllerE instance) {
+//                instance.setValue(valE);
+//                navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.E);
+//
+//                instance.setValue(valG);
+//                navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.G);
+//            }
+//        });
+//
+//        Injector.getGraph().use(ControllerF.class, new Consumer<ControllerF>() {
+//            @Override
+//            public void consume(ControllerF instance) {
+//                instance.setValue(valF);
+//                navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.F);
+//            }
+//        });
+
+        Injector.getGraph().use(ControllerG.class, new Consumer<ControllerG>() {
+            @Override
+            public void consume(ControllerG instance) {
+                instance.setValue(valG);
+                navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.E);
+                navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.F);
+                navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.G);
+            }
+        });
+
+        waitTest(1500);
+
+        //The value set to controller e in Injector.getGraph().use should be retained during the
+        //navigation
+        onView(withText(valG)).check(matches(isDisplayed()));
+        verify(disposeCheckerEMock, times(1)).onDisposed();
+        verify(disposeCheckerFMock, times(1)).onDisposed();
+        verify(disposeCheckerGMock, times(0)).onDisposed();
+        resetDisposeCheckers();
+        navigationController.navigateBack(this);
+
+        waitTest(1500);
+//        onView(withText(valF)).check(matches(isDisplayed()));
+        verify(disposeCheckerEMock, times(0)).onDisposed();
+        verify(disposeCheckerFMock, times(0)).onDisposed();
+        verify(disposeCheckerGMock, times(0)).onDisposed();
+        resetDisposeCheckers();
+        navigationController.navigateBack(this);
+
+        waitTest(1500);
+//        onView(withText(valE)).check(matches(isDisplayed()));
+        verify(disposeCheckerEMock, times(0)).onDisposed();
+        verify(disposeCheckerFMock, times(1)).onDisposed();
+        verify(disposeCheckerGMock, times(0)).onDisposed();
+        resetDisposeCheckers();
+        navigationController.navigateBack(this);
+
+        waitTest(1500);
+        verify(disposeCheckerEMock, times(1)).onDisposed();
+        verify(disposeCheckerFMock, times(0)).onDisposed();
+        verify(disposeCheckerGMock, times(1)).onDisposed();
+    }
+
+    private void resetDisposeCheckers() {
+        reset(disposeCheckerEMock);
+        reset(disposeCheckerFMock);
+        reset(disposeCheckerGMock);
     }
 
 }

@@ -97,6 +97,8 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 
             String lastLocId = lastLoc == null ? null : lastLoc.getLocationId();
 
+            EventC2V.OnLocationForward navEvent = new EventC2V.OnLocationForward(sender, lastLoc,
+                    currentLoc, clearTop, clearedTopToLocation);
             /**
              * Retain all cached state managed objects. They will be retained until the fragment is
              * created and ready to show. They will be released by the view ready call back by the
@@ -109,10 +111,9 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
                     }
                 });
              */
-            __MvcGraphHelper.retainCachedObjectsBeforeNavigation(Injector.getGraph());
+            __MvcGraphHelper.retainCachedObjectsBeforeNavigation(navEvent, Injector.getGraph());
 
-            postC2VEvent(new EventC2V.OnLocationForward(sender, lastLoc, currentLoc, clearTop,
-                    clearedTopToLocation));
+            postC2VEvent(navEvent);
 
             logger.trace("Nav Controller: Forward: {} -> {}", lastLocId, currentLoc.getLocationId());
         }

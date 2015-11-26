@@ -79,7 +79,6 @@ import javax.inject.Singleton;
  * <p/>
  */
 public class MvcGraph {
-    List<Provider> cachedInstancesBeforeNavigation = new ArrayList<>();
     private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;

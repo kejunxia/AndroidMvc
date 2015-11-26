@@ -25,9 +25,9 @@ import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
 
-public class NavFragmentE extends MvcFragment {
+public class NavFragmentF extends MvcFragment {
     @Inject
-    private ControllerE controllerE;
+    private ControllerF controllerF;
 
     @Inject
     private ControllerG controllerG;
@@ -44,7 +44,7 @@ public class NavFragmentE extends MvcFragment {
         super.onViewReady(view, savedInstanceState, reason);
         textView = (TextView) view.findViewById(R.id.nav_frag_e_text);
 
-        textView.setText(controllerE.getValue());
+        textView.setText(controllerF.getValue());
     }
 
 }

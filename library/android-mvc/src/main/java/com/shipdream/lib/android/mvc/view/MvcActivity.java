@@ -397,7 +397,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         @SuppressWarnings("unchecked")
-        private void performForwardNav(NavigationController.EventC2V.OnLocationForward event) {
+        private void performForwardNav(final NavigationController.EventC2V.OnLocationForward event) {
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
             FragmentManager fm = childFragmentManager();
 
@@ -451,7 +451,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     public void run() {
                         //Release reference count to pair the retaining by NavigationControllerImpl
                         // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
-                        __MvcGraphHelper.releaseCachedItemsAfterNavigation(Injector.getGraph());
+                        __MvcGraphHelper.releaseCachedItemsAfterNavigation(event, Injector.getGraph());
 
                         if (finalLastFrag != null) {
                             finalLastFrag.releaseDependencies();
