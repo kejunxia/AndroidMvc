@@ -420,11 +420,11 @@ public abstract class MvcActivity extends AppCompatActivity {
                 }
 
                 MvcFragment lastFrag = null;
+                if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
+                    lastFrag = (MvcFragment) fm.findFragmentByTag(
+                            getFragmentTag(event.getLastValue().getLocationId()));
+                }
                 if (!event.isClearHistory()) {
-                    if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
-                        lastFrag = (MvcFragment) fm.findFragmentByTag(
-                                getFragmentTag(event.getLastValue().getLocationId()));
-                    }
                     if (lastFrag != null) {
                         lastFrag.onPushingToBackStack();
                     }
@@ -456,6 +456,8 @@ public abstract class MvcActivity extends AppCompatActivity {
                         if (finalLastFrag != null) {
                             finalLastFrag.releaseDependencies();
                         }
+
+                        logger.trace("Fragment ready: " + fragment.getClass().getSimpleName());
 
                         fragment.unregisterOnViewReadyListener(this);
                     }

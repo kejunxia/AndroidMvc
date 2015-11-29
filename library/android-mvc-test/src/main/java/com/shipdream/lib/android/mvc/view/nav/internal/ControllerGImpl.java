@@ -30,8 +30,7 @@ public class ControllerGImpl extends BaseControllerImpl<ControllerG.Model> imple
 
     @Override
     public void onDisposed() {
-        Log.i("DisposeCheck", "Checker G disposed");
-        disposeCheckerG.onDisposed();
+        Log.i("DisposeCheck", "Controller G disposed");
     }
 
     @Override

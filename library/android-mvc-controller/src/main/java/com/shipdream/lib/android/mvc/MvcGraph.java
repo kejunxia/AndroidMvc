@@ -80,6 +80,7 @@ import javax.inject.Singleton;
  */
 public class MvcGraph {
     private Logger logger = LoggerFactory.getLogger(getClass());
+    static UiThreadRunner uiThreadRunner;
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
     List<StateManaged> stateManagedObjects = new ArrayList<>();
@@ -186,12 +187,17 @@ public class MvcGraph {
      * @param type The type of the injectable instance
      * @param consumer Consume to use the instance
      */
-    public <T> void use(Class<T> type, Consumer<T> consumer) {
-        try {
-            graph.use(type, Inject.class, consumer);
-        } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
-        }
+    public <T> void use(final Class<T> type, final Consumer<T> consumer) {
+//        uiThreadRunner.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+                try {
+                    graph.use(type, Inject.class, consumer);
+                } catch (PokeException e) {
+                    throw new MvcGraphException(e.getMessage(), e);
+                }
+//            }
+//        });
     }
 
     /**
@@ -296,12 +302,17 @@ public class MvcGraph {
      * @param consumer Consume to use the instance
      * @throws MvcGraphException throw when there are exceptions during the consumption of the instance
      */
-    public <T> void use(Class<T> type, Annotation qualifier, Consumer<T> consumer) {
-        try {
-            graph.use(type, qualifier, Inject.class, consumer);
-        } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
-        }
+    public <T> void use(final Class<T> type, final Annotation qualifier, final Consumer<T> consumer) {
+//        uiThreadRunner.runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+                try {
+                    graph.use(type, qualifier, Inject.class, consumer);
+                } catch (PokeException e) {
+                    throw new MvcGraphException(e.getMessage(), e);
+                }
+//            }
+//        });
     }
 
     /**

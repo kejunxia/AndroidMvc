@@ -43,12 +43,15 @@ public class __MvcGraphHelper {
 
         //Release all cached items after the fragment navigated to is ready to show.
         Collection<Provider> providers = retainedProviders.get(navigationEvent);
-        for (Provider provider : providers) {
-            if (provider != null) {
-                provider.release();
+        if (providers != null) {
+            for (Provider provider : providers) {
+                if (provider != null) {
+                    provider.release();
+                }
             }
+            providers.clear();
         }
-        providers.clear();
+
         retainedProviders.remove(navigationEvent);
     }
 

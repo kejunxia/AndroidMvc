@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
@@ -180,6 +182,8 @@ public abstract class MvcFragment extends Fragment {
         if (dependenciesInjected) {
             AndroidMvc.graph().release(this);
             dependenciesInjected = false;
+
+            LoggerFactory.getLogger(getClass()).trace("Fragment release: " + getClass().getSimpleName());
         }
     }
 

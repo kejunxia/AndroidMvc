@@ -18,9 +18,9 @@ package com.shipdream.lib.android.mvc.view.nav.internal;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerE;
+import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerG;
 
-public class DisposeCheckerGImpl implements DisposeCheckerE {
+public class DisposeCheckerGImpl implements DisposeCheckerG {
     @Override
     public void onDisposed() {
         Log.i("DisposeCheck", "Checker G disposed");
