@@ -104,10 +104,16 @@ public interface NavigationController extends BaseController<NavigationControlle
     void navigateBack(Object sender, String toLocationId);
 
     interface EventC2V {
+        abstract class OnLocationChanged extends ValueChangeEventC2V<NavLocation> {
+            public OnLocationChanged(Object sender, NavLocation lastValue, NavLocation currentValue) {
+                super(sender, lastValue, currentValue);
+            }
+        }
+
         /**
          * Event to notify views navigation will move forward.
          */
-        class OnLocationForward extends ValueChangeEventC2V<NavLocation> {
+        class OnLocationForward extends OnLocationChanged {
             private boolean clearHistory;
             private NavLocation locationWhereHistoryClearedUpTo;
 
@@ -147,7 +153,7 @@ public interface NavigationController extends BaseController<NavigationControlle
         /**
          * Event to notify views navigation will move backward.
          */
-        class OnLocationBack extends ValueChangeEventC2V<NavLocation> {
+        class OnLocationBack extends OnLocationChanged {
             private boolean fastRewind;
 
             public OnLocationBack(Object sender, NavLocation lastValue, NavLocation currentValue,

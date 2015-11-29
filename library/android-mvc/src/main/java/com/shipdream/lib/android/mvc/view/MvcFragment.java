@@ -146,6 +146,7 @@ public abstract class MvcFragment extends Fragment {
     private boolean dependenciesInjected = false;
 
     boolean isStateManagedByRootDelegateFragment = false;
+    boolean selfRelease = true;
 
     /**
      * @return orientation before last orientation change.
@@ -395,7 +396,9 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        releaseDependencies();
+        if (selfRelease) {
+            releaseDependencies();
+        }
         eventRegister.onDestroy();
         eventRegister = null;
     }

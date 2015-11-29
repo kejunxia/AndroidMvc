@@ -22,25 +22,33 @@ import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
+import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
 
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActivityNavigation> {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     @Inject
     private NavigationController navigationController;
 
@@ -65,23 +73,23 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
             super(scopeCache);
         }
 
-//        @Singleton
-//        @Provides
-//        public DisposeCheckerE providesDisposeCheckerE() {
-//            return testCaseNavigation.disposeCheckerEMock;
-//        }
-//
-//        @Singleton
-//        @Provides
-//        public DisposeCheckerF providesDisposeCheckerF() {
-//            return testCaseNavigation.disposeCheckerFMock;
-//        }
-//
-//        @Singleton
-//        @Provides
-//        public DisposeCheckerG providesDisposeCheckerG() {
-//            return testCaseNavigation.disposeCheckerGMock;
-//        }
+        @Singleton
+        @Provides
+        public DisposeCheckerE providesDisposeCheckerE() {
+            return testCaseNavigation.disposeCheckerEMock;
+        }
+
+        @Singleton
+        @Provides
+        public DisposeCheckerF providesDisposeCheckerF() {
+            return testCaseNavigation.disposeCheckerFMock;
+        }
+
+        @Singleton
+        @Provides
+        public DisposeCheckerG providesDisposeCheckerG() {
+            return testCaseNavigation.disposeCheckerGMock;
+        }
     }
 
     @Override
@@ -89,8 +97,29 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         super.injectDependencies(mvcSingletonCache);
 
         disposeCheckerEMock = mock(DisposeCheckerE.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                logger.debug("Dispose checker E");
+                return null;
+            }
+        }).when(disposeCheckerEMock).onDisposed();
         disposeCheckerFMock = mock(DisposeCheckerF.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                logger.debug("Dispose checker F");
+                return null;
+            }
+        }).when(disposeCheckerFMock).onDisposed();
         disposeCheckerGMock = mock(DisposeCheckerG.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                logger.debug("Dispose checker G");
+                return null;
+            }
+        }).when(disposeCheckerGMock).onDisposed();
         comp = new Comp(mvcSingletonCache);
         comp.testCaseNavigation = this;
         AndroidMvc.graph().register(comp);
@@ -187,18 +216,19 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         navigationController.navigateBack(this);
 
         onView(withText(valE)).check(matches(isDisplayed()));
-        waitTest(1000);
+        waitTest();
         verify(disposeCheckerEMock, times(0)).onDisposed();
-//        verify(disposeCheckerFMock, times(1)).onDisposed();
-//        verify(disposeCheckerGMock, times(1)).onDisposed();
-//        resetDisposeCheckers();
+        LoggerFactory.getLogger(getClass()).debug("DisposeCheck, checking F");
+        verify(disposeCheckerFMock, times(1)).onDisposed();
+        //__MvcGraphHelper retaining all cache is dangerous. Try to only retain relevant injected instances.
+        verify(disposeCheckerGMock, times(0)).onDisposed();
+        resetDisposeCheckers();
         LoggerFactory.getLogger(getClass()).debug("DisposeCheck nav back");
         navigationController.navigateBack(this);
 
-        waitTest(1000);
-//        verify(disposeCheckerEMock, times(1)).onDisposed();
-//        verify(disposeCheckerFMock, times(0)).onDisposed();
-//        verify(disposeCheckerGMock, times(0)).onDisposed();
+        verify(disposeCheckerEMock, times(1)).onDisposed();
+        verify(disposeCheckerFMock, times(0)).onDisposed();
+        verify(disposeCheckerGMock, times(1)).onDisposed();
     }
 
     private void resetDisposeCheckers() {

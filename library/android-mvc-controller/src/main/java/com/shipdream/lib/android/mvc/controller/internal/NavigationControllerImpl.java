@@ -131,7 +131,14 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 
         NavLocation previousLoc = currentLoc.getPreviousLocation();
         getModel().setCurrentLocation(previousLoc);
-        postC2VEvent(new EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false));
+
+        EventC2V.OnLocationBack navEvent = new EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false);
+
+        if (previousLoc != null ) {
+            __MvcGraphHelper.retainCachedObjectsBeforeNavigation(navEvent, Injector.getGraph());
+        }
+
+        postC2VEvent(navEvent);
 
         logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
                 previousLoc == null ? "null" : previousLoc.getLocationId());

@@ -150,6 +150,7 @@ public class TestMvcGraphHelper {
         ControllerA controllerAInViewA = viewA.controllerA;
         ManageA manageAInViewA = ((ControllerAImpl)viewA.controllerA).manageA;
 
+        //Simulate navigate to viewB
         NavigationController.EventC2V.OnLocationForward navEventB = mock(
                 NavigationController.EventC2V.OnLocationForward.class);
         __MvcGraphHelper.retainCachedObjectsBeforeNavigation(navEventB, Injector.getGraph());
@@ -158,25 +159,27 @@ public class TestMvcGraphHelper {
         ControllerA controllerAInViewB = viewB.controllerA;
         ManageA manageAInViewB = ((ControllerAImpl)viewA.controllerA).manageA;
 
+        //release viewA
         Injector.getGraph().release(viewA);
         __MvcGraphHelper.releaseCachedItemsAfterNavigation(navEventB, Injector.getGraph());
         verify(manageAMock, times(0)).onDisposed();
 
+        //Simulate navigate to viewC
         NavigationController.EventC2V.OnLocationForward navEventC = mock(
                 NavigationController.EventC2V.OnLocationForward.class);
         __MvcGraphHelper.retainCachedObjectsBeforeNavigation(navEventC, Injector.getGraph());
-
-        Injector.getGraph().release(viewB);
-        __MvcGraphHelper.releaseCachedItemsAfterNavigation(navEventC, Injector.getGraph());
-        verify(manageAMock, times(0)).onDisposed();
 
         Injector.getGraph().inject(viewC);
         ControllerA controllerAInViewC = viewB.controllerA;
         ManageA manageAInViewC = ((ControllerAImpl)viewA.controllerA).manageA;
 
+        //release viewB
+        Injector.getGraph().release(viewB);
+        __MvcGraphHelper.releaseCachedItemsAfterNavigation(navEventC, Injector.getGraph());
+        verify(manageAMock, times(0)).onDisposed();
+
         Assert.assertTrue(manageAInViewA == manageAInViewB);
         Assert.assertTrue(manageAInViewA == manageAInViewC);
-
     }
 
 }

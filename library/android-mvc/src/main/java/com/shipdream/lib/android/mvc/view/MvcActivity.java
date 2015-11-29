@@ -485,7 +485,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        private void performBackNav(NavigationController.EventC2V.OnLocationBack event) {
+        private void performBackNav(final NavigationController.EventC2V.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
                 MvcActivity mvcActivity = ((MvcActivity) getActivity());
@@ -510,6 +510,33 @@ public abstract class MvcActivity extends AppCompatActivity {
                             }
                         }
                     }
+
+                    MvcFragment lastFrag = null;
+                    if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
+                        lastFrag = (MvcFragment) fm.findFragmentByTag(
+                                getFragmentTag(event.getLastValue().getLocationId()));
+                    }
+                    final MvcFragment finalLastFrag = lastFrag;
+
+                    if (finalLastFrag != null) {
+                        finalLastFrag.selfRelease = false;
+                    }
+
+                    currentFrag.registerOnViewReadyListener(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Release reference count to pair the retaining by NavigationControllerImpl
+                            // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
+                            __MvcGraphHelper.releaseCachedItemsAfterNavigation(event, Injector.getGraph());
+
+                            if (finalLastFrag != null) {
+                                finalLastFrag.releaseDependencies();
+                                finalLastFrag.selfRelease = true;
+                            }
+
+                            currentFrag.unregisterOnViewReadyListener(this);
+                        }
+                    });
                 }
 
                 if (event.isFastRewind()) {
@@ -544,7 +571,9 @@ public abstract class MvcActivity extends AppCompatActivity {
                     }
                 } else {
                     fm.popBackStack();
-                    logger.trace("Navigation back: On step back to location {}", currentLoc.getLocationId());
+                    logger.trace("Navigation back: On step back from {} to location {}",
+                            event.getLastValue() != null ? event.getLastValue().getLocationId() : null,
+                            currentLoc.getLocationId());
                 }
             }
         }
