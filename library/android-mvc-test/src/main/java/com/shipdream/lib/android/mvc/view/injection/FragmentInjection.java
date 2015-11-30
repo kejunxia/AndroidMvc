@@ -85,7 +85,7 @@ public abstract class FragmentInjection extends MvcFragment {
                 }else if (item.equals("D")) {
                     loc = MvcTestActivityNavigation.Loc.D;
                 }
-                navigationController.navigateTo(view, loc);
+                navigationController.navigate(view).to(loc).go();
             }
         });
 

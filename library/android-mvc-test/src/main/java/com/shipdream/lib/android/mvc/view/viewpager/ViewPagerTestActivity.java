@@ -39,7 +39,7 @@ public class ViewPagerTestActivity extends MvcActivity {
     public static class HomeFragment extends DelegateFragment {
         @Override
         protected void onStartUp() {
-            getNavigationController().navigateTo(this, ViewPagerHomeFragment.class.getSimpleName(), null);
+            getNavigationController().navigate(this).to(ViewPagerHomeFragment.class.getSimpleName(), null).go();
         }
     }
 

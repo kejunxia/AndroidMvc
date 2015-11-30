@@ -252,7 +252,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                navigationController.navigateBack(this);
+                navigationController.navigate(this).navigateBack().go();
             }
             return true;
         }
@@ -449,10 +449,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                 fragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
-                        //Release reference count to pair the retaining by NavigationControllerImpl
-                        // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
-                        __MvcGraphHelper.releaseCachedItemsAfterNavigation(event, Injector.getGraph());
-
                         if (finalLastFrag != null) {
                             finalLastFrag.releaseDependencies();
                         }
@@ -525,10 +521,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                     currentFrag.registerOnViewReadyListener(new Runnable() {
                         @Override
                         public void run() {
-                            //Release reference count to pair the retaining by NavigationControllerImpl
-                            // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
-                            __MvcGraphHelper.releaseCachedItemsAfterNavigation(event, Injector.getGraph());
-
                             if (finalLastFrag != null) {
                                 finalLastFrag.releaseDependencies();
                                 finalLastFrag.selfRelease = true;

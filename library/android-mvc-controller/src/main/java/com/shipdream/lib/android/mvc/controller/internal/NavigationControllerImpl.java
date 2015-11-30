@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
-import com.shipdream.lib.android.mvc.Injector;
-import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 
@@ -34,13 +32,27 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     }
 
     @Override
+    public Navigator navigate(Object sender) {
+        Navigator navigator = new Navigator(sender, this);
+        return navigator;
+    }
+
+    @Override
+    public Navigator navigate(Object sender, Class... preparedControllers) {
+        Navigator navigator = new Navigator(sender, this);
+        return navigator;
+    }
+
+    @Override
     public void navigateTo(Object sender, String locationId) {
-        doNavigateTo(sender, locationId, false, null);
+//        doNavigateTo(sender, locationId, false, null);
+        navigate(sender).to(locationId).go();
     }
 
     @Override
     public void navigateTo(Object sender, String locationId, String clearTopToLocationId) {
-        doNavigateTo(sender, locationId, true, clearTopToLocationId);
+//        doNavigateTo(sender, locationId, true, clearTopToLocationId);
+        navigate(sender).to(locationId, clearTopToLocationId).go();
     }
 
     private void doNavigateTo(Object sender, String locationId, boolean clearTop,
@@ -99,19 +111,6 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 
             EventC2V.OnLocationForward navEvent = new EventC2V.OnLocationForward(sender, lastLoc,
                     currentLoc, clearTop, clearedTopToLocation);
-            /**
-             * Retain all cached state managed objects. They will be retained until the fragment is
-             * created and ready to show. They will be released by the view ready call back by the
-             * fragment navigating to.
-             *  fragment.registerOnViewReadyListener(new Runnable() {
-                    @Override
-                    public void run() {
-                    Injector.getGraph().releaseCachedItems();
-                    fragment.unregisterOnViewReadyListener(this);
-                    }
-                });
-             */
-            __MvcGraphHelper.retainCachedObjectsBeforeNavigation(navEvent, Injector.getGraph());
 
             postC2VEvent(navEvent);
 
@@ -123,73 +122,72 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 
     @Override
     public void navigateBack(Object sender) {
-        NavLocation currentLoc = getModel().getCurrentLocation();
-        if (currentLoc == null) {
-            logger.warn("Current location should never be null before navigating backwards.");
-            return;
-        }
-
-        NavLocation previousLoc = currentLoc.getPreviousLocation();
-        getModel().setCurrentLocation(previousLoc);
-
-        EventC2V.OnLocationBack navEvent = new EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false);
-
-        if (previousLoc != null ) {
-            __MvcGraphHelper.retainCachedObjectsBeforeNavigation(navEvent, Injector.getGraph());
-        }
-
-        postC2VEvent(navEvent);
-
-        logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
-                previousLoc == null ? "null" : previousLoc.getLocationId());
-
-        checkAppExit(sender);
-
-        dumpHistory();
+//        NavLocation currentLoc = getModel().getCurrentLocation();
+//        if (currentLoc == null) {
+//            logger.warn("Current location should never be null before navigating backwards.");
+//            return;
+//        }
+//
+//        NavLocation previousLoc = currentLoc.getPreviousLocation();
+//        getModel().setCurrentLocation(previousLoc);
+//
+//        EventC2V.OnLocationBack navEvent = new EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false);
+//
+//        postC2VEvent(navEvent);
+//
+//        logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
+//                previousLoc == null ? "null" : previousLoc.getLocationId());
+//
+//        checkAppExit(sender);
+//
+//        dumpHistory();
+        navigate(sender).navigateBack().go();
     }
 
     @Override
     public void navigateBack(Object sender, String toLocationId) {
-        NavLocation currentLoc = getModel().getCurrentLocation();
-        if (currentLoc == null) {
-            logger.warn("Current location should never be null before navigating backwards.");
-            return;
-        }
+//        NavLocation currentLoc = getModel().getCurrentLocation();
+//        if (currentLoc == null) {
+//            logger.warn("Current location should never be null before navigating backwards.");
+//            return;
+//        }
+//
+//        if (currentLoc.getPreviousLocation() == null) {
+//            //Has already been the first location, don't do anything
+//            return;
+//        }
+//
+//        boolean success = false;
+//        NavLocation previousLoc = currentLoc;
+//
+//        if(toLocationId == null) {
+//            success = true;
+//        }
+//        while (currentLoc != null) {
+//            if(toLocationId != null) {
+//                if (toLocationId.equals(currentLoc.getLocationId())) {
+//                    success = true;
+//                    break;
+//                }
+//            } else {
+//                if(currentLoc.getPreviousLocation() == null) {
+//                    break;
+//                }
+//            }
+//            currentLoc = currentLoc.getPreviousLocation();
+//        }
+//        if(success) {
+//            getModel().setCurrentLocation(currentLoc);
+//            postC2VEvent(new EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true));
+//            logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
+//                    previousLoc.getLocationId());
+//
+//            checkAppExit(sender);
+//
+//            dumpHistory();
+//        }
 
-        if (currentLoc.getPreviousLocation() == null) {
-            //Has already been the first location, don't do anything
-            return;
-        }
-
-        boolean success = false;
-        NavLocation previousLoc = currentLoc;
-
-        if(toLocationId == null) {
-            success = true;
-        }
-        while (currentLoc != null) {
-            if(toLocationId != null) {
-                if (toLocationId.equals(currentLoc.getLocationId())) {
-                    success = true;
-                    break;
-                }
-            } else {
-                if(currentLoc.getPreviousLocation() == null) {
-                    break;
-                }
-            }
-            currentLoc = currentLoc.getPreviousLocation();
-        }
-        if(success) {
-            getModel().setCurrentLocation(currentLoc);
-            postC2VEvent(new EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true));
-            logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
-                    previousLoc.getLocationId());
-
-            checkAppExit(sender);
-
-            dumpHistory();
-        }
+        navigate(sender).navigateBack(toLocationId).go();
     }
 
     private void checkAppExit(Object sender) {

@@ -39,7 +39,7 @@ public class MvcTestActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            getNavigationController().navigateTo(this, "TestFragment", null);
+            getNavigationController().navigate(this).to("TestFragment", null).go();
         }
 
         @Override

@@ -57,7 +57,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.B);
+        navigationController.navigate(this).to(MvcTestActivityNavigation.Loc.B).go();
         waitTest();
         //=============================> At B
         //onDestroyView is always called when a fragment is pushed to back stack
@@ -72,7 +72,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.C);
+        navigationController.navigate(this).to(MvcTestActivityNavigation.Loc.C).go();
         waitTest();
         //=============================> At C
         lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -85,7 +85,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 "Added by FragmentC")));
         onView(withId(R.id.textC)).check(matches(withText("Added by FragmentC")));
 
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).navigateBack().go();
         waitTest(1000);
         //=============================> At B
         lifeCycleValidatorC.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
@@ -104,7 +104,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).navigateBack().go();
         waitTest(1000);
         //=============================> At A
         //onDestroy of previous Fragment(FragmentB) is not called until it's removed out from back stack
@@ -140,7 +140,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.B);
+        navigationController.navigate(this).to(MvcTestActivityNavigation.Loc.B).go();
         waitTest();
         //=============================> At B
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +

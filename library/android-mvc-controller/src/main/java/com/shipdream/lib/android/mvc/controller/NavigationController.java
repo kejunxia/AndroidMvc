@@ -18,6 +18,7 @@ package com.shipdream.lib.android.mvc.controller;
 
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.NavLocation;
+import com.shipdream.lib.android.mvc.controller.internal.Navigator;
 import com.shipdream.lib.android.mvc.event.BaseEventC2C;
 import com.shipdream.lib.android.mvc.event.ValueChangeEventC2V;
 import com.shipdream.lib.poke.Consumer;
@@ -26,7 +27,12 @@ import com.shipdream.lib.poke.Consumer;
  * Controller to navigate among different fragments in the SAME activity.
  */
 public interface NavigationController extends BaseController<NavigationController.Model> {
+    Navigator navigate(Object sender);
+
+    Navigator navigate(Object sender, Class... preparedControllers);
+
     /**
+     *
      * Navigate to a new location. Current location will be saved/stacked into history which can be
      * popped out by {@link #navigateBack(Object, String)} or {@link #navigateTo(Object, String, String)}.
      * Navigation only takes effect when the given locationId is different from the current location
@@ -46,9 +52,13 @@ public interface NavigationController extends BaseController<NavigationControlle
      * and ready to show.
      * </p>
      *
+     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     *
      * @param sender     Who wants to navigate
      * @param locationId The id of the location navigate to
+     *
      */
+    @Deprecated
     void navigateTo(Object sender, String locationId);
 
     /**
@@ -73,20 +83,26 @@ public interface NavigationController extends BaseController<NavigationControlle
      * and ready to show.
      * </p>
      *
+     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     *
      * @param sender               Who wants to navigate
      * @param locationId           The id of the location navigate to
      * @param clearTopToLocationId Null if all history locations want to be cleared otherwise, the
      *                             id of the location the history will be exclusively cleared up to
      *                             which will be the second last location after navigation.
      */
+    @Deprecated
     void navigateTo(Object sender, String locationId, String clearTopToLocationId);
 
     /**
      * Navigates back. If current location is null it doesn't take any effect otherwise
      * raises a {@link EventC2V.OnLocationBack} event when there is a previous location.
      *
+     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     *
      * @param sender Who wants to navigate back
      */
+    @Deprecated
     void navigateBack(Object sender);
 
     /**
@@ -95,14 +111,20 @@ public interface NavigationController extends BaseController<NavigationControlle
      * navigate to location with given locationId and clear history prior to it. Then a
      * {@link EventC2V.OnLocationBack} event will be raised.
      *
+     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     *
      * @param sender       Who wants to navigate
      * @param toLocationId Null when needs to navigate to the very first location and all history
      *                     locations will be above it will be cleared. Otherwise, the id of the
      *                     location where the history will be exclusively cleared up to. Then this
      *                     location will be the second last one.
      */
+    @Deprecated
     void navigateBack(Object sender, String toLocationId);
 
+    /**
+     * Event t
+     */
     interface EventC2V {
         abstract class OnLocationChanged extends ValueChangeEventC2V<NavLocation> {
             public OnLocationChanged(Object sender, NavLocation lastValue, NavLocation currentValue) {

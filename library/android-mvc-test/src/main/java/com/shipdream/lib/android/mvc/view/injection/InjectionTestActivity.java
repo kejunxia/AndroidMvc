@@ -49,7 +49,7 @@ public class InjectionTestActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.A, null);
+            navigationController.navigate(this).to(MvcTestActivityNavigation.Loc.A, null).go();
         }
     }
 
