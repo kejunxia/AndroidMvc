@@ -132,7 +132,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     }
 
     @Test
-    public void should_release_injected_object_by_pure_navigation_controller_navigation() throws Throwable {
+    public void test_should_release_injected_object_by_pure_navigation_controller_navigation() throws Throwable {
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
         final String val = "Value = " + new Random().nextInt();
@@ -160,7 +160,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     }
 
     @Test
-    public void should_release_injected_object_by_chained_navigation_controller_navigation() throws Throwable {
+    public void test_should_release_injected_object_by_chained_navigation_controller_navigation() throws Throwable {
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
         final String valE = "ValueE = " + new Random().nextInt();

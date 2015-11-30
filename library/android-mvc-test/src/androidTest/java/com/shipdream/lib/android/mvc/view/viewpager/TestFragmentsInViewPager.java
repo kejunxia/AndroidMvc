@@ -40,7 +40,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_restore_controller_of_tab_a_after_swipe_away_then_swipe_back_to_tab_a() throws Throwable {
+    public void test_should_restore_controller_of_tab_a_after_swipe_away_then_swipe_back_to_tab_a() throws Throwable {
         onView(withText("Tab A")).check(matches(isDisplayed()));
 
         onView(withId(R.id.viewpager)).perform(swipeLeft());
@@ -61,7 +61,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_resumed_hosting_fragment_pops_out() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_resumed_hosting_fragment_pops_out() throws Throwable {
         if (isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is not disabled");
             return;
@@ -141,7 +141,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_restored_hosting_fragment_pops_out() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_restored_hosting_fragment_pops_out() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
             return;
@@ -231,7 +231,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity() throws Throwable {
         if (isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is enabled");
             return;
@@ -297,7 +297,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity_after_being_killed() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity_after_being_killed() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
             return;
@@ -370,7 +370,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
+    public void test_should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
         //=============================> At Sub Fragment
         navigationController.navigateTo(this, SubFragment.class.getSimpleName());
         waitTest(1200);
