@@ -40,27 +40,6 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void test_should_restore_controller_of_tab_a_after_swipe_away_then_swipe_back_to_tab_a() throws Throwable {
-        onView(withText("Tab A")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeLeft());
-        onView(withText("Tab A")).check(matches(not(isDisplayed())));
-        onView(withText("Tab B")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeLeft());
-        onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText("Tab C")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeRight());
-        onView(withText("Tab C")).check(matches(not(isDisplayed())));
-        onView(withText("Tab B")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeRight());
-        onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
-    }
-
-    @Test
     public void test_should_call_onViewReady_in_tab_fragments_when_resumed_hosting_fragment_pops_out() throws Throwable {
         if (isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is not disabled");
