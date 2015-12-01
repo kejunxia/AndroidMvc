@@ -49,7 +49,7 @@ public class TabFragmentA extends BaseTabFragment {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationController.navigate(v).to(SubFragment.class.getSimpleName()).go();
+                navigationController.navigate(v).to(SubFragment.class.getSimpleName());
             }
         });
     }

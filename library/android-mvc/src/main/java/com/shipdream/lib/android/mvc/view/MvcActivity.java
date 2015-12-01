@@ -252,7 +252,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                navigationController.navigate(this).back().go();
+                navigationController.navigate(this).back();
             }
             return true;
         }

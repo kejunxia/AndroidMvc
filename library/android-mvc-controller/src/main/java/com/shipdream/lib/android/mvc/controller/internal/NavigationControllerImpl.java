@@ -46,13 +46,13 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     @Override
     public void navigateTo(Object sender, String locationId) {
 //        doNavigateTo(sender, locationId, false, null);
-        navigate(sender).to(locationId).go();
+        navigate(sender).to(locationId);
     }
 
     @Override
     public void navigateTo(Object sender, String locationId, String clearTopToLocationId) {
 //        doNavigateTo(sender, locationId, true, clearTopToLocationId);
-        navigate(sender).to(locationId, clearTopToLocationId).go();
+        navigate(sender).to(locationId, clearTopToLocationId);
     }
 
     private void doNavigateTo(Object sender, String locationId, boolean clearTop,
@@ -141,7 +141,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 //        checkAppExit(sender);
 //
 //        dumpHistory();
-        navigate(sender).back().go();
+        navigate(sender).back();
     }
 
     @Override
@@ -187,7 +187,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 //            dumpHistory();
 //        }
 
-        navigate(sender).back(toLocationId).go();
+        navigate(sender).back(toLocationId);
     }
 
     private void checkAppExit(Object sender) {

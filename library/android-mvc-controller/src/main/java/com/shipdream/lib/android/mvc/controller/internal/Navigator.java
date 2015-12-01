@@ -26,14 +26,14 @@ public class Navigator {
         return onSettled;
     }
 
-    public Navigator to(String locationId) {
+    public void to(String locationId) {
         doNavigateTo(locationId, false, null);
-        return this;
+        go();
     }
 
-    public Navigator to(String locationId, String clearTopToLocationId) {
+    public void to(String locationId, String clearTopToLocationId) {
         doNavigateTo(locationId, true, clearTopToLocationId);
-        return this;
+        go();
     }
 
     private void doNavigateTo(String locationId, boolean clearTop,
@@ -93,30 +93,30 @@ public class Navigator {
         }
     }
 
-    public Navigator back() {
+    public void back() {
         NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationController.logger.warn("Current location should never be null before navigating backwards.");
-            return this;
+            return;
         }
 
         NavLocation previousLoc = currentLoc.getPreviousLocation();
         navigationController.getModel().setCurrentLocation(previousLoc);
 
         navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false);
-        return this;
+        go();
     }
 
-    public Navigator back(String toLocationId) {
+    public void back(String toLocationId) {
         NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationController.logger.warn("Current location should never be null before navigating backwards.");
-            return this;
+            return;
         }
 
         if (currentLoc.getPreviousLocation() == null) {
             //Has already been the first location, don't do anything
-            return this;
+            return;
         }
 
         boolean success = false;
@@ -142,7 +142,7 @@ public class Navigator {
             navigationController.getModel().setCurrentLocation(currentLoc);
             navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true);
         }
-        return this;
+        go();
     }
 
     public Navigator onSettled(OnSettled onSettled) {
@@ -150,7 +150,7 @@ public class Navigator {
         return this;
     }
 
-    public void go() {
+    private void go() {
         if (navigateEvent != null) {
             navigationController.postC2VEvent(navigateEvent);
 

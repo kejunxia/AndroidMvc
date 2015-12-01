@@ -74,7 +74,7 @@ public class MvcTestActivityNavigation extends MvcActivity {
         @Override
         protected void onStartUp() {
             Log.d("MvcTesting", "navigate");
-            navigationController.navigate(this).to(Loc.A).go();
+            navigationController.navigate(this).to(Loc.A);
         }
 
         @Override

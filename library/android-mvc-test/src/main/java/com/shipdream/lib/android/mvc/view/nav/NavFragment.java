@@ -51,7 +51,7 @@ public abstract class NavFragment extends MvcFragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationController.navigate(v).to(getNextFragmentLocId()).go();
+                navigationController.navigate(v).to(getNextFragmentLocId());
             }
         });
 
@@ -59,7 +59,7 @@ public abstract class NavFragment extends MvcFragment {
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navigationController.navigate(view).back(null).go();
+                navigationController.navigate(view).back(null);
             }
         });
 
