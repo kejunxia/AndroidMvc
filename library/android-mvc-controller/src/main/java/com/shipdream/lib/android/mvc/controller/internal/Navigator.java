@@ -1,5 +1,6 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
+import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 
@@ -18,12 +19,22 @@ public class Navigator {
         this.navigationController = navigationController;
     }
 
+    Navigator(Object sender, NavigationControllerImpl navigationController, Class... preparedObjects) {
+        this.sender = sender;
+        this.navigationController = navigationController;
+
+    }
+
     public Object getSender() {
         return sender;
     }
 
     public OnSettled getOnSettled() {
         return onSettled;
+    }
+
+    public Navigator prepare() {
+        return this;
     }
 
     public void to(String locationId) {
@@ -89,7 +100,7 @@ public class Navigator {
             navigationController.getModel().setCurrentLocation(currentLoc);
 
             navigateEvent = new NavigationController.EventC2V.OnLocationForward(sender, lastLoc,
-                    currentLoc, clearTop, clearedTopToLocation);
+                    currentLoc, clearTop, clearedTopToLocation, this);
         }
     }
 
@@ -103,7 +114,7 @@ public class Navigator {
         NavLocation previousLoc = currentLoc.getPreviousLocation();
         navigationController.getModel().setCurrentLocation(previousLoc);
 
-        navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false);
+        navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false, this);
         go();
     }
 
@@ -140,7 +151,7 @@ public class Navigator {
         }
         if(success) {
             navigationController.getModel().setCurrentLocation(currentLoc);
-            navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true);
+            navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true, this);
         }
         go();
     }

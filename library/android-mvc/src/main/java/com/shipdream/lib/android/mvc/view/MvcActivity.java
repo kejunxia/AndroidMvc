@@ -449,6 +449,10 @@ public abstract class MvcActivity extends AppCompatActivity {
                 fragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
+                        if (event.getNavigator() != null && event.getNavigator().getOnSettled() != null) {
+                            event.getNavigator().getOnSettled().run();
+                        }
+
                         if (finalLastFrag != null) {
                             finalLastFrag.releaseDependencies();
                         }
@@ -521,6 +525,10 @@ public abstract class MvcActivity extends AppCompatActivity {
                     currentFrag.registerOnViewReadyListener(new Runnable() {
                         @Override
                         public void run() {
+                            if (event.getNavigator() != null && event.getNavigator().getOnSettled() != null) {
+                                event.getNavigator().getOnSettled().run();
+                            }
+
                             if (finalLastFrag != null) {
                                 finalLastFrag.releaseDependencies();
                                 finalLastFrag.selfRelease = true;

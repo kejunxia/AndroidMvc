@@ -127,8 +127,16 @@ public interface NavigationController extends BaseController<NavigationControlle
      */
     interface EventC2V {
         abstract class OnLocationChanged extends ValueChangeEventC2V<NavLocation> {
-            public OnLocationChanged(Object sender, NavLocation lastValue, NavLocation currentValue) {
+            private final Navigator navigator;
+
+            public OnLocationChanged(Object sender, NavLocation lastValue, NavLocation currentValue,
+                                     Navigator navigator) {
                 super(sender, lastValue, currentValue);
+                this.navigator = navigator;
+            }
+
+            public Navigator getNavigator() {
+                return navigator;
             }
         }
 
@@ -148,8 +156,9 @@ public interface NavigationController extends BaseController<NavigationControlle
              * @param locationWhereHistoryClearedUpTo If need to clear location, up to where
              */
             public OnLocationForward(Object sender, NavLocation lastValue, NavLocation currentValue,
-                                     boolean clearHistory, NavLocation locationWhereHistoryClearedUpTo) {
-                super(sender, lastValue, currentValue);
+                                     boolean clearHistory, NavLocation locationWhereHistoryClearedUpTo,
+                                     Navigator navigator) {
+                super(sender, lastValue, currentValue, navigator);
                 this.clearHistory = clearHistory;
                 this.locationWhereHistoryClearedUpTo = locationWhereHistoryClearedUpTo;
             }
@@ -179,8 +188,8 @@ public interface NavigationController extends BaseController<NavigationControlle
             private boolean fastRewind;
 
             public OnLocationBack(Object sender, NavLocation lastValue, NavLocation currentValue,
-                                  boolean fastRewind) {
-                super(sender, lastValue, currentValue);
+                                  boolean fastRewind, Navigator navigator) {
+                super(sender, lastValue, currentValue, navigator);
                 this.fastRewind = fastRewind;
             }
 

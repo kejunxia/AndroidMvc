@@ -188,16 +188,35 @@ public class MvcGraph {
      * @param consumer Consume to use the instance
      */
     public <T> void use(final Class<T> type, final Consumer<T> consumer) {
-//        uiThreadRunner.runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-                try {
-                    graph.use(type, Inject.class, consumer);
-                } catch (PokeException e) {
-                    throw new MvcGraphException(e.getMessage(), e);
-                }
-//            }
-//        });
+        try {
+            graph.use(type, Inject.class, consumer);
+        } catch (PokeException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Reference an injectable object and retain it. Use
+     * {@link #dereference(Object, Class, Annotation)} to dereference it when it's not used
+     * any more.
+     * @param type the type of the object
+     * @param qualifier the qualifier
+     * @return
+     */
+    public <T> T reference(Class<T> type, Annotation qualifier)
+            throws ProviderMissingException, ProvideException, CircularDependenciesException {
+        return graph.reference(type, qualifier, Inject.class);
+    }
+
+    /**
+     * Dereference an injectable object. When it's not referenced by anything else after this
+     * dereferencing, release its cached instance if possible.
+     * @param type the type of the object
+     * @param qualifier the qualifier
+     */
+    public <T> void dereference(T instance, Class<T> type, Annotation qualifier)
+            throws ProviderMissingException {
+        graph.dereference(instance, type, qualifier, Inject.class);
     }
 
     /**
@@ -303,16 +322,11 @@ public class MvcGraph {
      * @throws MvcGraphException throw when there are exceptions during the consumption of the instance
      */
     public <T> void use(final Class<T> type, final Annotation qualifier, final Consumer<T> consumer) {
-//        uiThreadRunner.runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-                try {
-                    graph.use(type, qualifier, Inject.class, consumer);
-                } catch (PokeException e) {
-                    throw new MvcGraphException(e.getMessage(), e);
-                }
-//            }
-//        });
+        try {
+            graph.use(type, qualifier, Inject.class, consumer);
+        } catch (PokeException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
     }
 
     /**
