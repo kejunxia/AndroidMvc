@@ -141,7 +141,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 //        checkAppExit(sender);
 //
 //        dumpHistory();
-        navigate(sender).navigateBack().go();
+        navigate(sender).back().go();
     }
 
     @Override
@@ -187,7 +187,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 //            dumpHistory();
 //        }
 
-        navigate(sender).navigateBack(toLocationId).go();
+        navigate(sender).back(toLocationId).go();
     }
 
     private void checkAppExit(Object sender) {

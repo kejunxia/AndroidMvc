@@ -92,7 +92,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         FragmentManager fm = activity.getRootFragmentManager();
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A->B->C
         waitTest(1000);
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -114,7 +114,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A->B
         waitTest();
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -135,7 +135,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A
         waitTest();
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -155,7 +155,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //quit
         waitTest(2000);
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -353,7 +353,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A->B->C
         waitTest(1000);
         Assert.assertEquals(fragAInjectCount, 0);
@@ -366,7 +366,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A->B
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -379,7 +379,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -392,7 +392,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //quit
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -444,7 +444,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //quit
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -496,7 +496,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A->B
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -509,7 +509,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //->A
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -522,7 +522,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         //quit
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);

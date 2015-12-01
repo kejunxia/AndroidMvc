@@ -184,8 +184,8 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
     @After
     public void tearDown() throws Exception {
-        navigationController.navigate(this).navigateBack(null).go();
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back(null).go();
+        navigationController.navigate(this).back().go();
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 

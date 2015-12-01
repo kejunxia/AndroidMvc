@@ -93,7 +93,7 @@ public class Navigator {
         }
     }
 
-    public Navigator navigateBack() {
+    public Navigator back() {
         NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationController.logger.warn("Current location should never be null before navigating backwards.");
@@ -107,7 +107,7 @@ public class Navigator {
         return this;
     }
 
-    public Navigator navigateBack(String toLocationId) {
+    public Navigator back(String toLocationId) {
         NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationController.logger.warn("Current location should never be null before navigating backwards.");

@@ -85,7 +85,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 "Added by FragmentC")));
         onView(withId(R.id.textC)).check(matches(withText("Added by FragmentC")));
 
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         waitTest(1000);
         //=============================> At B
         lifeCycleValidatorC.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
@@ -104,7 +104,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationController.navigate(this).navigateBack().go();
+        navigationController.navigate(this).back().go();
         waitTest(1000);
         //=============================> At A
         //onDestroy of previous Fragment(FragmentB) is not called until it's removed out from back stack
