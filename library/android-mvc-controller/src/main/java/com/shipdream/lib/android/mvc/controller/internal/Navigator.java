@@ -1,39 +1,69 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
+import com.shipdream.lib.android.mvc.Constructable;
 import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.poke.Consumer;
+import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Navigator {
     public interface OnSettled {
         void run();
     }
 
+    private static class PendingReleaseInstance<T> {
+        private Class<T> type;
+        private Annotation qualifier;
+        private T instance;
+    }
+
     private final Object sender;
     private OnSettled onSettled;
     private NavigationControllerImpl navigationController;
     private NavigationController.EventC2V.OnLocationChanged navigateEvent;
+    private List<PendingReleaseInstance> pendingReleaseInstances;
 
     Navigator(Object sender, NavigationControllerImpl navigationController) {
         this.sender = sender;
         this.navigationController = navigationController;
     }
 
-    Navigator(Object sender, NavigationControllerImpl navigationController, Class... preparedObjects) {
-        this.sender = sender;
-        this.navigationController = navigationController;
-
-    }
-
     public Object getSender() {
         return sender;
     }
 
-    public OnSettled getOnSettled() {
-        return onSettled;
+    public <T> Navigator prepare(Class<T> type, Consumer<T> consumer) throws MvcGraphException {
+        prepare(type, null, consumer);
+        return this;
     }
 
-    public Navigator prepare() {
+    public <T> Navigator prepare(Class<T> type, Annotation qualifier, Consumer<T> consumer) throws MvcGraphException {
+        try {
+            T instance = Injector.getGraph().reference(type, qualifier);
+
+            consumer.consume(instance);
+
+            if (pendingReleaseInstances == null) {
+                pendingReleaseInstances = new ArrayList<>();
+            }
+            PendingReleaseInstance pendingReleaseInstance = new PendingReleaseInstance();
+            pendingReleaseInstance.instance = instance;
+            pendingReleaseInstance.type = type;
+            pendingReleaseInstance.qualifier = qualifier;
+            pendingReleaseInstances.add(pendingReleaseInstance);
+        } catch (PokeException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
         return this;
     }
 
@@ -159,6 +189,27 @@ public class Navigator {
     public Navigator onSettled(OnSettled onSettled) {
         this.onSettled = onSettled;
         return this;
+    }
+
+    /**
+     * Internal use. Don't do it in your app.
+     */
+    void destroy() {
+        if (onSettled != null) {
+            onSettled.run();
+        }
+
+        if (pendingReleaseInstances != null) {
+            for (PendingReleaseInstance i : pendingReleaseInstances) {
+                try {
+                    Injector.getGraph().dereference(i.instance, i.type, i.qualifier);
+                } catch (ProviderMissingException e) {
+                    //should not happen
+                    //in case this happens just logs it
+                    navigationController.logger.warn("Failed to auto release {} after navigation settled", i.type.getName());
+                }
+            }
+        }
     }
 
     private void go() {

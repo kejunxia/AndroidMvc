@@ -21,7 +21,6 @@ import android.support.annotation.NonNull;
 
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraph;
-import com.shipdream.lib.android.mvc.UiThreadRunnerImpl;
 import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
@@ -81,7 +80,6 @@ public class AndroidMvc {
         Injector.getGraph().register(new ViewComponent());
 
         AndroidPosterImpl.init();
-        UiThreadRunnerImpl.init();
     }
 
     private AndroidMvc() {

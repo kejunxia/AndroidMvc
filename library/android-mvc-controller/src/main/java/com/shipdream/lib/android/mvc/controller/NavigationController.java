@@ -27,9 +27,8 @@ import com.shipdream.lib.poke.Consumer;
  * Controller to navigate among different fragments in the SAME activity.
  */
 public interface NavigationController extends BaseController<NavigationController.Model> {
-    Navigator navigate(Object sender);
 
-    Navigator navigate(Object sender, Class... preparedControllers);
+    Navigator navigate(Object sender);
 
     /**
      *

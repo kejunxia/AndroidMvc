@@ -17,11 +17,11 @@
 package com.shipdream.lib.android.mvc;
 
 /**
- * Object has callback on disposal
+ * Object has callback on construction
  */
-public interface Disposable {
+public interface Constructable {
     /**
-     * Execute onDisposed logic of given object
+     * Execute onConstruct logic of given object
      */
-    void onDisposed();
+    void onConstruct();
 }

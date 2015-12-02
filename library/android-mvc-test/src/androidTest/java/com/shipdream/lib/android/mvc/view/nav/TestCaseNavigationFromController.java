@@ -167,42 +167,38 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         final String valF = "ValueF = " + new Random().nextInt();
         final String valG = "ValueG = " + new Random().nextInt();
 
-        getActivity().runOnUiThread(new Runnable() {
+        navigationController.navigate(this).prepare(ControllerE.class, new Consumer<ControllerE>() {
             @Override
-            public void run() {
-                Injector.getGraph().use(ControllerE.class, new Consumer<ControllerE>() {
-                    @Override
-                    public void consume(ControllerE instance) {
-                        instance.setValue(valE);
-                        navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.E);
-                    }
-                });
-
-                Injector.getGraph().use(ControllerF.class, new Consumer<ControllerF>() {
-                    @Override
-                    public void consume(ControllerF instance) {
-                        instance.setValue(valF);
-                        navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.F);
-                    }
-                });
-
-                Injector.getGraph().use(ControllerG.class, new Consumer<ControllerG>() {
-                    @Override
-                    public void consume(ControllerG instance) {
-                        instance.setValue(valG);
-                        navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.G);
-                    }
-                });
+            public void consume(ControllerE instance) {
+                instance.setValue(valE);
             }
-        });
+        }).to(MvcTestActivityNavigation.Loc.E);
 
-        waitTest();
+        waitTest(1000);
+
+        navigationController.navigate(this).prepare(ControllerF.class, new Consumer<ControllerF>() {
+            @Override
+            public void consume(ControllerF instance) {
+                instance.setValue(valF);
+            }
+        }).to(MvcTestActivityNavigation.Loc.F);
+
+        waitTest(1000);
+
+        navigationController.navigate(this).prepare(ControllerG.class, new Consumer<ControllerG>() {
+            @Override
+            public void consume(ControllerG instance) {
+                instance.setValue(valG);
+            }
+        }).to(MvcTestActivityNavigation.Loc.G);
+
+        waitTest(1000);
 
         //The value set to controller e in Injector.getGraph().use should be retained during the
         //navigation
         onView(withText(valG)).check(matches(isDisplayed()));
-        verify(disposeCheckerEMock, times(0)).onDisposed();
-        verify(disposeCheckerFMock, times(0)).onDisposed();
+        verify(disposeCheckerEMock, times(1)).onDisposed();
+        verify(disposeCheckerFMock, times(1)).onDisposed();
         verify(disposeCheckerGMock, times(0)).onDisposed();
         resetDisposeCheckers();
         navigationController.navigateBack(this);

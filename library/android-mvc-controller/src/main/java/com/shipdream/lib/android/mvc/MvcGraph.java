@@ -80,7 +80,6 @@ import javax.inject.Singleton;
  */
 public class MvcGraph {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    static UiThreadRunner uiThreadRunner;
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
     List<StateManaged> stateManagedObjects = new ArrayList<>();

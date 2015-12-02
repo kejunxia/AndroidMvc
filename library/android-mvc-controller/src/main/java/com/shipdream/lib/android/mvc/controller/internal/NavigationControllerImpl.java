@@ -38,12 +38,6 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     }
 
     @Override
-    public Navigator navigate(Object sender, Class... preparedObjects) {
-        Navigator navigator = new Navigator(sender, this, preparedObjects);
-        return navigator;
-    }
-
-    @Override
     public void navigateTo(Object sender, String locationId) {
         navigate(sender).to(locationId);
     }

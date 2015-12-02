@@ -29,6 +29,7 @@ import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.controller.internal.__MvcControllerHelper;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -449,8 +450,8 @@ public abstract class MvcActivity extends AppCompatActivity {
                 fragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
-                        if (event.getNavigator() != null && event.getNavigator().getOnSettled() != null) {
-                            event.getNavigator().getOnSettled().run();
+                        if (event.getNavigator() != null) {
+                            __MvcControllerHelper.destroyNavigator(event.getNavigator());
                         }
 
                         if (finalLastFrag != null) {
@@ -525,8 +526,8 @@ public abstract class MvcActivity extends AppCompatActivity {
                     currentFrag.registerOnViewReadyListener(new Runnable() {
                         @Override
                         public void run() {
-                            if (event.getNavigator() != null && event.getNavigator().getOnSettled() != null) {
-                                event.getNavigator().getOnSettled().run();
+                            if (event.getNavigator() != null) {
+                                __MvcControllerHelper.destroyNavigator(event.getNavigator());
                             }
 
                             if (finalLastFrag != null) {
