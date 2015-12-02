@@ -51,7 +51,7 @@ public interface NavigationController extends BaseController<NavigationControlle
      * and ready to show.
      * </p>
      *
-     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     * <p><b>Deprecated: use {@link #navigate(Object)} instead</b></p>
      *
      * @param sender     Who wants to navigate
      * @param locationId The id of the location navigate to
@@ -82,7 +82,7 @@ public interface NavigationController extends BaseController<NavigationControlle
      * and ready to show.
      * </p>
      *
-     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     * <p><b>Deprecated: use {@link #navigate(Object)} instead</b></p>
      *
      * @param sender               Who wants to navigate
      * @param locationId           The id of the location navigate to
@@ -97,7 +97,7 @@ public interface NavigationController extends BaseController<NavigationControlle
      * Navigates back. If current location is null it doesn't take any effect otherwise
      * raises a {@link EventC2V.OnLocationBack} event when there is a previous location.
      *
-     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     * <p><b>Deprecated: use {@link #navigate(Object)} instead</b></p>
      *
      * @param sender Who wants to navigate back
      */
@@ -110,7 +110,7 @@ public interface NavigationController extends BaseController<NavigationControlle
      * navigate to location with given locationId and clear history prior to it. Then a
      * {@link EventC2V.OnLocationBack} event will be raised.
      *
-     * <p><b>Deprecated: use {@link #navigate(Object)} or {@link #navigate(Object, Class[])} instead</b></p>
+     * <p><b>Deprecated: use {@link #navigate(Object)} instead</b></p>
      *
      * @param sender       Who wants to navigate
      * @param toLocationId Null when needs to navigate to the very first location and all history
