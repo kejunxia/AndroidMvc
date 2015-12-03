@@ -288,20 +288,9 @@ public abstract class Graph {
      */
     public <T> T reference(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
             throws ProviderMissingException, ProvideException, CircularDependenciesException {
-        T instance;
-
-        Provider<T> provider = getProvider(type, qualifier);
-        T cachedInstance = provider.findCachedInstance();
-        if (cachedInstance != null) {
-            instance = cachedInstance;
-        } else {
-            T newInstance = provider.get();
-
-            doInject(newInstance, null, type, qualifier, injectAnnotation);
-
-            instance = newInstance;
-        }
-
+         Provider<T> provider = getProvider(type, qualifier);
+        T instance = provider.get();
+        doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
         if (provider.getReferenceCount() == 1) {
             provider.notifyInjected(instance);
