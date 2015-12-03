@@ -97,7 +97,9 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 LifeCycle.onViewReadyFirstTime,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
-        onView(withId(R.id.textA)).check(matches(withText("Added by FragmentB")));
+        onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
+                "Added by FragmentB\n" +
+                "Added by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
                 "Added by FragmentB\n" +
                 "Added by FragmentC\n" +
@@ -117,7 +119,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
                 LifeCycle.onViewReadyFirstTime,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
-        onView(withId(R.id.textA)).check(matches(withText(
+        onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
+                "Added by FragmentB\n" +
                 "Added by FragmentB\n" +
                 "Added by FragmentA")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +

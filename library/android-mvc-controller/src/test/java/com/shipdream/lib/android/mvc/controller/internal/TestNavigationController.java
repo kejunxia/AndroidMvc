@@ -325,8 +325,8 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_be_able_to_log_navigation_history() throws Exception {
         // Arrange
         Logger logger = mock(Logger.class);
-        ((NavigationControllerImpl)navigationController).dumpHistoryOnLocationChange = true;
-        ((NavigationControllerImpl) navigationController).logger = logger;
+        navigationController.dumpHistoryOnLocationChange = true;
+        navigationController.logger = logger;
 
         // Act
         navigationController.navigateTo(this, "any location", "back to location");

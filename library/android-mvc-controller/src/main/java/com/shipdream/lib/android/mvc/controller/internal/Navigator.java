@@ -1,6 +1,5 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
-import com.shipdream.lib.android.mvc.Constructable;
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
@@ -8,9 +7,6 @@ import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
@@ -232,10 +228,8 @@ public class Navigator {
 
                 checkAppExit(sender);
             }
-
-            dumpHistory();
         }
-
+        dumpHistory();
     }
 
     private void checkAppExit(Object sender) {

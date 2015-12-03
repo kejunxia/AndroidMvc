@@ -45,7 +45,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNavigation> {
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -138,28 +137,28 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         testNavigateToA();
         testNavigateToB();
         waitTest(1000);
-        verify(disposeCheckerAMock, times(1)).onDisposed();
+        verify(disposeCheckerAMock, times(0)).onDisposed();
         verify(disposeCheckerBMock, times(0)).onDisposed();
         verify(disposeCheckerCMock, times(0)).onDisposed();
         verify(disposeCheckerDMock, times(0)).onDisposed();
         testNavigateToC();
         waitTest(1000);
-        verify(disposeCheckerAMock, times(1)).onDisposed();
-        verify(disposeCheckerBMock, times(1)).onDisposed();
+        verify(disposeCheckerAMock, times(0)).onDisposed();
+        verify(disposeCheckerBMock, times(0)).onDisposed();
         verify(disposeCheckerCMock, times(0)).onDisposed();
         verify(disposeCheckerDMock, times(0)).onDisposed();
         testNavigateToD();
         waitTest(1000);
-        verify(disposeCheckerAMock, times(1)).onDisposed();
-        verify(disposeCheckerBMock, times(1)).onDisposed();
-        verify(disposeCheckerCMock, times(1)).onDisposed();
+        verify(disposeCheckerAMock, times(0)).onDisposed();
+        verify(disposeCheckerBMock, times(0)).onDisposed();
+        verify(disposeCheckerCMock, times(0)).onDisposed();
         verify(disposeCheckerDMock, times(0)).onDisposed();
         navigationController.navigateBack(this);
         waitTest();
         waitTest(2000);
-        verify(disposeCheckerAMock, times(1)).onDisposed();
-        verify(disposeCheckerBMock, times(1)).onDisposed();
-        verify(disposeCheckerCMock, times(1)).onDisposed();
+        verify(disposeCheckerAMock, times(0)).onDisposed();
+        verify(disposeCheckerBMock, times(0)).onDisposed();
+        verify(disposeCheckerCMock, times(0)).onDisposed();
         verify(disposeCheckerDMock, times(1)).onDisposed();
 
         //A->B->C
@@ -171,7 +170,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest(1000);
         verify(disposeCheckerAMock, times(0)).onDisposed();
         verify(disposeCheckerBMock, times(0)).onDisposed();
-        verify(disposeCheckerCMock, times(1)).onDisposed();
+        verify(disposeCheckerCMock, times(0)).onDisposed();
         verify(disposeCheckerDMock, times(0)).onDisposed();
 
         //A->B->C->D
@@ -182,8 +181,8 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         navigationController.navigateBack(this, null);
         waitTest(1000);
         verify(disposeCheckerAMock, times(0)).onDisposed();
-        verify(disposeCheckerBMock, times(0)).onDisposed();
-        verify(disposeCheckerCMock, times(0)).onDisposed();
+        verify(disposeCheckerBMock, times(1)).onDisposed();
+        verify(disposeCheckerCMock, times(1)).onDisposed();
         verify(disposeCheckerDMock, times(1)).onDisposed();
 
         //A
@@ -192,7 +191,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         reset(disposeCheckerCMock);
         reset(disposeCheckerDMock);
         navigationController.navigateBack(this);
-        waitTest(1000);
+        waitTest(2000);
         verify(disposeCheckerAMock, times(1)).onDisposed();
         verify(disposeCheckerBMock, times(0)).onDisposed();
         verify(disposeCheckerCMock, times(0)).onDisposed();

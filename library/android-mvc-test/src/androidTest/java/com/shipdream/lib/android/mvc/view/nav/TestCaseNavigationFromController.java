@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
@@ -137,13 +136,12 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
 
         final String val = "Value = " + new Random().nextInt();
 
-        Injector.getGraph().use(ControllerE.class, new Consumer<ControllerE>() {
+        navigationController.navigate(this).prepare(ControllerE.class, new Consumer<ControllerE>() {
             @Override
             public void consume(ControllerE instance) {
                 instance.setValue(val);
-                navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.E);
             }
-        });
+        }).to(MvcTestActivityNavigation.Loc.E);
 
         //The value set to controller e in Injector.getGraph().use should be retained during the
         //navigation
@@ -167,61 +165,67 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         final String valF = "ValueF = " + new Random().nextInt();
         final String valG = "ValueG = " + new Random().nextInt();
 
+        resetDisposeCheckers();
         navigationController.navigate(this).prepare(ControllerE.class, new Consumer<ControllerE>() {
             @Override
             public void consume(ControllerE instance) {
                 instance.setValue(valE);
             }
         }).to(MvcTestActivityNavigation.Loc.E);
+        waitTest();
+        onView(withText(valE)).check(matches(isDisplayed()));
+        verify(disposeCheckerEMock, times(0)).onDisposed();
+        verify(disposeCheckerFMock, times(0)).onDisposed();
+        verify(disposeCheckerGMock, times(0)).onDisposed();
 
-        waitTest(1000);
-
+        resetDisposeCheckers();
         navigationController.navigate(this).prepare(ControllerF.class, new Consumer<ControllerF>() {
             @Override
             public void consume(ControllerF instance) {
                 instance.setValue(valF);
             }
         }).to(MvcTestActivityNavigation.Loc.F);
+        waitTest();
+        onView(withText(valF)).check(matches(isDisplayed()));
+        verify(disposeCheckerEMock, times(0)).onDisposed();
+        verify(disposeCheckerFMock, times(0)).onDisposed();
+        verify(disposeCheckerGMock, times(0)).onDisposed();
 
-        waitTest(1000);
-
+        resetDisposeCheckers();
         navigationController.navigate(this).prepare(ControllerG.class, new Consumer<ControllerG>() {
             @Override
             public void consume(ControllerG instance) {
                 instance.setValue(valG);
             }
         }).to(MvcTestActivityNavigation.Loc.G);
-
-        waitTest(1000);
-
-        //The value set to controller e in Injector.getGraph().use should be retained during the
-        //navigation
-        onView(withText(valG)).check(matches(isDisplayed()));
-        verify(disposeCheckerEMock, times(1)).onDisposed();
-        verify(disposeCheckerFMock, times(1)).onDisposed();
-        verify(disposeCheckerGMock, times(0)).onDisposed();
-        resetDisposeCheckers();
-        navigationController.navigateBack(this);
-
-        onView(withText(valF)).check(matches(isDisplayed()));
         waitTest();
+        onView(withText(valG)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
         verify(disposeCheckerFMock, times(0)).onDisposed();
         verify(disposeCheckerGMock, times(0)).onDisposed();
+
+        resetDisposeCheckers();
+        //The value set to controller e in Injector.getGraph().use should be retained during the
+        //navigation
+        navigationController.navigateBack(this);
+        waitTest();
+        onView(withText(valF)).check(matches(isDisplayed()));
+        verify(disposeCheckerEMock, times(0)).onDisposed();
+        verify(disposeCheckerFMock, times(0)).onDisposed();
+        verify(disposeCheckerGMock, times(0)).onDisposed();
+
         resetDisposeCheckers();
         navigationController.navigateBack(this);
-
-        onView(withText(valE)).check(matches(isDisplayed()));
         waitTest();
+        onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
-        LoggerFactory.getLogger(getClass()).debug("DisposeCheck, checking F");
         verify(disposeCheckerFMock, times(1)).onDisposed();
         //__MvcGraphHelper retaining all cache is dangerous. Try to only retain relevant injected instances.
         verify(disposeCheckerGMock, times(0)).onDisposed();
-        resetDisposeCheckers();
-        LoggerFactory.getLogger(getClass()).debug("DisposeCheck nav back");
-        navigationController.navigateBack(this);
 
+        resetDisposeCheckers();
+        navigationController.navigateBack(this);
+        waitTest();
         verify(disposeCheckerEMock, times(1)).onDisposed();
         verify(disposeCheckerFMock, times(0)).onDisposed();
         verify(disposeCheckerGMock, times(1)).onDisposed();

@@ -454,10 +454,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                             __MvcControllerHelper.destroyNavigator(event.getNavigator());
                         }
 
-                        if (finalLastFrag != null) {
-                            finalLastFrag.releaseDependencies();
-                        }
-
                         logger.trace("Fragment ready: " + fragment.getClass().getSimpleName());
 
                         fragment.unregisterOnViewReadyListener(this);
@@ -500,7 +496,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                 String currentFragTag = getFragmentTag(currentLoc.getLocationId());
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
-                    currentFrag.injectDependencies();
                     currentFrag.aboutToPopOut = true;
 
                     List<Fragment> subFragments = currentFrag.getChildFragmentManager().getFragments();

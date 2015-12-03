@@ -39,6 +39,11 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         super(ViewPagerTestActivity.class);
     }
 
+    @Override
+    protected void waitTest() throws InterruptedException {
+        super.waitTest(200);
+    }
+
     @Test
     public void test_should_call_onViewReady_in_tab_fragments_when_resumed_hosting_fragment_pops_out() throws Throwable {
         if (isDontKeepActivities()) {
@@ -248,16 +253,16 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         //=============================> At Sub Fragment
         getActivity().launchAnotherActivity();
-        waitTest(1200);
+        waitTest();
         pressBack();
-        waitTest(1200);
+        waitTest();
         lifeCycleValidatorA.expect(LifeCycle.onReturnForeground);
 
         onView(withId(R.id.viewpager)).perform(swipeLeft());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText("Tab C")).check(matches(isDisplayed()));
         waitTest(1000);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab C")).check(matches(not(isDisplayed())));
@@ -265,14 +270,12 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
+        onView(withText("Tab A")).check(matches(isDisplayed()));
 
         lifeCycleValidatorA.expect(
-                LifeCycle.onCreateNotNull,
-                LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyNewInstance,
-                LifeCycle.onViewReadyRestore);
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime);
     }
 
     @Test
@@ -330,7 +333,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText("Tab C")).check(matches(isDisplayed()));
         waitTest(1000);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab C")).check(matches(not(isDisplayed())));
@@ -338,14 +341,12 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
+        onView(withText("Tab A")).check(matches(isDisplayed()));
 
         lifeCycleValidatorA.expect(
-                LifeCycle.onCreateNotNull,
-                LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyNewInstance,
-                LifeCycle.onViewReadyRestore);
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime);
     }
 
     @Test
