@@ -24,7 +24,7 @@ import com.shipdream.lib.android.mvc.controller.NavigationController;
  */
 public class NavigationControllerImpl extends BaseControllerImpl<NavigationController.Model>
         implements NavigationController {
-    public static boolean dumpHistoryOnLocationChange = false;
+    public boolean dumpHistoryOnLocationChange = false;
 
     @Override
     public Class<Model> getModelClassType() {
@@ -33,8 +33,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
 
     @Override
     public Navigator navigate(Object sender) {
-        Navigator navigator = new Navigator(sender, this);
-        return navigator;
+        return new Navigator(sender, this);
     }
 
     @Override

@@ -37,7 +37,7 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 /**
- *
+ * Base controller implementation.
  */
 public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>,
         StateManaged<MODEL>, Constructable, Disposable {

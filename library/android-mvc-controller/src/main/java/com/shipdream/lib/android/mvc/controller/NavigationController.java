@@ -28,6 +28,11 @@ import com.shipdream.lib.poke.Consumer;
  */
 public interface NavigationController extends BaseController<NavigationController.Model> {
 
+    /**
+     * Initiates a {@link Navigator} to start navigation.
+     * @param sender Who wants to navigate
+     * @return A new instance of {@link Navigator}
+     */
     Navigator navigate(Object sender);
 
     /**

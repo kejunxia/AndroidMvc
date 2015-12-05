@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.controller;
 
 /**
- *
+ * Base controller interface.
  */
 public interface BaseController<MODEL> {
 

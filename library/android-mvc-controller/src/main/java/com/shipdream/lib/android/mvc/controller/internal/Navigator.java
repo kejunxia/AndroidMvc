@@ -1,6 +1,7 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
@@ -13,6 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Navigator {
+    /**
+     * The callback when the navigation is settled. Since Android Fragment doesn't invoke its call
+     * back like onCreate, onCreateView and etc after a fragment manager commits fragment transaction,
+     * if something needs to be done after the fragment being navigated to is ready to show
+     * (MvcFragment.onViewReady is called), put the actions in here.
+     */
     public interface OnSettled {
         void run();
     }
@@ -29,20 +36,97 @@ public class Navigator {
     private NavigationController.EventC2V.OnLocationChanged navigateEvent;
     private List<PendingReleaseInstance> pendingReleaseInstances;
 
+    /**
+     * Construct a {@link Navigator}
+     * @param sender Who wants to navigate
+     * @param navigationController The navigation controller
+     */
     Navigator(Object sender, NavigationControllerImpl navigationController) {
         this.sender = sender;
         this.navigationController = navigationController;
     }
 
+    /**
+     * Who wants to navigate
+     * @return the sender
+     */
     public Object getSender() {
         return sender;
     }
 
+    /**
+     * Prepare the instance subject to being injected with no qualifier for the fragment being
+     * navigated to. It's an equivalent way to pass arguments to the next fragment.For example, when
+     * next fragment needs to have a pre set page title name, the controller referenced by the
+     * fragment can be prepared here and set the title in the controller's model. Then in the
+     * MvcFragment.onViewReady bind the value of the page title from the controller's model to the
+     * fragment.
+     *
+     * <p>Example:</p>
+     * To initialize the timer of a TimerFragment which counts down seconds,sets the initial value
+     * of its controller by this prepare method.
+     * <pre>
+     class TimerFragment {
+    @Inject
+    TimerController timerController;
+    }
+
+     interface TimerController {
+     void setInitialValue(long howManySeconds);
+     }
+
+     navigationController.navigate(this).prepare(TimerController.class, new Consumer<TimerController>() {
+    @Override
+    public void consume(TimerController instance) {
+    long fiveMinutes = 60 * 5;
+    instance.setInitialValue(fiveMinutes);
+    }
+    }).to(TimerFragment.class.getName());
+     * </pre>
+     * @param type The class type of the instance needs to be prepared
+     * @param consumer The consumer in which the injected instance will be prepared
+     * @return This navigator
+     * @throws MvcGraphException Raised when the required injectable object cannot be injected
+     */
     public <T> Navigator prepare(Class<T> type, Consumer<T> consumer) throws MvcGraphException {
         prepare(type, null, consumer);
         return this;
     }
 
+    /**
+     * Prepare the instance subject to being injected for the fragment being navigated to. It's an
+     * equivalent way to pass arguments to the next fragment.For example, when next fragment needs
+     * to have a pre set page title name, the controller referenced by the fragment can be prepared
+     * here and set the title in the controller's model. Then in the MvcFragment.onViewReady bind
+     * the value of the page title from the controller's model to the fragment.
+     *
+     * <p>Example:</p>
+     * To initialize the timer of a TimerFragment which counts down seconds,sets the initial value
+     * of its controller by this prepare method.
+     * <pre>
+     class TimerFragment {
+        @Inject
+        TimerController timerController;
+     }
+
+     interface TimerController {
+        void setInitialValue(long howManySeconds);
+     }
+
+     navigationController.navigate(this).prepare(TimerController.class, null, new Consumer<TimerController>() {
+        @Override
+        public void consume(TimerController instance) {
+            long fiveMinutes = 60 * 5;
+            instance.setInitialValue(fiveMinutes);
+        }
+     }).to(TimerFragment.class.getName());
+     * </pre>
+     * @param type The class type of the instance needs to be prepared
+     * @param qualifier The qualifier
+     * @param consumer The consumer in which the injected instance will be prepared
+     * @return This navigator
+     * @throws MvcGraphException Raised when the required injectable object cannot be injected
+     */
     public <T> Navigator prepare(Class<T> type, Annotation qualifier, Consumer<T> consumer) throws MvcGraphException {
         try {
             T instance = Injector.getGraph().reference(type, qualifier);
@@ -68,6 +152,30 @@ public class Navigator {
         go();
     }
 
+    /**
+     * Navigates to a new location and exclusively clears history prior to the given
+     * clearTopToLocationId (clearTopToLocationId will be last location below given location).
+     * When clearTopToLocationId is null, it clears all history. In other words, the current given
+     * location will be the only location in the history stack and all other previous locations
+     * will be cleared. Navigation only takes effect when the given locationId is different from the
+     * current location and raises {@link NavigationController.EventC2V.OnLocationForward}
+     *
+     * <p>
+     * To set argument for the next fragment navigating to, use {@link #prepare(Class, Annotation, Consumer)}
+     * </p>
+     *
+     * <p>
+     * Forward navigating will automatically manage continuity of state before and after the
+     * navigation is performed. The injected instance will not be released until the next fragment
+     * is settled. So when the current fragment and next fragment share same injected
+     * controller their instance will be same.
+     * </p>
+     *
+     * @param locationId           The id of the location navigate to
+     * @param clearTopToLocationId Null if all history locations want to be cleared otherwise, the
+     *                             id of the location the history will be exclusively cleared up to
+     *                             which will be the second last location after navigation.
+     */
     public void to(String locationId, String clearTopToLocationId) {
         doNavigateTo(locationId, true, clearTopToLocationId);
         go();
@@ -130,6 +238,11 @@ public class Navigator {
         }
     }
 
+    /**
+     * Navigates one step back. If current location is null it doesn't take any effect otherwise
+     * raises a {@link NavigationController.EventC2V.OnLocationBack} event when there is a previous
+     * location.
+     */
     public void back() {
         NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
         if (currentLoc == null) {
@@ -144,6 +257,17 @@ public class Navigator {
         go();
     }
 
+    /**
+     * Navigates back. If current location is null it doesn't take any effect. When toLocationId
+     * is null, navigate to the very first location and clear all history prior to it, otherwise
+     * navigate to location with given locationId and clear history prior to it. Then a
+     * {@link NavigationController.EventC2V.OnLocationBack} event will be raised.
+     *
+     * @param toLocationId Null when needs to navigate to the very first location and all history
+     *                     locations will be above it will be cleared. Otherwise, the id of the
+     *                     location where the history will be exclusively cleared up to. Then this
+     *                     location will be the second last one.
+     */
     public void back(String toLocationId) {
         NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
         if (currentLoc == null) {
@@ -182,6 +306,12 @@ public class Navigator {
         go();
     }
 
+    /**
+     * Sets the call back when fragment being navigated to is ready to show(MvcFragment.onViewReady
+     * is called).
+     * @param onSettled {@link OnSettled} call back
+     * @return The navigator itself
+     */
     public Navigator onSettled(OnSettled onSettled) {
         this.onSettled = onSettled;
         return this;
@@ -208,6 +338,9 @@ public class Navigator {
         }
     }
 
+    /**
+     * Sends out the navigation event to execute the navigation
+     */
     private void go() {
         if (navigateEvent != null) {
             navigationController.postC2VEvent(navigateEvent);
@@ -232,6 +365,10 @@ public class Navigator {
         dumpHistory();
     }
 
+    /**
+     * Check the app is exiting
+     * @param sender The sender
+     */
     private void checkAppExit(Object sender) {
         NavLocation curLocation = navigationController.getModel().getCurrentLocation();
         if (curLocation == null) {
@@ -239,6 +376,9 @@ public class Navigator {
         }
     }
 
+    /**
+     * Prints navigation history
+     */
     private void dumpHistory() {
         if (navigationController.dumpHistoryOnLocationChange) {
             navigationController.logger.trace("");
