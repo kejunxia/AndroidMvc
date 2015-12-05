@@ -56,25 +56,4 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
         navigate(sender).back(toLocationId);
     }
 
-    private void checkAppExit(Object sender) {
-        NavLocation curLocation = getModel().getCurrentLocation();
-        if (curLocation == null) {
-            postC2CEvent(new EventC2C.OnAppExit(sender));
-        }
-    }
-
-    private void dumpHistory() {
-        if (dumpHistoryOnLocationChange) {
-            logger.trace("");
-            logger.trace("Nav Controller: dump: begin ---------------------------------------------->");
-            NavLocation curLoc = getModel().getCurrentLocation();
-            while (curLoc != null) {
-                logger.trace("Nav Controller: dump: {}({})", curLoc.getLocationId());
-                curLoc = curLoc.getPreviousLocation();
-            }
-            logger.trace("Nav Controller: dump: end   ---------------------------------------------->");
-            logger.trace("");
-        }
-    }
-
 }
