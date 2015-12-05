@@ -1,7 +1,6 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.Injector;
-import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
@@ -64,7 +63,7 @@ public class Navigator {
      *
      * <p>Example:</p>
      * To initialize the timer of a TimerFragment which counts down seconds,sets the initial value
-     * of its controller by this prepare method.
+     * of its controller by this with method.
      * <pre>
      class TimerFragment {
     @Inject
@@ -75,7 +74,7 @@ public class Navigator {
      void setInitialValue(long howManySeconds);
      }
 
-     navigationController.navigate(this).prepare(TimerController.class, new Consumer<TimerController>() {
+     navigationController.navigate(this).with(TimerController.class, new Consumer<TimerController>() {
     @Override
     public void consume(TimerController instance) {
     long fiveMinutes = 60 * 5;
@@ -84,12 +83,12 @@ public class Navigator {
     }).to(TimerFragment.class.getName());
      * </pre>
      * @param type The class type of the instance needs to be prepared
-     * @param consumer The consumer in which the injected instance will be prepared
+     * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
      * @throws MvcGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator prepare(Class<T> type, Consumer<T> consumer) throws MvcGraphException {
-        prepare(type, null, consumer);
+    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws MvcGraphException {
+        with(type, null, preparer);
         return this;
     }
 
@@ -102,7 +101,7 @@ public class Navigator {
      *
      * <p>Example:</p>
      * To initialize the timer of a TimerFragment which counts down seconds,sets the initial value
-     * of its controller by this prepare method.
+     * of its controller by this with method.
      * <pre>
      class TimerFragment {
         @Inject
@@ -113,7 +112,7 @@ public class Navigator {
         void setInitialValue(long howManySeconds);
      }
 
-     navigationController.navigate(this).prepare(TimerController.class, null, new Consumer<TimerController>() {
+     navigationController.navigate(this).with(TimerController.class, null, new Consumer<TimerController>() {
         @Override
         public void consume(TimerController instance) {
             long fiveMinutes = 60 * 5;
@@ -123,15 +122,15 @@ public class Navigator {
      * </pre>
      * @param type The class type of the instance needs to be prepared
      * @param qualifier The qualifier
-     * @param consumer The consumer in which the injected instance will be prepared
+     * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
      * @throws MvcGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator prepare(Class<T> type, Annotation qualifier, Consumer<T> consumer) throws MvcGraphException {
+    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvcGraphException {
         try {
             T instance = Injector.getGraph().reference(type, qualifier);
 
-            consumer.consume(instance);
+            preparer.prepare(instance);
 
             if (pendingReleaseInstances == null) {
                 pendingReleaseInstances = new ArrayList<>();
@@ -147,6 +146,23 @@ public class Navigator {
         return this;
     }
 
+    /**
+     * Navigates to the specified location. Navigation only takes effect when the given locationId
+     * is different from the current location and raises {@link NavigationController.EventC2V.OnLocationForward}
+     *
+     * <p>
+     * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Consumer)}
+     * </p>
+     *
+     * <p>
+     * Navigation will automatically manage continuity of state before and after the
+     * navigation is performed. The injected instance will not be released until the next fragment
+     * is settled. So when the current fragment and next fragment share same injected
+     * controller their instance will be same.
+     * </p>
+     *
+     * @param locationId           The id of the location navigate to
+     */
     public void to(String locationId) {
         doNavigateTo(locationId, false, null);
         go();
@@ -161,11 +177,11 @@ public class Navigator {
      * current location and raises {@link NavigationController.EventC2V.OnLocationForward}
      *
      * <p>
-     * To set argument for the next fragment navigating to, use {@link #prepare(Class, Annotation, Consumer)}
+     * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
      * </p>
      *
      * <p>
-     * Forward navigating will automatically manage continuity of state before and after the
+     * Navigation will automatically manage continuity of state before and after the
      * navigation is performed. The injected instance will not be released until the next fragment
      * is settled. So when the current fragment and next fragment share same injected
      * controller their instance will be same.

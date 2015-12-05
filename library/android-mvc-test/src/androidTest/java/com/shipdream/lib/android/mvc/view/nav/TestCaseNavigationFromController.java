@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.view.nav;
 
 import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.controller.internal.Preparer;
 import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Component;
@@ -136,9 +137,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
 
         final String val = "Value = " + new Random().nextInt();
 
-        navigationController.navigate(this).prepare(ControllerE.class, new Consumer<ControllerE>() {
+        navigationController.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
             @Override
-            public void consume(ControllerE instance) {
+            public void prepare(ControllerE instance) {
                 instance.setValue(val);
             }
         }).to(MvcTestActivityNavigation.Loc.E);
@@ -166,9 +167,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         final String valG = "ValueG = " + new Random().nextInt();
 
         resetDisposeCheckers();
-        navigationController.navigate(this).prepare(ControllerE.class, new Consumer<ControllerE>() {
+        navigationController.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
             @Override
-            public void consume(ControllerE instance) {
+            public void prepare(ControllerE instance) {
                 instance.setValue(valE);
             }
         }).to(MvcTestActivityNavigation.Loc.E);
@@ -179,9 +180,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();
-        navigationController.navigate(this).prepare(ControllerF.class, new Consumer<ControllerF>() {
+        navigationController.navigate(this).with(ControllerF.class, new Preparer<ControllerF>() {
             @Override
-            public void consume(ControllerF instance) {
+            public void prepare(ControllerF instance) {
                 instance.setValue(valF);
             }
         }).to(MvcTestActivityNavigation.Loc.F);
@@ -192,9 +193,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();
-        navigationController.navigate(this).prepare(ControllerG.class, new Consumer<ControllerG>() {
+        navigationController.navigate(this).with(ControllerG.class, new Preparer<ControllerG>() {
             @Override
-            public void consume(ControllerG instance) {
+            public void prepare(ControllerG instance) {
                 instance.setValue(valG);
             }
         }).to(MvcTestActivityNavigation.Loc.G);
