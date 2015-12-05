@@ -336,7 +336,7 @@ public class Navigator {
     /**
      * Internal use. Don't do it in your app.
      */
-    void destroy() {
+    void __destroy() {
         if (onSettled != null) {
             onSettled.run();
         }
