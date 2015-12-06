@@ -16,8 +16,11 @@
 
 package com.shipdream.lib.android.mvc;
 
+import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.AsyncTask;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvc.controller.internal.Navigator;
+import com.shipdream.lib.android.mvc.controller.internal.Preparer;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
@@ -183,19 +186,6 @@ public class MvcGraph {
     }
 
     /**
-     * Same as {@link #use(Class, Annotation, Consumer)} except using un-qualified injectable type.
-     * @param type The type of the injectable instance
-     * @param consumer Consume to use the instance
-     */
-    public <T> void use(final Class<T> type, final Consumer<T> consumer) {
-        try {
-            graph.use(type, Inject.class, consumer);
-        } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
-        }
-    }
-
-    /**
      * Reference an injectable object and retain it. Use
      * {@link #dereference(Object, Class, Annotation)} to dereference it when it's not used
      * any more.
@@ -220,12 +210,26 @@ public class MvcGraph {
     }
 
     /**
+     * Same as {@link #use(Class, Annotation, Consumer)} except using un-qualified injectable type.
+     * @param type The type of the injectable instance
+     * @param consumer Consume to use the instance
+     */
+    public <T> void use(final Class<T> type, final Consumer<T> consumer) {
+        try {
+            graph.use(type, Inject.class, consumer);
+        } catch (PokeException e) {
+            throw new MvcGraphException(e.getMessage(), e);
+        }
+    }
+
+    /**
      * Use an injectable instance in the scope of {@link Consumer#consume(Object)} without injecting
      * it as a field of an object. This method will automatically retain the instance before
      * {@link Consumer#consume(Object)} is called and released after it's returned. As a result,
      * it doesn't hold the instance like the field marked by {@link Inject} that will retain the
      * reference of the instance until {@link #release(Object)} is called. However, in the
      * scope of {@link Consumer#consume(Object)} the instance will be held.
+     *
      * <p>For example,</p>
      * <pre>
         interface Os {
@@ -316,6 +320,14 @@ public class MvcGraph {
 
         mvcGraph.release(device);  //OsReferenceCount = 0
      * </pre>
+     *
+     * <p><b>Note that, if navigation is involved in {@link Consumer#consume(Object)}, though the
+     * instance injected is still held until consume method returns, the injected instance may
+     * loose its state when the next fragment is loaded. This is because Android doesn't load
+     * fragment immediately by fragment manager, instead navigation will be done in the future main
+     * loop. Therefore, if the state of an injected instance needs to be carried to the next fragment
+     * navigated to, use {@link NavigationController#navigate(Object)}.{@link Navigator#with(Class, Annotation, Preparer)}</b></p>
+     *
      * @param type The type of the injectable instance
      * @param qualifier Qualifier for the injectable instance
      * @param consumer Consume to use the instance

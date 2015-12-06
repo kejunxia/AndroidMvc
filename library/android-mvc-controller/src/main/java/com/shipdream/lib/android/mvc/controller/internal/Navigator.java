@@ -3,9 +3,7 @@ package com.shipdream.lib.android.mvc.controller.internal;
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
-import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -81,21 +79,24 @@ public class Navigator {
      * of its controller by this with method.
      * <pre>
      class TimerFragment {
-    @Inject
-    TimerController timerController;
-    }
-
-     interface TimerController {
-     void setInitialValue(long howManySeconds);
+        @Inject
+        TimerController timerController;
      }
 
-     navigationController.navigate(this).with(TimerController.class, new Consumer<TimerController>() {
-    @Override
-    public void consume(TimerController instance) {
-    long fiveMinutes = 60 * 5;
-    instance.setInitialValue(fiveMinutes);
-    }
-    }).to(TimerFragment.class.getName());
+     interface TimerController {
+        void setInitialValue(long howManySeconds);
+     }
+
+     navigationController.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
+        @Override
+        public void prepare(TimerController instance) {
+            long fiveMinutes = 60 * 5;
+            instance.setInitialValue(fiveMinutes);
+
+            //Then the value set to the controller will be guaranteed to be retained when
+            //TimerFragment is ready to show
+        }
+     }).to(TimerFragment.class.getName());
      * </pre>
      * @param type The class type of the instance needs to be prepared
      * @param preparer The preparer in which the injected instance will be prepared
@@ -127,11 +128,14 @@ public class Navigator {
         void setInitialValue(long howManySeconds);
      }
 
-     navigationController.navigate(this).with(TimerController.class, null, new Consumer<TimerController>() {
+     navigationController.navigate(this).with(TimerController.class, null, new Preparer<TimerController>() {
         @Override
-        public void consume(TimerController instance) {
+        public void prepare(TimerController instance) {
             long fiveMinutes = 60 * 5;
             instance.setInitialValue(fiveMinutes);
+
+            //Then the value set to the controller will be guaranteed to be retained when
+            //TimerFragment is ready to show
         }
      }).to(TimerFragment.class.getName());
      * </pre>
