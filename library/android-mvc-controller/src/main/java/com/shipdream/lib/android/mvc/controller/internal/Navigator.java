@@ -3,6 +3,7 @@ package com.shipdream.lib.android.mvc.controller.internal;
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
+import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.exception.PokeException;
@@ -151,7 +152,7 @@ public class Navigator {
      * is different from the current location and raises {@link NavigationController.EventC2V.OnLocationForward}
      *
      * <p>
-     * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Consumer)}
+     * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
      * </p>
      *
      * <p>
@@ -334,31 +335,11 @@ public class Navigator {
     }
 
     /**
-     * Internal use. Don't do it in your app.
-     */
-    void __destroy() {
-        if (onSettled != null) {
-            onSettled.run();
-        }
-
-        if (pendingReleaseInstances != null) {
-            for (PendingReleaseInstance i : pendingReleaseInstances) {
-                try {
-                    Injector.getGraph().dereference(i.instance, i.type, i.qualifier);
-                } catch (ProviderMissingException e) {
-                    //should not happen
-                    //in case this happens just logs it
-                    navigationController.logger.warn("Failed to auto release {} after navigation settled", i.type.getName());
-                }
-            }
-        }
-    }
-
-    /**
      * Sends out the navigation event to execute the navigation
      */
     private void go() {
         if (navigateEvent != null) {
+
             navigationController.postC2VEvent(navigateEvent);
 
             if (navigateEvent instanceof NavigationController.EventC2V.OnLocationForward) {
@@ -379,6 +360,27 @@ public class Navigator {
             }
         }
         dumpHistory();
+    }
+
+    /**
+     * Internal use. Don't do it in your app.
+     */
+    void __destroy() {
+        if (onSettled != null) {
+            onSettled.run();
+        }
+
+        if (pendingReleaseInstances != null) {
+            for (PendingReleaseInstance i : pendingReleaseInstances) {
+                try {
+                    Injector.getGraph().dereference(i.instance, i.type, i.qualifier);
+                } catch (ProviderMissingException e) {
+                    //should not happen
+                    //in case this happens just logs it
+                    navigationController.logger.warn("Failed to auto release {} after navigation settled", i.type.getName());
+                }
+            }
+        }
     }
 
     /**

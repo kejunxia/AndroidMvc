@@ -12,7 +12,6 @@ import java.util.Map;
  * Helper class to work with MvcGraph. Internal use only. Don't use it in your app.
  */
 public class __MvcGraphHelper {
-    private static Map<NavigationController.EventC2V.OnLocationChanged, Collection<Provider>> retainedProviders = new HashMap<>();
     /**
      * Internal use. Gets all cached items this cache still manages
      * @return The collection of cached times

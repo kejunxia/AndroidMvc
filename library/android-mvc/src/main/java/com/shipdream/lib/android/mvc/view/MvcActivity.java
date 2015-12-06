@@ -446,7 +446,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                     logger.trace("Cleared fragment back stack up to {}", tagPopTo);
                 }
 
-                final MvcFragment finalLastFrag = lastFrag;
                 fragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
@@ -485,6 +484,10 @@ public abstract class MvcActivity extends AppCompatActivity {
         private void performBackNav(final NavigationController.EventC2V.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
+                if (event.getNavigator() != null) {
+                    __MvcControllerHelper.destroyNavigator(event.getNavigator());
+                }
+
                 MvcActivity mvcActivity = ((MvcActivity) getActivity());
                 //Back to null which should finish the current activity
                 mvcActivity.performSuperBackKeyPressed();
