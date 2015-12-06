@@ -56,6 +56,20 @@ public class Navigator {
 
     /**
      * Prepare the instance subject to being injected with no qualifier for the fragment being
+     * navigated to. This instance will be not be released until the navigation is settled. To
+     * config the instance try {@link #with(Class, Preparer)} or {@link #with(Class, Annotation, Preparer)}
+     *
+     * @param type The class type of the instance needs to be prepared
+     * @return This navigator
+     * @throws MvcGraphException Raised when the required injectable object cannot be injected
+     */
+    public <T> Navigator with(Class<T> type) throws MvcGraphException {
+        with(type, null, null);
+        return this;
+    }
+
+    /**
+     * Prepare the instance subject to being injected with no qualifier for the fragment being
      * navigated to. It's an equivalent way to pass arguments to the next fragment.For example, when
      * next fragment needs to have a pre set page title name, the controller referenced by the
      * fragment can be prepared here and set the title in the controller's model. Then in the
@@ -131,7 +145,9 @@ public class Navigator {
         try {
             T instance = Injector.getGraph().reference(type, qualifier);
 
-            preparer.prepare(instance);
+            if (preparer != null) {
+                preparer.prepare(instance);
+            }
 
             if (pendingReleaseInstances == null) {
                 pendingReleaseInstances = new ArrayList<>();
