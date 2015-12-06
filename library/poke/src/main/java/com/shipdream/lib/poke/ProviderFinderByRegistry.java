@@ -425,7 +425,7 @@ public class ProviderFinderByRegistry implements ProviderFinder {
                         "be accessible.", method.getName()), e);  // $COVERAGE-IGNORE$
             } catch (InvocationTargetException e) {
                 throw new ProvideException(String.format("Provides method %s is not able " +
-                        "to be invoked against %s.", method.getName(), component.getClass().getName()));  // $COVERAGE-IGNORE$
+                        "to be invoked against %s.", method.getName(), component.getClass().getName()), e);  // $COVERAGE-IGNORE$
             }
         }
     }
