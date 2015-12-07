@@ -39,29 +39,13 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         super(ViewPagerTestActivity.class);
     }
 
-    @Test
-    public void should_restore_controller_of_tab_a_after_swipe_away_then_swipe_back_to_tab_a() throws Throwable {
-        onView(withText("Tab A")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeLeft());
-        onView(withText("Tab A")).check(matches(not(isDisplayed())));
-        onView(withText("Tab B")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeLeft());
-        onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText("Tab C")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeRight());
-        onView(withText("Tab C")).check(matches(not(isDisplayed())));
-        onView(withText("Tab B")).check(matches(isDisplayed()));
-
-        onView(withId(R.id.viewpager)).perform(swipeRight());
-        onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
+    @Override
+    protected void waitTest() throws InterruptedException {
+        super.waitTest(200);
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_resumed_hosting_fragment_pops_out() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_resumed_hosting_fragment_pops_out() throws Throwable {
         if (isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is not disabled");
             return;
@@ -141,7 +125,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_restored_hosting_fragment_pops_out() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_restored_hosting_fragment_pops_out() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
             return;
@@ -231,7 +215,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity() throws Throwable {
         if (isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is enabled");
             return;
@@ -269,16 +253,16 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         //=============================> At Sub Fragment
         getActivity().launchAnotherActivity();
-        waitTest(1200);
+        waitTest();
         pressBack();
-        waitTest(1200);
+        waitTest();
         lifeCycleValidatorA.expect(LifeCycle.onReturnForeground);
 
         onView(withId(R.id.viewpager)).perform(swipeLeft());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText("Tab C")).check(matches(isDisplayed()));
         waitTest(1000);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab C")).check(matches(not(isDisplayed())));
@@ -286,18 +270,16 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
+        onView(withText("Tab A")).check(matches(isDisplayed()));
 
         lifeCycleValidatorA.expect(
-                LifeCycle.onCreateNotNull,
-                LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyNewInstance,
-                LifeCycle.onViewReadyRestore);
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime);
     }
 
     @Test
-    public void should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity_after_being_killed() throws Throwable {
+    public void test_should_call_onViewReady_in_tab_fragments_when_comes_back_from_another_activity_after_being_killed() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
             return;
@@ -351,7 +333,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText("Tab C")).check(matches(isDisplayed()));
         waitTest(1000);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab C")).check(matches(not(isDisplayed())));
@@ -359,18 +341,16 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText(TabFragmentA.RESTORE_TEXT)).check(matches(isDisplayed()));
+        onView(withText("Tab A")).check(matches(isDisplayed()));
 
         lifeCycleValidatorA.expect(
-                LifeCycle.onCreateNotNull,
-                LifeCycle.onCreateViewNotNull,
-                LifeCycle.onViewCreatedNotNull,
-                LifeCycle.onViewReadyNewInstance,
-                LifeCycle.onViewReadyRestore);
+                LifeCycle.onCreateViewNull,
+                LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyFirstTime);
     }
 
     @Test
-    public void should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
+    public void test_should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
         //=============================> At Sub Fragment
         navigationController.navigateTo(this, SubFragment.class.getSimpleName());
         waitTest(1200);

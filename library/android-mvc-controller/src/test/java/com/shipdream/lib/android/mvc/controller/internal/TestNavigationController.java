@@ -16,20 +16,39 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
+import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.BaseNavigationControllerTest;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.TimerController;
+import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.internal.TimerControllerImpl;
+import com.shipdream.lib.poke.Component;
+import com.shipdream.lib.poke.Consumer;
+import com.shipdream.lib.poke.Provides;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.internal.matchers.Null;
 import org.slf4j.Logger;
 
+import java.lang.annotation.Annotation;
+import java.lang.annotation.Retention;
+
+import javax.inject.Inject;
+import javax.inject.Qualifier;
+import javax.inject.Singleton;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -325,8 +344,8 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_be_able_to_log_navigation_history() throws Exception {
         // Arrange
         Logger logger = mock(Logger.class);
-        ((NavigationControllerImpl)navigationController).dumpHistoryOnLocationChange = true;
-        ((NavigationControllerImpl) navigationController).logger = logger;
+        navigationController.dumpHistoryOnLocationChange = true;
+        navigationController.logger = logger;
 
         // Act
         navigationController.navigateTo(this, "any location", "back to location");
@@ -361,6 +380,260 @@ public class TestNavigationController extends BaseNavigationControllerTest {
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
+    }
+
+    private static class TimerFragmentX2 {
+        @Inject
+        @Slower2
+        private TimerController timerController;
+    }
+
+    private static class TimerFragmentX3 {
+        @Inject
+        @Slower3
+        private TimerController timerController;
+    }
+
+    @Qualifier
+    @Retention(RUNTIME)
+    @interface Slower2 {}
+
+    @Qualifier
+    @Retention(RUNTIME)
+    @interface Slower3 {}
+
+    @Slower2
+    @Slower3
+    static class SlowXHolder {
+
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_catch_invocation_exception_when_NPE_detected_on_injection() throws Exception {
+        Component com = new Component() {
+            @Provides
+            @Singleton
+            @Slower2
+            TimerController timerSlowerX2() {
+                return new TimerControllerImpl(){
+                    {
+                        onConstruct();
+                    }
+                    @Override
+                    public void setInitialValue(long value) {
+                        super.setInitialValue(value * 2);
+                    }
+                };
+            }
+        };
+        Injector.getGraph().register(com);
+
+        Annotation slower2Qualifier = SlowXHolder.class.getAnnotation(Slower2.class);
+
+        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should have now been released
+                Assert.assertEquals(0, instance.getInitialValue());
+            }
+        });
+    }
+
+    @Test
+    public void should_retain_prepared_instance_until_navigation_settled() throws Exception {
+        // Arrange
+        final long fiveMinutes = 60 * 5;
+
+        Component com = new Component() {
+            @Provides
+            @Singleton
+            @Slower2
+            TimerController timerSlowerX2() {
+                return new TimerControllerImpl(){
+                    {
+                        try {
+                            onConstruct();
+                        } catch (Exception e) {}
+
+                    }
+                    @Override
+                    public void setInitialValue(long value) {
+                        super.setInitialValue(value * 2);
+                    }
+                };
+            }
+
+            @Provides
+            @Singleton
+            @Slower3
+            TimerController timerSlowerX3() {
+                return new TimerControllerImpl(){
+                    {
+                        try {
+                            onConstruct();
+                        } catch (Exception e) {}
+                    }
+                    @Override
+                    public void setInitialValue(long value) {
+                        super.setInitialValue(value * 3);
+                    }
+                };
+            }
+        };
+
+        Injector.getGraph().register(com);
+
+        Annotation slower2Qualifier = SlowXHolder.class.getAnnotation(Slower2.class);
+        Annotation slower3Qualifier = SlowXHolder.class.getAnnotation(Slower3.class);
+
+        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should have now been released
+                Assert.assertEquals(0, instance.getInitialValue());
+            }
+        });
+
+        // Act
+        Navigator navigator = navigationController.navigate(this).with(TimerController.class, slower2Qualifier, new Preparer<TimerController>() {
+            @Override
+            public void prepare(TimerController instance) {
+                instance.setInitialValue(fiveMinutes);
+            }
+        });
+        navigator.to(TimerFragmentX2.class.getName());
+
+        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should not have been released yet
+                Assert.assertEquals(fiveMinutes * 2, instance.getInitialValue());
+            }
+        });
+
+        //destroy the navigator
+        navigator.__destroy();
+
+        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should have now been released
+                Assert.assertEquals(0, instance.getInitialValue());
+            }
+        });
+
+        //Test fragment 3
+        Injector.getGraph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should have now been released
+                Assert.assertEquals(0, instance.getInitialValue());
+            }
+        });
+
+        navigator = navigationController.navigate(this).with(TimerController.class, slower3Qualifier, new Preparer<TimerController>() {
+            @Override
+            public void prepare(TimerController instance) {
+                instance.setInitialValue(fiveMinutes);
+            }
+        });
+        navigator.to(TimerFragmentX3.class.getName());
+
+        Injector.getGraph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should not have been released yet
+                Assert.assertEquals(fiveMinutes * 3, instance.getInitialValue());
+            }
+        });
+
+        //destroy the navigator
+        navigator.__destroy();
+
+        Injector.getGraph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should have now been released
+                Assert.assertEquals(0, instance.getInitialValue());
+            }
+        });
+    }
+
+    private static class TimerFragment {
+        @Inject
+        private TimerController timerController;
+    }
+
+    @Test
+    public void should_retain_prepared_instance_until_navigation_settled_without_qualifier() throws Exception {
+        // Arrange
+        final long fiveMinutes = 60 * 5;
+
+        // Act
+        Navigator navigator = navigationController.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
+            @Override
+            public void prepare(TimerController instance) {
+                instance.setInitialValue(fiveMinutes);
+            }
+        });
+        navigator.to(TimerFragment.class.getName());
+
+        Injector.getGraph().use(TimerController.class, null, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should not have been released yet
+                Assert.assertEquals(fiveMinutes, instance.getInitialValue());
+            }
+        });
+
+        //destroy the navigator
+        navigator.__destroy();
+
+        Injector.getGraph().use(TimerController.class, new Consumer<TimerController>() {
+            @Override
+            public void consume(TimerController instance) {
+                //Controller should have now been released
+                Assert.assertEquals(0, instance.getInitialValue());
+            }
+        });
+    }
+
+    @Test
+    public void should_invoke_singular_argument_with_method_of_navigator_correct() throws Exception {
+        Navigator navigator = navigationController.navigate(this);
+        Navigator spiedNavigator = spy(navigator);
+
+        verify(spiedNavigator, times(0)).with(eq(NavigationController.class), isNull(Annotation.class), isNull(Preparer.class));
+
+        spiedNavigator.with(NavigationController.class);
+
+        verify(spiedNavigator).with(eq(NavigationController.class), isNull(Annotation.class), isNull(Preparer.class));
+    }
+
+    @Test
+    public void should_return_correct_sender_by_navigator() throws Exception {
+        // Act
+        Navigator navigator = navigationController.navigate(this);
+
+        Assert.assertTrue(this == navigator.getSender());
+    }
+
+    @Test
+    public void should_invoke_on_settled_when_navigation_is_done() throws Exception {
+        // Arrange
+        Navigator.OnSettled onSettled = mock(Navigator.OnSettled.class);
+
+        // Act
+        Navigator navigator = navigationController.navigate(this).with(TimerController.class)
+                .onSettled(onSettled);
+        navigator.to(TimerFragment.class.getName());
+
+        verify(onSettled, times(0)).run();
+
+        //destroy the navigator
+        navigator.__destroy();
+
+        verify(onSettled, times(1)).run();
     }
 
     /**

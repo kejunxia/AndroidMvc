@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
-import com.shipdream.lib.android.mvc.Injector;
-import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 
@@ -26,7 +24,7 @@ import com.shipdream.lib.android.mvc.controller.NavigationController;
  */
 public class NavigationControllerImpl extends BaseControllerImpl<NavigationController.Model>
         implements NavigationController {
-    public static boolean dumpHistoryOnLocationChange = false;
+    public boolean dumpHistoryOnLocationChange = false;
 
     @Override
     public Class<Model> getModelClassType() {
@@ -34,175 +32,28 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     }
 
     @Override
+    public Navigator navigate(Object sender) {
+        return new Navigator(sender, this);
+    }
+
+    @Override
     public void navigateTo(Object sender, String locationId) {
-        doNavigateTo(sender, locationId, false, null);
+        navigate(sender).to(locationId);
     }
 
     @Override
     public void navigateTo(Object sender, String locationId, String clearTopToLocationId) {
-        doNavigateTo(sender, locationId, true, clearTopToLocationId);
-    }
-
-    private void doNavigateTo(Object sender, String locationId, boolean clearTop,
-                              String clearTopToLocationId) {
-        NavLocation clearedTopToLocation = null;
-        if (clearTop) {
-            if (clearTopToLocationId != null) {
-                //find out the top most location in the history stack with clearTopToLocationId
-                NavLocation currentLoc = getModel().getCurrentLocation();
-                while (currentLoc != null) {
-                    if (clearTopToLocationId.equals(currentLoc.getLocationId())) {
-                        //Reverse the history to this location
-                        clearedTopToLocation = currentLoc;
-                        break;
-                    }
-                    currentLoc = currentLoc.getPreviousLocation();
-                }
-                if (clearedTopToLocation == null) {
-                    //The location to clear up to is not found. Disable clear top.
-                    clearTop = false;
-                }
-            } else {
-                clearedTopToLocation = null;
-            }
-        }
-
-        NavLocation lastLoc = getModel().getCurrentLocation();
-        boolean locationChanged = false;
-
-        if (clearTop) {
-            locationChanged = true;
-        } else {
-            if (locationId != null) {
-                if(lastLoc == null) {
-                    locationChanged = true;
-                } else if(!locationId.equals(lastLoc.getLocationId())) {
-                    locationChanged = true;
-                }
-            }
-        }
-
-        if (locationChanged) {
-            NavLocation currentLoc = new NavLocation();
-            currentLoc._setLocationId(locationId);
-            if (!clearTop) {
-                //Remember last location as previous location
-                currentLoc._setPreviousLocation(lastLoc);
-            } else {
-                //Remember clear top location location as the previous location
-                currentLoc._setPreviousLocation(clearedTopToLocation);
-            }
-
-            getModel().setCurrentLocation(currentLoc);
-
-            String lastLocId = lastLoc == null ? null : lastLoc.getLocationId();
-
-            /**
-             * Retain all cached state managed objects. They will be retained until the fragment is
-             * created and ready to show. They will be released by the view ready call back by the
-             * fragment navigating to.
-             *  fragment.registerOnViewReadyListener(new Runnable() {
-                    @Override
-                    public void run() {
-                    Injector.getGraph().releaseCachedItems();
-                    fragment.unregisterOnViewReadyListener(this);
-                    }
-                });
-             */
-            __MvcGraphHelper.retainCachedObjectsBeforeNavigation(Injector.getGraph());
-
-            postC2VEvent(new EventC2V.OnLocationForward(sender, lastLoc, currentLoc, clearTop,
-                    clearedTopToLocation));
-
-            logger.trace("Nav Controller: Forward: {} -> {}", lastLocId, currentLoc.getLocationId());
-        }
-
-        dumpHistory();
+        navigate(sender).to(locationId, clearTopToLocationId);
     }
 
     @Override
     public void navigateBack(Object sender) {
-        NavLocation currentLoc = getModel().getCurrentLocation();
-        if (currentLoc == null) {
-            logger.warn("Current location should never be null before navigating backwards.");
-            return;
-        }
-
-        NavLocation previousLoc = currentLoc.getPreviousLocation();
-        getModel().setCurrentLocation(previousLoc);
-        postC2VEvent(new EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false));
-
-        logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
-                previousLoc == null ? "null" : previousLoc.getLocationId());
-
-        checkAppExit(sender);
-
-        dumpHistory();
+        navigate(sender).back();
     }
 
     @Override
     public void navigateBack(Object sender, String toLocationId) {
-        NavLocation currentLoc = getModel().getCurrentLocation();
-        if (currentLoc == null) {
-            logger.warn("Current location should never be null before navigating backwards.");
-            return;
-        }
-
-        if (currentLoc.getPreviousLocation() == null) {
-            //Has already been the first location, don't do anything
-            return;
-        }
-
-        boolean success = false;
-        NavLocation previousLoc = currentLoc;
-
-        if(toLocationId == null) {
-            success = true;
-        }
-        while (currentLoc != null) {
-            if(toLocationId != null) {
-                if (toLocationId.equals(currentLoc.getLocationId())) {
-                    success = true;
-                    break;
-                }
-            } else {
-                if(currentLoc.getPreviousLocation() == null) {
-                    break;
-                }
-            }
-            currentLoc = currentLoc.getPreviousLocation();
-        }
-        if(success) {
-            getModel().setCurrentLocation(currentLoc);
-            postC2VEvent(new EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true));
-            logger.trace("Nav Controller: Backward: {} -> {}", currentLoc.getLocationId(),
-                    previousLoc.getLocationId());
-
-            checkAppExit(sender);
-
-            dumpHistory();
-        }
-    }
-
-    private void checkAppExit(Object sender) {
-        NavLocation curLocation = getModel().getCurrentLocation();
-        if (curLocation == null) {
-            postC2CEvent(new EventC2C.OnAppExit(sender));
-        }
-    }
-
-    private void dumpHistory() {
-        if (dumpHistoryOnLocationChange) {
-            logger.trace("");
-            logger.trace("Nav Controller: dump: begin ---------------------------------------------->");
-            NavLocation curLoc = getModel().getCurrentLocation();
-            while (curLoc != null) {
-                logger.trace("Nav Controller: dump: {}({})", curLoc.getLocationId());
-                curLoc = curLoc.getPreviousLocation();
-            }
-            logger.trace("Nav Controller: dump: end   ---------------------------------------------->");
-            logger.trace("");
-        }
+        navigate(sender).back(toLocationId);
     }
 
 }

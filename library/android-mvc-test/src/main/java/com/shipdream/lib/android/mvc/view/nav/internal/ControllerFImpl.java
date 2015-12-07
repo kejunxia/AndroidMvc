@@ -19,18 +19,18 @@ package com.shipdream.lib.android.mvc.view.nav.internal;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.view.nav.ControllerE;
-import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerE;
+import com.shipdream.lib.android.mvc.view.nav.ControllerF;
+import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerF;
 
 import javax.inject.Inject;
 
-public class ControllerEImpl extends BaseControllerImpl<ControllerE.Model> implements ControllerE {
+public class ControllerFImpl extends BaseControllerImpl<ControllerF.Model> implements ControllerF {
     @Inject
-    private DisposeCheckerE disposeCheckerE;
+    private DisposeCheckerF disposeCheckerF;
 
     @Override
     public void onDisposed() {
-        Log.i("DisposeCheck", "Controller E disposed");
+        Log.i("DisposeCheck", "Controller F disposed");
     }
 
     @Override

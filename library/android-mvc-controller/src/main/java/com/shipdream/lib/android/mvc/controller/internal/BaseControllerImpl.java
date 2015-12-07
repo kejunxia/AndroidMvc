@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
 
+import com.shipdream.lib.android.mvc.Constructable;
 import com.shipdream.lib.android.mvc.Disposable;
 import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.StateManaged;
@@ -36,10 +37,10 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 /**
- *
+ * Base controller implementation.
  */
 public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>,
-        StateManaged<MODEL>, Disposable {
+        StateManaged<MODEL>, Constructable, Disposable {
     interface AndroidPoster {
         void post(EventBus eventBusC2V, BaseEventC2V eventC2V);
     }

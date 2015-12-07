@@ -39,7 +39,7 @@ public class EventBusV2VActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            getNavigationController().navigateTo(this, "TestFragment", null);
+            getNavigationController().navigate(this).to("TestFragment", null);
         }
 
         @Override

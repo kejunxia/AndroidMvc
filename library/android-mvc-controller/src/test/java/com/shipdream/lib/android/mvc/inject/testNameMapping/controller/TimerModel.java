@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc;
+package com.shipdream.lib.android.mvc.inject.testNameMapping.controller;
 
-/**
- * Object has callback on disposal
- */
-public interface Disposable {
-    /**
-     * Execute onDisposed logic of given object
-     */
-    void onDisposed();
+public class TimerModel {
+    private long initialValue;
+
+    public long getInitialValue() {
+        return initialValue;
+    }
+
+    public void setInitialValue(long initialValue) {
+        this.initialValue = initialValue;
+    }
 }

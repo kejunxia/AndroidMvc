@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
@@ -144,6 +146,7 @@ public abstract class MvcFragment extends Fragment {
     private boolean dependenciesInjected = false;
 
     boolean isStateManagedByRootDelegateFragment = false;
+    boolean selfRelease = true;
 
     /**
      * @return orientation before last orientation change.
@@ -180,6 +183,8 @@ public abstract class MvcFragment extends Fragment {
         if (dependenciesInjected) {
             AndroidMvc.graph().release(this);
             dependenciesInjected = false;
+
+            LoggerFactory.getLogger(getClass()).trace("Fragment release: " + getClass().getSimpleName());
         }
     }
 
@@ -391,7 +396,9 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        releaseDependencies();
+        if (selfRelease) {
+            releaseDependencies();
+        }
         eventRegister.onDestroy();
         eventRegister = null;
     }

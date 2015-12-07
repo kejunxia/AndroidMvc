@@ -87,12 +87,12 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
 
     @Test
     public void test_should_reinject_last_fragment_and_release_top_fragment_on_single_step_back_navigation() throws Throwable {
-        prepareAndCheckStack();
+        prepareAndCheckStack(true);
         //->A->B->C->D
         FragmentManager fm = activity.getRootFragmentManager();
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A->B->C
         waitTest(1000);
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -108,13 +108,13 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragAReleaseCount, 0);
         Assert.assertEquals(fragBInjectCount, 0);
         Assert.assertEquals(fragBReleaseCount, 0);
-        Assert.assertEquals(fragCInjectCount, 1);
+        Assert.assertEquals(fragCInjectCount, 0);
         Assert.assertEquals(fragCReleaseCount, 0);
         Assert.assertEquals(fragDInjectCount, 0);
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A->B
         waitTest();
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -127,7 +127,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
         Assert.assertEquals(fragAInjectCount, 0);
         Assert.assertEquals(fragAReleaseCount, 0);
-        Assert.assertEquals(fragBInjectCount, 1);
+        Assert.assertEquals(fragBInjectCount, 0);
         Assert.assertEquals(fragBReleaseCount, 0);
         Assert.assertEquals(fragCInjectCount, 0);
         Assert.assertEquals(fragCReleaseCount, 1);
@@ -135,7 +135,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A
         waitTest();
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -145,7 +145,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertNull(fm.getFragments().get(3));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
-        Assert.assertEquals(fragAInjectCount, 1);
+        Assert.assertEquals(fragAInjectCount, 0);
         Assert.assertEquals(fragAReleaseCount, 0);
         Assert.assertEquals(fragBInjectCount, 0);
         Assert.assertEquals(fragBReleaseCount, 1);
@@ -155,7 +155,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //quit
         waitTest(2000);
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -181,6 +181,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         prepareAndCheckStack();
         //->A->B->C->D
 
+        waitTest(200);
         resetGraphMonitorCounts();
         //Now clear history up to A and put C on it. Then A should pop out without re
         navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.C, MvcTestActivityNavigation.Loc.A);
@@ -194,12 +195,12 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fm.getBackStackEntryCount(), 2);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
         Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.C));
-        Assert.assertEquals(fragAInjectCount, 1);
+        Assert.assertEquals(fragAInjectCount, 0);
         Assert.assertEquals(fragAReleaseCount, 0);
         Assert.assertEquals(fragBInjectCount, 0);
-        Assert.assertEquals(fragBReleaseCount, 0);
+        Assert.assertEquals(fragBReleaseCount, 1);
         Assert.assertEquals(fragCInjectCount, 1);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        Assert.assertEquals(fragCReleaseCount, 1);
         Assert.assertEquals(fragDInjectCount, 0);
         Assert.assertEquals(fragDReleaseCount, 1);
     }
@@ -211,6 +212,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         prepareAndCheckStack();
         //->A->B->C->D
 
+        waitTest();
         resetGraphMonitorCounts();
         //Now clear history up to A and put C on it. Then A should pop out without re
         navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.B, null);
@@ -224,11 +226,11 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.B));
         Assert.assertEquals(fragAInjectCount, 0);
-        Assert.assertEquals(fragAReleaseCount, 0);
+        Assert.assertEquals(fragAReleaseCount, 1);
         Assert.assertEquals(fragBInjectCount, 1);
-        Assert.assertEquals(fragBReleaseCount, 0);
+        Assert.assertEquals(fragBReleaseCount, 1);
         Assert.assertEquals(fragCInjectCount, 0);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        Assert.assertEquals(fragCReleaseCount, 1);
         Assert.assertEquals(fragDInjectCount, 0);
         Assert.assertEquals(fragDReleaseCount, 1);
     }
@@ -240,6 +242,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         prepareAndCheckStack();
         //->A->B->C->D
 
+        waitTest(200);
         resetGraphMonitorCounts();
         navigationController.navigateBack(this, MvcTestActivityNavigation.Loc.B);
         //->A->B
@@ -254,10 +257,10 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
         Assert.assertEquals(fragAInjectCount, 0);
         Assert.assertEquals(fragAReleaseCount, 0);
-        Assert.assertEquals(fragBInjectCount, 1);
+        Assert.assertEquals(fragBInjectCount, 0);
         Assert.assertEquals(fragBReleaseCount, 0);
         Assert.assertEquals(fragCInjectCount, 0);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        Assert.assertEquals(fragCReleaseCount, 1);
         Assert.assertEquals(fragDInjectCount, 0);
         Assert.assertEquals(fragDReleaseCount, 1);
     }
@@ -269,6 +272,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         prepareAndCheckStack();
         //->A->B->C->D
 
+        waitTest(200);
         resetGraphMonitorCounts();
         navigationController.navigateBack(this, null);
         //->A
@@ -280,12 +284,12 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertNull(fm.getFragments().get(3));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
-        Assert.assertEquals(fragAInjectCount, 1);
+        Assert.assertEquals(fragAInjectCount, 0);
         Assert.assertEquals(fragAReleaseCount, 0);
         Assert.assertEquals(fragBInjectCount, 0);
-        Assert.assertEquals(fragBReleaseCount, 0);
+        Assert.assertEquals(fragBReleaseCount, 1);
         Assert.assertEquals(fragCInjectCount, 0);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        Assert.assertEquals(fragCReleaseCount, 1);
         Assert.assertEquals(fragDInjectCount, 0);
         Assert.assertEquals(fragDReleaseCount, 1);
     }
@@ -317,14 +321,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertNull(fm.getFragments().get(5));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
-        Assert.assertEquals(2, fragAInjectCount);
-        Assert.assertTrue(fragAInjectCount == fragAReleaseCount + 1);
+        Assert.assertEquals(0, fragAInjectCount);
+        Assert.assertEquals(1, fragAReleaseCount);
+        Assert.assertEquals(0, fragBInjectCount);
         Assert.assertEquals(1, fragBReleaseCount);
-        Assert.assertTrue(fragBInjectCount == fragBReleaseCount);
-        Assert.assertEquals(1, fragCInjectCount);
-        Assert.assertTrue(fragCReleaseCount == fragCInjectCount + 1);
-        Assert.assertEquals(1, fragDInjectCount);
-        Assert.assertTrue(fragDInjectCount == fragDReleaseCount);
+        Assert.assertEquals(0, fragCInjectCount);
+        Assert.assertEquals(2, fragCReleaseCount);
+        Assert.assertEquals(0, fragDInjectCount);
+        Assert.assertEquals(1, fragDReleaseCount);
     }
 
     @Test
@@ -337,6 +341,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         prepareAndCheckStack();
         //->A->B->C->D
 
+        waitTest(200);
         resetGraphMonitorCounts();
         pressHome();
         waitTest();
@@ -344,16 +349,16 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         waitTest(2000);
 
         Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 0);
+        Assert.assertEquals(fragAReleaseCount, 1);
         Assert.assertEquals(fragBInjectCount, 1);
-        Assert.assertEquals(fragBReleaseCount, 0);
+        Assert.assertEquals(fragBReleaseCount, 1);
         Assert.assertEquals(fragCInjectCount, 1);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        Assert.assertEquals(fragCReleaseCount, 1);
         Assert.assertEquals(fragDInjectCount, 1);
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A->B->C
         waitTest(1000);
         Assert.assertEquals(fragAInjectCount, 0);
@@ -366,7 +371,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A->B
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -379,7 +384,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -392,7 +397,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //quit
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -415,6 +420,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         prepareAndCheckStack();
         //->A->B->C->D
 
+        waitTest(200);
         resetGraphMonitorCounts();
         pressHome();
         waitTest(1000);
@@ -422,11 +428,11 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         waitTest(1000);
 
         Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 0);
+        Assert.assertEquals(fragAReleaseCount, 1);
         Assert.assertEquals(fragBInjectCount, 1);
-        Assert.assertEquals(fragBReleaseCount, 0);
+        Assert.assertEquals(fragBReleaseCount, 1);
         Assert.assertEquals(fragCInjectCount, 1);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        Assert.assertEquals(fragCReleaseCount, 1);
         Assert.assertEquals(fragDInjectCount, 1);
         Assert.assertEquals(fragDReleaseCount, 1);
 
@@ -444,7 +450,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //quit
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -466,7 +472,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
 
         prepareAndCheckStack();
         //->A->B->C->D
-
+        waitTest(200);
         resetGraphMonitorCounts();
         pressHome();
         waitTest();
@@ -474,11 +480,11 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         waitTest(2000);
 
         Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 0);
+        Assert.assertEquals(fragAReleaseCount, 1);
         Assert.assertEquals(fragBInjectCount, 1);
-        Assert.assertEquals(fragBReleaseCount, 0);
+        Assert.assertEquals(fragBReleaseCount, 1);
         Assert.assertEquals(fragCInjectCount, 1);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        Assert.assertEquals(fragCReleaseCount, 1);
         Assert.assertEquals(fragDInjectCount, 1);
         Assert.assertEquals(fragDReleaseCount, 1);
 
@@ -496,7 +502,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A->B
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -509,7 +515,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //->A
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -522,7 +528,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
         Assert.assertEquals(fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigationController.navigateBack(this);
+        navigationController.navigate(this).back();
         //quit
         waitTest();
         Assert.assertEquals(fragAInjectCount, 0);
@@ -536,83 +542,97 @@ public class TestCaseNavigationAndInjection extends BaseTestCase <MvcTestActivit
     }
 
     private void prepareAndCheckStack() throws InterruptedException {
-        //The activity will navigate to fragment a on launch
-        Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 0);
-        Assert.assertEquals(fragBInjectCount, 0);
-        Assert.assertEquals(fragBReleaseCount, 0);
-        Assert.assertEquals(fragCInjectCount, 0);
-        Assert.assertEquals(fragCReleaseCount, 0);
-        Assert.assertEquals(fragDInjectCount, 0);
-        Assert.assertEquals(fragDReleaseCount, 0);
+        prepareAndCheckStack(false);
+    }
+
+    private void prepareAndCheckStack(boolean check) throws InterruptedException {
+        if (check) {
+            //The activity will navigate to fragment a on launch
+            Assert.assertEquals(fragAInjectCount, 1);
+            Assert.assertEquals(fragAReleaseCount, 0);
+            Assert.assertEquals(fragBInjectCount, 0);
+            Assert.assertEquals(fragBReleaseCount, 0);
+            Assert.assertEquals(fragCInjectCount, 0);
+            Assert.assertEquals(fragCReleaseCount, 0);
+            Assert.assertEquals(fragDInjectCount, 0);
+            Assert.assertEquals(fragDReleaseCount, 0);
+        }
 
         FragmentManager fm = activity.getRootFragmentManager();
         //->A
         //should not take effect to navigate to the same location
         navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.A);
         //->A
-        waitTest();
-        Assert.assertEquals(fm.getFragments().size(), 1);
-        Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
-        Assert.assertEquals(fm.getBackStackEntryCount(), 1);
-        Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
+        if (check) {
+            waitTest();
+            Assert.assertEquals(fm.getFragments().size(), 1);
+            Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
+            Assert.assertEquals(fm.getBackStackEntryCount(), 1);
+            Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
 
-        Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 0);
+            Assert.assertEquals(fragAInjectCount, 1);
+            Assert.assertEquals(fragAReleaseCount, 0);
+        }
 
         navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.B);
         //->A->B
-        waitTest();
-        Assert.assertEquals(fm.getFragments().size(), 2);
-        Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
-        Assert.assertTrue(fm.getFragments().get(1) instanceof NavFragmentB);
-        Assert.assertEquals(fm.getBackStackEntryCount(), 2);
-        Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
-        Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
-        Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 1);
-        Assert.assertEquals(fragBInjectCount, 1);
-        Assert.assertEquals(fragBReleaseCount, 0);
+        if (check) {
+            waitTest();
+            Assert.assertEquals(fm.getFragments().size(), 2);
+            Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
+            Assert.assertTrue(fm.getFragments().get(1) instanceof NavFragmentB);
+            Assert.assertEquals(fm.getBackStackEntryCount(), 2);
+            Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
+            Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
+            Assert.assertEquals(fragAInjectCount, 1);
+            Assert.assertEquals(fragAReleaseCount, 0);
+            Assert.assertEquals(fragBInjectCount, 1);
+            Assert.assertEquals(fragBReleaseCount, 0);
+        }
 
         navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.C);
         //->A->B->C
-        waitTest();
-        Assert.assertEquals(fm.getFragments().size(), 3);
-        Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
-        Assert.assertTrue(fm.getFragments().get(1) instanceof NavFragmentB);
-        Assert.assertTrue(fm.getFragments().get(2) instanceof NavFragmentC);
-        Assert.assertEquals(fm.getBackStackEntryCount(), 3);
-        Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
-        Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
-        Assert.assertTrue(fm.getBackStackEntryAt(2).getName().contains(MvcTestActivityNavigation.Loc.C));
-        Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 1);
-        Assert.assertEquals(fragBInjectCount, 1);
-        Assert.assertEquals(fragBReleaseCount, 1);
-        Assert.assertEquals(fragCInjectCount, 1);
-        Assert.assertEquals(fragCReleaseCount, 0);
+        if (check) {
+            waitTest();
+            Assert.assertEquals(fm.getFragments().size(), 3);
+            Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
+            Assert.assertTrue(fm.getFragments().get(1) instanceof NavFragmentB);
+            Assert.assertTrue(fm.getFragments().get(2) instanceof NavFragmentC);
+            Assert.assertEquals(fm.getBackStackEntryCount(), 3);
+            Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
+            Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
+            Assert.assertTrue(fm.getBackStackEntryAt(2).getName().contains(MvcTestActivityNavigation.Loc.C));
+            Assert.assertEquals(fragAInjectCount, 1);
+            Assert.assertEquals(fragAReleaseCount, 0);
+            Assert.assertEquals(fragBInjectCount, 1);
+            Assert.assertEquals(fragBReleaseCount, 0);
+            Assert.assertEquals(fragCInjectCount, 1);
+            Assert.assertEquals(fragCReleaseCount, 0);
+        }
 
         navigationController.navigateTo(this, MvcTestActivityNavigation.Loc.D);
         //->A->B->C->D
-        waitTest();
-        Assert.assertEquals(fm.getFragments().size(), 4);
-        Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
-        Assert.assertTrue(fm.getFragments().get(1) instanceof NavFragmentB);
-        Assert.assertTrue(fm.getFragments().get(2) instanceof NavFragmentC);
-        Assert.assertTrue(fm.getFragments().get(3) instanceof NavFragmentD);
-        Assert.assertEquals(fm.getBackStackEntryCount(), 4);
-        Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
-        Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
-        Assert.assertTrue(fm.getBackStackEntryAt(2).getName().contains(MvcTestActivityNavigation.Loc.C));
-        Assert.assertTrue(fm.getBackStackEntryAt(3).getName().contains(MvcTestActivityNavigation.Loc.D));
-        Assert.assertEquals(fragAInjectCount, 1);
-        Assert.assertEquals(fragAReleaseCount, 1);
-        Assert.assertEquals(fragBInjectCount, 1);
-        Assert.assertEquals(fragBReleaseCount, 1);
-        Assert.assertEquals(fragCInjectCount, 1);
-        Assert.assertEquals(fragCReleaseCount, 1);
-        Assert.assertEquals(fragDInjectCount, 1);
-        Assert.assertEquals(fragDReleaseCount, 0);
+        if (check) {
+            waitTest();
+            Assert.assertEquals(fm.getFragments().size(), 4);
+            Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentA);
+            Assert.assertTrue(fm.getFragments().get(1) instanceof NavFragmentB);
+            Assert.assertTrue(fm.getFragments().get(2) instanceof NavFragmentC);
+            Assert.assertTrue(fm.getFragments().get(3) instanceof NavFragmentD);
+            Assert.assertEquals(fm.getBackStackEntryCount(), 4);
+            Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(MvcTestActivityNavigation.Loc.A));
+            Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(MvcTestActivityNavigation.Loc.B));
+            Assert.assertTrue(fm.getBackStackEntryAt(2).getName().contains(MvcTestActivityNavigation.Loc.C));
+            Assert.assertTrue(fm.getBackStackEntryAt(3).getName().contains(MvcTestActivityNavigation.Loc.D));
+            Assert.assertEquals(fragAInjectCount, 1);
+            Assert.assertEquals(fragAReleaseCount, 0);
+            Assert.assertEquals(fragBInjectCount, 1);
+            Assert.assertEquals(fragBReleaseCount, 0);
+            Assert.assertEquals(fragCInjectCount, 1);
+            Assert.assertEquals(fragCReleaseCount, 0);
+            Assert.assertEquals(fragDInjectCount, 1);
+            Assert.assertEquals(fragDReleaseCount, 0);
+        }
     }
 
     private void resetGraphMonitorCounts () {

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc;
+package com.shipdream.lib.android.mvc.view.nav;
 
-/**
- * Object has callback on disposal
- */
-public interface Disposable {
-    /**
-     * Execute onDisposed logic of given object
-     */
-    void onDisposed();
+import com.shipdream.lib.android.mvc.controller.BaseController;
+
+public interface ControllerF extends BaseController<ControllerF.Model> {
+    class Model {
+        public String value;
+    }
+
+    void setValue(String value);
+    String getValue();
 }

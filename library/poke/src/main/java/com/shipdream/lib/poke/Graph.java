@@ -272,32 +272,49 @@ public abstract class Graph {
     public <T> void use(Class<T> type, Annotation qualifier,
                         Class<? extends Annotation> injectAnnotation, Consumer<T> consumer)
             throws ProvideException, CircularDependenciesException, ProviderMissingException {
-        T instance;
+        T instance = reference(type, qualifier, injectAnnotation);
+        consumer.consume(instance);
+        dereference(instance, type, qualifier, injectAnnotation);
+    }
 
-        Provider<T> provider = getProvider(type, qualifier);
-        T cachedInstance = provider.findCachedInstance();
-        if (cachedInstance != null) {
-            instance = cachedInstance;
-        } else {
-            T newInstance = provider.get();
-
-            doInject(newInstance, null, type, qualifier, injectAnnotation);
-
-            instance = newInstance;
-        }
-
+    /**
+     * Reference an injectable object and retain it. Use
+     * {@link #dereference(Object, Class, Annotation, Class)} to dereference it when it's not used
+     * any more.
+     * @param type the type of the object
+     * @param qualifier the qualifier
+     * @param injectAnnotation the inject annotation
+     * @return
+     */
+    public <T> T reference(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
+            throws ProviderMissingException, ProvideException, CircularDependenciesException {
+         Provider<T> provider = getProvider(type, qualifier);
+        T instance = provider.get();
+        doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
         if (provider.getReferenceCount() == 1) {
             provider.notifyInjected(instance);
         }
-        consumer.consume(instance);
 
         //Clear visiting records
         visitedFields.clear();
         visitedInjectNodes.clear();
 
+        return instance;
+    }
+
+    /**
+     * Dereference an injectable object. When it's not referenced by anything else after this
+     * dereferencing, release its cached instance if possible.
+     * @param type the type of the object
+     * @param qualifier the qualifier
+     * @param injectAnnotation the inject annotation
+     */
+    public <T> void dereference(T instance, Class<T> type, Annotation qualifier,
+                                Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
         doRelease(instance, null, type, qualifier, injectAnnotation);
 
+        Provider<T> provider = getProvider(type, qualifier);
         provider.release();
         checkToFreeProvider(provider);
     }

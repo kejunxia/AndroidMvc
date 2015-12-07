@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc;
+package com.shipdream.lib.android.mvc.view.nav;
 
-/**
- * Object has callback on disposal
- */
-public interface Disposable {
-    /**
-     * Execute onDisposed logic of given object
-     */
-    void onDisposed();
+import com.shipdream.lib.android.mvc.Disposable;
+
+public interface DisposeCheckerF extends Disposable {
 }

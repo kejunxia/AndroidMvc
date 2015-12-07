@@ -50,7 +50,7 @@ public class TestV2VEvents extends BaseTestCase<EventBusV2VActivity> {
     }
 
     @Test
-    public void should_be_able_to_send_and_receive_v2v_events_among_fragments_services_and_dialogFragments() throws Throwable {
+    public void test_should_be_able_to_send_and_receive_v2v_events_among_fragments_services_and_dialogFragments() throws Throwable {
         onView(withId(R.id.fragment_mvc_v2v_text)).check(matches(withText("Initial Text")));
 
         onView(withId(R.id.fragment_mvc_v2v_btnService)).perform(click());

@@ -29,6 +29,7 @@ import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.controller.internal.__MvcControllerHelper;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -252,7 +253,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                navigationController.navigateBack(this);
+                navigationController.navigate(this).back();
             }
             return true;
         }
@@ -397,7 +398,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         @SuppressWarnings("unchecked")
-        private void performForwardNav(NavigationController.EventC2V.OnLocationForward event) {
+        private void performForwardNav(final NavigationController.EventC2V.OnLocationForward event) {
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
             FragmentManager fm = childFragmentManager();
 
@@ -420,11 +421,11 @@ public abstract class MvcActivity extends AppCompatActivity {
                 }
 
                 MvcFragment lastFrag = null;
+                if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
+                    lastFrag = (MvcFragment) fm.findFragmentByTag(
+                            getFragmentTag(event.getLastValue().getLocationId()));
+                }
                 if (!event.isClearHistory()) {
-                    if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
-                        lastFrag = (MvcFragment) fm.findFragmentByTag(
-                                getFragmentTag(event.getLastValue().getLocationId()));
-                    }
                     if (lastFrag != null) {
                         lastFrag.onPushingToBackStack();
                     }
@@ -445,17 +446,14 @@ public abstract class MvcActivity extends AppCompatActivity {
                     logger.trace("Cleared fragment back stack up to {}", tagPopTo);
                 }
 
-                final MvcFragment finalLastFrag = lastFrag;
                 fragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
-                        //Release reference count to pair the retaining by NavigationControllerImpl
-                        // with Injector.getGraph().retainCachedObjectsBeforeNavigation();
-                        __MvcGraphHelper.releaseCachedItemsAfterNavigation(Injector.getGraph());
-
-                        if (finalLastFrag != null) {
-                            finalLastFrag.releaseDependencies();
+                        if (event.getNavigator() != null) {
+                            __MvcControllerHelper.destroyNavigator(event.getNavigator());
                         }
+
+                        logger.trace("Fragment ready: " + fragment.getClass().getSimpleName());
 
                         fragment.unregisterOnViewReadyListener(this);
                     }
@@ -483,9 +481,13 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        private void performBackNav(NavigationController.EventC2V.OnLocationBack event) {
+        private void performBackNav(final NavigationController.EventC2V.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
+                if (event.getNavigator() != null) {
+                    __MvcControllerHelper.destroyNavigator(event.getNavigator());
+                }
+
                 MvcActivity mvcActivity = ((MvcActivity) getActivity());
                 //Back to null which should finish the current activity
                 mvcActivity.performSuperBackKeyPressed();
@@ -497,7 +499,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                 String currentFragTag = getFragmentTag(currentLoc.getLocationId());
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
-                    currentFrag.injectDependencies();
                     currentFrag.aboutToPopOut = true;
 
                     List<Fragment> subFragments = currentFrag.getChildFragmentManager().getFragments();
@@ -508,6 +509,33 @@ public abstract class MvcActivity extends AppCompatActivity {
                             }
                         }
                     }
+
+                    MvcFragment lastFrag = null;
+                    if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
+                        lastFrag = (MvcFragment) fm.findFragmentByTag(
+                                getFragmentTag(event.getLastValue().getLocationId()));
+                    }
+                    final MvcFragment finalLastFrag = lastFrag;
+
+                    if (finalLastFrag != null) {
+                        finalLastFrag.selfRelease = false;
+                    }
+
+                    currentFrag.registerOnViewReadyListener(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (event.getNavigator() != null) {
+                                __MvcControllerHelper.destroyNavigator(event.getNavigator());
+                            }
+
+                            if (finalLastFrag != null) {
+                                finalLastFrag.releaseDependencies();
+                                finalLastFrag.selfRelease = true;
+                            }
+
+                            currentFrag.unregisterOnViewReadyListener(this);
+                        }
+                    });
                 }
 
                 if (event.isFastRewind()) {
@@ -542,7 +570,9 @@ public abstract class MvcActivity extends AppCompatActivity {
                     }
                 } else {
                     fm.popBackStack();
-                    logger.trace("Navigation back: On step back to location {}", currentLoc.getLocationId());
+                    logger.trace("Navigation back: On step back from {} to location {}",
+                            event.getLastValue() != null ? event.getLastValue().getLocationId() : null,
+                            currentLoc.getLocationId());
                 }
             }
         }
