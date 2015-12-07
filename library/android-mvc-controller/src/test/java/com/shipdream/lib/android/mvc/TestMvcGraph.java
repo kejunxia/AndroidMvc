@@ -410,4 +410,40 @@ public class TestMvcGraph {
         // Verify
         verify(stateManagedMock).restoreState(eq(stateMock));
     }
+
+    interface UnimplementedInterface{}
+
+    @Test(expected = MvcGraphException.class)
+    public void should_raise_mvc_graph_exception_when_inject_on_poke_exception() {
+        class View {
+            @Inject
+            UnimplementedInterface unimplementedInterface;
+        }
+        mvcGraph.inject(new View());
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_raise_mvc_graph_exception_when_release_on_poke_exception() {
+        class View {
+            @Inject
+            UnimplementedInterface unimplementedInterface;
+        }
+        View view = new View();
+        view.unimplementedInterface = new UnimplementedInterface() {
+        };
+        mvcGraph.release(view);
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_raise_mvc_graph_exception_when_use_on_poke_exception() {
+        class View {
+            @Inject
+            UnimplementedInterface unimplementedInterface;
+        }
+        mvcGraph.use(UnimplementedInterface.class, new Consumer<UnimplementedInterface>() {
+            @Override
+            public void consume(UnimplementedInterface instance) {
+            }
+        });
+    }
 }

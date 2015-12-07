@@ -30,6 +30,7 @@ import com.shipdream.lib.poke.Provides;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.internal.matchers.Null;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -42,9 +43,12 @@ import javax.inject.Singleton;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -592,6 +596,44 @@ public class TestNavigationController extends BaseNavigationControllerTest {
                 Assert.assertEquals(0, instance.getInitialValue());
             }
         });
+    }
+
+    @Test
+    public void should_invoke_singular_argument_with_method_of_navigator_correct() throws Exception {
+        Navigator navigator = navigationController.navigate(this);
+        Navigator spiedNavigator = spy(navigator);
+
+        verify(spiedNavigator, times(0)).with(eq(NavigationController.class), isNull(Annotation.class), isNull(Preparer.class));
+
+        spiedNavigator.with(NavigationController.class);
+
+        verify(spiedNavigator).with(eq(NavigationController.class), isNull(Annotation.class), isNull(Preparer.class));
+    }
+
+    @Test
+    public void should_return_correct_sender_by_navigator() throws Exception {
+        // Act
+        Navigator navigator = navigationController.navigate(this);
+
+        Assert.assertTrue(this == navigator.getSender());
+    }
+
+    @Test
+    public void should_invoke_on_settled_when_navigation_is_done() throws Exception {
+        // Arrange
+        Navigator.OnSettled onSettled = mock(Navigator.OnSettled.class);
+
+        // Act
+        Navigator navigator = navigationController.navigate(this).with(TimerController.class)
+                .onSettled(onSettled);
+        navigator.to(TimerFragment.class.getName());
+
+        verify(onSettled, times(0)).run();
+
+        //destroy the navigator
+        navigator.__destroy();
+
+        verify(onSettled, times(1)).run();
     }
 
     /**

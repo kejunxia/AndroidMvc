@@ -82,7 +82,6 @@ import javax.inject.Singleton;
  * <p/>
  */
 public class MvcGraph {
-    List<Provider> cachedInstancesBeforeNavigation = new ArrayList<>();
     private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
@@ -350,11 +349,7 @@ public class MvcGraph {
     public void inject(Object target) {
         try {
             graph.inject(target, Inject.class);
-        } catch (ProvideException e) {
-            throw new MvcGraphException(e.getMessage(), e);
-        } catch (ProviderMissingException e) {
-            throw new MvcGraphException(e.getMessage(), e);
-        } catch (CircularDependenciesException e) {
+        } catch (PokeException e) {
             throw new MvcGraphException(e.getMessage(), e);
         }
     }
