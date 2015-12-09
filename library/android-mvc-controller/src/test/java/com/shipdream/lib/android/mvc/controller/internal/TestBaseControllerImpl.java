@@ -155,7 +155,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         controller.setLogger(loggerMock);
         controller.eventBusC2C = null;
 
-        BaseEventC2C event = new BaseEventC2C(this);
+        BaseEventC2C event = new BaseEventC2C(this){};
 
         //Act
         controller.postC2CEvent(event);
@@ -175,7 +175,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         controller.setLogger(loggerMock);
         controller.mEventBusC2V = null;
 
-        BaseEventC2V event = new BaseEventC2V(this);
+        BaseEventC2V event = new BaseEventC2V(this){};
 
         //Act
         controller.postC2VEvent(event);
