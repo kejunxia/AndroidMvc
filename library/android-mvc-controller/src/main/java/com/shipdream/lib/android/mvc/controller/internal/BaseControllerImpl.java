@@ -57,7 +57,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     EventBus eventBusC2C;
 
     @Inject
-    ExecutorService mExecutorService;
+    ExecutorService executorService;
 
     private MODEL model;
 
@@ -221,7 +221,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      * @return returns the reference of {@link AsyncTask} that can be used to query its state and cancel it.
      */
     protected AsyncTask runAsyncTask(Object sender, final AsyncTask asyncTask) {
-        return runAsyncTask(sender, mExecutorService, asyncTask, null);
+        return runAsyncTask(sender, executorService, asyncTask, null);
     }
 
     /**
@@ -235,7 +235,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      */
     protected AsyncTask runAsyncTask(Object sender, final AsyncTask asyncTask,
                                      final AsyncExceptionHandler asyncExceptionHandler) {
-        return runAsyncTask(sender, mExecutorService, asyncTask, asyncExceptionHandler);
+        return runAsyncTask(sender, executorService, asyncTask, asyncExceptionHandler);
     }
 
     /**

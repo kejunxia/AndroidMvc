@@ -65,6 +65,6 @@ public abstract class MvcService extends Service{
      * @param event
      */
     protected void postEventV2V(BaseEventV2V event) {
-        eventRegister.postEventV2V(event);
+        AndroidMvc.getEventBusV2V().post(event);
     }
 }

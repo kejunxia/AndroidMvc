@@ -30,10 +30,6 @@ class EventRegister {
     @EventBusC2V
     private EventBus eventBusC2V;
 
-    @Inject
-    @EventBusV2V
-    private EventBus eventBusV2V;
-
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Object androidComponent;
     private boolean eventsRegistered = false;
@@ -48,7 +44,7 @@ class EventRegister {
     void registerEventBuses() {
         if (!eventsRegistered) {
             eventBusC2V.register(androidComponent);
-            eventBusV2V.register(androidComponent);
+            AndroidMvc.getEventBusV2V().register(androidComponent);
             eventsRegistered = true;
             logger.trace("+Event bus registered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());
@@ -64,7 +60,7 @@ class EventRegister {
     void unregisterEventBuses() {
         if (eventsRegistered) {
             eventBusC2V.unregister(androidComponent);
-            eventBusV2V.unregister(androidComponent);
+            AndroidMvc.getEventBusV2V().unregister(androidComponent);
             eventsRegistered = false;
             logger.trace("-Event bus unregistered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
@@ -80,9 +76,5 @@ class EventRegister {
 
     void onDestroy() {
         AndroidMvc.graph().release(this);
-    }
-
-    void postEventV2V(BaseEventV2V event) {
-        eventBusV2V.post(event);
     }
 }
