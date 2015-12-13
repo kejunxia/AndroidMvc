@@ -16,6 +16,10 @@
 
 package com.shipdream.lib.android.mvc.event;
 
+/**
+ * Value change v2v event.
+ * @param <T> The type fo the value
+ */
 public class ValueChangeEventV2V<T> extends BaseEventV2V{
     private final T lastValue;
     private final T currentValue;

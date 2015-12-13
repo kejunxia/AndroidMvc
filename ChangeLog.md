@@ -1,3 +1,6 @@
+Version:1.5.1
+Add convenient method for MvcActivity post v2v events
+
 Version: 1.5.0
 Add reference/dereference method to MvcGraph
 Enhanced navigation controller:

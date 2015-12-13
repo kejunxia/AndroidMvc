@@ -475,6 +475,6 @@ public abstract class MvcFragment extends Fragment {
      * @param event
      */
     protected void postEventV2V(BaseEventV2V event) {
-        eventRegister.postEventV2V(event);
+        AndroidMvc.getEventBusV2V().post(event);
     }
 }

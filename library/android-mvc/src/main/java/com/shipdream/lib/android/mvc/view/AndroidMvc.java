@@ -66,12 +66,25 @@ public class AndroidMvc {
         }
     }
 
+    private static EventBus eventBusV2V;
+
+    /**
+     * Gets the event bus that routes events among views.
+     * @return The event bus
+     */
+    public static EventBus getEventBusV2V() {
+        if (eventBusV2V == null) {
+            eventBusV2V = new EventBusImpl();
+        }
+        return eventBusV2V;
+    }
+
     static class ViewComponent extends Component {
         @Provides
         @EventBusV2V
         @Singleton
-        public EventBus providesIEventBusC2V() {
-            return new EventBusImpl();
+        public EventBus providesIEventBusV2V() {
+            return getEventBusV2V();
         }
     }
 

@@ -88,7 +88,7 @@ public class MvcDialogFragment extends DialogFragment {
      * @param event
      */
     protected void postEventV2V(BaseEventV2V event) {
-        eventRegister.postEventV2V(event);
+        AndroidMvc.getEventBusV2V().post(event);
     }
 
 }
