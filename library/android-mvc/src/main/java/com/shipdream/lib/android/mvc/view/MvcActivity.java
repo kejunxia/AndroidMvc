@@ -19,15 +19,16 @@ package com.shipdream.lib.android.mvc.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentHostCallback;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.Injector;
-import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.__MvcControllerHelper;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
@@ -162,6 +163,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          * FIXME: ChildFragmentManager hack - remove this method when the bug is fixed in future android support library
          */
         private FragmentManager retainedChildFragmentManager;
+        private FragmentHostCallback currentHost;
 
         /**
          * Get child fragment manager with android support lib rev20/rev21 which has a the
@@ -184,17 +186,25 @@ public abstract class MvcActivity extends AppCompatActivity {
         @Override
         public void onAttach(Context context) {
             super.onAttach(context);
-
             if (retainedChildFragmentManager != null) {
                 //restore the last retained child fragment manager to the new
                 //created fragment
                 try {
+                    //Copy the mHost(Activity) to retainedChildFragmentManager
+                    Class fragmentImplClass = Class.forName("android.support.v4.app.FragmentManagerImpl");
+                    Field mHostField = fragmentImplClass.getDeclaredField("mHost");
+                    mHostField.setAccessible(true);
+                    currentHost = (FragmentHostCallback) mHostField.get(getFragmentManager());
+
                     Field childFMField = Fragment.class.getDeclaredField("mChildFragmentManager");
                     childFMField.setAccessible(true);
                     childFMField.set(this, retainedChildFragmentManager);
                 } catch (Exception e) {
                     logger.warn(e.getMessage(), e);
                 }
+
+                //Refresh children fragment's hosts
+                refreshHosts(getChildFragmentManager());
             } else {
                 //If the child fragment manager has not been retained yet, let it hold the internal
                 //child fragment manager as early as possible. This can prevent child fragment
@@ -204,6 +214,25 @@ public abstract class MvcActivity extends AppCompatActivity {
                 //yet set. If the fragment is rotated, the state of child fragment manager will be
                 //lost since mRetainedChildFragmentManager hasn't set to be retained by the OS.
                 retainedChildFragmentManager = getChildFragmentManager();
+            }
+        }
+
+        private void refreshHosts(FragmentManager fragmentManager) {
+            List<Fragment> frags = fragmentManager.getFragments();
+            if (frags != null) {
+                for (Fragment f : frags) {
+                    try {
+                        //Copy the mHost(Activity) to retainedChildFragmentManager
+                        Field mHostField = Fragment.class.getDeclaredField("mHost");
+                        mHostField.setAccessible(true);
+                        mHostField.set(f, currentHost);
+                    } catch (Exception e) {
+                        logger.warn(e.getMessage(), e);
+                    }
+                    if (f.getChildFragmentManager() != null) {
+                        refreshHosts(f.getChildFragmentManager());
+                    }
+                }
             }
         }
 
@@ -304,6 +333,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         @Override
         public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
             super.onViewReady(view, savedInstanceState, reason);
+            canCommitFragmentTransaction = true;
             if (reason.isFirstTime()) {
                 firstTimeRun = true;
             }
