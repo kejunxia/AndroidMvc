@@ -1,3 +1,6 @@
+Version:1.5.2
+Fix bug to ensure all fragments are associated with correct activity
+
 Version:1.5.1
 Add convenient method for MvcActivity post v2v events
 
