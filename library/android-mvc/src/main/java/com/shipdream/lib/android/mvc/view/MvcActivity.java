@@ -164,6 +164,26 @@ public abstract class MvcActivity extends AppCompatActivity {
          */
         private FragmentManager retainedChildFragmentManager;
         private FragmentHostCallback currentHost;
+        private Class fragmentImplClass;
+        private Field mHostField;
+
+        {
+            try {
+                fragmentImplClass = Class.forName("android.support.v4.app.FragmentManagerImpl");
+                mHostField = fragmentImplClass.getDeclaredField("mHost");
+                mHostField.setAccessible(true);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException("FragmentManagerImpl is renamed due to the " +
+                        "change of Android SDK, this workaround doesn't work any more. " +
+                        "See the issue at " +
+                        "https://code.google.com/p/android/issues/detail?id=74222", e);
+            } catch (NoSuchFieldException e) {
+                throw new RuntimeException("FragmentManagerImpl.mHost is found due to the " +
+                        "change of Android SDK, this workaround doesn't work any more. " +
+                        "See the issue at " +
+                        "https://code.google.com/p/android/issues/detail?id=74222", e);
+            }
+        }
 
         /**
          * Get child fragment manager with android support lib rev20/rev21 which has a the
@@ -191,20 +211,17 @@ public abstract class MvcActivity extends AppCompatActivity {
                 //created fragment
                 try {
                     //Copy the mHost(Activity) to retainedChildFragmentManager
-                    Class fragmentImplClass = Class.forName("android.support.v4.app.FragmentManagerImpl");
-                    Field mHostField = fragmentImplClass.getDeclaredField("mHost");
-                    mHostField.setAccessible(true);
                     currentHost = (FragmentHostCallback) mHostField.get(getFragmentManager());
 
                     Field childFMField = Fragment.class.getDeclaredField("mChildFragmentManager");
                     childFMField.setAccessible(true);
                     childFMField.set(this, retainedChildFragmentManager);
+
+                    refreshHosts(getFragmentManager());
                 } catch (Exception e) {
                     logger.warn(e.getMessage(), e);
                 }
-
                 //Refresh children fragment's hosts
-                refreshHosts(getChildFragmentManager());
             } else {
                 //If the child fragment manager has not been retained yet, let it hold the internal
                 //child fragment manager as early as possible. This can prevent child fragment
@@ -217,22 +234,34 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        private void refreshHosts(FragmentManager fragmentManager) {
+        private void refreshHosts(FragmentManager fragmentManager) throws IllegalAccessException {
+            if (fragmentManager != null) {
+                replaceFragmentManagerHost(fragmentManager);
+            }
+
             List<Fragment> frags = fragmentManager.getFragments();
             if (frags != null) {
                 for (Fragment f : frags) {
-                    try {
-                        //Copy the mHost(Activity) to retainedChildFragmentManager
-                        Field mHostField = Fragment.class.getDeclaredField("mHost");
-                        mHostField.setAccessible(true);
-                        mHostField.set(f, currentHost);
-                    } catch (Exception e) {
-                        logger.warn(e.getMessage(), e);
-                    }
-                    if (f.getChildFragmentManager() != null) {
-                        refreshHosts(f.getChildFragmentManager());
+                    if (f != null) {
+                        try {
+                            //Copy the mHost(Activity) to retainedChildFragmentManager
+                            Field mHostField = Fragment.class.getDeclaredField("mHost");
+                            mHostField.setAccessible(true);
+                            mHostField.set(f, currentHost);
+                        } catch (Exception e) {
+                            logger.warn(e.getMessage(), e);
+                        }
+                        if (f.getChildFragmentManager() != null) {
+                            refreshHosts(f.getChildFragmentManager());
+                        }
                     }
                 }
+            }
+        }
+
+        private void replaceFragmentManagerHost(FragmentManager fragmentManager) throws IllegalAccessException {
+            if (currentHost != null) {
+                mHostField.set(fragmentManager, currentHost);
             }
         }
 
