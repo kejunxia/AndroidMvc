@@ -22,12 +22,12 @@ package com.shipdream.lib.poke;
 public abstract class ImplClassLocator {
     /**
      * Locate implementation class of the given contract class.
-     * @param contract
+     * @param classType
      * @param <T>
      * @param <S>
      * @return
      */
-    public abstract <T, S extends T> Class<S> locateImpl(Class<T> contract) throws ImplClassNotFoundException;
+    public abstract <T, S extends T> Class<S> locateImpl(Class<T> classType) throws ImplClassNotFoundException;
 
     /**
      * Define the {@link ScopeCache} for the injectable contract located by this

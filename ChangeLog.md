@@ -1,3 +1,6 @@
+Version:1.5.3
+MvcGraph able to inject concrete class with a public constructor
+
 Version:1.5.2
 Fix bug to ensure all fragments are associated with correct activity
 

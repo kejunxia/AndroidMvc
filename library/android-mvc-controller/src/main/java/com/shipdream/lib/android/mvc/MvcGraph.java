@@ -66,9 +66,12 @@ import javax.inject.Singleton;
  * Priority of finding implementation of contract is by<br>
  * <ol>
  * <li>Registered implementation by {@link #register(Component)}</li>
- * <li>General class name mapping strategy. Implementation for interface a.b.c.SomeContract
+ * <li>When the injecting type is an interface: Implementation for interface a.b.c.SomeContract
  * should be named as a.b.c.internal.SomeContractImpl. Interface: a.b.c.SomeContract -->
  * a.b.c.<b>internal</b>.SomeContract<b>Impl</b></li>
+ * <li>When the injecting type is a concrete class type with empty constructor: implementation is
+ * itself. Therefore a new instance of itself will be created for the injection.</li>
+ * <li>Otherwise, errors will occur</li>
  * </ol>
  * <p/>
  * As described above, explicit implementation can be registered by {@link #register(Component)}.
@@ -508,7 +511,14 @@ public class MvcGraph {
                 provider = providers.get(type);
                 if (provider == null) {
                     try {
-                        Class<? extends T> impClass = defaultImplClassLocator.locateImpl(type);
+                        Class<? extends T> impClass;
+                        if (type.isInterface()) {
+                            impClass = defaultImplClassLocator.locateImpl(type);
+                        } else {
+                            //The type is a class then it's a construable by itself.
+                            impClass = type;
+                        }
+
                         provider = new MvcProvider<>(mvcGraph.stateManagedObjects, type, impClass);
                         provider.setScopeCache(defaultImplClassLocator.getScopeCache());
                         providers.put(type, provider);

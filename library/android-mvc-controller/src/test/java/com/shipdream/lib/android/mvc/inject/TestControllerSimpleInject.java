@@ -21,14 +21,13 @@ import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.LifeCycle
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.MissingImplController;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.poke.Component;
-import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -131,6 +130,30 @@ public class TestControllerSimpleInject extends BaseTestCases {
         graph.release(testView);
         verify(lifeCycleProxy, times(1)).disposeCalled();
     }
+
+
+    public static class Car {
+
+    }
+
+    static class Road {
+        @Inject
+        private Car car;
+    }
+
+    @Test
+    public void should_be_able_to_inject_concrete_class() throws Exception {
+        MvcGraph graph = new MvcGraph(new BaseControllerDependencies());
+
+        Road road = new Road();
+
+        Assert.assertNull(road.car);
+
+        graph.inject(road);
+
+        Assert.assertNotNull(road.car);
+    }
+
 
     public static class LifeCycleTestControllerComponent extends Component {
         private LifeCycleTestController.Proxy proxy;
