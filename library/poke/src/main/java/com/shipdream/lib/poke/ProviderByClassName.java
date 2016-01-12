@@ -19,6 +19,9 @@ package com.shipdream.lib.poke;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * This provider uses default/empty constructor by provided class name to get dependencies. So
  * make sure the implementation has default public constructor
@@ -49,10 +52,16 @@ public class ProviderByClassName<T> extends Provider {
     @Override
     public Object createInstance() throws ProvideException {
         try {
-            return clazz.newInstance();
+            Constructor constructor = clazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor.newInstance();
         } catch (InstantiationException e) {
             throwProvideException(e);
         } catch (IllegalAccessException e) {
+            throwProvideException(e);
+        } catch (NoSuchMethodException e) {
+            throwProvideException(e);
+        } catch (InvocationTargetException e) {
             throwProvideException(e);
         }
 
@@ -62,7 +71,7 @@ public class ProviderByClassName<T> extends Provider {
 
     private void throwProvideException(Exception e) throws ProvideException {
         throw new ProvideException(String.format("Failed to provide class - %s. Make sure %s exist " +
-                "and with a PUBLIC default constructor.", clazz.getName(), implClassName), e);
+                "and with a default empty constructor.", clazz.getName(), implClassName), e);
     }
 
 }
