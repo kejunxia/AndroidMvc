@@ -87,7 +87,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
     }
 
-    void performSuperBackKeyPressed () {
+    void performSuperBackKeyPressed() {
         super.onBackPressed();
     }
 
@@ -120,12 +120,13 @@ public abstract class MvcActivity extends AppCompatActivity {
      * to talk to view2, instead of sending V2V events, view1 can send a command to a controller and
      * that controller will fire an C2VEvent that will be received by view2. In this way, more
      * business logic can be wrapped into controllers rather than exposed to view1.
-     *
+     * <p/>
      * <p>However, it's not absolute. For example, when routing intent received by Activities to
      * Fragments, EventBusV2V is a handy solution. Note that the AndroidMvc framework is a single
      * Activity design and it manages views on fragment level and fragments don't have
      * onNewIntent(Intent intent) method. When a fragment needs to handle an intent, use eventBusV2V
      * to route the intent to fragments from the main activity.</p>
+     *
      * @param event The v2v event
      */
     protected void postEventV2V(BaseEventV2V event) {
@@ -134,6 +135,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
     /**
      * Add callback so that onViewReady will be delay to call after all instance state are restored
+     *
      * @param runnable The delayed onViewReady callbacks
      */
     void addPendingOnViewReadyActions(Runnable runnable) {
@@ -349,13 +351,9 @@ public abstract class MvcActivity extends AppCompatActivity {
 
             if (savedInstanceState != null) {
                 notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
-
-                Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
-                long ts = System.currentTimeMillis();
-                DefaultStateKeeperHolder.restoreStateOfAllControllers(mvcOutState);
-                logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
             }
         }
+
 
         private boolean firstTimeRun = false;
 
@@ -372,12 +370,19 @@ public abstract class MvcActivity extends AppCompatActivity {
         public void onViewStateRestored(Bundle savedInstanceState) {
             super.onViewStateRestored(savedInstanceState);
 
-            if (savedInstanceState != null && pendingOnViewReadyActions != null) {
-                int size = pendingOnViewReadyActions.size();
-                for (int i = 0; i < size; i++) {
-                    pendingOnViewReadyActions.get(i).run();
+            if (savedInstanceState != null) {
+                Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
+                long ts = System.currentTimeMillis();
+                DefaultStateKeeperHolder.restoreStateOfAllControllers(mvcOutState);
+                logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
+
+                if (pendingOnViewReadyActions != null) {
+                    int size = pendingOnViewReadyActions.size();
+                    for (int i = 0; i < size; i++) {
+                        pendingOnViewReadyActions.get(i).run();
+                    }
+                    pendingOnViewReadyActions.clear();
                 }
-                pendingOnViewReadyActions.clear();
             }
         }
 
@@ -387,7 +392,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          * obtained by {@link #getNavigationController()} or even be injected again. This callback is
          * equivalent to override {@link #onViewReady(View, Bundle, Reason)} and perform action when
          * reason of view ready of this {@link DelegateFragment} is {@link Reason#isFirstTime()}.
-         *
+         * <p/>
          * <p>
          * Note this callback will NOT be invoked on restoration after the app is killed by the OS from background.
          * </p>
@@ -449,7 +454,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     for (int i = 0; i < size; i++) {
                         MvcFragment frag = (MvcFragment) frags.get(i);
                         if (frag != null) {
-                            if(frag.isAdded() && frag instanceof MvcFragment) {
+                            if (frag.isAdded() && frag instanceof MvcFragment) {
                                 frag.isStateManagedByRootDelegateFragment = selfManaged;
                             }
                             notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag, selfManaged);
@@ -461,6 +466,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         /**
          * Handle the forward navigation event call back
+         *
          * @param event The forward navigation event
          */
         protected void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
@@ -513,7 +519,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     String tagPopTo = clearTopToLocation == null ? null : getFragmentTag(clearTopToLocation.getLocationId());
 
                     //clear back stack fragments
-                    if(tagPopTo == null) {
+                    if (tagPopTo == null) {
                         //Clear all, must use flag FragmentManager.POP_BACK_STACK_INCLUSIVE
                         fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                     } else {
@@ -545,6 +551,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         /**
          * Handle the backward navigation event call back
+         *
          * @param event The backward navigation event
          */
         protected void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
@@ -584,7 +591,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     if (subFragments != null && !subFragments.isEmpty()) {
                         for (Fragment fragment : subFragments) {
                             if (fragment instanceof MvcFragment) {
-                                ((MvcFragment)fragment).aboutToPopOut = true;
+                                ((MvcFragment) fragment).aboutToPopOut = true;
                             }
                         }
                     }
@@ -619,7 +626,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
                 if (event.isFastRewind()) {
                     if (currentLoc.getPreviousLocation() == null) {
-                        if(fm.getBackStackEntryCount() <= 1) {
+                        if (fm.getBackStackEntryCount() <= 1) {
                             //Has reached bottom. Does nothing in this case
                             return;
                         }
