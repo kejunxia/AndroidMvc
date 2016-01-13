@@ -348,10 +348,6 @@ public abstract class MvcActivity extends AppCompatActivity {
             setHasOptionsMenu(true);
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.delegateFragment = this;
-
-            if (savedInstanceState != null) {
-                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
-            }
         }
 
 
@@ -363,6 +359,10 @@ public abstract class MvcActivity extends AppCompatActivity {
             canCommitFragmentTransaction = true;
             if (reason.isFirstTime()) {
                 firstTimeRun = true;
+            }
+
+            if (savedInstanceState != null) {
+                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
             }
         }
 
