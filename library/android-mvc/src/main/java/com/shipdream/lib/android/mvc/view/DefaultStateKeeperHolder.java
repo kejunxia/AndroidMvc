@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.StateManaged;
-import com.shipdream.lib.android.mvc.controller.BaseController;
 
 import java.lang.reflect.Field;
 
@@ -35,7 +34,7 @@ class DefaultStateKeeperHolder {
         stateKeeper.bundle = outState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (BaseController.class.isAssignableFrom(field.getType())) {
+            if (StateManaged.class.isAssignableFrom(field.getType())) {
                 StateManaged stateManaged = null;
                 try {
                     field.setAccessible(true);
@@ -53,7 +52,7 @@ class DefaultStateKeeperHolder {
         stateKeeper.bundle = savedState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (BaseController.class.isAssignableFrom(field.getType())) {
+            if (StateManaged.class.isAssignableFrom(field.getType())) {
                 try {
                     field.setAccessible(true);
                     StateManaged stateManaged = (StateManaged) field.get(object);

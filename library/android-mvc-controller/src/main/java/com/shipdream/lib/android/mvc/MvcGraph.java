@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc;
 
+import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.AsyncTask;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
@@ -545,19 +546,23 @@ public class MvcGraph {
         public T createInstance() throws ProvideException {
             final T newInstance = (T) super.createInstance();
 
-            if (newInstance instanceof BaseControllerImpl) {
-                registerOnInjectedListener(new OnInjectedListener() {
-                    @Override
-                    public void onInjected(Object object) {
-                        BaseControllerImpl controller = (BaseControllerImpl) object;
-                        controller.onConstruct();
-                        unregisterOnInjectedListener(this);
-
-                        logger.trace("++Controller injected - '{}'.",
-                                object.getClass().getSimpleName());
+            registerOnInjectedListener(new OnInjectedListener() {
+                @Override
+                public void onInjected(Object object) {
+                    if (object instanceof Constructable) {
+                        Constructable constructable = (Constructable) object;
+                        constructable.onConstruct();
                     }
-                });
-            }
+                    unregisterOnInjectedListener(this);
+
+                    if (logger.isTraceEnabled()) {
+                        if (object instanceof BaseController) {
+                            logger.trace("++Controller injected - '{}'.",
+                                    object.getClass().getSimpleName());
+                        }
+                    }
+                }
+            });
 
             if (newInstance instanceof StateManaged) {
                 stateManagedObjects.add((StateManaged) newInstance);

@@ -33,6 +33,8 @@ public class InjectionTestActivity extends MvcActivity {
                 return FragmentB.class;
             case MvcTestActivityNavigation.Loc.C:
                 return FragmentC.class;
+            case MvcTestActivityNavigation.Loc.D:
+                return FragmentD.class;
             default:
                 return null;
         }
