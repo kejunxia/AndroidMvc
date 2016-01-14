@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.view.nav;
 
 import android.os.Bundle;
+import android.view.View;
 
 import javax.inject.Inject;
 
@@ -32,6 +33,11 @@ public class NavFragmentA extends NavFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
+        super.onViewReady(view, savedInstanceState, reason);
     }
 
     @Override

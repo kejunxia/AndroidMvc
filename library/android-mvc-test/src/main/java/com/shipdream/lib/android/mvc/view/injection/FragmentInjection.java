@@ -90,13 +90,14 @@ public abstract class FragmentInjection extends MvcFragment {
         });
 
         setUpData();
+
+        toolbar.setTitle("Loc:" + printHistory());
     }
 
     @Override
     public void onResume() {
         super.onResume();
         getLifeCycleMonitor().onResume();
-        toolbar.setTitle("Loc:" + printHistory());
     }
 
     private String printHistory() {
