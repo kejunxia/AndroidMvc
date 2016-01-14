@@ -105,23 +105,4 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
         graph.inject(family, MyInject.class);
     }
 
-    static class Fish implements Pet {
-        private Fish() {
-        }
-    }
-
-    @Test(expected = ProvideException.class)
-    public void shouldDetectProvideExceptionWithClassWithInaccessibleConstructor()
-            throws ProviderConflictException, CircularDependenciesException, ProviderMissingException, ProvideException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Pet.class, Fish.class);
-
-        class Family {
-            @MyInject
-            private Pet pet;
-        }
-
-        Family family = new Family();
-        graph.inject(family, MyInject.class);
-    }
 }
