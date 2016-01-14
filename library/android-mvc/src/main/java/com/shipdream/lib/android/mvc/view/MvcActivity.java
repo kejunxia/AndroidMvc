@@ -376,6 +376,8 @@ public abstract class MvcActivity extends AppCompatActivity {
                 DefaultStateKeeperHolder.restoreStateOfAllControllers(mvcOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
+                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, false);
+
                 if (pendingOnViewReadyActions != null) {
                     int size = pendingOnViewReadyActions.size();
                     for (int i = 0; i < size; i++) {
