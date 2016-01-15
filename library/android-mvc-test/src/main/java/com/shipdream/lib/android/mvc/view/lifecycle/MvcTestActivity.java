@@ -16,9 +16,6 @@
 
 package com.shipdream.lib.android.mvc.view.lifecycle;
 
-import android.os.Bundle;
-import android.view.View;
-
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
@@ -35,28 +32,9 @@ public class MvcTestActivity extends MvcActivity {
     }
 
     public static class HomeFragment extends DelegateFragment {
-        private boolean onViewStateRestoredCalled = false;
-
         @Override
         protected void onStartUp() {
             getNavigationController().navigate(this).to("TestFragment", null);
-        }
-
-        @Override
-        public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
-            super.onViewReady(view, savedInstanceState, reason);
-
-            if (reason.isRestored()) {
-                if (!onViewStateRestoredCalled) {
-                    throw new IllegalStateException("When activity is restoring, onViewReady must be called after onViewStateRestored to guarantee all state of this fragment is ready to use.");
-                }
-            }
-        }
-
-        @Override
-        public void onViewStateRestored(Bundle savedInstanceState) {
-            onViewStateRestoredCalled = true;
-            super.onViewStateRestored(savedInstanceState);
         }
     }
 
