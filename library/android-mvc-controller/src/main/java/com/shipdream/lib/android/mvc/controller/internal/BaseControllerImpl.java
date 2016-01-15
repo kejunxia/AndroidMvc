@@ -75,13 +75,14 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     }
 
     private MODEL createModelInstance() {
-        if (getModelClassType() == null) {
+        Class<MODEL> type = getStateType();
+        if (type == null) {
             return null;
         } else {
             try {
-                return new ReflectUtils.newObjectByType<>(getModelClassType()).newInstance();
+                return new ReflectUtils.newObjectByType<>(type).newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Fail to instantiate model by its default constructor");
+                throw new RuntimeException("Fail to instantiate state by its default constructor");
             }
         }
     }
