@@ -63,10 +63,10 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
         onView(withId(R.id.textA)).check(matches(withText("2:B")));
 
         pressHome();
-        waitTest(2000);
+        waitTest(1000);
 
         bringBack();
-        waitTest(2000);
+        waitTest(1000);
 
         onView(withId(R.id.fragment_injection_root)).perform(click());
         onView(withId(R.id.textA)).check(matches(withText("3:C")));
