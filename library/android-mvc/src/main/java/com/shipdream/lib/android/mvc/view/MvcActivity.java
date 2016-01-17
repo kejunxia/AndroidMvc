@@ -350,11 +350,10 @@ public abstract class MvcActivity extends AppCompatActivity {
             activity.delegateFragment = this;
         }
 
-        public void onViewCreated(final View view, final Bundle savedInstanceState) {
+        void onPreViewReady(final View view, final Bundle savedInstanceState) {
             if (savedInstanceState != null) {
                 notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
             }
-            super.onViewCreated(view, savedInstanceState);
         }
 
         private boolean firstTimeRun = false;

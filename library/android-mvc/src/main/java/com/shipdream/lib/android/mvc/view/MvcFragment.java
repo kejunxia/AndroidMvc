@@ -233,6 +233,12 @@ public abstract class MvcFragment extends Fragment {
     }
 
     /**
+     * Called when view is created by before {@link #onViewReady(View, Bundle, Reason)} is called
+     */
+    void onPreViewReady(View view, Bundle savedInstanceState) {
+    }
+
+    /**
      * This Android lifecycle callback is sealed. Use {@link #onViewReady(View, Bundle, Reason)}
      * instead which provides a flag to indicate if the creation of the view is caused by rotation.
      *
@@ -241,9 +247,11 @@ public abstract class MvcFragment extends Fragment {
      *                           otherwise the state to restore and recreate the view
      */
     @Override
-    public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    final public void onViewCreated(final View view, final Bundle savedInstanceState) {
         fragmentComesBackFromBackground = false;
         eventRegister.registerEventBuses();
+
+        onPreViewReady(view, savedInstanceState);
 
         final boolean restoring = savedInstanceState != null;
         if (restoring && isStateManagedByRootDelegateFragment) {

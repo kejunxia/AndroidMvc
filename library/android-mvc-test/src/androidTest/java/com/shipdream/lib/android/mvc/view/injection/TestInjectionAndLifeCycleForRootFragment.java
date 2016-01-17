@@ -63,7 +63,7 @@ public class TestInjectionAndLifeCycleForRootFragment extends BaseTestCase<Injec
         bringBack();
         waitTest();
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\nOK\nAdded by FragmentA")));
-        onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
+        onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\nAdded by FragmentA")));
     }
 
 }
