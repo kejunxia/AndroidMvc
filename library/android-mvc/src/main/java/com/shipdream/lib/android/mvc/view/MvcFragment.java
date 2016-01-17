@@ -25,8 +25,6 @@ import android.view.ViewGroup;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
@@ -146,7 +144,6 @@ public abstract class MvcFragment extends Fragment {
     private boolean dependenciesInjected = false;
 
     boolean isStateManagedByRootDelegateFragment = false;
-    boolean selfRelease = true;
 
     /**
      * @return orientation before last orientation change.
@@ -172,19 +169,17 @@ public abstract class MvcFragment extends Fragment {
      */
     protected abstract int getLayoutResId();
 
-    void injectDependencies() {
+    private void injectDependencies() {
         if (!dependenciesInjected) {
             AndroidMvc.graph().inject(this);
             dependenciesInjected = true;
         }
     }
 
-    void releaseDependencies() {
+    private void releaseDependencies() {
         if (dependenciesInjected) {
             AndroidMvc.graph().release(this);
             dependenciesInjected = false;
-
-            LoggerFactory.getLogger(getClass()).trace("Fragment release: " + getClass().getSimpleName());
         }
     }
 
@@ -246,7 +241,7 @@ public abstract class MvcFragment extends Fragment {
      *                           otherwise the state to restore and recreate the view
      */
     @Override
-    final public void onViewCreated(final View view, final Bundle savedInstanceState) {
+    public void onViewCreated(final View view, final Bundle savedInstanceState) {
         fragmentComesBackFromBackground = false;
         eventRegister.registerEventBuses();
 
@@ -256,7 +251,6 @@ public abstract class MvcFragment extends Fragment {
                 @Override
                 public void run() {
                     doOnViewCreatedCallBack(view, savedInstanceState, restoring);
-                    isStateManagedByRootDelegateFragment = false;
                 }
             });
         } else {
@@ -396,9 +390,7 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (selfRelease) {
-            releaseDependencies();
-        }
+        releaseDependencies();
         eventRegister.onDestroy();
         eventRegister = null;
     }

@@ -348,8 +348,19 @@ public abstract class MvcActivity extends AppCompatActivity {
             setHasOptionsMenu(true);
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.delegateFragment = this;
+
+//            if (savedInstanceState != null) {
+//                //restoring, ensure this root fragment wait state restored before onViewReady is called
+//                isStateManagedByRootDelegateFragment = true;
+//            }
         }
 
+//        public void onViewCreated(final View view, final Bundle savedInstanceState) {
+//            if (savedInstanceState != null) {
+//                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
+//            }
+//            super.onViewCreated(view, savedInstanceState);
+//        }
 
         private boolean firstTimeRun = false;
 
@@ -439,6 +450,8 @@ public abstract class MvcActivity extends AppCompatActivity {
             DefaultStateKeeperHolder.saveStateOfAllControllers(mvcOutState);
             outState.putBundle(MVC_STATE_BUNDLE_KEY, mvcOutState);
             logger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
+
+            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
         }
 
         /**
@@ -502,7 +515,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                 final MvcFragment fragment;
                 try {
                     fragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
-                    fragment.injectDependencies();
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to instantiate fragment: " + fragmentClass.getName(), e);
                 }
@@ -598,29 +610,12 @@ public abstract class MvcActivity extends AppCompatActivity {
                         }
                     }
 
-                    MvcFragment lastFrag = null;
-                    if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
-                        lastFrag = (MvcFragment) fm.findFragmentByTag(
-                                getFragmentTag(event.getLastValue().getLocationId()));
-                    }
-                    final MvcFragment finalLastFrag = lastFrag;
-
-                    if (finalLastFrag != null) {
-                        finalLastFrag.selfRelease = false;
-                    }
-
                     currentFrag.registerOnViewReadyListener(new Runnable() {
                         @Override
                         public void run() {
                             if (event.getNavigator() != null) {
                                 __MvcControllerHelper.destroyNavigator(event.getNavigator());
                             }
-
-                            if (finalLastFrag != null) {
-                                finalLastFrag.releaseDependencies();
-                                finalLastFrag.selfRelease = true;
-                            }
-
                             currentFrag.unregisterOnViewReadyListener(this);
                         }
                     });

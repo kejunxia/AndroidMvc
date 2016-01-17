@@ -43,7 +43,7 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
     }
 
     @Test
-    public void should_manage_state_of_nested_stateManagedObjects() throws Throwable {
+    public void test_should_manage_state_of_nested_stateManagedObjects() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "testLifeCyclesWhenKeepActivities not tested as Don't Keep Activities setting is disabled");
             return;
