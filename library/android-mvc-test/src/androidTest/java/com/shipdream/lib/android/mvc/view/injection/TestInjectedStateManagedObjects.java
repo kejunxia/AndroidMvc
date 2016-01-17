@@ -19,7 +19,6 @@ package com.shipdream.lib.android.mvc.view.injection;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
-import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
@@ -30,10 +29,10 @@ import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
-public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestActivity> {
+public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestActivityStateManagedObjects> {
 
     public TestInjectedStateManagedObjects() {
-        super(InjectionTestActivity.class);
+        super(InjectionTestActivityStateManagedObjects.class);
     }
 
     @Override
@@ -48,9 +47,6 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
             Log.i(getClass().getSimpleName(), "testLifeCyclesWhenKeepActivities not tested as Don't Keep Activities setting is disabled");
             return;
         }
-
-        navigationController.navigate(this).to(MvcTestActivityNavigation.Loc.D);
-        waitTest();
 
         onView(withId(R.id.textA)).check(matches(withText("")));
 

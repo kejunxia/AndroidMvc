@@ -212,6 +212,10 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
                 LifeCycle.onPoppedOutToFront);
 
         lifeCycleValidatorC.expect();
+
+        navigationController.navigate(this).back(null);
+        navigationController.navigate(this).back();
+        waitTest(1000);
     }
 
     @Test

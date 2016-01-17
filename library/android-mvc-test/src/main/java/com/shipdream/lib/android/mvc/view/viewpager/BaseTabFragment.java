@@ -8,7 +8,7 @@ import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
 public abstract class BaseTabFragment extends MvcFragment {
     protected abstract LifeCycleMonitor getLifeCycleMonitor();
-    
+
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, MvcFragment.Reason reason) {
         getLifeCycleMonitor().onCreateView(view, savedInstanceState);
