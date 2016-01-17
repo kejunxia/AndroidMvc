@@ -348,19 +348,14 @@ public abstract class MvcActivity extends AppCompatActivity {
             setHasOptionsMenu(true);
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.delegateFragment = this;
-
-//            if (savedInstanceState != null) {
-//                //restoring, ensure this root fragment wait state restored before onViewReady is called
-//                isStateManagedByRootDelegateFragment = true;
-//            }
         }
 
-//        public void onViewCreated(final View view, final Bundle savedInstanceState) {
-//            if (savedInstanceState != null) {
-//                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
-//            }
-//            super.onViewCreated(view, savedInstanceState);
-//        }
+        public void onViewCreated(final View view, final Bundle savedInstanceState) {
+            if (savedInstanceState != null) {
+                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
+            }
+            super.onViewCreated(view, savedInstanceState);
+        }
 
         private boolean firstTimeRun = false;
 
@@ -370,10 +365,6 @@ public abstract class MvcActivity extends AppCompatActivity {
             canCommitFragmentTransaction = true;
             if (reason.isFirstTime()) {
                 firstTimeRun = true;
-            }
-
-            if (savedInstanceState != null) {
-                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
             }
         }
 
