@@ -17,8 +17,7 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
 
-import com.shipdream.lib.android.mvc.Constructable;
-import com.shipdream.lib.android.mvc.Disposable;
+import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.BaseController;
@@ -27,7 +26,6 @@ import com.shipdream.lib.android.mvc.event.BaseEventC2V;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
-import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +37,7 @@ import javax.inject.Inject;
 /**
  * Base controller implementation.
  */
-public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>,
-        StateManaged<MODEL>, Constructable, Disposable {
+public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implements BaseController<MODEL> {
     interface AndroidPoster {
         void post(EventBus eventBusC2V, BaseEventC2V eventC2V);
     }
@@ -59,8 +56,6 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     @Inject
     ExecutorService executorService;
 
-    private MODEL model;
-
     /**
      * Called when the controller is constructed. Note that it could be called either when the
      * controller is instantiated for the first time or restored by views.
@@ -70,21 +65,8 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      * {@link #restoreState(Object)} will replace the model created here.</p>
      */
     public void onConstruct() {
-        model = createModelInstance();
+        super.onConstruct();
         eventBusC2C.register(this);
-    }
-
-    private MODEL createModelInstance() {
-        Class<MODEL> type = getStateType();
-        if (type == null) {
-            return null;
-        } else {
-            try {
-                return new ReflectUtils.newObjectByType<>(type).newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException("Fail to instantiate state by its default constructor");
-            }
-        }
     }
 
     /**
@@ -93,8 +75,13 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      */
     @Override
     public void onDisposed() {
+        super.onDisposed();
         eventBusC2C.unregister(this);
-        logger.trace("-Event bus unregistered for Controller - '{}'.", getClass().getName());
+    }
+
+    @Override
+    public void bindModel(Object sender, MODEL model) {
+        super.bindState(model);
     }
 
     /**
@@ -104,19 +91,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      */
     @Override
     public MODEL getModel() {
-        return model;
-    }
-
-    /**
-     * Method of {@link StateManaged} that allows {@link StateKeeper} to save and get the state of
-     * which is also the model the controller.
-     *
-     * @return Null if the controller doesn't need to get its state saved and restored
-     * automatically. Otherwise same as {@link #getModel()}
-     */
-    @Override
-    final public MODEL getState() {
-        return model;
+        return getState();
     }
 
     /**
@@ -162,14 +137,6 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      * Called when the controller is restored after {@link #restoreState(Object)} is called.
      */
     public void onRestored() {
-    }
-
-    @Override
-    public void bindModel(Object sender, MODEL model) {
-        if (model == null) {
-            throw new IllegalArgumentException("Can't bind a null model to a controller explicitly.");
-        }
-        this.model = model;
     }
 
     /**

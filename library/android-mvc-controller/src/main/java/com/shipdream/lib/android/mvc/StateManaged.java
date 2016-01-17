@@ -17,11 +17,16 @@
 package com.shipdream.lib.android.mvc;
 
 /**
- * Indicates the object implemented this interface needs to get its state managed. Its state could
- * be saved and restored by {@link StateKeeper}
- * @param <T>
+ * Indicates the object having managed state that will be saved and restored by {@link StateKeeper}
+ * @param <T> The type defining the state of this object
  */
 public interface StateManaged <T> {
+    /**
+     * Binds the state to this object
+     * @param state The state to bind
+     */
+    void bindState(T state);
+
     /**
      * @return The class type of the state
      */

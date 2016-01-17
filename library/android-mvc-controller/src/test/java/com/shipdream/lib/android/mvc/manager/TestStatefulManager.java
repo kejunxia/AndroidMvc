@@ -1,9 +1,14 @@
 package com.shipdream.lib.android.mvc.manager;
 
+import com.shipdream.lib.android.mvc.MvcBean;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 public class TestStatefulManager {
+    abstract class AbstractStatefulManager<T> extends MvcBean<T> {
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_when_bind_null_to_stateful_manager() {
         AbstractStatefulManager manager = new AbstractStatefulManager() {
