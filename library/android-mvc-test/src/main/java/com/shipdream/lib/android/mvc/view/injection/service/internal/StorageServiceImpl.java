@@ -1,29 +1,15 @@
 package com.shipdream.lib.android.mvc.view.injection.service.internal;
 
-import com.shipdream.lib.android.mvc.Constructable;
-import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
 
 /**
  * Created by kejun on 1/13/2016.
  */
-public class StorageServiceImpl implements StorageService, StateManaged<StorageService.Storage>,
-        Constructable{
-    private Storage storage;
-
+public class StorageServiceImpl extends MvcBean<StorageService.Storage> implements StorageService{
     @Override
-    public Class<Storage> getStateType() {
-        return Storage.class;
-    }
-
-    @Override
-    public Storage getState() {
-        return storage;
-    }
-
-    @Override
-    public void restoreState(Storage restoredState) {
-        this.storage = restoredState;
+    public Class<StorageService.Storage> getStateType() {
+        return StorageService.Storage.class;
     }
 
     @Override
@@ -36,8 +22,4 @@ public class StorageServiceImpl implements StorageService, StateManaged<StorageS
         getState().setContent(content);
     }
 
-    @Override
-    public void onConstruct() {
-        storage = new Storage();
-    }
 }
