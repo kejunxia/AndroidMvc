@@ -22,12 +22,25 @@ package com.shipdream.lib.android.mvc.event;
 public abstract class BaseEvent {
     private final Object sender;
 
+    /**
+     * Construct an event
+     * @param sender Who initially sent the request that triggers this event
+     */
     public BaseEvent(Object sender) {
         this.sender = sender;
     }
 
+    /**
+     * Gets the sender that tracks who initially sends a command leading to trigger this event. It's
+     * useful when the origin of the event is important. For example, in a login controller there is
+     * a login function - login(sender). It could be called by a button click operation or an
+     * automatic call on app start up. Then the event handler may needs to handle the successful
+     * login differently based on different login requesters when sender is useful to differentiate
+     * these scenarios.
+     *
+     * @return Who initially sent the request that triggers this event.
+     */
     public Object getSender(){
         return sender;
     }
-
 }

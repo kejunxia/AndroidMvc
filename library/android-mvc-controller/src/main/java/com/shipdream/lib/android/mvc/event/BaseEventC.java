@@ -20,6 +20,10 @@ package com.shipdream.lib.android.mvc.event;
  * Base event from controllers to controllers.
  */
 public abstract class BaseEventC extends BaseEvent{
+    /**
+     * Construct a controller event
+     * @param sender Who initially sent the request that triggers this event
+     */
     public BaseEventC(Object sender) {
         super(sender);
     }
