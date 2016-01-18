@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.event.bus.annotation;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
-import javax.inject.Qualifier;
+package com.shipdream.lib.android.mvc.event;
 
 /**
- * Indicates the annotated event bus is for communication from controllers to views. On Android
- * events through the event bus annotated by this annotation will be guaranteed to be received on
- * Android's UI thread automatically.
+ * Value change c2v event.
+ * @param <T> The type fo the value
  */
-@Qualifier
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-public @interface EventBusC2V {
+public class ValueChangeEventV<T> extends BaseEventV {
+    private final T lastValue;
+    private final T currentValue;
+
+    public ValueChangeEventV(Object sender, T lastValue, T currentValue) {
+        super(sender);
+        this.lastValue = lastValue;
+        this.currentValue = currentValue;
+    }
+
+    public T getLastValue(){
+        return lastValue;
+    }
+
+    public T getCurrentValue(){
+        return currentValue;
+    }
 }

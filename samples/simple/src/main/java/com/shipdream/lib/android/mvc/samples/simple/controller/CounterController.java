@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvc.samples.simple.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.samples.simple.model.CounterModel;
 
 /**
@@ -64,7 +64,7 @@ public interface CounterController extends BaseController<CounterModel> {
         /**
          * Event to notify views counter has been updated
          */
-        class OnCounterUpdated extends BaseEventC2V {
+        class OnCounterUpdated extends BaseEventV {
             private final int count;
             private final String countInEnglish;
             public OnCounterUpdated(Object sender, int count, String countInEnglish) {

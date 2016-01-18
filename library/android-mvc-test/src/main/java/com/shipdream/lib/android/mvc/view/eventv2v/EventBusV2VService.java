@@ -30,7 +30,7 @@ public class EventBusV2VService extends MvcService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        postEventV2V(new Events.OnFragmentTextChanged(this, "Updated By Service"));
+        postToViews(new Events.OnFragmentTextChanged(this, "Updated By Service"));
         return START_STICKY;
     }
 }

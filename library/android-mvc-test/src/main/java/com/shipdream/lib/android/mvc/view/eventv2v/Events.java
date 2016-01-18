@@ -1,9 +1,9 @@
 package com.shipdream.lib.android.mvc.view.eventv2v;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 public interface Events {
-    abstract class OnTextChanged extends BaseEventV2V {
+    abstract class OnTextChanged extends BaseEventV {
         private final String text;
         protected OnTextChanged(Object sender, String text) {
             super(sender);

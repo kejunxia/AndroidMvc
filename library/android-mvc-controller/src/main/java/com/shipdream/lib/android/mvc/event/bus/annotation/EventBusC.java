@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.event;
+package com.shipdream.lib.android.mvc.event.bus.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.inject.Qualifier;
 
 /**
- * Base event from controllers to controllers.
+ * Indicates the annotated event bus is for events to controllers. Events through the event bus
+ * annotated by this annotation will be received on the same thread as the caller who posts them.
  */
-public abstract class BaseEventC2C extends BaseEvent{
-    public BaseEventC2C(Object sender) {
-        super(sender);
-    }
+@Qualifier
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface EventBusC {
 }

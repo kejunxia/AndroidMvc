@@ -1,7 +1,7 @@
 package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
@@ -28,9 +28,9 @@ public class TestInjector {
 
     static class Comp extends Component {
         @Provides
-        @EventBusC2C
+        @EventBusC
         @Singleton
-        public EventBus providesIEventBusC2C() {
+        public EventBus providesIEventBusC() {
             return new EventBusImpl();
         }
     }

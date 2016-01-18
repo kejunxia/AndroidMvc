@@ -1,3 +1,6 @@
+Version:2.0.0
+Simplified event and event bus structure.
+
 Version:1.6.0
 Add manager layer in which shared logic by controllers is encapsulated in managers. Managers can send broadcast to controllers but not vise versa.
 

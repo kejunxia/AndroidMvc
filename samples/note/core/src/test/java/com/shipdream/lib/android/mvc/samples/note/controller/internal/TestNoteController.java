@@ -90,7 +90,7 @@ public class TestNoteController extends TestControllerBase<NoteController> {
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
 
         //act
         controllerToTest.toCreateNote();
@@ -141,7 +141,7 @@ public class TestNoteController extends TestControllerBase<NoteController> {
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
 
         Assert.assertFalse(controllerToTest.inSelectionMode());
 
@@ -168,7 +168,7 @@ public class TestNoteController extends TestControllerBase<NoteController> {
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
 
         Assert.assertFalse(controllerToTest.inSelectionMode());
 
@@ -193,7 +193,7 @@ public class TestNoteController extends TestControllerBase<NoteController> {
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
 
 
         Assert.assertFalse(controllerToTest.inSelectionMode());

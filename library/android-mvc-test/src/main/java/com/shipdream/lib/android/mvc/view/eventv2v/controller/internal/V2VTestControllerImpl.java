@@ -11,6 +11,6 @@ public class V2VTestControllerImpl extends BaseControllerImpl implements V2VTest
 
     @Override
     public void updateDialogButton(Object sender, String text) {
-        postC2VEvent(new EventC2V.OnButtonUpdated(sender, text));
+        postToViews(new EventC2V.OnButtonUpdated(sender, text));
     }
 }

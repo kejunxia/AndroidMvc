@@ -360,7 +360,7 @@ public class Navigator {
     private void go() {
         if (navigateEvent != null) {
 
-            navigationController.postC2VEvent(navigateEvent);
+            navigationController.postToViews(navigateEvent);
 
             if (navigateEvent instanceof NavigationController.EventC2V.OnLocationForward) {
                 String lastLocId = navigateEvent.getLastValue() == null ? null
@@ -410,7 +410,7 @@ public class Navigator {
     private void checkAppExit(Object sender) {
         NavLocation curLocation = navigationController.getModel().getCurrentLocation();
         if (curLocation == null) {
-            navigationController.postC2CEvent(new NavigationController.EventC2C.OnAppExit(sender));
+            navigationController.postToControllers(new NavigationController.EventC2C.OnAppExit(sender));
         }
     }
 

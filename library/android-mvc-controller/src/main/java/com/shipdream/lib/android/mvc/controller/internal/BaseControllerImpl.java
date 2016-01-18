@@ -21,11 +21,12 @@ import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.BaseController;
-import com.shipdream.lib.android.mvc.event.BaseEventC2C;
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventC;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
+import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,23 +36,26 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 /**
- * Base controller implementation.
+ * Base controller implementation. Controllers are responsible to manage the corresponding view. When
+ * multiple controllers have shared logic or data, break them out into a manager extending
+ * {@link BaseManagerImpl}. For example, a common  scenario is multiple controllers can share an
+ * AccountManager/LoginManager and monitor the account change events.
  */
 public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implements BaseController<MODEL> {
     interface AndroidPoster {
-        void post(EventBus eventBusC2V, BaseEventC2V eventC2V);
+        void post(EventBus eventBusV, BaseEventV eventV);
     }
 
     static AndroidPoster androidPoster;
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    @EventBusC2V
-    EventBus mEventBusC2V;
+    @EventBusV
+    EventBus eventBus2V;
 
     @Inject
-    @EventBusC2C
-    EventBus eventBusC2C;
+    @EventBusC
+    EventBus eventBus2C;
 
     @Inject
     ExecutorService executorService;
@@ -66,7 +70,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      */
     public void onConstruct() {
         super.onConstruct();
-        eventBusC2C.register(this);
+        eventBus2C.register(this);
     }
 
     /**
@@ -76,7 +80,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     @Override
     public void onDisposed() {
         super.onDisposed();
-        eventBusC2C.unregister(this);
+        eventBus2C.unregister(this);
     }
 
     @Override
@@ -147,17 +151,17 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * <li>Same thread of caller -- if on usual JVM</li>
      * </ul>
      *
-     * @param eventC2V Controller to View event to be broadcast
+     * @param event Controller to View event to be broadcast
      */
-    protected void postC2VEvent(final BaseEventC2V eventC2V) {
+    protected void postToViews(final BaseEventV event) {
         if (androidPoster != null) {
             //Run on android OS
-            androidPoster.post(mEventBusC2V, eventC2V);
+            androidPoster.post(eventBus2V, event);
         } else {
-            if (mEventBusC2V != null) {
-                mEventBusC2V.post(eventC2V);
+            if (eventBus2V != null) {
+                eventBus2V.post(event);
             } else {
-                logger.warn("Trying to post event {} to EventBusC2V which is null", eventC2V.getClass().getName());
+                logger.warn("Trying to post event {} to EventBusV which is null", event.getClass().getName());
             }
         }
     }
@@ -165,13 +169,13 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     /**
      * Help function to post events to other controllers
      *
-     * @param eventC2C Controller to Controller event to be broadcast
+     * @param event event to other controllers
      */
-    protected void postC2CEvent(final BaseEventC2C eventC2C) {
-        if (eventBusC2C != null) {
-            eventBusC2C.post(eventC2C);
+    protected void postToControllers(final BaseEventC event) {
+        if (eventBus2C != null) {
+            eventBus2C.post(event);
         } else {
-            logger.warn("Trying to post event {} to EventBusC2C which is null", eventC2C.getClass().getName());
+            logger.warn("Trying to post event {} to EventBusC which is null", event.getClass().getName());
         }
     }
 

@@ -23,8 +23,8 @@ import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.controller.internal.Navigator;
 import com.shipdream.lib.android.mvc.controller.internal.Preparer;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
@@ -429,21 +429,21 @@ public class MvcGraph {
     public abstract static class BaseDependencies {
         /**
          * Create a new instance of EventBus for events among controllers. This event bus will be
-         * injected into fields annotated by {@link EventBusC2C}.
+         * injected into fields annotated by {@link EventBusC}.
          *
          * @return The event bus
          */
-        protected EventBus createEventBusC2C() {
+        protected EventBus createEventBusC() {
             return new EventBusImpl();
         }
 
         /**
-         * Create a new instance of EventBus for events from controllers to views. This event bus
-         * will be injected into fields annotated by {@link EventBusC2V}.
+         * Create a new instance of EventBus for events posted to views. This event bus
+         * will be injected into fields annotated by {@link EventBusV}.
          *
          * @return The event bus
          */
-        protected EventBus createEventBusC2V() {
+        protected EventBus createEventBusV() {
             return new EventBusImpl();
         }
 
@@ -474,17 +474,17 @@ public class MvcGraph {
         }
 
         @Provides
-        @EventBusC2C
+        @EventBusC
         @Singleton
-        public EventBus providesIEventBusC2C() {
-            return baseDependencies.createEventBusC2C();
+        public EventBus providesIEventBusC() {
+            return baseDependencies.createEventBusC();
         }
 
         @Provides
-        @EventBusC2V
+        @EventBusV
         @Singleton
-        public EventBus providesIEventBusC2V() {
-            return baseDependencies.createEventBusC2V();
+        public EventBus providesIEventBusV() {
+            return baseDependencies.createEventBusV();
         }
 
         @Provides

@@ -30,7 +30,6 @@ import com.shipdream.lib.poke.Provides;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.internal.matchers.Null;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -136,7 +135,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void shouldBeAbleToNavigateBackOneByOne() throws Exception {
         //mock the subscriber
         BackListener backListener = mock(BackListener.class);
-        eventBusC2V.register(backListener);
+        eventBusV.register(backListener);
 
         prepareLocationHistory();
 
@@ -198,7 +197,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void shouldBeAbleToNavigateBackToGivenLocation() throws Exception {
         //mock the subscriber
         BackListener backListener = mock(BackListener.class);
-        eventBusC2V.register(backListener);
+        eventBusV.register(backListener);
 
         prepareLocationHistory();
 
@@ -221,7 +220,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void shouldBeAbleToNavigateBackToFirstLocation() throws Exception {
         //mock the subscriber
         BackListener backListener = mock(BackListener.class);
-        eventBusC2V.register(backListener);
+        eventBusV.register(backListener);
 
         prepareLocationHistory();
 
@@ -250,7 +249,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
                 = ArgumentCaptor.forClass(NavigationController.EventC2C.OnAppExit.class);
 
         AppExitListener exitListener = mock(AppExitListener.class);
-        eventBusC2C.register(exitListener);
+        eventBusC.register(exitListener);
 
         prepareLocationHistory();
 
@@ -279,7 +278,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
                 = ArgumentCaptor.forClass(NavigationController.EventC2C.OnAppExit.class);
 
         AppExitListener exitListener = mock(AppExitListener.class);
-        eventBusC2C.register(exitListener);
+        eventBusC.register(exitListener);
 
         prepareLocationHistory();
 
@@ -295,7 +294,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
          public void should_not_raise_navigate_back_event_when_navigate_to_first_location_from_the_first_location() throws Exception {
         // Arrange
         BackListener backListener = mock(BackListener.class);
-        eventBusC2V.register(backListener);
+        eventBusV.register(backListener);
 
         navigationController.navigateTo(this, locId1);
 
@@ -312,7 +311,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_not_raise_navigate_back_event_when_navigate_to_unknown_location() throws Exception {
         // Arrange
         BackListener backListener = mock(BackListener.class);
-        eventBusC2V.register(backListener);
+        eventBusV.register(backListener);
 
         prepareLocationHistory();
 
@@ -329,7 +328,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_not_raise_navigate_back_event_when_fast_back_navigate_from_null_location() throws Exception {
         // Arrange
         BackListener backListener = mock(BackListener.class);
-        eventBusC2V.register(backListener);
+        eventBusV.register(backListener);
 
         // Arrange
         navigationController.navigateBack(this, "any location");
@@ -642,7 +641,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     private ForwardListener prepareLocationHistory() {
         //mock the subscriber
         ForwardListener forwardListener = mock(ForwardListener.class);
-        eventBusC2V.register(forwardListener);
+        eventBusV.register(forwardListener);
 
         navigationController.navigateTo(this, locId1);
 

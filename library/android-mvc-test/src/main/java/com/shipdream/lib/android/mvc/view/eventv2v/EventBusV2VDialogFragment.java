@@ -37,7 +37,7 @@ public class EventBusV2VDialogFragment extends MvcDialogFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postEventV2V(new Events.OnFragmentTextChanged(v, "Dialog Closed"));
+                postToViews(new Events.OnFragmentTextChanged(v, "Dialog Closed"));
                 dismiss();
             }
         });

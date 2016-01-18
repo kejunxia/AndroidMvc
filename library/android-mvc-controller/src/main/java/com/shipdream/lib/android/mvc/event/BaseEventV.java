@@ -19,8 +19,8 @@ package com.shipdream.lib.android.mvc.event;
 /**
  * Base event from controllers to views.
  */
-public abstract class BaseEventC2V extends BaseEvent{
-    public BaseEventC2V(Object sender) {
+public abstract class BaseEventV extends BaseEvent{
+    public BaseEventV(Object sender) {
         super(sender);
     }
 }

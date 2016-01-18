@@ -56,7 +56,7 @@ public class TestRunAsyncTask extends BaseControllerTest {
         controller.onConstruct();
 
         eventMonitor = mock(EventMonitor.class);
-        eventBusC2V.register(eventMonitor);
+        eventBusV.register(eventMonitor);
     }
 
     @Test

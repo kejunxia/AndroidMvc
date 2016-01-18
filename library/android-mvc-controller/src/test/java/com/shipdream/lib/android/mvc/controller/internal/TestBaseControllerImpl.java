@@ -18,8 +18,8 @@ package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.controller.BaseControllerTest;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
-import com.shipdream.lib.android.mvc.event.BaseEventC2C;
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventC;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -77,7 +77,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         navigationController.bindModel(this, null);
     }
 
-    class Event extends BaseEventC2C {
+    class Event extends BaseEventC {
         public Event(Object sender) {
             super(sender);
         }
@@ -89,8 +89,8 @@ public class TestBaseControllerImpl extends BaseControllerTest {
             return null;
         }
 
-        void postMyEvent(BaseEventC2C e) {
-            postC2CEvent(e);
+        void postMyEvent(BaseEventC e) {
+            postToControllers(e);
         }
     }
 
@@ -153,12 +153,12 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         graph.inject(controller);
         controller.onConstruct();
         controller.setLogger(loggerMock);
-        controller.eventBusC2C = null;
+        controller.eventBus2C = null;
 
-        BaseEventC2C event = new BaseEventC2C(this){};
+        BaseEventC event = new BaseEventC(this){};
 
         //Act
-        controller.postC2CEvent(event);
+        controller.postToControllers(event);
 
         //Assert
         verify(loggerMock).warn(anyString(), anyVararg());
@@ -173,12 +173,12 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         graph.inject(controller);
         controller.onConstruct();
         controller.setLogger(loggerMock);
-        controller.mEventBusC2V = null;
+        controller.eventBus2V = null;
 
-        BaseEventC2V event = new BaseEventC2V(this){};
+        BaseEventV event = new BaseEventV(this){};
 
         //Act
-        controller.postC2VEvent(event);
+        controller.postToViews(event);
 
         //Assert
         verify(loggerMock).warn(anyString(), anyVararg());

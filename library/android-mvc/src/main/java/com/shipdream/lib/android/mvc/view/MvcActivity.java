@@ -31,7 +31,7 @@ import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.__MvcControllerHelper;
-import com.shipdream.lib.android.mvc.event.BaseEventV2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -53,10 +53,17 @@ public abstract class MvcActivity extends AppCompatActivity {
         return FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
     }
 
+    private EventRegister eventRegister;
+
     @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        eventRegister = new EventRegister(this);
+        eventRegister.onCreate();
+
+        eventRegister.registerEventBuses();
 
         setContentView(R.layout.mvc_activity);
         delegateFragment = (DelegateFragment) getSupportFragmentManager().findFragmentByTag(
@@ -85,6 +92,9 @@ public abstract class MvcActivity extends AppCompatActivity {
                     __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
             toPrintAppExitMessage = false;
         }
+
+        eventRegister.unregisterEventBuses();
+        eventRegister.onDestroy();
     }
 
     void performSuperBackKeyPressed() {
@@ -114,25 +124,18 @@ public abstract class MvcActivity extends AppCompatActivity {
     }
 
     /**
-     * Post an event from this view to other views. Using EventBusV2V is a handy way to
-     * inter-communicate among views but it's a little anti pattern. Best practice is that views
-     * communicates to other views through controllers and EventBusC2V. For example, if view1 wants
-     * to talk to view2, instead of sending V2V events, view1 can send a command to a controller and
-     * that controller will fire an C2VEvent that will be received by view2. In this way, more
-     * business logic can be wrapped into controllers rather than exposed to view1.
-     * <p/>
-     * <p>However, it's not absolute. For example, when routing intent received by Activities to
-     * Fragments, EventBusV2V is a handy solution. Note that the AndroidMvc framework is a single
+     * Post an event from this view to other views. Events sent to views should be managed by controllers.
+     * <p>However, it's handy in some scenarios. For example, when routing intent received by Activities to
+     * Fragments, EventBusV is a handy solution. Note that the AndroidMvc framework is a single
      * Activity design and it manages views on fragment level and fragments don't have
-     * onNewIntent(Intent intent) method. When a fragment needs to handle an intent, use eventBusV2V
+     * onNewIntent(Intent intent) method. When a fragment needs to handle an intent, use eventBusV
      * to route the intent to fragments from the main activity.</p>
      *
-     * @param event The v2v event
+     * @param event The event to views
      */
-    protected void postEventV2V(BaseEventV2V event) {
-        AndroidMvc.getEventBusV2V().post(event);
+    protected void postToViews(BaseEventV event) {
+        eventRegister.postToViews(event);
     }
-
     /**
      * Add callback so that onViewReady will be delay to call after all instance state are restored
      *

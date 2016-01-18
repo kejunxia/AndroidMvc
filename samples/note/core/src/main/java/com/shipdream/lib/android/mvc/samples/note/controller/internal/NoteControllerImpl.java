@@ -100,7 +100,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
                 navigationController.navigateTo(this, LocId.NOTE_HANDSET_DETAIL);
             } else {
                 EventC2V.OnNoteSelected event = new EventC2V.OnNoteSelected(this, note);
-                postC2VEvent(event);
+                postToViews(event);
             }
         }
     }
@@ -116,7 +116,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
             note.setUpdateTime(System.currentTimeMillis());
 
             persistNotes();
-            postC2VEvent(new EventC2V.OnNoteCreated(this));
+            postToViews(new EventC2V.OnNoteCreated(this));
         }
         navigationController.navigateBack(this);
     }
@@ -129,7 +129,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
             note.setContent(content);
             note.setUpdateTime(System.currentTimeMillis());
             persistNotes();
-            postC2VEvent(new EventC2V.OnNoteUpdated(sender));
+            postToViews(new EventC2V.OnNoteUpdated(sender));
         }
     }
 
@@ -146,7 +146,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
 
             persistNotes();
 
-            postC2VEvent(new EventC2V.OnNoteRemoved(sender, new ArrayList<>(getModel().getSelectedNoteIds())));
+            postToViews(new EventC2V.OnNoteRemoved(sender, new ArrayList<>(getModel().getSelectedNoteIds())));
             getModel().getSelectedNoteIds().clear();
         }
     }
@@ -165,7 +165,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
         if (!inSelectionMode()) {
             //Not in selection mode, add the first selected item
             getModel().getSelectedNoteIds().add(id);
-            postC2VEvent(new EventC2V.OnEditModeBegan(sender));
+            postToViews(new EventC2V.OnEditModeBegan(sender));
         } else {
             //check state of current id
             int index = isSelected(id);
@@ -175,7 +175,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
                 getModel().getSelectedNoteIds().add(id);
             }
         }
-        postC2VEvent(new EventC2V.OnNoteSelectionChanged(sender));
+        postToViews(new EventC2V.OnNoteSelectionChanged(sender));
     }
 
     public int isSelected(long id) {
@@ -196,7 +196,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
     @Override
     public void clearSelections(Object sender) {
         getModel().getSelectedNoteIds().clear();
-        postC2VEvent(new EventC2V.OnNoteSelectionChanged(sender));
+        postToViews(new EventC2V.OnNoteSelectionChanged(sender));
     }
 
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm");

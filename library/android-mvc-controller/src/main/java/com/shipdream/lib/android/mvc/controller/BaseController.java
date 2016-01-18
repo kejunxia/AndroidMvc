@@ -16,8 +16,13 @@
 
 package com.shipdream.lib.android.mvc.controller;
 
+import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
+
 /**
- * Base controller interface.
+ * Base controller interface. Controllers are responsible to manage the corresponding view. When
+ * multiple controllers have shared logic or data, break them out into a manager extending
+ * {@link BaseManagerImpl}. For example, a common  scenario is multiple controllers can share an
+ * AccountManager/LoginManager and monitor the account change events.
  */
 public interface BaseController<MODEL> {
 
