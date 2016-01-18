@@ -1,3 +1,6 @@
+Version:1.6.0
+Add manager layer in which shared logic by controllers is encapsulated in managers. Managers can send broadcast to controllers but not vise versa.
+
 Version:1.5.3
 * MvcGraph able to inject concrete class with a public constructor
 * Fix bug that sub fragments' controller do not restore state
