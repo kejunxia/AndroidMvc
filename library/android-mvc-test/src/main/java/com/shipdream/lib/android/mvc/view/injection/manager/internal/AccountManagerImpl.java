@@ -1,21 +1,20 @@
 package com.shipdream.lib.android.mvc.view.injection.manager.internal;
 
-import com.shipdream.lib.android.mvc.Constructable;
-import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
 import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
 import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
 
 import javax.inject.Inject;
 
-public class AccountManagerImpl implements AccountManager, StateManaged<AccountManager.Session>, Constructable {
-    private Session session;
+public class AccountManagerImpl extends BaseManagerImpl<AccountManager.Session>
+        implements AccountManager {
 
     @Inject
     private StorageService storageService;
 
     @Override
     public void setUserId(long id) {
-        session.setUserId(id);
+        getState().setUserId(id);
     }
 
     @Override
@@ -34,22 +33,7 @@ public class AccountManagerImpl implements AccountManager, StateManaged<AccountM
     }
 
     @Override
-    public void onConstruct() {
-        session = new Session();
-    }
-
-    @Override
     public Class<Session> getStateType() {
         return Session.class;
-    }
-
-    @Override
-    public Session getState() {
-        return session;
-    }
-
-    @Override
-    public void restoreState(Session restoredState) {
-        this.session = restoredState;
     }
 }

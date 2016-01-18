@@ -75,13 +75,14 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     }
 
     private MODEL createModelInstance() {
-        if (getModelClassType() == null) {
+        Class<MODEL> type = getStateType();
+        if (type == null) {
             return null;
         } else {
             try {
-                return new ReflectUtils.newObjectByType<>(getModelClassType()).newInstance();
+                return new ReflectUtils.newObjectByType<>(type).newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Fail to instantiate model by its default constructor");
+                throw new RuntimeException("Fail to instantiate state by its default constructor");
             }
         }
     }
@@ -97,10 +98,9 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
     }
 
     /**
+     * Model represents the state of view that this controller is managing.
      * @return @return Null if the controller doesn't need to get its state saved and restored
-     * automatically when {@link #getModelClassType()} returns null. e.g. The controller
-     * always loads resource from remote services so that its state can be thought persisted by the
-     * remote services. Otherwise returns the model of the controller
+     * automatically when {@link #getModelClassType()} returns null. Otherwise the model.
      */
     @Override
     public MODEL getModel() {
@@ -112,8 +112,7 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      * which is also the model the controller.
      *
      * @return Null if the controller doesn't need to get its state saved and restored
-     * automatically. e.g. The controller always loads resource from remote services so that
-     * its state can be thought persisted by the remote services. Otherwise the model of the controller
+     * automatically. Otherwise same as {@link #getModel()}
      */
     @Override
     final public MODEL getState() {

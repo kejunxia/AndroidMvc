@@ -109,8 +109,12 @@ public class EventBusImpl implements EventBus {
                 } catch (IllegalAccessException e) {
                     logger.warn(e.getMessage(), e);
                 } catch (InvocationTargetException e) {
+                    String msg = e.getMessage();
+                    if (msg == null || msg.isEmpty() && e.getCause() != null) {
+                        msg = e.getCause().getMessage();
+                    }
                     throw new RuntimeException("Not able to post event - "
-                            + event.getClass().getName() + " due to error: " + e.getMessage(), e);
+                            + event.getClass().getName() + " due to error: " + msg, e.getCause());
                 }
             }
         }

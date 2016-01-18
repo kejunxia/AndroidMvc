@@ -1,3 +1,7 @@
+Version:1.6.0
+* Add BaseManagerImpl. Logic and data shared by multiple controllers can be put into managers and injected into controllers.
+* Delegate fragment's onViewReady lifecycle will be called after state of all controllers are restored if activity is killed by OS
+
 Version:1.5.3
 * MvcGraph able to inject concrete class with a public constructor
 * Fix bug that sub fragments' controller do not restore state

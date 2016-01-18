@@ -25,8 +25,6 @@ import android.view.ViewGroup;
 import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.event.BaseEventV2V;
 
-import org.slf4j.LoggerFactory;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
@@ -146,7 +144,6 @@ public abstract class MvcFragment extends Fragment {
     private boolean dependenciesInjected = false;
 
     boolean isStateManagedByRootDelegateFragment = false;
-    boolean selfRelease = true;
 
     /**
      * @return orientation before last orientation change.
@@ -172,19 +169,17 @@ public abstract class MvcFragment extends Fragment {
      */
     protected abstract int getLayoutResId();
 
-    void injectDependencies() {
+    private void injectDependencies() {
         if (!dependenciesInjected) {
             AndroidMvc.graph().inject(this);
             dependenciesInjected = true;
         }
     }
 
-    void releaseDependencies() {
+    private void releaseDependencies() {
         if (dependenciesInjected) {
             AndroidMvc.graph().release(this);
             dependenciesInjected = false;
-
-            LoggerFactory.getLogger(getClass()).trace("Fragment release: " + getClass().getSimpleName());
         }
     }
 
@@ -238,6 +233,12 @@ public abstract class MvcFragment extends Fragment {
     }
 
     /**
+     * Called when view is created by before {@link #onViewReady(View, Bundle, Reason)} is called
+     */
+    void onPreViewReady(View view, Bundle savedInstanceState) {
+    }
+
+    /**
      * This Android lifecycle callback is sealed. Use {@link #onViewReady(View, Bundle, Reason)}
      * instead which provides a flag to indicate if the creation of the view is caused by rotation.
      *
@@ -250,13 +251,14 @@ public abstract class MvcFragment extends Fragment {
         fragmentComesBackFromBackground = false;
         eventRegister.registerEventBuses();
 
+        onPreViewReady(view, savedInstanceState);
+
         final boolean restoring = savedInstanceState != null;
         if (restoring && isStateManagedByRootDelegateFragment) {
             ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
                 @Override
                 public void run() {
                     doOnViewCreatedCallBack(view, savedInstanceState, restoring);
-                    isStateManagedByRootDelegateFragment = false;
                 }
             });
         } else {
@@ -396,9 +398,7 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (selfRelease) {
-            releaseDependencies();
-        }
+        releaseDependencies();
         eventRegister.onDestroy();
         eventRegister = null;
     }
