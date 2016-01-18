@@ -1,14 +1,12 @@
 package com.shipdream.lib.android.mvc.view.injection.manager.internal;
 
-import com.shipdream.lib.android.mvc.Constructable;
-import com.shipdream.lib.android.mvc.StateManaged;
-import com.shipdream.lib.android.mvc.manager.AbstractStatefulManager;
+import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
 import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
 import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
 
 import javax.inject.Inject;
 
-public class AccountManagerImpl extends AbstractStatefulManager<AccountManager.Session>
+public class AccountManagerImpl extends BaseManagerImpl<AccountManager.Session>
         implements AccountManager {
 
     @Inject

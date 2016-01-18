@@ -15,7 +15,7 @@ import com.shipdream.lib.poke.util.ReflectUtils;
  * Managers should only be serving controllers and not visible to views.
  * </p>
  */
-public abstract class AbstractStatefulManager<STATE> implements StateManaged<STATE>,
+public abstract class BaseManagerImpl<STATE> implements StateManaged<STATE>,
         Constructable, Disposable {
     private STATE state;
 

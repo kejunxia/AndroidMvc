@@ -6,7 +6,7 @@ import org.junit.Test;
 public class TestStatefulManager {
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_when_bind_null_to_stateful_manager() {
-        AbstractStatefulManager manager = new AbstractStatefulManager() {
+        BaseManagerImpl manager = new BaseManagerImpl() {
             @Override
             public Class getStateType() {
                 return String.class;
@@ -18,7 +18,7 @@ public class TestStatefulManager {
 
     @Test
     public void should_rebind_state_after_restoring_manager() {
-        AbstractStatefulManager<String> manager = new AbstractStatefulManager() {
+        BaseManagerImpl<String> manager = new BaseManagerImpl() {
 
             @Override
             public Class getStateType() {
@@ -35,7 +35,7 @@ public class TestStatefulManager {
 
     @Test
     public void should_call_on_restore_call_back_after_manager_is_restored() {
-        class MyManager extends AbstractStatefulManager<String> {
+        class MyManager extends BaseManagerImpl<String> {
             private boolean called = false;
 
             @Override
@@ -60,7 +60,7 @@ public class TestStatefulManager {
     }
 
     public void should_create_state_instance_on_construct_when_the_state_type_is_specified_for_a_stateful_manager() {
-        class MyManager extends AbstractStatefulManager<String> {
+        class MyManager extends BaseManagerImpl<String> {
             @Override
             public Class getStateType() {
                 return String.class;
@@ -76,7 +76,7 @@ public class TestStatefulManager {
     }
 
     public void should_NOT_create_state_instance_on_construct_when_the_state_type_is_null_for_a_stateful_manager() {
-        class MyManager extends AbstractStatefulManager {
+        class MyManager extends BaseManagerImpl {
             @Override
             public Class getStateType() {
                 return null;
@@ -97,7 +97,7 @@ public class TestStatefulManager {
             {int x = 1 / 0;}
         }
 
-        class MyManager extends AbstractStatefulManager<BadClass> {
+        class MyManager extends BaseManagerImpl<BadClass> {
             @Override
             public Class<BadClass> getStateType() {
                 return BadClass.class;
@@ -111,7 +111,7 @@ public class TestStatefulManager {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_excpetion_when_binding_null_to_stateful_manager() {
-        class MyManager extends AbstractStatefulManager<String> {
+        class MyManager extends BaseManagerImpl<String> {
             @Override
             public Class<String> getStateType() {
                 return String.class;
@@ -125,7 +125,7 @@ public class TestStatefulManager {
 
     @Test
     public void should_be_able_to_successfully_bind_state_to_stateful_manager() {
-        class MyManager extends AbstractStatefulManager<String> {
+        class MyManager extends BaseManagerImpl<String> {
             @Override
             public Class<String> getStateType() {
                 return String.class;
