@@ -144,16 +144,29 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     }
 
     /**
-     * Help function to post the event to views on
+     * Post an event to other controllers. Event will be posted on the same thread as the caller.
+     *
+     * @param event event to controllers
+     */
+    protected void postControllerEvent(final BaseEventC event) {
+        if (eventBus2C != null) {
+            eventBus2C.post(event);
+        } else {
+            logger.warn("Trying to post event {} to EventBusC which is null", event.getClass().getName());
+        }
+    }
+
+    /**
+     * Post an event to views on
      * <ul>
      * <li>Android main thread -- when detected android OS. Note that, if the caller is on main thread, event will be
      * execute immediately on the main thread. Otherwise it will be post to the main thread message queue.</li>
      * <li>Same thread of caller -- if on usual JVM</li>
      * </ul>
      *
-     * @param event Controller to View event to be broadcast
+     * @param event event to views
      */
-    protected void postToViews(final BaseEventV event) {
+    protected void postViewEvent(final BaseEventV event) {
         if (androidPoster != null) {
             //Run on android OS
             androidPoster.post(eventBus2V, event);
@@ -163,19 +176,6 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
             } else {
                 logger.warn("Trying to post event {} to EventBusV which is null", event.getClass().getName());
             }
-        }
-    }
-
-    /**
-     * Help function to post events to other controllers
-     *
-     * @param event event to other controllers
-     */
-    protected void postToControllers(final BaseEventC event) {
-        if (eventBus2C != null) {
-            eventBus2C.post(event);
-        } else {
-            logger.warn("Trying to post event {} to EventBusC which is null", event.getClass().getName());
         }
     }
 

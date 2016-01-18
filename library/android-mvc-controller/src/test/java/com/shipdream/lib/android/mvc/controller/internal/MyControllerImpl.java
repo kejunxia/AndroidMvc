@@ -49,7 +49,7 @@ public class MyControllerImpl extends BaseControllerImpl {
             @Override
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
-                postToViews(new ResourceLoaded(sender));
+                postViewEvent(new ResourceLoaded(sender));
             }
         });
     }
@@ -69,7 +69,7 @@ public class MyControllerImpl extends BaseControllerImpl {
             @Override
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
-                postToViews(new ResourceLoaded(sender));
+                postViewEvent(new ResourceLoaded(sender));
             }
         });
     }
@@ -79,12 +79,12 @@ public class MyControllerImpl extends BaseControllerImpl {
             @Override
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
-                postToViews(new ResourceLoaded(sender));
+                postViewEvent(new ResourceLoaded(sender));
             }
         }, new AsyncExceptionHandler() {
             @Override
             public void handleException(Exception exception) {
-                postToViews(new ResourceLoadFailed(sender, exception));
+                postViewEvent(new ResourceLoadFailed(sender, exception));
             }
         });
     }
@@ -108,7 +108,7 @@ public class MyControllerImpl extends BaseControllerImpl {
         }, new AsyncExceptionHandler() {
             @Override
             public void handleException(Exception exception) {
-                postToViews(new ResourceLoadFailed(sender, exception));
+                postViewEvent(new ResourceLoadFailed(sender, exception));
             }
         });
     }
@@ -120,9 +120,9 @@ public class MyControllerImpl extends BaseControllerImpl {
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 if (getState() == State.CANCELED) {
-                    postToViews(new ResourceLoadCanceled(sender));
+                    postViewEvent(new ResourceLoadCanceled(sender));
                 } else {
-                    postToViews(new ResourceLoaded(sender));
+                    postViewEvent(new ResourceLoaded(sender));
                 }
             }
         };
@@ -131,7 +131,7 @@ public class MyControllerImpl extends BaseControllerImpl {
                 new AsyncExceptionHandler() {
                     @Override
                     public void handleException(Exception exception) {
-                        postToViews(new ResourceLoadFailed(sender, exception));
+                        postViewEvent(new ResourceLoadFailed(sender, exception));
                     }
                 });
 

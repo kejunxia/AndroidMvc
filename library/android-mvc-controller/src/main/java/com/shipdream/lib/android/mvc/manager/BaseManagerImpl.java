@@ -30,11 +30,11 @@ public abstract class BaseManagerImpl<STATE> extends MvcBean<STATE> {
     private EventBus eventBus2C;
 
     /**
-     * Help function to post events to controllers
+     * Post an event to other controllers. Event will be posted on the same thread as the caller.
      *
-     * @param event post events to controllers
+     * @param event event to controllers
      */
-    protected void postToControllers(final BaseEventC event) {
+    protected void postControllerEvent(final BaseEventC event) {
         if (eventBus2C != null) {
             eventBus2C.post(event);
         } else {

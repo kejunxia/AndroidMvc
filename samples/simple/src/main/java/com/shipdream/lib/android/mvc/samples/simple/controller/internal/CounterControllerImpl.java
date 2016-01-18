@@ -47,7 +47,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
         int count = getModel().getCount();
         getModel().setCount(++count);
         //Post controller to view event to views
-        postToViews(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
+        postViewEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
         int count = getModel().getCount();
         getModel().setCount(--count);
         //Post controller to view event to views
-        postToViews(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
+        postViewEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
     }
 
     @Override
