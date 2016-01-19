@@ -16,7 +16,11 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.Disposable;
+import com.shipdream.lib.android.mvc.MvcBean;
 
-public interface DisposeCheckerB extends Disposable {
+public class DisposeCheckerB extends MvcBean {
+    @Override
+    public Class getStateType() {
+        return null;
+    }
 }

@@ -3,7 +3,7 @@ package com.shipdream.lib.android.mvc.view;
 import android.os.Bundle;
 
 import com.shipdream.lib.android.mvc.Injector;
-import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.MvcBean;
 
 import java.lang.reflect.Field;
 
@@ -34,15 +34,15 @@ class DefaultStateKeeperHolder {
         stateKeeper.bundle = outState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (StateManaged.class.isAssignableFrom(field.getType())) {
-                StateManaged stateManaged = null;
+            if (MvcBean.class.isAssignableFrom(field.getType())) {
+                MvcBean mvcBean = null;
                 try {
                     field.setAccessible(true);
-                    stateManaged = (StateManaged) field.get(object);
+                    mvcBean = (MvcBean) field.get(object);
                 } catch (IllegalAccessException e) {
                     //ignore
                 }
-                stateKeeper.saveState(stateManaged.getState(), stateManaged.getStateType());
+                stateKeeper.saveState(mvcBean.getState(), mvcBean.getStateType());
             }
         }
     }
@@ -52,12 +52,12 @@ class DefaultStateKeeperHolder {
         stateKeeper.bundle = savedState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (StateManaged.class.isAssignableFrom(field.getType())) {
+            if (MvcBean.class.isAssignableFrom(field.getType())) {
                 try {
                     field.setAccessible(true);
-                    StateManaged stateManaged = (StateManaged) field.get(object);
-                    Object value = stateKeeper.getState(stateManaged.getStateType());
-                    stateManaged.restoreState(value);
+                    MvcBean mvcBean = (MvcBean) field.get(object);
+                    Object value = stateKeeper.getState(mvcBean.getStateType());
+                    mvcBean.restoreState(value);
                 } catch (IllegalAccessException e) {
                     //ignore
                 }

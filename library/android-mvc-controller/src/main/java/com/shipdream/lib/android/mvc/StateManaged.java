@@ -22,15 +22,16 @@ package com.shipdream.lib.android.mvc;
  */
 public interface StateManaged <T> {
     /**
+     * @return The class type of the state. It's only used to instantiate the state object by the
+     * framework.
+     */
+    Class<T> getStateType();
+
+    /**
      * Binds the state to this object
      * @param state The state to bind
      */
     void bindState(T state);
-
-    /**
-     * @return The class type of the state
-     */
-    Class<T> getStateType();
 
     /**
      * @return The state of the object implementing {@link StateManaged}

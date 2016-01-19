@@ -380,14 +380,14 @@ public class TestMvcGraph {
     @Test
     public void should_be_able_save_and_restore_state_correctly()
             throws ProvideException, ProviderConflictException {
-        final StateManaged stateManagedMock = mock(StateManaged.class);
+        MvcBean mvcBeanMock = mock(MvcBean.class);
         Object mockState = mock(Object.class);
-        when(stateManagedMock.getState()).thenReturn(mockState);
-        when(stateManagedMock.getStateType()).thenReturn(Object.class);
+        when(mvcBeanMock.getState()).thenReturn(mockState);
+        when(mvcBeanMock.getStateType()).thenReturn(Object.class);
 
-        List<StateManaged> stateManagedList = new ArrayList();
-        stateManagedList.add(stateManagedMock);
-        mvcGraph.stateManagedObjects = stateManagedList;
+        List<MvcBean> mvcBeans = new ArrayList();
+        mvcBeans.add(mvcBeanMock);
+        mvcGraph.mvcBeans = mvcBeans;
 
         final StateKeeper stateKeeperMock = mock(StateKeeper.class);
 
@@ -395,8 +395,8 @@ public class TestMvcGraph {
         mvcGraph.saveAllStates(stateKeeperMock);
 
         // Verify
-        verify(stateManagedMock, times(1)).getState();
-        verify(stateManagedMock, times(1)).getStateType();
+        verify(mvcBeanMock, times(1)).getState();
+        verify(mvcBeanMock, times(1)).getStateType();
         verify(stateKeeperMock).saveState(eq(mockState), eq(Object.class));
 
         // Arrange
@@ -408,7 +408,7 @@ public class TestMvcGraph {
         mvcGraph.restoreAllStates(stateKeeperMock);
 
         // Verify
-        verify(stateManagedMock).restoreState(eq(stateMock));
+        verify(mvcBeanMock).restoreState(eq(stateMock));
     }
 
     interface UnimplementedInterface{}

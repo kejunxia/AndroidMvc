@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.AsyncTask;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
@@ -89,7 +88,7 @@ public class MvcGraph {
     private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
-    List<StateManaged> stateManagedObjects = new ArrayList<>();
+    List<MvcBean> mvcBeans = new ArrayList<>();
 
     //Composite graph to hide methods
     Graph graph;
@@ -109,17 +108,15 @@ public class MvcGraph {
 
                 if (obj != null) {
                     //When the cached instance is still there free and dispose it.
-                    if (obj instanceof StateManaged) {
-                        stateManagedObjects.remove(obj);
-                    }
+                    if (obj instanceof MvcBean) {
+                        MvcBean bean = (MvcBean) obj;
+                        bean.onDisposed();
+                        mvcBeans.remove(obj);
 
-                    if (obj instanceof Disposable) {
-                        ((Disposable) obj).onDisposed();
-                    }
-
-                    if (obj instanceof BaseControllerImpl) {
-                        logger.trace("--Controller freed - '{}'.",
-                                obj.getClass().getSimpleName());
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("--MvcBean freed - '{}'.",
+                                    obj.getClass().getSimpleName());
+                        }
                     }
                 }
             }
@@ -400,10 +397,10 @@ public class MvcGraph {
      * @param stateKeeper The state keeper to manage the state
      */
     public void saveAllStates(StateKeeper stateKeeper) {
-        int size = stateManagedObjects.size();
+        int size = mvcBeans.size();
         for (int i = 0; i < size; i++) {
-            StateManaged obj = stateManagedObjects.get(i);
-            stateKeeper.saveState(obj.getState(), obj.getStateType());
+            MvcBean bean = mvcBeans.get(i);
+            stateKeeper.saveState(bean.getState(), bean.getStateType());
         }
     }
 
@@ -413,12 +410,12 @@ public class MvcGraph {
      */
     @SuppressWarnings("unchecked")
     public void restoreAllStates(StateKeeper stateKeeper) {
-        int size = stateManagedObjects.size();
+        int size = mvcBeans.size();
         for (int i = 0; i < size; i++) {
-            StateManaged obj = stateManagedObjects.get(i);
-            Object state = stateKeeper.getState(obj.getStateType());
+            MvcBean bean = mvcBeans.get(i);
+            Object state = stateKeeper.getState(bean.getStateType());
             if(state != null) {
-                stateManagedObjects.get(i).restoreState(state);
+                mvcBeans.get(i).restoreState(state);
             }
         }
     }
@@ -520,7 +517,7 @@ public class MvcGraph {
                             impClass = type;
                         }
 
-                        provider = new MvcProvider<>(mvcGraph.stateManagedObjects, type, impClass);
+                        provider = new MvcProvider<>(mvcGraph.mvcBeans, type, impClass);
                         provider.setScopeCache(defaultImplClassLocator.getScopeCache());
                         providers.put(type, provider);
                     } catch (ImplClassNotFoundException e) {
@@ -534,11 +531,11 @@ public class MvcGraph {
 
     private static class MvcProvider<T> extends ProviderByClassType<T> {
         private final Logger logger = LoggerFactory.getLogger(MvcGraph.class);
-        private List<StateManaged> stateManagedObjects;
+        private List<MvcBean> mvcBeans;
 
-        public MvcProvider(List<StateManaged> stateManagedObjects, Class<T> type, Class<? extends T> implementationClass) {
+        public MvcProvider(List<MvcBean> mvcBeans, Class<T> type, Class<? extends T> implementationClass) {
             super(type, implementationClass);
-            this.stateManagedObjects = stateManagedObjects;
+            this.mvcBeans = mvcBeans;
         }
 
         @SuppressWarnings("unchecked")
@@ -556,16 +553,16 @@ public class MvcGraph {
                     unregisterOnInjectedListener(this);
 
                     if (logger.isTraceEnabled()) {
-                        if (object instanceof BaseController) {
-                            logger.trace("++Controller injected - '{}'.",
+                        if (object instanceof MvcBean) {
+                            logger.trace("++MvcBean injected - '{}'.",
                                     object.getClass().getSimpleName());
                         }
                     }
                 }
             });
 
-            if (newInstance instanceof StateManaged) {
-                stateManagedObjects.add((StateManaged) newInstance);
+            if (newInstance instanceof MvcBean) {
+                mvcBeans.add((MvcBean) newInstance);
             }
 
             return newInstance;

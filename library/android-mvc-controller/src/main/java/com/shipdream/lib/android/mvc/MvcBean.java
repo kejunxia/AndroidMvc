@@ -54,16 +54,15 @@ public abstract class MvcBean<STATE> implements StateManaged<STATE>, Constructab
      * @return Null if the MvcBean doesn't need to get its state saved and restored automatically.
      */
     @Override
-    final public STATE getState() {
+    public STATE getState() {
         return state;
     }
 
     /**
-     * @return The class type of the state of the controller that will be used by this MvcBean to
-     * instantiate its state in {@link #onConstruct()}
+     * @return The class type of the state that will be used by this MvcBean to instantiate its
+     * state in {@link #onConstruct()}
      */
-    @Override
-    abstract public Class<STATE> getStateType();
+    public abstract Class<STATE> getStateType();
 
     /**
      * Restore the state of this MvcBean.
