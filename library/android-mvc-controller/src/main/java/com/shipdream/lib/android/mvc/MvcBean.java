@@ -2,7 +2,7 @@ package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.poke.util.ReflectUtils;
 
-public abstract class MvcBean<STATE> implements StateManaged<STATE>, Constructable, Disposable {
+public abstract class MvcBean<STATE> {
     private STATE state;
 
     /**
@@ -46,14 +46,12 @@ public abstract class MvcBean<STATE> implements StateManaged<STATE>, Constructab
      * Called when the MvcBean is disposed. This occurs when the MvcBean is de-referenced and
      * not retained by any other objects.
      */
-    @Override
     public void onDisposed() {
     }
 
     /**
      * @return Null if the MvcBean doesn't need to get its state saved and restored automatically.
      */
-    @Override
     public STATE getState() {
         return state;
     }
@@ -74,7 +72,6 @@ public abstract class MvcBean<STATE> implements StateManaged<STATE>, Constructab
      * @param restoredState The restored state by {@link StateKeeper} that will be rebound to the
      *                      MvcBean.
      */
-    @Override
     public void restoreState(STATE restoredState) {
         if (getStateType() != null) {
             bindState(restoredState);

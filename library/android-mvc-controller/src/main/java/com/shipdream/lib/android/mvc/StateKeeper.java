@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc;
 
 /**
- * StateKeeper can save state of objects implementing {@link StateManaged} into it. The state can
+ * StateKeeper can save state of objects implementing {@link MvcBean} into it. The state can
  * be got back from the keeper later on.
  */
 public interface StateKeeper {

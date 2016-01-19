@@ -22,7 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -98,7 +98,7 @@ public abstract class MvcFragment extends Fragment {
          * <p>Although when a fragment is restored all fields of the fragment will be recreated
          * ({@link #isNewInstance()} = true), MVC framework will automatically restore the
          * state(model) of injected controllers held by the fragment . So when a fragment is being
-         * restored, only re-instantiate its non-controller fields. All injected {@link StateManaged}
+         * restored, only re-instantiate its non-controller fields. All injected {@link MvcBean}
          * including controllers will be restored by the framework itself.</p>
          */
         public boolean isRestored() {

@@ -19,7 +19,6 @@ package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.StateKeeper;
-import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
@@ -108,7 +107,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     protected abstract Class<MODEL> getModelClassType();
 
     /**
-     * Method of {@link StateManaged} that allows {@link StateKeeper} to save and get the state of
+     * Method of {@link MvcBean} that allows {@link StateKeeper} to save and get the state of
      * which is also the model the controller.
      *
      * @return The class type of the model of the controller
@@ -119,7 +118,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     }
 
     /**
-     * Method of {@link StateManaged} that allows {@link StateKeeper} to save and get the state of
+     * Method of {@link MvcBean} that allows {@link StateKeeper} to save and get the state of
      * which is also the model the controller.
      * <p>
      * Note that if the controller doesn't need its state saved and restored automatically return

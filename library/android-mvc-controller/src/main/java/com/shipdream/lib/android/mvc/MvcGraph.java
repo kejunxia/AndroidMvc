@@ -546,9 +546,9 @@ public class MvcGraph {
             registerOnInjectedListener(new OnInjectedListener() {
                 @Override
                 public void onInjected(Object object) {
-                    if (object instanceof Constructable) {
-                        Constructable constructable = (Constructable) object;
-                        constructable.onConstruct();
+                    if (object instanceof MvcBean) {
+                        MvcBean bean = (MvcBean) object;
+                        bean.onConstruct();
                     }
                     unregisterOnInjectedListener(this);
 

@@ -26,8 +26,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.Injector;
+import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.StateManaged;
 import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.__MvcControllerHelper;
@@ -449,7 +449,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         /**
          * Notify all sub MvcFragments theirs state is managed by this root fragment. So all
-         * {@link StateManaged} objects those fragments holding will be saved into this root
+         * {@link MvcBean} objects those fragments holding will be saved into this root
          * fragment's outState bundle.
          */
         private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(MvcFragment fragment, boolean selfManaged) {
