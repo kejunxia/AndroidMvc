@@ -28,7 +28,7 @@ public class ControllerDImpl extends BaseControllerImpl<ControllerD.Model>
     private AccountManager accountManager;
 
     @Override
-    protected Class<ControllerD.Model> getModelClassType() {
+    public Class<ControllerD.Model> modelType() {
         return ControllerD.Model.class;
     }
 

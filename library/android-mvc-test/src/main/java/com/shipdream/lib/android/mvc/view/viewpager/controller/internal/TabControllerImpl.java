@@ -6,7 +6,7 @@ import com.shipdream.lib.android.mvc.view.viewpager.controller.TabController;
 
 public class TabControllerImpl extends BaseControllerImpl<TabModel> implements TabController {
     @Override
-    protected Class<TabModel> getModelClassType() {
+    public Class<TabModel> modelType() {
         return TabModel.class;
     }
 

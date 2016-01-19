@@ -42,7 +42,7 @@ public class PrinterController2Impl extends BaseControllerImpl<PrintModel> imple
     }
 
     @Override
-    public Class<PrintModel> getModelClassType() {
+    public Class<PrintModel> modelType() {
         return PrintModel.class;
     }
 }

@@ -208,7 +208,7 @@ public class NoteControllerImpl extends BaseControllerImpl<NoteModel> implements
     }
 
     @Override
-    public Class<NoteModel> getModelClassType() {
+    public Class<NoteModel> modelType() {
         return NoteModel.class;
     }
 }

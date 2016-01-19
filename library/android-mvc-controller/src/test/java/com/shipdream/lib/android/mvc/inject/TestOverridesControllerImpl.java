@@ -47,7 +47,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
             return printContent;
         }
         @Override
-        public Class<PrintModel> getModelClassType() {
+        public Class<PrintModel> modelType() {
             return null;
         }
         @Override

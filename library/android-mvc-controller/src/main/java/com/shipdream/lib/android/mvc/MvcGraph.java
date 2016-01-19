@@ -323,9 +323,9 @@ public class MvcGraph {
      *
      * <p><b>Note that, if navigation is involved in {@link Consumer#consume(Object)}, though the
      * instance injected is still held until consume method returns, the injected instance may
-     * loose its state when the next fragment is loaded. This is because Android doesn't load
+     * loose its model when the next fragment is loaded. This is because Android doesn't load
      * fragment immediately by fragment manager, instead navigation will be done in the future main
-     * loop. Therefore, if the state of an injected instance needs to be carried to the next fragment
+     * loop. Therefore, if the model of an injected instance needs to be carried to the next fragment
      * navigated to, use {@link NavigationController#navigate(Object)}.{@link Navigator#with(Class, Annotation, Preparer)}</b></p>
      *
      * @param type The type of the injectable instance
@@ -393,29 +393,29 @@ public class MvcGraph {
     }
 
     /**
-     * Save state of all injected objects
-     * @param stateKeeper The state keeper to manage the state
+     * Save model of all injected objects
+     * @param modelKeeper The model keeper managing the model
      */
-    public void saveAllStates(StateKeeper stateKeeper) {
+    public void saveAllModels(ModelKeeper modelKeeper) {
         int size = mvcBeans.size();
         for (int i = 0; i < size; i++) {
             MvcBean bean = mvcBeans.get(i);
-            stateKeeper.saveState(bean.getState(), bean.getStateType());
+            modelKeeper.saveModel(bean.getModel(), bean.modelType());
         }
     }
 
     /**
-     * Restore state of all injected objects
-     * @param stateKeeper The state keeper to manage the state
+     * Restore model of all injected objects
+     * @param modelKeeper The model keeper managing the model
      */
     @SuppressWarnings("unchecked")
-    public void restoreAllStates(StateKeeper stateKeeper) {
+    public void restoreAllModels(ModelKeeper modelKeeper) {
         int size = mvcBeans.size();
         for (int i = 0; i < size; i++) {
             MvcBean bean = mvcBeans.get(i);
-            Object state = stateKeeper.getState(bean.getStateType());
-            if(state != null) {
-                mvcBeans.get(i).restoreState(state);
+            Object model = modelKeeper.retrieveModel(bean.modelType());
+            if(model != null) {
+                mvcBeans.get(i).restoreModel(model);
             }
         }
     }

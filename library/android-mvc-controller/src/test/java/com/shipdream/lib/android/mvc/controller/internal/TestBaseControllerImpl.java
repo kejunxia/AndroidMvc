@@ -37,8 +37,8 @@ public class TestBaseControllerImpl extends BaseControllerTest {
     public void should_return_getState_and_getStateType_correctly() throws Exception {
         NavigationControllerImpl navigationController = new NavigationControllerImpl();
 
-        Assert.assertTrue(navigationController.getModel() == navigationController.getState());
-        Assert.assertTrue(navigationController.getStateType() == navigationController.getModelClassType());
+        Assert.assertTrue(navigationController.getModel() == navigationController.getModel());
+        Assert.assertTrue(navigationController.modelType() == navigationController.modelType());
     }
 
     @Test
@@ -48,13 +48,13 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         NavigationController.Model restoreState = mock(NavigationController.Model.class);
         Assert.assertNotEquals(restoreState, navigationController.getModel());
 
-        navigationController.restoreState(restoreState);
+        navigationController.restoreModel(restoreState);
         Assert.assertEquals(restoreState, navigationController.getModel());
     }
 
     class StatelessController extends BaseControllerImpl {
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
     }
@@ -63,10 +63,10 @@ public class TestBaseControllerImpl extends BaseControllerTest {
     public void should_rebind_model_on_restoration_when_state_class_type_is_null() throws Exception {
         StatelessController controller = new StatelessController();
         //Pre-verify
-        Assert.assertNull(controller.getModelClassType());
+        Assert.assertNull(controller.modelType());
         Assert.assertNull(controller.getModel());
 
-        controller.restoreState("Non-Null State");
+        controller.restoreModel("Non-Null State");
         Assert.assertNull(controller.getModel());
     }
 
@@ -85,7 +85,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
     static class Controller1 extends BaseControllerImpl {
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
 
@@ -102,7 +102,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         EventProxy proxy;
 
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
 
@@ -135,7 +135,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
     class TestController extends BaseControllerImpl {
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
 
@@ -190,7 +190,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
     class BadController extends BaseControllerImpl<PrivateModel> {
         @Override
-        protected Class<PrivateModel> getModelClassType() {
+        public Class<PrivateModel> modelType() {
             return PrivateModel.class;
         }
     }

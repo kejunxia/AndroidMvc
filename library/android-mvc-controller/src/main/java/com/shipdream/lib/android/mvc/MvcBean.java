@@ -2,42 +2,43 @@ package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.poke.util.ReflectUtils;
 
-public abstract class MvcBean<STATE> {
-    private STATE state;
+public abstract class MvcBean<MODEL> {
+    private MODEL model;
 
     /**
-     * Bind state to MvcBean
-     * @param state non-null state
+     * Bind model to MvcBean
+     * @param model non-null model
      * @throws IllegalArgumentException thrown when null is being bound
      */
-    public void bindState(STATE state) {
-        if (state == null) {
-            throw new IllegalArgumentException("Can't bind null state explicitly.");
+    public void bindModel(MODEL model) {
+        if (model == null) {
+            throw new IllegalArgumentException("Can't bind null model explicitly.");
+        } else {
+            this.model = model;
         }
-        this.state = state;
     }
 
     /**
      * Called when the MvcBean is injected for the first time or restored when a new instance of
      * this MvcBean needs to be instantiated.
      *
-     * <p>The state of the MvcBean will be instantiated by state's default no-argument constructor.
-     * However, if the MvcBean needs to be restored, a new instance of state restored by
-     * {@link #restoreState(Object)} will replace the state created by this method.</p>
+     * <p>The model of the MvcBean will be instantiated by model's default no-argument constructor.
+     * However, if the MvcBean needs to be restored, a new instance of model restored by
+     * {@link #restoreModel(Object)} will replace the model created by this method.</p>
      */
     public void onConstruct() {
-        state = createStateInstance();
+        model = instantiateModel();
     }
 
-    private STATE createStateInstance() {
-        Class<STATE> type = getStateType();
+    private MODEL instantiateModel() {
+        Class<MODEL> type = modelType();
         if (type == null) {
             return null;
         } else {
             try {
                 return new ReflectUtils.newObjectByType<>(type).newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Fail to instantiate state by its default constructor");
+                throw new RuntimeException("Fail to instantiate model by its default constructor");
             }
         }
     }
@@ -50,37 +51,41 @@ public abstract class MvcBean<STATE> {
     }
 
     /**
-     * @return Null if the MvcBean doesn't need to get its state saved and restored automatically.
+     * Model represents the state of this MvcBean.
+     * @return Null if the MvcBean doesn't need to get its model saved and restored automatically.
      */
-    public STATE getState() {
-        return state;
+    public MODEL getModel() {
+        return model;
     }
 
     /**
-     * @return The class type of the state that will be used by this MvcBean to instantiate its
-     * state in {@link #onConstruct()}
+     * Provides the type class of the model.
+     * @return Implementing class should return the type class of the model that will be used by
+     * this MvcBean to instantiate its model in {@link #onConstruct()} and restores model in
+     * {@link #restoreModel(Object)}. Returning null is allowed which means this MvcBean doesn't
+     * have a model needs to be automatically saved and restored.
      */
-    public abstract Class<STATE> getStateType();
+    public abstract Class<MODEL> modelType();
 
     /**
-     * Restore the state of this MvcBean.
+     * Restores the model of this MvcBean.
      * <p>
-     * Note that if the MvcBean doesn't need its state saved and restored automatically and return
-     * null in {@link #getStateType()}, then this method will have no effect.
+     * Note that when {@link #modelType()} returns null, this method will have no effect.
      * </p>
      *
-     * @param restoredState The restored state by {@link StateKeeper} that will be rebound to the
+     * @param restoredModel The restored model by {@link ModelKeeper} that will be rebound to the
      *                      MvcBean.
      */
-    public void restoreState(STATE restoredState) {
-        if (getStateType() != null) {
-            bindState(restoredState);
+    public void restoreModel(MODEL restoredModel) {
+        if (modelType() != null) {
+            this.model = restoredModel;
+            onRestored();
         }
-        onRestored();
     }
 
     /**
-     * Called after {@link #restoreState(Object)} is called.
+     * Called after {@link #restoreModel(Object)} is called only when {@link #modelType()} returns
+     * a non-null type class.
      */
     public void onRestored() {
     }

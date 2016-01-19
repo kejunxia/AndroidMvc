@@ -6,13 +6,13 @@ import android.os.Parcelable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.shipdream.lib.android.mvc.StateKeeper;
+import com.shipdream.lib.android.mvc.ModelKeeper;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DefaultStateKeeper implements StateKeeper {
+class DefaultModelKeeper implements ModelKeeper {
     static final String MVC_SATE_PREFIX = "__--AndroidMvc:State:";
 
     private static Gson gson;
@@ -21,7 +21,7 @@ class DefaultStateKeeper implements StateKeeper {
     AndroidStateKeeper customStateKeeper;
     Bundle bundle;
 
-    DefaultStateKeeper() {
+    DefaultModelKeeper() {
         gson = new GsonBuilder().create();
     }
 
@@ -32,17 +32,17 @@ class DefaultStateKeeper implements StateKeeper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> void saveState(T state, Class<T> type) {
+    public <T> void saveModel(T model, Class<T> type) {
         if (type != null) {
             Parcelable parcelable = null;
 
             if (NavigationController.Model.class == type) {
                 //Use navigation model keeper to save state
-                parcelable = navigationModelKeeper.saveState(state, type);
+                parcelable = navigationModelKeeper.saveState(model, type);
             } else {
                 if (customStateKeeper != null) {
                     //Use customs state manager to restore state
-                    parcelable = customStateKeeper.saveState(state, type);
+                    parcelable = customStateKeeper.saveState(model, type);
                 }
             }
 
@@ -55,7 +55,7 @@ class DefaultStateKeeper implements StateKeeper {
             } else {
                 //Use Gson to restore state
                 String stateKey = getStateKey(type.getName());
-                String json = gson.toJson(state);
+                String json = gson.toJson(model);
                 bundle.putString(stateKey, json);
 
                 logger.trace("Save state by JSON - {}, {}ms used. Content: {}",
@@ -66,7 +66,7 @@ class DefaultStateKeeper implements StateKeeper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T getState(Class<T> type) {
+    public <T> T retrieveModel(Class<T> type) {
         T state = null;
         if (type != null) {
             long ts = System.currentTimeMillis();

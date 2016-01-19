@@ -11,18 +11,15 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 /**
- * Abstract manager with state that needs to be managed. A stateful manager can be shared by multiple
- * controllers. For example, LoginManager is an good example that will manage the state of logged in
- * user. The log in user object usually is a part of the state to remember the logged in user.
+ * Abstract manager with model that needs to be managed. A manager can be shared by multiple
+ * controllers. A LoginManager is an good example that manages the state of logged in user.
  *
  * <p>
  * Managers should only be serving controllers and not visible to views. Managers can post events
- * to controllers to notify them the state is changed in the shared manager. For example, a common
- * scenario is multiple controllers can share an AccountManager/LoginManager and monitor the account
- * change events.
+ * to controllers to notify the state change in the shared manager.
  * </p>
  */
-public abstract class BaseManagerImpl<STATE> extends MvcBean<STATE> {
+public abstract class BaseManagerImpl<MODEL> extends MvcBean<MODEL> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject

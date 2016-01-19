@@ -14,12 +14,12 @@ public class AccountManagerImpl extends BaseManagerImpl<AccountManager.Session>
 
     @Override
     public void setUserId(long id) {
-        getState().setUserId(id);
+        getModel().setUserId(id);
     }
 
     @Override
     public long getUserId() {
-        return getState().getUserId();
+        return getModel().getUserId();
     }
 
     @Override
@@ -33,7 +33,7 @@ public class AccountManagerImpl extends BaseManagerImpl<AccountManager.Session>
     }
 
     @Override
-    public Class<Session> getStateType() {
+    public Class<Session> modelType() {
         return Session.class;
     }
 }

@@ -40,7 +40,7 @@ public class MyControllerImpl extends BaseControllerImpl {
     }
 
     @Override
-    public Class getModelClassType() {
+    public Class modelType() {
         return null;
     }
 

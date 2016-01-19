@@ -35,7 +35,7 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
     private NoteController noteController;
 
     @Override
-    public Class getModelClassType() {
+    public Class modelType() {
         return null;
     }
 

@@ -38,7 +38,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
      * Just return the class type of the model managed by this controller
      */
     @Override
-    protected Class<CounterModel> getModelClassType() {
+    public Class<CounterModel> modelType() {
         return CounterModel.class;
     }
 

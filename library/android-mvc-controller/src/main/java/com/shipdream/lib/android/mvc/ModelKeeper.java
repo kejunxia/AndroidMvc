@@ -17,24 +17,24 @@
 package com.shipdream.lib.android.mvc;
 
 /**
- * StateKeeper can save state of objects implementing {@link MvcBean} into it. The state can
+ * ModelKeeper can save model of objects implementing {@link MvcBean} into it. The model can
  * be got back from the keeper later on.
  */
-public interface StateKeeper {
+public interface ModelKeeper {
     /**
-     * Save state into this {@link StateKeeper}
-     * @param state The state to save
-     * @param type The class type of the state
+     * Save model into this {@link ModelKeeper}
+     * @param model The model to save
+     * @param type The class type of the model
      * @param <T>
      */
-    <T> void saveState(T state, Class<T> type);
+    <T> void saveModel(T model, Class<T> type);
 
     /**
-     * Get saved state from the keeper
-     * @param type The class type of the state
+     * Retrieves model
+     * @param type The class type of the model
      * @param <T>
-     * @return null if the state with the given type has not been saved or a null state was saved,
-     * otherwise state saved previously
+     * @return null if the model with the given type has not been saved or a null model was saved,
+     * otherwise returns model saved previously
      */
-    <T> T getState(Class<T> type);
+    <T> T retrieveModel(Class<T> type);
 }

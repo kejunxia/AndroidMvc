@@ -5,7 +5,7 @@ import com.shipdream.lib.android.mvc.view.eventv2v.controller.V2VTestController;
 
 public class V2VTestControllerImpl extends BaseControllerImpl implements V2VTestController{
     @Override
-    protected Class getModelClassType() {
+    public Class modelType() {
         return null;
     }
 

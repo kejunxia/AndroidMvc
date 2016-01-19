@@ -25,7 +25,7 @@ import java.util.List;
 public class ControllerAImpl extends BaseControllerImpl<ControllerA.Model>
         implements ControllerA{
     @Override
-    public Class<Model> getModelClassType() {
+    public Class<Model> modelType() {
         return ControllerA.Model.class;
     }
 

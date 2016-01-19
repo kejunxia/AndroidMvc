@@ -20,7 +20,7 @@ import com.shipdream.lib.android.mvc.MvcBean;
 
 public class DisposeCheckerA extends MvcBean {
     @Override
-    public Class getStateType() {
+    public Class modelType() {
         return null;
     }
 }

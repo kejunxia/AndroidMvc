@@ -6,7 +6,7 @@ import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.TimerMode
 
 public class TimerControllerImpl extends BaseControllerImpl<TimerModel> implements TimerController{
     @Override
-    protected Class<TimerModel> getModelClassType() {
+    public Class<TimerModel> modelType() {
         return TimerModel.class;
     }
 

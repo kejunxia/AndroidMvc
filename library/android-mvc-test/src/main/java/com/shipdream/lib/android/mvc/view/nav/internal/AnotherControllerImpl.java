@@ -23,7 +23,7 @@ public class AnotherControllerImpl extends BaseControllerImpl<AnotherController.
         implements AnotherController {
 
     @Override
-    protected Class<Model> getModelClassType() {
+    public Class<Model> modelType() {
         return AnotherController.Model.class;
     }
 

@@ -34,7 +34,7 @@ public class ControllerFImpl extends BaseControllerImpl<ControllerF.Model> imple
     }
 
     @Override
-    protected Class<Model> getModelClassType() {
+    public Class<Model> modelType() {
         return Model.class;
     }
 

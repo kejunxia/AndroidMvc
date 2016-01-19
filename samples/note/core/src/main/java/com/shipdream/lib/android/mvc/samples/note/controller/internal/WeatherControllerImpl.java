@@ -47,7 +47,7 @@ public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> imp
     private PreferenceService preferenceService;
 
     @Override
-    protected Class<WeatherModel> getModelClassType() {
+    public Class<WeatherModel> modelType() {
         return WeatherModel.class;
     }
 

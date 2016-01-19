@@ -25,7 +25,7 @@ import java.util.List;
 public class ControllerCImpl extends BaseControllerImpl<ControllerC.Model>
         implements ControllerC{
     @Override
-    public Class<Model> getModelClassType() {
+    public Class<Model> modelType() {
         return Model.class;
     }
 

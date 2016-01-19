@@ -8,18 +8,18 @@ import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
  */
 public class StorageServiceImpl extends MvcBean<StorageService.Storage> implements StorageService{
     @Override
-    public Class<StorageService.Storage> getStateType() {
+    public Class<StorageService.Storage> modelType() {
         return StorageService.Storage.class;
     }
 
     @Override
     public String getContent() {
-        return getState().getContent();
+        return getModel().getContent();
     }
 
     @Override
     public void setContent(String content) {
-        getState().setContent(content);
+        getModel().setContent(content);
     }
 
 }

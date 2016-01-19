@@ -136,7 +136,7 @@ public abstract class MvcFragment extends Fragment {
         }
     }
 
-    private final static String STATE_LAST_ORIENTATION = DefaultStateKeeper.MVC_SATE_PREFIX + "LastOrientation--__";
+    private final static String STATE_LAST_ORIENTATION = DefaultModelKeeper.MVC_SATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
     private boolean fragmentComesBackFromBackground = false;

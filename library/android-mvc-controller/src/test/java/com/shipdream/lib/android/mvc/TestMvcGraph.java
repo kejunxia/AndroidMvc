@@ -382,33 +382,33 @@ public class TestMvcGraph {
             throws ProvideException, ProviderConflictException {
         MvcBean mvcBeanMock = mock(MvcBean.class);
         Object mockState = mock(Object.class);
-        when(mvcBeanMock.getState()).thenReturn(mockState);
-        when(mvcBeanMock.getStateType()).thenReturn(Object.class);
+        when(mvcBeanMock.getModel()).thenReturn(mockState);
+        when(mvcBeanMock.modelType()).thenReturn(Object.class);
 
         List<MvcBean> mvcBeans = new ArrayList();
         mvcBeans.add(mvcBeanMock);
         mvcGraph.mvcBeans = mvcBeans;
 
-        final StateKeeper stateKeeperMock = mock(StateKeeper.class);
+        final ModelKeeper modelKeeperMock = mock(ModelKeeper.class);
 
         // Act
-        mvcGraph.saveAllStates(stateKeeperMock);
+        mvcGraph.saveAllModels(modelKeeperMock);
 
         // Verify
-        verify(mvcBeanMock, times(1)).getState();
-        verify(mvcBeanMock, times(1)).getStateType();
-        verify(stateKeeperMock).saveState(eq(mockState), eq(Object.class));
+        verify(mvcBeanMock, times(1)).getModel();
+        verify(mvcBeanMock, times(1)).modelType();
+        verify(modelKeeperMock).saveModel(eq(mockState), eq(Object.class));
 
         // Arrange
-        reset(stateKeeperMock);
+        reset(modelKeeperMock);
 
         Object stateMock = mock(Object.class);
-        when(stateKeeperMock.getState(eq(Object.class))).thenReturn(stateMock);
+        when(modelKeeperMock.retrieveModel(eq(Object.class))).thenReturn(stateMock);
 
-        mvcGraph.restoreAllStates(stateKeeperMock);
+        mvcGraph.restoreAllModels(modelKeeperMock);
 
         // Verify
-        verify(mvcBeanMock).restoreState(eq(stateMock));
+        verify(mvcBeanMock).restoreModel(eq(stateMock));
     }
 
     interface UnimplementedInterface{}

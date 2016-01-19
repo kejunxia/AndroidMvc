@@ -28,7 +28,7 @@ public class PrintControllerImpl extends BaseControllerImpl<PrintModel> implemen
 
     @SuppressWarnings("unchecked")
     @Override
-    public Class getModelClassType() {
+    public Class modelType() {
         return PrintModel.class;
     }
 }

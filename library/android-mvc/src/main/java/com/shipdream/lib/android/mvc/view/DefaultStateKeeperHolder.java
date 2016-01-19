@@ -11,21 +11,21 @@ import java.lang.reflect.Field;
  * This class holds a stateKeeper as a singleton.
  */
 class DefaultStateKeeperHolder {
-    static DefaultStateKeeper stateKeeper;
+    static DefaultModelKeeper stateKeeper;
 
     static {
-        stateKeeper = new DefaultStateKeeper();
+        stateKeeper = new DefaultModelKeeper();
     }
 
     static void saveStateOfAllControllers(Bundle outState) {
         stateKeeper.bundle = outState;
-        Injector.getGraph().saveAllStates(stateKeeper);
+        Injector.getGraph().saveAllModels(stateKeeper);
         stateKeeper.bundle = null;
     }
 
     static void restoreStateOfAllControllers(Bundle savedState) {
         stateKeeper.bundle = savedState;
-        Injector.getGraph().restoreAllStates(stateKeeper);
+        Injector.getGraph().restoreAllModels(stateKeeper);
         stateKeeper.bundle = null;
     }
 
@@ -42,7 +42,7 @@ class DefaultStateKeeperHolder {
                 } catch (IllegalAccessException e) {
                     //ignore
                 }
-                stateKeeper.saveState(mvcBean.getState(), mvcBean.getStateType());
+                stateKeeper.saveModel(mvcBean.getModel(), mvcBean.modelType());
             }
         }
     }
@@ -56,8 +56,8 @@ class DefaultStateKeeperHolder {
                 try {
                     field.setAccessible(true);
                     MvcBean mvcBean = (MvcBean) field.get(object);
-                    Object value = stateKeeper.getState(mvcBean.getStateType());
-                    mvcBean.restoreState(value);
+                    Object value = stateKeeper.retrieveModel(mvcBean.modelType());
+                    mvcBean.restoreModel(value);
                 } catch (IllegalAccessException e) {
                     //ignore
                 }

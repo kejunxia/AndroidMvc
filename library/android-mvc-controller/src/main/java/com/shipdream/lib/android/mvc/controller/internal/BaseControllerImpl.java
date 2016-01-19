@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvc.controller.internal;
 
 
 import com.shipdream.lib.android.mvc.MvcBean;
-import com.shipdream.lib.android.mvc.StateKeeper;
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
@@ -35,10 +34,10 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 /**
- * Base controller implementation. Controllers are responsible to manage the corresponding view. When
- * multiple controllers have shared logic or data, break them out into a manager extending
- * {@link BaseManagerImpl}. For example, a common  scenario is multiple controllers can share an
- * AccountManager/LoginManager and monitor the account change events.
+ * Base controller implementation implements {@link BaseController}. A controller is responsible to
+ * manage the corresponding view. When multiple controllers have shared logic or data, break them
+ * out into a manager extending {@link BaseManagerImpl}. For example, a common  scenario is multiple
+ * controllers can share an AccountManager and monitor the account change events.
  */
 public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implements BaseController<MODEL> {
     interface AndroidPoster {
@@ -63,9 +62,8 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * Called when the controller is constructed. Note that it could be called either when the
      * controller is instantiated for the first time or restored by views.
      *
-     * <p>The model of the controller will be instantiated by model's default no-argument constructor.
-     * However, if the controller needs to be restored, a new instance of model restored by
-     * {@link #restoreState(Object)} will replace the model created here.</p>
+     * <p>The model of the controller will be instantiated by model's default no-argument
+     * constructor here whe {@link #modelType()} doesn't return null.</p>
      */
     public void onConstruct() {
         super.onConstruct();
@@ -84,66 +82,22 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
 
     @Override
     public void bindModel(Object sender, MODEL model) {
-        super.bindState(model);
+        super.bindModel(model);
     }
 
     /**
-     * Model represents the state of view that this controller is managing.
-     * @return @return Null if the controller doesn't need to get its state saved and restored
-     * automatically when {@link #getModelClassType()} returns null. Otherwise the model.
+     * Model represents the state of the view this controller is managing.
+     * @return Null if the controller doesn't need to get its model saved and restored automatically
+     * when {@link #modelType()} returns null.
      */
     @Override
     public MODEL getModel() {
-        return getState();
+        return super.getModel();
     }
 
     /**
-     * Subclass should override this method to provide the class type of the model of the controller.
-     *
-     * @return null when the controller doesn't need to get its state saved and restored
-     * automatically by view. e.g. The controller always loads resource from remote services so that
-     * its state can be thought managed by the remote services. Otherwise returns the class type
-     */
-    protected abstract Class<MODEL> getModelClassType();
-
-    /**
-     * Method of {@link MvcBean} that allows {@link StateKeeper} to save and get the state of
-     * which is also the model the controller.
-     *
-     * @return The class type of the model of the controller
-     */
-    @Override
-    final public Class<MODEL> getStateType() {
-        return getModelClassType();
-    }
-
-    /**
-     * Method of {@link MvcBean} that allows {@link StateKeeper} to save and get the state of
-     * which is also the model the controller.
-     * <p>
-     * Note that if the controller doesn't need its state saved and restored automatically return
-     * null in {@link #getModelClassType()} and then this method will have no effect.
-     * </p>
-     *
-     * @param restoredState The restored state by {@link StateKeeper} that will be bound to the
-     *                      controller on the view referencing the controller is restored.
-     */
-    @Override
-    final public void restoreState(MODEL restoredState) {
-        if (getModelClassType() != null) {
-            bindModel(this, restoredState);
-        }
-        onRestored();
-    }
-
-    /**
-     * Called when the controller is restored after {@link #restoreState(Object)} is called.
-     */
-    public void onRestored() {
-    }
-
-    /**
-     * Post an event to other controllers. Event will be posted on the same thread as the caller.
+     * Post an event to other controllers. The event will be posted on the same thread that the
+     * caller is running on.
      *
      * @param event event to controllers
      */

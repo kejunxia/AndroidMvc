@@ -26,7 +26,7 @@ public class LifeCycleTestControllerImpl extends BaseControllerImpl implements L
     private Proxy proxy;
 
     @Override
-    public Class getModelClassType() {
+    public Class modelType() {
         return null;
     }
 

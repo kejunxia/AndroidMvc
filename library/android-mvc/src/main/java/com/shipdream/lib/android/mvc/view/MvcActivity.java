@@ -152,7 +152,7 @@ public abstract class MvcActivity extends AppCompatActivity {
      * injected into any fragments extending {@link MvcFragment} by fields annotated by @Inject.
      */
     public static abstract class DelegateFragment extends MvcFragment {
-        private static final String MVC_STATE_BUNDLE_KEY = DefaultStateKeeper.MVC_SATE_PREFIX + "RootBundle";
+        private static final String MVC_STATE_BUNDLE_KEY = DefaultModelKeeper.MVC_SATE_PREFIX + "RootBundle";
         private Logger logger = LoggerFactory.getLogger(getClass());
         //Track if the state is saved and not able to commit fragment transaction
         private boolean canCommitFragmentTransaction = false;
