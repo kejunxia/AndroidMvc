@@ -36,7 +36,31 @@ public class TestInjector {
     }
 
     @Test(expected = RuntimeException.class)
-    public void should_raise_runtime_exception_when_exception_occurring_when_configuring_mvc_graph_by_injector() {
+    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvc_graph_dependencies() {
+        Injector.getGraph().register(new Component() {
+            @Provides
+            @EventBusC
+            @Singleton
+            public EventBus providesIEventBusC() {
+                return mock(EventBus.class);
+            }
+        });
+
+        //Register an event bus that will raise a duplicate registering exception when register the
+        //BaseDependencies
+
+        MvcGraph.BaseDependencies baseDependencies = new MvcGraph.BaseDependencies() {
+            @Override
+            protected ExecutorService createExecutorService() {
+                return mock(ExecutorService.class);
+            }
+        };
+
+        Injector.configGraph(baseDependencies);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvc_graph_by_injector() {
         MvcGraph.BaseDependencies baseDependencies = new MvcGraph.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {

@@ -113,10 +113,8 @@ public class MvcGraph {
                         bean.onDisposed();
                         mvcBeans.remove(obj);
 
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("--MvcBean freed - '{}'.",
-                                    obj.getClass().getSimpleName());
-                        }
+                        logger.trace("--MvcBean freed - '{}'.",
+                                obj.getClass().getSimpleName());
                     }
                 }
             }
@@ -473,14 +471,14 @@ public class MvcGraph {
         @Provides
         @EventBusC
         @Singleton
-        public EventBus providesIEventBusC() {
+        public EventBus providesEventBusC() {
             return baseDependencies.createEventBusC();
         }
 
         @Provides
         @EventBusV
         @Singleton
-        public EventBus providesIEventBusV() {
+        public EventBus providesEventBusV() {
             return baseDependencies.createEventBusV();
         }
 
@@ -549,15 +547,11 @@ public class MvcGraph {
                     if (object instanceof MvcBean) {
                         MvcBean bean = (MvcBean) object;
                         bean.onConstruct();
+
+                        logger.trace("++MvcBean injected - '{}'.",
+                                object.getClass().getSimpleName());
                     }
                     unregisterOnInjectedListener(this);
-
-                    if (logger.isTraceEnabled()) {
-                        if (object instanceof MvcBean) {
-                            logger.trace("++MvcBean injected - '{}'.",
-                                    object.getClass().getSimpleName());
-                        }
-                    }
                 }
             });
 
