@@ -17,11 +17,17 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.lang.reflect.InvocationTargetException;
+
+import static org.junit.Assert.fail;
 
 public class TestDefaultGraphExceptions extends BaseTestCases {
     interface Pet{
@@ -103,6 +109,86 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
 
         Family family = new Family();
         graph.inject(family, MyInject.class);
+    }
+
+    private static abstract class AbstractBean {
+    }
+
+    @Test
+    public void should_handle_InstantiationException_when_create_class_instance_in_ProviderByClassName()
+            throws ProviderConflictException, ClassNotFoundException, ProvideException, CircularDependenciesException, ProviderMissingException {
+        SimpleGraph graph = new SimpleGraph();
+        Provider provider = new ProviderByClassName(AbstractBean.class, AbstractBean.class.getName());
+        graph.register(provider);
+
+        class Consumer {
+            @MyInject
+            AbstractBean bean;
+        }
+
+        Consumer c = new Consumer();
+
+        try {
+            graph.inject(c, MyInject.class);
+            fail("Should have caught InstantiationException but not");
+        } catch (PokeException e) {
+            Assert.assertTrue(e.getCause() instanceof InstantiationException);
+        }
+    }
+
+    private static class BadInstantiatingBean {
+        {
+            int x = 1 / 0;
+        }
+    }
+
+    @Test
+    public void should_handle_InvocationTargetException_when_create_class_instance_in_ProviderByClassName()
+            throws ProviderConflictException, ClassNotFoundException, ProvideException, CircularDependenciesException, ProviderMissingException {
+        SimpleGraph graph = new SimpleGraph();
+        Provider provider = new ProviderByClassName(BadInstantiatingBean.class, BadInstantiatingBean.class.getName());
+        graph.register(provider);
+
+        class Consumer {
+            @MyInject
+            BadInstantiatingBean bean;
+        }
+
+        Consumer c = new Consumer();
+
+        try {
+            graph.inject(c, MyInject.class);
+
+            fail("Should have caught InvocationTargetException but not");
+        } catch (PokeException e) {
+            Assert.assertTrue(e.getCause() instanceof InvocationTargetException);
+        }
+    }
+
+    @Test
+    public void should_handle_NoSuchMethodException_when_create_class_instance_in_ProviderByClassName()
+            throws ProviderConflictException, ClassNotFoundException, ProvideException, CircularDependenciesException, ProviderMissingException {
+        class BadBean {
+        }
+
+        SimpleGraph graph = new SimpleGraph();
+        Provider provider = new ProviderByClassName(BadBean.class, BadBean.class.getName());
+        graph.register(provider);
+
+        class Consumer {
+            @MyInject
+            BadBean bean;
+        }
+
+        Consumer c = new Consumer();
+
+        try {
+            graph.inject(c, MyInject.class);
+
+            fail("Should have caught NoSuchMethodException but not");
+        } catch (PokeException e) {
+            Assert.assertTrue(e.getCause() instanceof NoSuchMethodException);
+        }
     }
 
 }

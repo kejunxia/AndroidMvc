@@ -22,7 +22,9 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -59,6 +61,7 @@ public class TestEventBus {
         class Event2{}
         class Event3{}
 
+        //Test java.xxx
         class Subscriber extends java.io.InputStream{
             public void onEvent(Event1 event1) {
             }
@@ -72,34 +75,82 @@ public class TestEventBus {
         Subscriber sub = new Subscriber();
 
         //Action
-        eventBus.register(sub);
+        EventBusImpl eventBus1 = new EventBusImpl();
+        eventBus1.register(sub);
 
         //Assert
-        Assert.assertEquals(eventBus.subscribers.size(), 1);
-        Assert.assertTrue(eventBus.subscribers.keySet().contains(Event1.class));
+        Assert.assertEquals(eventBus1.subscribers.size(), 1);
+        Assert.assertTrue(eventBus1.subscribers.keySet().contains(Event1.class));
 
-        class Subscriber2 extends java.io.InputStream{
-            public void onEvent(Event2 event2) {
+        eventBus1.unregister(sub);
+        Assert.assertEquals(eventBus1.subscribers.size(), 0);
+
+        //Test javax.xxx
+        class Subscriber2 extends javax.naming.Binding {
+            public Subscriber2(String name, Object obj) {
+                super(name, obj);
             }
-            public void onEvent(Event3 event3) {
-            }
-            @Override
-            public int read() throws IOException {
-                return 0;
+
+            public void onEvent(Event1 event1) {
             }
         }
-
-        Subscriber2 sub2 = new Subscriber2();
+        Subscriber2 sub2 = new Subscriber2("", "");
 
         //Action
         EventBusImpl eventBus2 = new EventBusImpl();
         eventBus2.register(sub2);
-        Assert.assertEquals(eventBus2.subscribers.size(), 2);
-        Assert.assertTrue(eventBus2.subscribers.keySet().contains(Event2.class));
-        Assert.assertTrue(eventBus2.subscribers.keySet().contains(Event3.class));
+
+        //Assert
+        Assert.assertEquals(eventBus2.subscribers.size(), 1);
+        Assert.assertTrue(eventBus2.subscribers.keySet().contains(Event1.class));
 
         eventBus2.unregister(sub2);
         Assert.assertEquals(eventBus2.subscribers.size(), 0);
+
+        //Test android.xxx
+        class Subscriber3 extends android.Phone{
+            public void onEvent(Event2 event2) {
+            }
+            public void onEvent(Event3 event3) {
+            }
+        }
+        Subscriber3 sub3 = new Subscriber3();
+
+        EventBusImpl eventBus3 = new EventBusImpl();
+        eventBus3.register(sub3);
+
+        Assert.assertEquals(eventBus3.subscribers.size(), 2);
+        Assert.assertTrue(eventBus3.subscribers.keySet().contains(Event2.class));
+        Assert.assertTrue(eventBus3.subscribers.keySet().contains(Event3.class));
+
+        eventBus3.unregister(sub3);
+        Assert.assertEquals(eventBus3.subscribers.size(), 0);
+    }
+
+    @Test
+    public void should_throw_runtime_exception_when_posting_event_encounters_illegalAccessException() {
+        //Arrange
+        class Event1{}
+
+        //Test java.xxx
+        class Subscriber{
+            void onEvent(Event1 event1) {
+                throw new RuntimeException("Opps...");
+            }
+        }
+        Subscriber sub = new Subscriber();
+
+        //Action
+        EventBusImpl eventBus = new EventBusImpl();
+        eventBus.register(sub);
+
+        try {
+            eventBus.post(new Event1());
+
+            fail("Should caught InvocationTargetException");
+        } catch (RuntimeException e) {
+            Assert.assertTrue(e.getCause() instanceof InvocationTargetException);
+        }
     }
 
     @Test
