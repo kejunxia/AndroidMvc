@@ -26,7 +26,7 @@ public class TestInjector {
     }
 
     @Test
-    public void should() {
+    public void should_return_all_cahced_instances_by___MvcGraphHelper() {
         Injector.configGraph(new MvcGraph.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
