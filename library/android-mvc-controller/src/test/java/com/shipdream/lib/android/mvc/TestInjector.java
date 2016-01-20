@@ -2,16 +2,15 @@ package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
-import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.poke.Component;
-import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
 import static org.mockito.Mockito.mock;
 
@@ -26,54 +25,44 @@ public class TestInjector {
         Injector.getGraph();
     }
 
-    static class Comp extends Component {
-        @Provides
-        @EventBusC
-        @Singleton
-        public EventBus providesIEventBusC() {
-            return new EventBusImpl();
-        }
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvc_graph_dependencies() {
-        Injector.getGraph().register(new Component() {
-            @Provides
-            @EventBusC
-            @Singleton
-            public EventBus providesIEventBusC() {
-                return mock(EventBus.class);
+    @Test
+    public void should() {
+        Injector.configGraph(new MvcGraph.BaseDependencies() {
+            @Override
+            protected ExecutorService createExecutorService() {
+                return mock(ExecutorService.class);
             }
         });
+        Assert.assertEquals(0, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
 
-        //Register an event bus that will raise a duplicate registering exception when register the
-        //BaseDependencies
+        class View1 {
+            @Inject
+            @EventBusC
+            EventBus eventBus;
+        }
 
-        MvcGraph.BaseDependencies baseDependencies = new MvcGraph.BaseDependencies() {
-            @Override
-            protected ExecutorService createExecutorService() {
-                return mock(ExecutorService.class);
-            }
-        };
+        View1 v1 = new View1();
+        Injector.getGraph().inject(v1);
+        Assert.assertEquals(1, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
 
-        Injector.configGraph(baseDependencies);
-    }
+        class View2 {
+            @Inject
+            @EventBusC
+            EventBus eventBus;
+        }
 
-    @Test(expected = RuntimeException.class)
-    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvc_graph_by_injector() {
-        MvcGraph.BaseDependencies baseDependencies = new MvcGraph.BaseDependencies() {
-            @Override
-            protected ExecutorService createExecutorService() {
-                return mock(ExecutorService.class);
-            }
-        };
+        View2 v2 = new View2();
+        Injector.getGraph().inject(v2);
+        Assert.assertEquals(1, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
 
-        Injector.configGraph(baseDependencies);
+        class View3 {
+            @Inject
+            @EventBusV
+            EventBus eventBus;
+        }
 
-        //Register component providing duplicate instances
-        Injector.getGraph().register(new Comp());
-
-        //Exception should be raised here
-        Injector.configGraph(baseDependencies);
+        View3 v3 = new View3();
+        Injector.getGraph().inject(v3);
+        Assert.assertEquals(2, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
     }
 }
