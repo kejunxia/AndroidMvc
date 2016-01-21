@@ -24,7 +24,7 @@ import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
-import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
+import com.shipdream.lib.android.mvc.manager.internal.BaseManagerImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

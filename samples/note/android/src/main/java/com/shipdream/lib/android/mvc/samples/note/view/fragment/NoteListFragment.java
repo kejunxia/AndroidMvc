@@ -30,7 +30,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.samples.note.R;
-import com.shipdream.lib.android.mvc.samples.note.controller.NoteController;
+import com.shipdream.lib.android.mvc.samples.note.controller.NoteListController;
 import com.shipdream.lib.android.mvc.samples.note.model.dto.Note;
 
 import javax.inject.Inject;
@@ -43,8 +43,11 @@ public class NoteListFragment extends BaseFragment {
     private RecyclerView.LayoutManager layoutManager;
     private ActionMode actionMode;
 
+//    @Inject
+//    private NoteController noteController;
+
     @Inject
-    private NoteController noteController;
+    private NoteListController noteListController;
 
     @Override
     protected int getLayoutResId() {
@@ -67,7 +70,7 @@ public class NoteListFragment extends BaseFragment {
         buttonAddNote.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                noteController.toCreateNote();
+                noteListController.toCreateNote();
             }
         });
 
@@ -100,15 +103,15 @@ public class NoteListFragment extends BaseFragment {
         }
     }
 
-    public void onEvent(NoteController.EventC2V.OnNoteSelectionChanged event) {
+    public void onEvent(NoteListController.EventC2V.OnNoteSelectionChanged event) {
         updateList();
     }
 
-    public void onEvent(NoteController.EventC2V.OnNoteRemoved event) {
+    public void onEvent(NoteListController.EventC2V.OnNoteRemoved event) {
         updateList();
     }
 
-    public void onEvent(NoteController.EventC2V.OnEditModeBegan event) {
+    public void onEvent(NoteListController.EventC2V.OnEditModeBegan event) {
         showActionMode();
     }
 
@@ -129,7 +132,7 @@ public class NoteListFragment extends BaseFragment {
             public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.menu_delete:
-                        noteController.removeNote(item);
+                        noteListController.removeNote(item);
                         mode.finish();
                         return true;
                 }
@@ -138,7 +141,7 @@ public class NoteListFragment extends BaseFragment {
 
             @Override
             public void onDestroyActionMode(ActionMode mode) {
-                noteController.clearSelections(mode);
+                noteListController.clearSelections(mode);
                 actionMode = null;
             }
         });
@@ -156,9 +159,9 @@ public class NoteListFragment extends BaseFragment {
             listView.setVisibility(View.GONE);
         }
 
-        if(actionMode != null && !noteController.inSelectionMode()) {
+        if(actionMode != null && !noteListController.inSelectionMode()) {
             actionMode.finish();
-        } else if(noteController.inSelectionMode() && actionMode == null) {
+        } else if(noteListController.inSelectionMode() && actionMode == null) {
             showActionMode();
         }
     }
@@ -182,20 +185,20 @@ public class NoteListFragment extends BaseFragment {
 
         @Override
         public void onBindViewHolder(NoteItemHolder holder, final int i) {
-            final Note note = noteListFragment.noteController.getNotes().get(i);
+            final Note note = noteListFragment.noteListController.getNotes().get(i);
             holder.title.setText(note.getTitle());
-            holder.updateTime.setText(noteListFragment.noteController.getDisplayNoteUpdateTime(note.getUpdateTime()));
-            holder.root.setSelected(noteListFragment.noteController.isSelected(note.getId()) >= 0);
+            holder.updateTime.setText(noteListFragment.noteListController.getDisplayNoteUpdateTime(note.getUpdateTime()));
+            holder.root.setSelected(noteListFragment.noteListController.isSelected(note.getId()) >= 0);
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    noteListFragment.noteController.selectNote(note.getId());
+                    noteListFragment.noteListController.selectNote(note.getId());
                 }
             });
             holder.root.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    noteListFragment.noteController.toggleSelection(v, note.getId());
+                    noteListFragment.noteListController.toggleSelection(v, note.getId());
                     return true;
                 }
             });
@@ -203,7 +206,7 @@ public class NoteListFragment extends BaseFragment {
 
         @Override
         public int getItemCount() {
-            return noteListFragment.noteController.getNotes().size();
+            return noteListFragment.noteListController.getNotes().size();
         }
     }
 

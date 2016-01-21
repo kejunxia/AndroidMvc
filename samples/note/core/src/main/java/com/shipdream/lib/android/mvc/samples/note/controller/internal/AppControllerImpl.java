@@ -20,7 +20,7 @@ import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
-import com.shipdream.lib.android.mvc.samples.note.controller.NoteController;
+import com.shipdream.lib.android.mvc.samples.note.manager.NoteManager;
 import com.shipdream.lib.android.mvc.samples.note.model.NoteModel;
 
 import javax.inject.Inject;
@@ -32,7 +32,7 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
     private NavigationController navigationController;
 
     @Inject
-    private NoteController noteController;
+    private NoteManager noteManager;
 
     @Override
     public Class modelType() {
@@ -40,9 +40,10 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
     }
 
     @Override
-    public void navigateToInitialLocation() {
+    public void startApp(Object sender) {
+        //Login a dump user. This should be done by a login api in real app.
         if(navigationController.getModel().getCurrentLocation() == null) {
-            navigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST);
+            navigationController.navigate(this).to(LocId.NOTE_HANDSET_LIST);
         }
     }
 
@@ -79,10 +80,10 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
             //Clear history and go to note list
             navigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST, null);
 
-            NoteModel noteModel = noteController.getModel();
+            NoteModel noteModel = noteManager.getModel();
             if(null != noteModel.getViewingNote()) {
                 //Was viewing note details, stack the detail location on top of note list
-                navigationController.navigateTo(this, LocId.NOTE_HANDSET_DETAIL);
+                navigationController.navigate(this).to(LocId.NOTE_HANDSET_DETAIL);
             }
         }
     }

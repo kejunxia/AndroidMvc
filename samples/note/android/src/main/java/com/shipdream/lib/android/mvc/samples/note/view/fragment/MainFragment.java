@@ -103,7 +103,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
     @Override
     protected void onStartUp() {
-        appController.navigateToInitialLocation();
+        appController.startApp(this);
     }
 
     @Override
