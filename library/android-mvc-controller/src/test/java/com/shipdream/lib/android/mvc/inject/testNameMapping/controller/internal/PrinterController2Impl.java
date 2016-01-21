@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public class PrinterController2Impl extends BaseControllerImpl<PrintModel> imple
     }
 
     @Override
-    public Class<PrintModel> getModelClassType() {
+    public Class<PrintModel> modelType() {
         return PrintModel.class;
     }
 }

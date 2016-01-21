@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package com.shipdream.lib.android.mvc.controller.internal;
 
 import com.shipdream.lib.android.mvc.controller.BaseControllerTest;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
-import com.shipdream.lib.android.mvc.event.BaseEventC2C;
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventC;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -37,8 +37,8 @@ public class TestBaseControllerImpl extends BaseControllerTest {
     public void should_return_getState_and_getStateType_correctly() throws Exception {
         NavigationControllerImpl navigationController = new NavigationControllerImpl();
 
-        Assert.assertTrue(navigationController.getModel() == navigationController.getState());
-        Assert.assertTrue(navigationController.getStateType() == navigationController.getModelClassType());
+        Assert.assertTrue(navigationController.getModel() == navigationController.getModel());
+        Assert.assertTrue(navigationController.modelType() == navigationController.modelType());
     }
 
     @Test
@@ -48,13 +48,13 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         NavigationController.Model restoreState = mock(NavigationController.Model.class);
         Assert.assertNotEquals(restoreState, navigationController.getModel());
 
-        navigationController.restoreState(restoreState);
+        navigationController.restoreModel(restoreState);
         Assert.assertEquals(restoreState, navigationController.getModel());
     }
 
     class StatelessController extends BaseControllerImpl {
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
     }
@@ -63,10 +63,10 @@ public class TestBaseControllerImpl extends BaseControllerTest {
     public void should_rebind_model_on_restoration_when_state_class_type_is_null() throws Exception {
         StatelessController controller = new StatelessController();
         //Pre-verify
-        Assert.assertNull(controller.getModelClassType());
+        Assert.assertNull(controller.modelType());
         Assert.assertNull(controller.getModel());
 
-        controller.restoreState("Non-Null State");
+        controller.restoreModel("Non-Null State");
         Assert.assertNull(controller.getModel());
     }
 
@@ -77,7 +77,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         navigationController.bindModel(this, null);
     }
 
-    class Event extends BaseEventC2C {
+    class Event extends BaseEventC {
         public Event(Object sender) {
             super(sender);
         }
@@ -85,12 +85,12 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
     static class Controller1 extends BaseControllerImpl {
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
 
-        void postMyEvent(BaseEventC2C e) {
-            postC2CEvent(e);
+        void postMyEvent(BaseEventC e) {
+            postControllerEvent(e);
         }
     }
 
@@ -102,7 +102,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         EventProxy proxy;
 
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
 
@@ -135,7 +135,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
     class TestController extends BaseControllerImpl {
         @Override
-        protected Class getModelClassType() {
+        public Class modelType() {
             return null;
         }
 
@@ -153,12 +153,12 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         graph.inject(controller);
         controller.onConstruct();
         controller.setLogger(loggerMock);
-        controller.eventBusC2C = null;
+        controller.eventBus2C = null;
 
-        BaseEventC2C event = new BaseEventC2C(this){};
+        BaseEventC event = new BaseEventC(this){};
 
         //Act
-        controller.postC2CEvent(event);
+        controller.postControllerEvent(event);
 
         //Assert
         verify(loggerMock).warn(anyString(), anyVararg());
@@ -173,12 +173,12 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         graph.inject(controller);
         controller.onConstruct();
         controller.setLogger(loggerMock);
-        controller.mEventBusC2V = null;
+        controller.eventBus2V = null;
 
-        BaseEventC2V event = new BaseEventC2V(this){};
+        BaseEventV event = new BaseEventV(this){};
 
         //Act
-        controller.postC2VEvent(event);
+        controller.postViewEvent(event);
 
         //Assert
         verify(loggerMock).warn(anyString(), anyVararg());
@@ -190,7 +190,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
     class BadController extends BaseControllerImpl<PrivateModel> {
         @Override
-        protected Class<PrivateModel> getModelClassType() {
+        public Class<PrivateModel> modelType() {
             return PrivateModel.class;
         }
     }

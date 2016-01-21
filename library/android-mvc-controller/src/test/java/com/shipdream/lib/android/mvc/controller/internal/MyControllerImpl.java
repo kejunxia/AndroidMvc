@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -40,7 +40,7 @@ public class MyControllerImpl extends BaseControllerImpl {
     }
 
     @Override
-    public Class getModelClassType() {
+    public Class modelType() {
         return null;
     }
 
@@ -49,7 +49,7 @@ public class MyControllerImpl extends BaseControllerImpl {
             @Override
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
-                postC2VEvent(new ResourceLoaded(sender));
+                postViewEvent(new ResourceLoaded(sender));
             }
         });
     }
@@ -69,7 +69,7 @@ public class MyControllerImpl extends BaseControllerImpl {
             @Override
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
-                postC2VEvent(new ResourceLoaded(sender));
+                postViewEvent(new ResourceLoaded(sender));
             }
         });
     }
@@ -79,12 +79,12 @@ public class MyControllerImpl extends BaseControllerImpl {
             @Override
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
-                postC2VEvent(new ResourceLoaded(sender));
+                postViewEvent(new ResourceLoaded(sender));
             }
         }, new AsyncExceptionHandler() {
             @Override
             public void handleException(Exception exception) {
-                postC2VEvent(new ResourceLoadFailed(sender, exception));
+                postViewEvent(new ResourceLoadFailed(sender, exception));
             }
         });
     }
@@ -108,7 +108,7 @@ public class MyControllerImpl extends BaseControllerImpl {
         }, new AsyncExceptionHandler() {
             @Override
             public void handleException(Exception exception) {
-                postC2VEvent(new ResourceLoadFailed(sender, exception));
+                postViewEvent(new ResourceLoadFailed(sender, exception));
             }
         });
     }
@@ -120,9 +120,9 @@ public class MyControllerImpl extends BaseControllerImpl {
             public void execute() throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 if (getState() == State.CANCELED) {
-                    postC2VEvent(new ResourceLoadCanceled(sender));
+                    postViewEvent(new ResourceLoadCanceled(sender));
                 } else {
-                    postC2VEvent(new ResourceLoaded(sender));
+                    postViewEvent(new ResourceLoaded(sender));
                 }
             }
         };
@@ -131,26 +131,26 @@ public class MyControllerImpl extends BaseControllerImpl {
                 new AsyncExceptionHandler() {
                     @Override
                     public void handleException(Exception exception) {
-                        postC2VEvent(new ResourceLoadFailed(sender, exception));
+                        postViewEvent(new ResourceLoadFailed(sender, exception));
                     }
                 });
 
         return asyncTask;
     }
 
-    public static class ResourceLoaded extends BaseEventC2V {
+    public static class ResourceLoaded extends BaseEventV {
         public ResourceLoaded(Object sender) {
             super(sender);
         }
     }
 
-    public static class ResourceLoadCanceled extends BaseEventC2V {
+    public static class ResourceLoadCanceled extends BaseEventV {
         public ResourceLoadCanceled(Object sender) {
             super(sender);
         }
     }
 
-    public static class ResourceLoadFailed extends BaseEventC2V {
+    public static class ResourceLoadFailed extends BaseEventV {
         private final Exception exception;
 
         public ResourceLoadFailed(Object sender, Exception exception) {

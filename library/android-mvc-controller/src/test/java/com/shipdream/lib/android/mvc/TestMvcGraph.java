@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -380,35 +380,35 @@ public class TestMvcGraph {
     @Test
     public void should_be_able_save_and_restore_state_correctly()
             throws ProvideException, ProviderConflictException {
-        final StateManaged stateManagedMock = mock(StateManaged.class);
+        MvcBean mvcBeanMock = mock(MvcBean.class);
         Object mockState = mock(Object.class);
-        when(stateManagedMock.getState()).thenReturn(mockState);
-        when(stateManagedMock.getStateType()).thenReturn(Object.class);
+        when(mvcBeanMock.getModel()).thenReturn(mockState);
+        when(mvcBeanMock.modelType()).thenReturn(Object.class);
 
-        List<StateManaged> stateManagedList = new ArrayList();
-        stateManagedList.add(stateManagedMock);
-        mvcGraph.stateManagedObjects = stateManagedList;
+        List<MvcBean> mvcBeans = new ArrayList();
+        mvcBeans.add(mvcBeanMock);
+        mvcGraph.mvcBeans = mvcBeans;
 
-        final StateKeeper stateKeeperMock = mock(StateKeeper.class);
+        final ModelKeeper modelKeeperMock = mock(ModelKeeper.class);
 
         // Act
-        mvcGraph.saveAllStates(stateKeeperMock);
+        mvcGraph.saveAllModels(modelKeeperMock);
 
         // Verify
-        verify(stateManagedMock, times(1)).getState();
-        verify(stateManagedMock, times(1)).getStateType();
-        verify(stateKeeperMock).saveState(eq(mockState), eq(Object.class));
+        verify(mvcBeanMock, times(1)).getModel();
+        verify(mvcBeanMock, times(1)).modelType();
+        verify(modelKeeperMock).saveModel(eq(mockState), eq(Object.class));
 
         // Arrange
-        reset(stateKeeperMock);
+        reset(modelKeeperMock);
 
         Object stateMock = mock(Object.class);
-        when(stateKeeperMock.getState(eq(Object.class))).thenReturn(stateMock);
+        when(modelKeeperMock.retrieveModel(eq(Object.class))).thenReturn(stateMock);
 
-        mvcGraph.restoreAllStates(stateKeeperMock);
+        mvcGraph.restoreAllModels(modelKeeperMock);
 
         // Verify
-        verify(stateManagedMock).restoreState(eq(stateMock));
+        verify(mvcBeanMock).restoreModel(eq(stateMock));
     }
 
     interface UnimplementedInterface{}

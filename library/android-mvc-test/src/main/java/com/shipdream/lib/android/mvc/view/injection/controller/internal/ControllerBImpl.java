@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.util.List;
 public class ControllerBImpl extends BaseControllerImpl<ControllerB.Model>
         implements ControllerB{
     @Override
-    public Class<Model> getModelClassType() {
+    public Class<Model> modelType() {
         return Model.class;
     }
 

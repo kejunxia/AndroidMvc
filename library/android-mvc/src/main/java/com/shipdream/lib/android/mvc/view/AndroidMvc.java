@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,10 @@ import android.support.annotation.NonNull;
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
-import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.poke.Component;
-import com.shipdream.lib.poke.Provides;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
-
-import javax.inject.Singleton;
 
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
@@ -66,32 +60,8 @@ public class AndroidMvc {
         }
     }
 
-    private static EventBus eventBusV2V;
-
-    /**
-     * Gets the event bus that routes events among views.
-     * @return The event bus
-     */
-    public static EventBus getEventBusV2V() {
-        if (eventBusV2V == null) {
-            eventBusV2V = new EventBusImpl();
-        }
-        return eventBusV2V;
-    }
-
-    static class ViewComponent extends Component {
-        @Provides
-        @EventBusV2V
-        @Singleton
-        public EventBus providesIEventBusV2V() {
-            return getEventBusV2V();
-        }
-    }
-
     static {
         Injector.configGraph(new DefaultControllerDependencies());
-        Injector.getGraph().register(new ViewComponent());
-
         AndroidPosterImpl.init();
     }
 

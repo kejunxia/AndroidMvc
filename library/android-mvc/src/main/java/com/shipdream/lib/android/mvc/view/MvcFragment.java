@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.shipdream.lib.android.mvc.StateManaged;
-import com.shipdream.lib.android.mvc.event.BaseEventV2V;
+import com.shipdream.lib.android.mvc.MvcBean;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -98,7 +98,7 @@ public abstract class MvcFragment extends Fragment {
          * <p>Although when a fragment is restored all fields of the fragment will be recreated
          * ({@link #isNewInstance()} = true), MVC framework will automatically restore the
          * state(model) of injected controllers held by the fragment . So when a fragment is being
-         * restored, only re-instantiate its non-controller fields. All injected {@link StateManaged}
+         * restored, only re-instantiate its non-controller fields. All injected {@link MvcBean}
          * including controllers will be restored by the framework itself.</p>
          */
         public boolean isRestored() {
@@ -136,7 +136,7 @@ public abstract class MvcFragment extends Fragment {
         }
     }
 
-    private final static String STATE_LAST_ORIENTATION = DefaultStateKeeper.MVC_SATE_PREFIX + "LastOrientation--__";
+    private final static String STATE_LAST_ORIENTATION = DefaultModelKeeper.MVC_SATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
     private boolean fragmentComesBackFromBackground = false;
@@ -463,18 +463,12 @@ public abstract class MvcFragment extends Fragment {
     }
 
     /**
-     * Post an event from this view to other views. Using EventBusV2V is a handy way to
-     * inter-communicate among views but it's a little anti pattern. Best practice is that views
-     * communicates to other views through controllers and EventBusC2V. For example, if view1 wants
-     * to talk to view2, instead of sending V2V events, view1 can send a command to a controller and
-     * that controller will fire an C2VEvent that will be received by view2. In this way, more
-     * business logic can be wrapped into controllers rather than exposed to view1.
-     *
-     * <p>However, it's not absolute. If touching a controller is an overkill, sending events
-     * directly through V2V channel is still an option.</p>
+     * Handy method to post an event to other views directly. However, when possible, it's
+     * recommended to post events from controllers to views.
      * @param event
      */
-    protected void postEventV2V(BaseEventV2V event) {
-        AndroidMvc.getEventBusV2V().post(event);
+    protected void postToViews(BaseEventV event) {
+        eventRegister.postToViews(event);
     }
+
 }

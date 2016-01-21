@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public class TestEvent {
         String v1 = "v1";
         String v2 = "v2";
         Object sender = new Object();
-        ValueChangeEventC2C eventC2C = new ValueChangeEventC2C(sender, v1, v2);
+        ValueChangeEventC eventC2C = new ValueChangeEventC(sender, v1, v2);
 
         Assert.assertEquals(sender, eventC2C.getSender());
         Assert.assertEquals(v1, eventC2C.getLastValue());
@@ -38,7 +38,7 @@ public class TestEvent {
         String v1 = "v1";
         String v2 = "v2";
         Object sender = new Object();
-        ValueChangeEventC2V eventC2V = new ValueChangeEventC2V(sender, v1, v2);
+        ValueChangeEventV eventC2V = new ValueChangeEventV(sender, v1, v2);
 
         Assert.assertEquals(sender, eventC2V.getSender());
         Assert.assertEquals(v1, eventC2V.getLastValue());
@@ -50,7 +50,7 @@ public class TestEvent {
         String v1 = "v1";
         String v2 = "v2";
         Object sender = new Object();
-        ValueChangeEventV2V eventV2V = new ValueChangeEventV2V(sender, v1, v2);
+        ValueChangeEventV eventV2V = new ValueChangeEventV(sender, v1, v2);
 
         Assert.assertEquals(sender, eventV2V.getSender());
         Assert.assertEquals(v1, eventV2V.getLastValue());

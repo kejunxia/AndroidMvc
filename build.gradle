@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,8 +72,8 @@ ext {
     siteUrl = 'https://github.com/kejunxia/AndroidMvc'      // Homepage URL of the library
     gitUrl = 'https://github.com/kejunxia/AndroidMvc.git'   // Git repository URL
     version = [
-        major: 1,
-        minor: 6,
+        major: 2,
+        minor: 0,
         patch : 0
     ]
     libGroup = 'com.shipdream'

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 package com.shipdream.lib.android.mvc.event.bus.internal;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -49,6 +52,105 @@ public class TestEventBus {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowIllegalArgumentExceptionToPostNullEvent() {
         eventBus.post(null);
+    }
+
+    @Test
+    public void should_subscribers_methods_inherited_from_system_classes() {
+        //Arrange
+        class Event1{}
+        class Event2{}
+        class Event3{}
+
+        //Test java.xxx
+        class Subscriber extends java.io.InputStream{
+            public void onEvent(Event1 event1) {
+            }
+
+            @Override
+            public int read() throws IOException {
+                return 0;
+            }
+        }
+
+        Subscriber sub = new Subscriber();
+
+        //Action
+        EventBusImpl eventBus1 = new EventBusImpl();
+        eventBus1.register(sub);
+
+        //Assert
+        Assert.assertEquals(eventBus1.subscribers.size(), 1);
+        Assert.assertTrue(eventBus1.subscribers.keySet().contains(Event1.class));
+
+        eventBus1.unregister(sub);
+        Assert.assertEquals(eventBus1.subscribers.size(), 0);
+
+        //Test javax.xxx
+        class Subscriber2 extends javax.naming.Binding {
+            public Subscriber2(String name, Object obj) {
+                super(name, obj);
+            }
+
+            public void onEvent(Event1 event1) {
+            }
+        }
+        Subscriber2 sub2 = new Subscriber2("", "");
+
+        //Action
+        EventBusImpl eventBus2 = new EventBusImpl();
+        eventBus2.register(sub2);
+
+        //Assert
+        Assert.assertEquals(eventBus2.subscribers.size(), 1);
+        Assert.assertTrue(eventBus2.subscribers.keySet().contains(Event1.class));
+
+        eventBus2.unregister(sub2);
+        Assert.assertEquals(eventBus2.subscribers.size(), 0);
+
+        //Test android.xxx
+        class Subscriber3 extends android.Phone{
+            public void onEvent(Event2 event2) {
+            }
+            public void onEvent(Event3 event3) {
+            }
+        }
+        Subscriber3 sub3 = new Subscriber3();
+
+        EventBusImpl eventBus3 = new EventBusImpl();
+        eventBus3.register(sub3);
+
+        Assert.assertEquals(eventBus3.subscribers.size(), 2);
+        Assert.assertTrue(eventBus3.subscribers.keySet().contains(Event2.class));
+        Assert.assertTrue(eventBus3.subscribers.keySet().contains(Event3.class));
+
+        eventBus3.unregister(sub3);
+        Assert.assertEquals(eventBus3.subscribers.size(), 0);
+    }
+
+    @Test
+    public void should_throw_runtime_exception_when_posting_event_encounters_illegalAccessException() {
+        //Arrange
+        class Event1{}
+
+        //Test java.xxx
+        class Subscriber{
+            void onEvent(Event1 event1) {
+                throw new RuntimeException("Opps...");
+            }
+        }
+        Subscriber sub = new Subscriber();
+
+        //Action
+        EventBusImpl eventBus = new EventBusImpl();
+        eventBus.register(sub);
+
+        try {
+            eventBus.post(new Event1());
+
+            fail("Should caught InvocationTargetException");
+        } catch (RuntimeException e) {
+            Assert.assertTrue(e.getCause() instanceof InvocationTargetException);
+        }
     }
 
     @Test

@@ -1,9 +1,25 @@
+/*
+ * Copyright 2016 Kejun Xia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.shipdream.lib.android.mvc.controller.internal;
 
 import android.os.Handler;
 import android.os.Looper;
 
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 
 import org.slf4j.Logger;
@@ -21,9 +37,9 @@ public class AndroidPosterImpl implements BaseControllerImpl.AndroidPoster {
     }
 
     @Override
-    public void post(final EventBus eventBusC2V, final BaseEventC2V eventC2V) {
+    public void post(final EventBus eventBusV, final BaseEventV eventV) {
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-            doPost(eventBusC2V, eventC2V);
+            doPost(eventBusV, eventV);
         } else {
             //Android handler is presented, posting to the main thread on Android.
             if (handler == null) {
@@ -32,17 +48,17 @@ public class AndroidPosterImpl implements BaseControllerImpl.AndroidPoster {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    doPost(eventBusC2V, eventC2V);
+                    doPost(eventBusV, eventV);
                 }
             });
         }
     }
 
-    private static void doPost(EventBus eventBusC2V, BaseEventC2V eventC2V) {
-        if (eventBusC2V != null) {
-            eventBusC2V.post(eventC2V);
+    private static void doPost(EventBus eventBusV, BaseEventV event) {
+        if (eventBusV != null) {
+            eventBusV.post(event);
         } else {
-            logger.warn("Trying to post event but EventBusC2V is null");
+            logger.warn("Trying to post event but EventBusV is null");
         }
     }
 }

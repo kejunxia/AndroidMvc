@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.controller.internal.AsyncTask;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.controller.internal.Navigator;
 import com.shipdream.lib.android.mvc.controller.internal.Preparer;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
@@ -89,7 +88,7 @@ public class MvcGraph {
     private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
-    List<StateManaged> stateManagedObjects = new ArrayList<>();
+    List<MvcBean> mvcBeans = new ArrayList<>();
 
     //Composite graph to hide methods
     Graph graph;
@@ -109,16 +108,12 @@ public class MvcGraph {
 
                 if (obj != null) {
                     //When the cached instance is still there free and dispose it.
-                    if (obj instanceof StateManaged) {
-                        stateManagedObjects.remove(obj);
-                    }
+                    if (obj instanceof MvcBean) {
+                        MvcBean bean = (MvcBean) obj;
+                        bean.onDisposed();
+                        mvcBeans.remove(obj);
 
-                    if (obj instanceof Disposable) {
-                        ((Disposable) obj).onDisposed();
-                    }
-
-                    if (obj instanceof BaseControllerImpl) {
-                        logger.trace("--Controller freed - '{}'.",
+                        logger.trace("--MvcBean freed - '{}'.",
                                 obj.getClass().getSimpleName());
                     }
                 }
@@ -326,9 +321,9 @@ public class MvcGraph {
      *
      * <p><b>Note that, if navigation is involved in {@link Consumer#consume(Object)}, though the
      * instance injected is still held until consume method returns, the injected instance may
-     * loose its state when the next fragment is loaded. This is because Android doesn't load
+     * loose its model when the next fragment is loaded. This is because Android doesn't load
      * fragment immediately by fragment manager, instead navigation will be done in the future main
-     * loop. Therefore, if the state of an injected instance needs to be carried to the next fragment
+     * loop. Therefore, if the model of an injected instance needs to be carried to the next fragment
      * navigated to, use {@link NavigationController#navigate(Object)}.{@link Navigator#with(Class, Annotation, Preparer)}</b></p>
      *
      * @param type The type of the injectable instance
@@ -396,29 +391,29 @@ public class MvcGraph {
     }
 
     /**
-     * Save state of all injected objects
-     * @param stateKeeper The state keeper to manage the state
+     * Save model of all injected objects
+     * @param modelKeeper The model keeper managing the model
      */
-    public void saveAllStates(StateKeeper stateKeeper) {
-        int size = stateManagedObjects.size();
+    public void saveAllModels(ModelKeeper modelKeeper) {
+        int size = mvcBeans.size();
         for (int i = 0; i < size; i++) {
-            StateManaged obj = stateManagedObjects.get(i);
-            stateKeeper.saveState(obj.getState(), obj.getStateType());
+            MvcBean bean = mvcBeans.get(i);
+            modelKeeper.saveModel(bean.getModel(), bean.modelType());
         }
     }
 
     /**
-     * Restore state of all injected objects
-     * @param stateKeeper The state keeper to manage the state
+     * Restore model of all injected objects
+     * @param modelKeeper The model keeper managing the model
      */
     @SuppressWarnings("unchecked")
-    public void restoreAllStates(StateKeeper stateKeeper) {
-        int size = stateManagedObjects.size();
+    public void restoreAllModels(ModelKeeper modelKeeper) {
+        int size = mvcBeans.size();
         for (int i = 0; i < size; i++) {
-            StateManaged obj = stateManagedObjects.get(i);
-            Object state = stateKeeper.getState(obj.getStateType());
-            if(state != null) {
-                stateManagedObjects.get(i).restoreState(state);
+            MvcBean bean = mvcBeans.get(i);
+            Object model = modelKeeper.retrieveModel(bean.modelType());
+            if(model != null) {
+                mvcBeans.get(i).restoreModel(model);
             }
         }
     }
@@ -429,21 +424,21 @@ public class MvcGraph {
     public abstract static class BaseDependencies {
         /**
          * Create a new instance of EventBus for events among controllers. This event bus will be
-         * injected into fields annotated by {@link EventBusC2C}.
+         * injected into fields annotated by {@link EventBusC}.
          *
          * @return The event bus
          */
-        protected EventBus createEventBusC2C() {
+        protected EventBus createEventBusC() {
             return new EventBusImpl();
         }
 
         /**
-         * Create a new instance of EventBus for events from controllers to views. This event bus
-         * will be injected into fields annotated by {@link EventBusC2V}.
+         * Create a new instance of EventBus for events posted to views. This event bus
+         * will be injected into fields annotated by {@link EventBusV}.
          *
          * @return The event bus
          */
-        protected EventBus createEventBusC2V() {
+        protected EventBus createEventBusV() {
             return new EventBusImpl();
         }
 
@@ -474,17 +469,17 @@ public class MvcGraph {
         }
 
         @Provides
-        @EventBusC2C
+        @EventBusC
         @Singleton
-        public EventBus providesIEventBusC2C() {
-            return baseDependencies.createEventBusC2C();
+        public EventBus providesEventBusC() {
+            return baseDependencies.createEventBusC();
         }
 
         @Provides
-        @EventBusC2V
+        @EventBusV
         @Singleton
-        public EventBus providesIEventBusC2V() {
-            return baseDependencies.createEventBusC2V();
+        public EventBus providesEventBusV() {
+            return baseDependencies.createEventBusV();
         }
 
         @Provides
@@ -520,7 +515,7 @@ public class MvcGraph {
                             impClass = type;
                         }
 
-                        provider = new MvcProvider<>(mvcGraph.stateManagedObjects, type, impClass);
+                        provider = new MvcProvider<>(mvcGraph.mvcBeans, type, impClass);
                         provider.setScopeCache(defaultImplClassLocator.getScopeCache());
                         providers.put(type, provider);
                     } catch (ImplClassNotFoundException e) {
@@ -534,11 +529,11 @@ public class MvcGraph {
 
     private static class MvcProvider<T> extends ProviderByClassType<T> {
         private final Logger logger = LoggerFactory.getLogger(MvcGraph.class);
-        private List<StateManaged> stateManagedObjects;
+        private List<MvcBean> mvcBeans;
 
-        public MvcProvider(List<StateManaged> stateManagedObjects, Class<T> type, Class<? extends T> implementationClass) {
+        public MvcProvider(List<MvcBean> mvcBeans, Class<T> type, Class<? extends T> implementationClass) {
             super(type, implementationClass);
-            this.stateManagedObjects = stateManagedObjects;
+            this.mvcBeans = mvcBeans;
         }
 
         @SuppressWarnings("unchecked")
@@ -549,23 +544,19 @@ public class MvcGraph {
             registerOnInjectedListener(new OnInjectedListener() {
                 @Override
                 public void onInjected(Object object) {
-                    if (object instanceof Constructable) {
-                        Constructable constructable = (Constructable) object;
-                        constructable.onConstruct();
+                    if (object instanceof MvcBean) {
+                        MvcBean bean = (MvcBean) object;
+                        bean.onConstruct();
+
+                        logger.trace("++MvcBean injected - '{}'.",
+                                object.getClass().getSimpleName());
                     }
                     unregisterOnInjectedListener(this);
-
-                    if (logger.isTraceEnabled()) {
-                        if (object instanceof BaseController) {
-                            logger.trace("++Controller injected - '{}'.",
-                                    object.getClass().getSimpleName());
-                        }
-                    }
                 }
             });
 
-            if (newInstance instanceof StateManaged) {
-                stateManagedObjects.add((StateManaged) newInstance);
+            if (newInstance instanceof MvcBean) {
+                mvcBeans.add((MvcBean) newInstance);
             }
 
             return newInstance;

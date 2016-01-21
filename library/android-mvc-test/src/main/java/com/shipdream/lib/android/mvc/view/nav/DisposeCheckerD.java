@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.Disposable;
+import com.shipdream.lib.android.mvc.MvcBean;
 
-public interface DisposeCheckerD extends Disposable {
+public class DisposeCheckerD extends MvcBean {
+    @Override
+    public Class modelType() {
+        return null;
+    }
 }

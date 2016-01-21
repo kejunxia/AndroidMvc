@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,17 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.nav.internal;
+package com.shipdream.lib.android.mvc.event;
 
-import android.util.Log;
-
-import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerB;
-
-public class DisposeCheckerBImpl implements DisposeCheckerB {
-    @Override
-    public void onDisposed() {
-        Log.i("DisposeCheck", "Checker B disposed");
+/**
+ * Base event from controllers to views.
+ */
+public abstract class BaseEventV extends BaseEvent{
+    /**
+     * Construct a view event
+     * @param sender Who initially sent the request that triggers this event
+     */
+    public BaseEventV(Object sender) {
+        super(sender);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,14 @@
 package com.shipdream.lib.android.mvc.controller.internal;
 
 
-import com.shipdream.lib.android.mvc.Constructable;
-import com.shipdream.lib.android.mvc.Disposable;
-import com.shipdream.lib.android.mvc.StateKeeper;
-import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.controller.BaseController;
-import com.shipdream.lib.android.mvc.event.BaseEventC2C;
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventC;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2C;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
-import com.shipdream.lib.poke.util.ReflectUtils;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
+import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,54 +34,40 @@ import java.util.concurrent.ExecutorService;
 import javax.inject.Inject;
 
 /**
- * Base controller implementation.
+ * Base controller implementation implements {@link BaseController}. A controller is responsible to
+ * manage the corresponding view. When multiple controllers have shared logic or data, break them
+ * out into a manager extending {@link BaseManagerImpl}. For example, a common  scenario is multiple
+ * controllers can share an AccountManager and monitor the account change events.
  */
-public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>,
-        StateManaged<MODEL>, Constructable, Disposable {
+public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implements BaseController<MODEL> {
     interface AndroidPoster {
-        void post(EventBus eventBusC2V, BaseEventC2V eventC2V);
+        void post(EventBus eventBusV, BaseEventV eventV);
     }
 
     static AndroidPoster androidPoster;
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    @EventBusC2V
-    EventBus mEventBusC2V;
+    @EventBusV
+    EventBus eventBus2V;
 
     @Inject
-    @EventBusC2C
-    EventBus eventBusC2C;
+    @EventBusC
+    EventBus eventBus2C;
 
     @Inject
     ExecutorService executorService;
-
-    private MODEL model;
 
     /**
      * Called when the controller is constructed. Note that it could be called either when the
      * controller is instantiated for the first time or restored by views.
      *
-     * <p>The model of the controller will be instantiated by model's default no-argument constructor.
-     * However, if the controller needs to be restored, a new instance of model restored by
-     * {@link #restoreState(Object)} will replace the model created here.</p>
+     * <p>The model of the controller will be instantiated by model's default no-argument
+     * constructor here whe {@link #modelType()} doesn't return null.</p>
      */
     public void onConstruct() {
-        model = createModelInstance();
-        eventBusC2C.register(this);
-    }
-
-    private MODEL createModelInstance() {
-        Class<MODEL> type = getStateType();
-        if (type == null) {
-            return null;
-        } else {
-            try {
-                return new ReflectUtils.newObjectByType<>(type).newInstance();
-            } catch (Exception e) {
-                throw new RuntimeException("Fail to instantiate state by its default constructor");
-            }
-        }
+        super.onConstruct();
+        eventBus2C.register(this);
     }
 
     /**
@@ -93,118 +76,59 @@ public abstract class BaseControllerImpl<MODEL> implements BaseController<MODEL>
      */
     @Override
     public void onDisposed() {
-        eventBusC2C.unregister(this);
-        logger.trace("-Event bus unregistered for Controller - '{}'.", getClass().getName());
-    }
-
-    /**
-     * Model represents the state of view that this controller is managing.
-     * @return @return Null if the controller doesn't need to get its state saved and restored
-     * automatically when {@link #getModelClassType()} returns null. Otherwise the model.
-     */
-    @Override
-    public MODEL getModel() {
-        return model;
-    }
-
-    /**
-     * Method of {@link StateManaged} that allows {@link StateKeeper} to save and get the state of
-     * which is also the model the controller.
-     *
-     * @return Null if the controller doesn't need to get its state saved and restored
-     * automatically. Otherwise same as {@link #getModel()}
-     */
-    @Override
-    final public MODEL getState() {
-        return model;
-    }
-
-    /**
-     * Subclass should override this method to provide the class type of the model of the controller.
-     *
-     * @return null when the controller doesn't need to get its state saved and restored
-     * automatically by view. e.g. The controller always loads resource from remote services so that
-     * its state can be thought managed by the remote services. Otherwise returns the class type
-     */
-    protected abstract Class<MODEL> getModelClassType();
-
-    /**
-     * Method of {@link StateManaged} that allows {@link StateKeeper} to save and get the state of
-     * which is also the model the controller.
-     *
-     * @return The class type of the model of the controller
-     */
-    @Override
-    final public Class<MODEL> getStateType() {
-        return getModelClassType();
-    }
-
-    /**
-     * Method of {@link StateManaged} that allows {@link StateKeeper} to save and get the state of
-     * which is also the model the controller.
-     * <p>
-     * Note that if the controller doesn't need its state saved and restored automatically return
-     * null in {@link #getModelClassType()} and then this method will have no effect.
-     * </p>
-     *
-     * @param restoredState The restored state by {@link StateKeeper} that will be bound to the
-     *                      controller on the view referencing the controller is restored.
-     */
-    @Override
-    final public void restoreState(MODEL restoredState) {
-        if (getModelClassType() != null) {
-            bindModel(this, restoredState);
-        }
-        onRestored();
-    }
-
-    /**
-     * Called when the controller is restored after {@link #restoreState(Object)} is called.
-     */
-    public void onRestored() {
+        super.onDisposed();
+        eventBus2C.unregister(this);
     }
 
     @Override
     public void bindModel(Object sender, MODEL model) {
-        if (model == null) {
-            throw new IllegalArgumentException("Can't bind a null model to a controller explicitly.");
-        }
-        this.model = model;
+        super.bindModel(model);
     }
 
     /**
-     * Help function to post the event to views on
+     * Model represents the state of the view this controller is managing.
+     * @return Null if the controller doesn't need to get its model saved and restored automatically
+     * when {@link #modelType()} returns null.
+     */
+    @Override
+    public MODEL getModel() {
+        return super.getModel();
+    }
+
+    /**
+     * Post an event to other controllers. The event will be posted on the same thread that the
+     * caller is running on.
+     *
+     * @param event event to controllers
+     */
+    protected void postControllerEvent(final BaseEventC event) {
+        if (eventBus2C != null) {
+            eventBus2C.post(event);
+        } else {
+            logger.warn("Trying to post event {} to EventBusC which is null", event.getClass().getName());
+        }
+    }
+
+    /**
+     * Post an event to views on
      * <ul>
      * <li>Android main thread -- when detected android OS. Note that, if the caller is on main thread, event will be
      * execute immediately on the main thread. Otherwise it will be post to the main thread message queue.</li>
      * <li>Same thread of caller -- if on usual JVM</li>
      * </ul>
      *
-     * @param eventC2V Controller to View event to be broadcast
+     * @param event event to views
      */
-    protected void postC2VEvent(final BaseEventC2V eventC2V) {
+    protected void postViewEvent(final BaseEventV event) {
         if (androidPoster != null) {
             //Run on android OS
-            androidPoster.post(mEventBusC2V, eventC2V);
+            androidPoster.post(eventBus2V, event);
         } else {
-            if (mEventBusC2V != null) {
-                mEventBusC2V.post(eventC2V);
+            if (eventBus2V != null) {
+                eventBus2V.post(event);
             } else {
-                logger.warn("Trying to post event {} to EventBusC2V which is null", eventC2V.getClass().getName());
+                logger.warn("Trying to post event {} to EventBusV which is null", event.getClass().getName());
             }
-        }
-    }
-
-    /**
-     * Help function to post events to other controllers
-     *
-     * @param eventC2C Controller to Controller event to be broadcast
-     */
-    protected void postC2CEvent(final BaseEventC2C eventC2C) {
-        if (eventBusC2C != null) {
-            eventBusC2C.post(eventC2C);
-        } else {
-            logger.warn("Trying to post event {} to EventBusC2C which is null", eventC2C.getClass().getName());
         }
     }
 

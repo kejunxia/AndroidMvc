@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ public class TestWeatherController extends TestControllerBase<WeatherController>
             }
         }
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
         //Prepare data
         WeatherListResponse responseMock = mock(WeatherListResponse.class);
         when(weatherServiceMock.getWeathers(any(List.class))).thenReturn(responseMock);
@@ -149,7 +149,7 @@ public class TestWeatherController extends TestControllerBase<WeatherController>
             }
         }
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
         //Prepare data
         controllerToTest.getModel().getWeatherWatchlist().clear();
 
@@ -179,7 +179,7 @@ public class TestWeatherController extends TestControllerBase<WeatherController>
             }
         }
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
         //Prepare data
         controllerToTest.getModel().getWeatherWatchlist().put(WeatherModel.City.Beijing, null);
         when(weatherServiceMock.getWeathers(any(List.class))).thenThrow(new IOException());

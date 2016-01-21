@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc;
+package com.shipdream.lib.android.mvc.event.bus.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.inject.Qualifier;
 
 /**
- * Object has callback on disposal
+ * Indicates the annotated event bus is for events to controllers. Events through the event bus
+ * annotated by this annotation will be received on the same thread as the caller who posts them.
  */
-public interface Disposable {
-    /**
-     * Execute onDisposed logic of given object
-     */
-    void onDisposed();
+@Qualifier
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface EventBusC {
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,24 +60,24 @@ public class TestCounterController {
 
     private CounterControllerImpl counterController;
 
-    protected EventBus eventBusC2C;
-    protected EventBus eventBusC2V;
+    protected EventBus eventBusC;
+    protected EventBus eventBusV;
     protected ExecutorService executorService;
 
     private void prepareGraph() {
-        eventBusC2C = new EventBusImpl();
-        eventBusC2V = new EventBusImpl();
+        eventBusC = new EventBusImpl();
+        eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
 
         Injector.configGraph(new MvcGraph.BaseDependencies() {
             @Override
-            public EventBus createEventBusC2C() {
-                return eventBusC2C;
+            public EventBus createEventBusC() {
+                return eventBusC;
             }
 
             @Override
-            public EventBus createEventBusC2V() {
-                return eventBusC2V;
+            public EventBus createEventBusV() {
+                return eventBusV;
             }
 
             @Override
@@ -111,7 +111,7 @@ public class TestCounterController {
             }
         }
         Monitor monitor = mock(Monitor.class);
-        eventBusC2V.register(monitor);
+        eventBusV.register(monitor);
 
         //mock controller model for count value
         int value = new Random().nextInt();

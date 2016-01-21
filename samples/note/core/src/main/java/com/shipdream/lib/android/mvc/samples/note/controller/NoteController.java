@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvc.samples.note.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.samples.note.model.NoteModel;
 import com.shipdream.lib.android.mvc.samples.note.model.dto.Note;
 
@@ -107,7 +107,7 @@ public interface NoteController extends BaseController<NoteModel> {
         /**
          * Raises when a new note is created
          */
-        public static class OnNoteSelected extends BaseEventC2V {
+        public static class OnNoteSelected extends BaseEventV {
             private final Note note;
 
             public OnNoteSelected(Object sender, Note note) {
@@ -123,7 +123,7 @@ public interface NoteController extends BaseController<NoteModel> {
         /**
          * Raises when a new note is created
          */
-        public static class OnNoteCreated extends BaseEventC2V {
+        public static class OnNoteCreated extends BaseEventV {
             public OnNoteCreated(Object sender) {
                 super(sender);
             }
@@ -132,7 +132,7 @@ public interface NoteController extends BaseController<NoteModel> {
         /**
          * Raises when a new note is updated
          */
-        public static class OnNoteUpdated extends BaseEventC2V {
+        public static class OnNoteUpdated extends BaseEventV {
             public OnNoteUpdated(Object sender) {
                 super(sender);
             }
@@ -141,7 +141,7 @@ public interface NoteController extends BaseController<NoteModel> {
         /**
          * Raises when edit mode has began
          */
-        public static class OnEditModeBegan extends BaseEventC2V {
+        public static class OnEditModeBegan extends BaseEventV {
             public OnEditModeBegan(Object sender) {
                 super(sender);
             }
@@ -150,7 +150,7 @@ public interface NoteController extends BaseController<NoteModel> {
         /**
          * Raises when any selection of notes changed
          */
-        public static class OnNoteSelectionChanged extends BaseEventC2V {
+        public static class OnNoteSelectionChanged extends BaseEventV {
             public OnNoteSelectionChanged(Object sender) {
                 super(sender);
             }
@@ -159,7 +159,7 @@ public interface NoteController extends BaseController<NoteModel> {
         /**
          * Raises when a new note is removed
          */
-        public static class OnNoteRemoved extends BaseEventC2V {
+        public static class OnNoteRemoved extends BaseEventV {
             final private List<Long> deletedNoteIds;
             public OnNoteRemoved(Object sender, List<Long> deletedNoteIds) {
                 super(sender);

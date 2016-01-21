@@ -1,43 +1,41 @@
+/*
+ * Copyright 2016 Kejun Xia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.shipdream.lib.android.mvc.view.injection.service.internal;
 
-import com.shipdream.lib.android.mvc.Constructable;
-import com.shipdream.lib.android.mvc.StateManaged;
+import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
 
 /**
  * Created by kejun on 1/13/2016.
  */
-public class StorageServiceImpl implements StorageService, StateManaged<StorageService.Storage>,
-        Constructable{
-    private Storage storage;
-
+public class StorageServiceImpl extends MvcBean<StorageService.Storage> implements StorageService{
     @Override
-    public Class<Storage> getStateType() {
-        return Storage.class;
-    }
-
-    @Override
-    public Storage getState() {
-        return storage;
-    }
-
-    @Override
-    public void restoreState(Storage restoredState) {
-        this.storage = restoredState;
+    public Class<StorageService.Storage> modelType() {
+        return StorageService.Storage.class;
     }
 
     @Override
     public String getContent() {
-        return getState().getContent();
+        return getModel().getContent();
     }
 
     @Override
     public void setContent(String content) {
-        getState().setContent(content);
+        getModel().setContent(content);
     }
 
-    @Override
-    public void onConstruct() {
-        storage = new Storage();
-    }
 }

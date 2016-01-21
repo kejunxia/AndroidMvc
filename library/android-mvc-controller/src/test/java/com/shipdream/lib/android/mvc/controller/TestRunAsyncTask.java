@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class TestRunAsyncTask extends BaseControllerTest {
 
     private MyControllerImpl controller;
     private EventMonitor eventMonitor;
-    private static final long WAIT_DURATION = MyControllerImpl.LONG_TASK_DURATION + 1000;
+    private static final long WAIT_DURATION = MyControllerImpl.LONG_TASK_DURATION + 100;
 
     @Before
     public void setUp() throws Exception {
@@ -56,7 +56,7 @@ public class TestRunAsyncTask extends BaseControllerTest {
         controller.onConstruct();
 
         eventMonitor = mock(EventMonitor.class);
-        eventBusC2V.register(eventMonitor);
+        eventBusV.register(eventMonitor);
     }
 
     @Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public class LifeCycleTestControllerImpl extends BaseControllerImpl implements L
     private Proxy proxy;
 
     @Override
-    public Class getModelClassType() {
+    public Class modelType() {
         return null;
     }
 

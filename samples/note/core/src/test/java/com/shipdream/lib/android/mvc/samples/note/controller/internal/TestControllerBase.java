@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,25 +31,25 @@ import java.util.concurrent.ExecutorService;
 import static org.mockito.Mockito.mock;
 
 public abstract class TestControllerBase <Controller extends BaseController> extends TestBase {
-    protected EventBus eventBusC2C;
-    protected EventBus eventBusC2V;
+    protected EventBus eventBusC;
+    protected EventBus eventBusV;
     protected ExecutorService executorService;
     protected Controller controllerToTest;
 
     private void prepareGraph() {
-        eventBusC2C = new EventBusImpl();
-        eventBusC2V = new EventBusImpl();
+        eventBusC = new EventBusImpl();
+        eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
 
         Injector.configGraph(new MvcGraph.BaseDependencies() {
             @Override
-            public EventBus createEventBusC2C() {
-                return eventBusC2C;
+            public EventBus createEventBusC() {
+                return eventBusC;
             }
 
             @Override
-            public EventBus createEventBusC2V() {
-                return eventBusC2V;
+            public EventBus createEventBusV() {
+                return eventBusV;
             }
 
             @Override

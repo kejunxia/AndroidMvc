@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,24 @@
 package com.shipdream.lib.android.mvc.event;
 
 /**
- * Base event from views to views.
+ * Value change c2v event.
+ * @param <T> The type fo the value
  */
-public abstract class BaseEventV2V extends BaseEvent{
-    public BaseEventV2V(Object sender) {
+public class ValueChangeEventV<T> extends BaseEventV {
+    private final T lastValue;
+    private final T currentValue;
+
+    public ValueChangeEventV(Object sender, T lastValue, T currentValue) {
         super(sender);
+        this.lastValue = lastValue;
+        this.currentValue = currentValue;
+    }
+
+    public T getLastValue(){
+        return lastValue;
+    }
+
+    public T getCurrentValue(){
+        return currentValue;
     }
 }

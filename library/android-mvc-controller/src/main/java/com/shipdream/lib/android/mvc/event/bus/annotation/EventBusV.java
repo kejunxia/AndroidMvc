@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.event;
+package com.shipdream.lib.android.mvc.event.bus.annotation;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import javax.inject.Qualifier;
 
 /**
- * Base event from controllers to views.
+ * Indicates the annotated event bus is for events sent to views. On Android
+ * events through the event bus annotated by this annotation will be guaranteed to be received on
+ * Android's UI thread automatically.
  */
-public abstract class BaseEventC2V extends BaseEvent{
-    public BaseEventC2V(Object sender) {
-        super(sender);
-    }
+@Qualifier
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface EventBusV {
 }

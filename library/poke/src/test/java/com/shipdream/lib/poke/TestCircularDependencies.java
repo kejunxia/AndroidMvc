@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,17 +38,17 @@ public class TestCircularDependencies extends BaseTestCases {
         ScopeCache scopeCache = new ScopeCache();
 
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassName powerProvider = new ProviderByClassName(Power.class, PowerImpl.class);
+        ProviderByClassType powerProvider = new ProviderByClassType<>(Power.class, PowerImpl.class);
         powerProvider.setScopeCache(scopeCache);
         powerProvider.registerOnInjectedListener(powerOnInject);
 
         Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassName driverProvider = new ProviderByClassName(Driver.class, DriverImpl.class);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.setScopeCache(scopeCache);
         driverProvider.registerOnInjectedListener(driverOnInject);
 
         Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassName robotProvider = new ProviderByClassName(Robot.class, RobotImpl.class);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.setScopeCache(scopeCache);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
@@ -90,7 +90,7 @@ public class TestCircularDependencies extends BaseTestCases {
         final SimpleGraph graph = new SimpleGraph();
         final ScopeCache scopeCache = new ScopeCache();
 
-        ProviderByClassName powerProvider = new ProviderByClassName(Power.class, PowerImpl.class);
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
         powerProvider.setScopeCache(scopeCache);
         powerProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Power>() {
             @Override
@@ -99,7 +99,7 @@ public class TestCircularDependencies extends BaseTestCases {
             }
         });
 
-        ProviderByClassName driverProvider = new ProviderByClassName(Driver.class, DriverImpl.class);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.setScopeCache(scopeCache);
         driverProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Driver>() {
             @Override
@@ -108,7 +108,7 @@ public class TestCircularDependencies extends BaseTestCases {
             }
         });
 
-        ProviderByClassName robotProvider = new ProviderByClassName(Robot.class, RobotImpl.class);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.setScopeCache(scopeCache);
         robotProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Robot>() {
             @Override
@@ -133,17 +133,17 @@ public class TestCircularDependencies extends BaseTestCases {
         final ScopeCache scopeCache = new ScopeCache();
 
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassName powerProvider = new ProviderByClassName(Power.class, PowerImpl.class);
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
         powerProvider.setScopeCache(scopeCache);
         powerProvider.registerOnInjectedListener(powerOnInject);
 
         Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassName driverProvider = new ProviderByClassName(Driver.class, DriverImpl.class);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.setScopeCache(scopeCache);
         driverProvider.registerOnInjectedListener(driverOnInject);
 
         Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassName robotProvider = new ProviderByClassName(Robot.class, RobotImpl.class);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.setScopeCache(scopeCache);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
@@ -359,13 +359,13 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     private void prepareInjection(ScopeCache scopeCache, SimpleGraph graph) throws ProviderConflictException {
-        ProviderByClassName powerProvider = new ProviderByClassName(Power.class, PowerImpl.class);
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
         powerProvider.setScopeCache(scopeCache);
 
-        ProviderByClassName driverProvider = new ProviderByClassName(Driver.class, DriverImpl.class);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.setScopeCache(scopeCache);
 
-        ProviderByClassName robotProvider = new ProviderByClassName(Robot.class, RobotImpl.class);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.setScopeCache(scopeCache);
 
         graph.register(powerProvider);

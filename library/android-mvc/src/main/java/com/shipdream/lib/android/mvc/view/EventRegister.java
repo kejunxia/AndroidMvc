@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package com.shipdream.lib.android.mvc.view;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV2V;
+import android.os.Handler;
+import android.os.Looper;
+
+import com.shipdream.lib.android.mvc.controller.internal.AndroidPosterImpl;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC2V;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,8 +31,11 @@ import javax.inject.Inject;
 
 class EventRegister {
     @Inject
-    @EventBusC2V
-    private EventBus eventBusC2V;
+    @EventBusV
+    private EventBus eventBusV;
+
+    private AndroidPosterImpl androidPoster;
+    private static Handler handler;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Object androidComponent;
@@ -43,8 +50,7 @@ class EventRegister {
      */
     void registerEventBuses() {
         if (!eventsRegistered) {
-            eventBusC2V.register(androidComponent);
-            AndroidMvc.getEventBusV2V().register(androidComponent);
+            eventBusV.register(androidComponent);
             eventsRegistered = true;
             logger.trace("+Event bus registered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());
@@ -59,8 +65,7 @@ class EventRegister {
      */
     void unregisterEventBuses() {
         if (eventsRegistered) {
-            eventBusC2V.unregister(androidComponent);
-            AndroidMvc.getEventBusV2V().unregister(androidComponent);
+            eventBusV.unregister(androidComponent);
             eventsRegistered = false;
             logger.trace("-Event bus unregistered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
@@ -77,4 +82,22 @@ class EventRegister {
     void onDestroy() {
         AndroidMvc.graph().release(this);
     }
+
+    void postToViews(final BaseEventV event) {
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            eventBusV.post(event);
+        } else {
+            //Android handler is presented, posting to the main thread on Android.
+            if (handler == null) {
+                handler = new Handler(Looper.getMainLooper());
+            }
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    eventBusV.post(event);
+                }
+            });
+        }
+    }
+
 }

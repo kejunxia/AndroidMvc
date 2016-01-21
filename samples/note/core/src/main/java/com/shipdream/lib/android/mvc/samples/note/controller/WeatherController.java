@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.samples.note.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
-import com.shipdream.lib.android.mvc.event.BaseEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.samples.note.model.WeatherModel;
 
 public interface WeatherController extends BaseController<WeatherModel> {
@@ -47,7 +47,7 @@ public interface WeatherController extends BaseController<WeatherModel> {
         /**
          * Raised when weathers are updated successfully
          */
-        public static class OnWeatherWatchlistChanged extends BaseEventC2V {
+        public static class OnWeatherWatchlistChanged extends BaseEventV {
             public OnWeatherWatchlistChanged(Object sender) {
                 super(sender);
             }
@@ -56,7 +56,7 @@ public interface WeatherController extends BaseController<WeatherModel> {
         /**
          * Raised when it began to update weathers
          */
-        public static class OnWeathersUpdateBegan extends BaseEventC2V {
+        public static class OnWeathersUpdateBegan extends BaseEventV {
             public OnWeathersUpdateBegan(Object sender) {
                 super(sender);
             }
@@ -65,7 +65,7 @@ public interface WeatherController extends BaseController<WeatherModel> {
         /**
          * Raised when weathers are updated successfully
          */
-        public static class OnWeathersUpdated extends BaseEventC2V {
+        public static class OnWeathersUpdated extends BaseEventV {
             public OnWeathersUpdated(Object sender) {
                 super(sender);
             }
@@ -74,7 +74,7 @@ public interface WeatherController extends BaseController<WeatherModel> {
         /**
          * Raised when failed to update weathers
          */
-        public static class OnWeathersUpdateFailed extends BaseEventC2V {
+        public static class OnWeathersUpdateFailed extends BaseEventV {
             private final Exception exception;
             public OnWeathersUpdateFailed(Object sender, Exception exception) {
                 super(sender);

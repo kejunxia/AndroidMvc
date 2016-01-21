@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package com.shipdream.lib.android.mvc.controller;
 import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.internal.Navigator;
-import com.shipdream.lib.android.mvc.event.BaseEventC2C;
-import com.shipdream.lib.android.mvc.event.ValueChangeEventC2V;
+import com.shipdream.lib.android.mvc.event.BaseEventC;
+import com.shipdream.lib.android.mvc.event.ValueChangeEventV;
 import com.shipdream.lib.poke.Consumer;
 
 /**
@@ -127,10 +127,10 @@ public interface NavigationController extends BaseController<NavigationControlle
     void navigateBack(Object sender, String toLocationId);
 
     /**
-     * Event t
+     * Events
      */
     interface EventC2V {
-        abstract class OnLocationChanged extends ValueChangeEventC2V<NavLocation> {
+        abstract class OnLocationChanged extends ValueChangeEventV<NavLocation> {
             private final Navigator navigator;
 
             public OnLocationChanged(Object sender, NavLocation lastValue, NavLocation currentValue,
@@ -215,7 +215,7 @@ public interface NavigationController extends BaseController<NavigationControlle
          *
          * <p><b>This is a good point to notify controllers to clear the their state.</b></p>
          */
-        class OnAppExit extends BaseEventC2C {
+        class OnAppExit extends BaseEventC {
             public OnAppExit(Object sender) {
                 super(sender);
             }

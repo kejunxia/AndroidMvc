@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
-import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.controller.NavigationController;
 
 /**
@@ -27,7 +26,7 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     public boolean dumpHistoryOnLocationChange = false;
 
     @Override
-    public Class<Model> getModelClassType() {
+    public Class<Model> modelType() {
         return NavigationController.Model.class;
     }
 
@@ -55,5 +54,4 @@ public class NavigationControllerImpl extends BaseControllerImpl<NavigationContr
     public void navigateBack(Object sender, String toLocationId) {
         navigate(sender).back(toLocationId);
     }
-
 }

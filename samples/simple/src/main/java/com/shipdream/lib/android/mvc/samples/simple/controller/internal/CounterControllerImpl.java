@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
      * Just return the class type of the model managed by this controller
      */
     @Override
-    protected Class<CounterModel> getModelClassType() {
+    public Class<CounterModel> modelType() {
         return CounterModel.class;
     }
 
@@ -47,7 +47,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
         int count = getModel().getCount();
         getModel().setCount(++count);
         //Post controller to view event to views
-        postC2VEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
+        postViewEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
         int count = getModel().getCount();
         getModel().setCount(--count);
         //Post controller to view event to views
-        postC2VEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
+        postViewEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
     }
 
     @Override

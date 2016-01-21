@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class EventBusV2VFragment extends MvcFragment {
     }
 
     private void onEvent(V2VTestController.EventC2V.OnButtonUpdated onButtonUpdated) {
-        postEventV2V(new Events.OnDialogButtonChanged(onButtonUpdated.getSender(), onButtonUpdated.getText()));
+        postToViews(new Events.OnDialogButtonChanged(onButtonUpdated.getSender(), onButtonUpdated.getText()));
     }
 
 }

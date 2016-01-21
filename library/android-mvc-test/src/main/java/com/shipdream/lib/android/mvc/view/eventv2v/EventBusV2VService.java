@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class EventBusV2VService extends MvcService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        postEventV2V(new Events.OnFragmentTextChanged(this, "Updated By Service"));
+        postToViews(new Events.OnFragmentTextChanged(this, "Updated By Service"));
         return START_STICKY;
     }
 }

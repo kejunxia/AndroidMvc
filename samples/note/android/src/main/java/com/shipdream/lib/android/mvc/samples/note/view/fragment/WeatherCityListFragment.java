@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV2V;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.samples.note.R;
 import com.shipdream.lib.android.mvc.samples.note.controller.WeatherController;
 import com.shipdream.lib.android.mvc.samples.note.model.WeatherModel;
@@ -106,7 +106,7 @@ public class WeatherCityListFragment extends MvcDialogFragment {
         buttonOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postEventV2V(new EventV2V.OnOkButtonClicked(v));
+                postToViews(new EventV2V.OnOkButtonClicked(v));
             }
         });
 
@@ -145,7 +145,7 @@ public class WeatherCityListFragment extends MvcDialogFragment {
     }
 
     public static class EventV2V {
-        public static class OnOkButtonClicked extends BaseEventV2V {
+        public static class OnOkButtonClicked extends BaseEventV {
             protected OnOkButtonClicked(Object sender) {
                 super(sender);
             }

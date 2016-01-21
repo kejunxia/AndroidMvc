@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> imp
     private PreferenceService preferenceService;
 
     @Override
-    protected Class<WeatherModel> getModelClassType() {
+    public Class<WeatherModel> modelType() {
         return WeatherModel.class;
     }
 
@@ -80,9 +80,9 @@ public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> imp
         if(getModel().getWeatherWatchlist().size() == 0) {
             String cities = gson.toJson(getModel().getWeatherWatchlist());
             preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
-            postC2VEvent(new EventC2V.OnWeathersUpdated(sender));
+            postViewEvent(new EventC2V.OnWeathersUpdated(sender));
         } else {
-            postC2VEvent(new EventC2V.OnWeathersUpdateBegan(sender));
+            postViewEvent(new EventC2V.OnWeathersUpdateBegan(sender));
 
             runAsyncTask(sender, new AsyncTask() {
                 @Override
@@ -98,13 +98,13 @@ public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> imp
                     String cities = gson.toJson(getModel().getWeatherWatchlist());
                     preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
                     //Weather updated, post successful event
-                    postC2VEvent(new EventC2V.OnWeathersUpdated(sender));
+                    postViewEvent(new EventC2V.OnWeathersUpdated(sender));
                 }
             }, new AsyncExceptionHandler() {
                 @Override
                 public void handleException(Exception exception) {
                     //Weather failed, post error event
-                    postC2VEvent(new EventC2V.OnWeathersUpdateFailed(sender, exception));
+                    postViewEvent(new EventC2V.OnWeathersUpdateFailed(sender, exception));
                 }
             });
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class EventBusV2VDialogFragment extends MvcDialogFragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postEventV2V(new Events.OnFragmentTextChanged(v, "Dialog Closed"));
+                postToViews(new Events.OnFragmentTextChanged(v, "Dialog Closed"));
                 dismiss();
             }
         });

@@ -1,3 +1,6 @@
+Version:2.0.0
+Simplified event and event bus structure.
+
 Version:1.6.0
 * Add BaseManagerImpl. Logic and data shared by multiple controllers can be put into managers and injected into controllers.
 * Delegate fragment's onViewReady lifecycle will be called after state of all controllers are restored if activity is killed by OS
