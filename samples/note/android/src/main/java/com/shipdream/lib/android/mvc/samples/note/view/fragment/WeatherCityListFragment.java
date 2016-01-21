@@ -106,7 +106,7 @@ public class WeatherCityListFragment extends MvcDialogFragment {
         buttonOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                postToViews(new EventV2V.OnOkButtonClicked(v));
+                postViewEvent(new EventV2V.OnOkButtonClicked(v));
             }
         });
 

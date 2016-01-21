@@ -83,7 +83,7 @@ class EventRegister {
         AndroidMvc.graph().release(this);
     }
 
-    void postToViews(final BaseEventV event) {
+    void postViewEvent(final BaseEventV event) {
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             eventBusV.post(event);
         } else {

@@ -65,7 +65,7 @@ public class EventBusV2VFragment extends MvcFragment {
     }
 
     private void onEvent(V2VTestController.EventC2V.OnButtonUpdated onButtonUpdated) {
-        postToViews(new Events.OnDialogButtonChanged(onButtonUpdated.getSender(), onButtonUpdated.getText()));
+        postViewEvent(new Events.OnDialogButtonChanged(onButtonUpdated.getSender(), onButtonUpdated.getText()));
     }
 
 }

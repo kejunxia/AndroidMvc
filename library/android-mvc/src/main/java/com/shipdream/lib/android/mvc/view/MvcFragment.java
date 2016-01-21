@@ -467,8 +467,8 @@ public abstract class MvcFragment extends Fragment {
      * recommended to post events from controllers to views.
      * @param event
      */
-    protected void postToViews(BaseEventV event) {
-        eventRegister.postToViews(event);
+    protected void postViewEvent(BaseEventV event) {
+        eventRegister.postViewEvent(event);
     }
 
 }

@@ -133,8 +133,8 @@ public abstract class MvcActivity extends AppCompatActivity {
      *
      * @param event The event to views
      */
-    protected void postToViews(BaseEventV event) {
-        eventRegister.postToViews(event);
+    protected void postViewEvent(BaseEventV event) {
+        eventRegister.postViewEvent(event);
     }
     /**
      * Add callback so that onViewReady will be delay to call after all instance state are restored
