@@ -2,7 +2,7 @@ Version:2.1.0
 * Rename post event methods to postEvent2C and postEventCV which post events to controllers and views.
 
 Version:2.0.0
-* Controllers now are supposed to have an one-to-one relationship with a view. In other words, a controller is an abstraction of a view. Business logic should reside in controllers rather then views. Since a controller is a representation of a view, a view theoretically can be unit tested just by testing its abstraction in its corresponding controller.
+* Controllers now are supposed to have one-to-one relationship with a view. In other words, a controller is an abstraction of a single view. Business logic should reside in controllers rather then views. Since a controller is a representation of a view, a view theoretically can be unit tested just by testing its abstraction in its corresponding controller.
 * Shared logic by multiple controllers now are supposed to move to a shared manager. For example, a logged in user is commonly queried on multiple app pages(views). So controllers for these pages(views) need to access the shared logged in user state. The logged in user and login/logout functions can be wrapped in a LoginManager and shared by the controllers.
 * Add BaseManagerImpl which is the base class of managers.
 * BaseControllerImpl.postEventC2C renamed to BaseControllerImpl.postControllerEvent, BaseControllerImpl.postEventC2V renamed to BaseControllerImpl.postViewEvent
