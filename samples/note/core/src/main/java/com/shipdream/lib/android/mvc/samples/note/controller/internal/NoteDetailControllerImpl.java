@@ -21,7 +21,7 @@ public class NoteDetailControllerImpl extends BaseControllerImpl<NoteDetailModel
     @Override
     public void updateViewingNote(Object sender, String title, String content) {
         noteManager.updateViewingNote(title, content);
-        postViewEvent(new EventC2V.OnNoteUpdated(sender));
+        postEvent2V(new EventC2V.OnNoteUpdated(sender));
     }
 
     @Override

@@ -25,7 +25,7 @@ public class NoteCreateControllerImpl extends BaseControllerImpl<NoteCreateModel
     public void addNote(String title, String content) {
         if(title != null && !title.isEmpty()) {
             noteManager.addNote(title, content);
-            postViewEvent(new EventC2V.OnNoteCreated(this));
+            postEvent2V(new EventC2V.OnNoteCreated(this));
         }
         navigationController.navigate(this).back();
     }

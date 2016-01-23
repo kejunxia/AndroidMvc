@@ -58,7 +58,7 @@ public abstract class BaseManagerImpl<MODEL> extends MvcBean<MODEL> implements B
      *
      * @param event event to controllers
      */
-    protected void postControllerEvent(final BaseEventC event) {
+    protected void postEvent2C(final BaseEventC event) {
         if (eventBus2C != null) {
             eventBus2C.post(event);
         } else {

@@ -1,5 +1,5 @@
-Version:2.0.1
-* Rename methods - postToViews in MvcActivity, MvcFragment, MvcService and MvcDialogFragment to postViewEvent to ensure the consistency of the method name for posting events to views used in controllers.
+Version:2.1.0
+* Rename post event methods to postEvent2C and postEventCV which post events to controllers and views.
 
 Version:2.0.0
 * Controllers now are supposed to have an one-to-one relationship with a view. In other words, a controller is an abstraction of a view. Business logic should reside in controllers rather then views. Since a controller is a representation of a view, a view theoretically can be unit tested just by testing its abstraction in its corresponding controller.
@@ -8,7 +8,6 @@ Version:2.0.0
 * BaseControllerImpl.postEventC2C renamed to BaseControllerImpl.postControllerEvent, BaseControllerImpl.postEventC2V renamed to BaseControllerImpl.postViewEvent
 * Remove EventBusV2V because to views it has no difference from EventBusC2V since views don't care where the events come from. Now there are only 2 event buses. EventBusC and EventBusV which are subscribed by controllers and views respectively.
 * BaseControllerImpl.getModelTypeClass() renamed to BaseControllerImpl.modelType(). So when typing method getModel() in AndroidStudio it doesn't show getModelTypeClass() by its intellisense to smooth code typing experience.
-
 
 Version:1.6.0
 * Add BaseManagerImpl. Logic and data shared by multiple controllers can be put into managers and injected into controllers.

@@ -36,7 +36,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
     public void removeNote(Object sender) {
         if (inSelectionMode()) {
             noteManager.removeNote(getModel().getSelectedNoteIds());
-            postViewEvent(new EventC2V.OnNoteRemoved(sender, new ArrayList<>(getModel().getSelectedNoteIds())));
+            postEvent2V(new EventC2V.OnNoteRemoved(sender, new ArrayList<>(getModel().getSelectedNoteIds())));
             getModel().getSelectedNoteIds().clear();
         }
     }
@@ -49,7 +49,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
     @Override
     public void clearSelections(Object sender) {
         getModel().getSelectedNoteIds().clear();
-        postViewEvent(new EventC2V.OnNoteSelectionChanged(sender));
+        postEvent2V(new EventC2V.OnNoteSelectionChanged(sender));
     }
 
     @Override
@@ -74,7 +74,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
                 navigationController.navigate(this).to(LocId.NOTE_HANDSET_DETAIL);
             } else {
                 EventC2V.OnNoteSelected event = new EventC2V.OnNoteSelected(this, noteManager.findNote(id));
-                postViewEvent(event);
+                postEvent2V(event);
             }
         }
     }
@@ -84,7 +84,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
         if (!inSelectionMode()) {
             //Not in selection mode, add the first selected item
             getModel().getSelectedNoteIds().add(id);
-            postViewEvent(new EventC2V.OnEditModeBegan(sender));
+            postEvent2V(new EventC2V.OnEditModeBegan(sender));
         } else {
             //check state of current id
             int index = isSelected(id);
@@ -94,7 +94,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
                 getModel().getSelectedNoteIds().add(id);
             }
         }
-        postViewEvent(new EventC2V.OnNoteSelectionChanged(sender));
+        postEvent2V(new EventC2V.OnNoteSelectionChanged(sender));
     }
 
     @Override

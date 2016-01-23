@@ -40,7 +40,7 @@ public class TestManagerImpl {
     public void should_not_crash_when_manager_post_event_even_without_registering_controller_event_bus() {
         class MyManager extends BaseManagerImpl {
             void doPost(){
-                postControllerEvent(mock(BaseEventC.class));
+                postEvent2C(mock(BaseEventC.class));
             }
 
             @Override
@@ -66,7 +66,7 @@ public class TestManagerImpl {
 
         class MyManager extends BaseManagerImpl {
             void doPost(){
-                postControllerEvent(myEvent);
+                postEvent2C(myEvent);
             }
 
             @Override

@@ -80,8 +80,8 @@ public class MvcDialogFragment extends DialogFragment {
      * recommended to post events from controllers to views.
      * @param event
      */
-    protected void postViewEvent(BaseEventV event) {
-        eventRegister.postViewEvent(event);
+    protected void postEvent2V(BaseEventV event) {
+        eventRegister.postEvent2V(event);
     }
 
 }

@@ -90,7 +90,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         }
 
         void postMyEvent(BaseEventC e) {
-            postControllerEvent(e);
+            postEvent2C(e);
         }
     }
 
@@ -158,7 +158,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         BaseEventC event = new BaseEventC(this){};
 
         //Act
-        controller.postControllerEvent(event);
+        controller.postEvent2C(event);
 
         //Assert
         verify(loggerMock).warn(anyString(), anyVararg());
@@ -178,7 +178,7 @@ public class TestBaseControllerImpl extends BaseControllerTest {
         BaseEventV event = new BaseEventV(this){};
 
         //Act
-        controller.postViewEvent(event);
+        controller.postEvent2V(event);
 
         //Assert
         verify(loggerMock).warn(anyString(), anyVararg());
