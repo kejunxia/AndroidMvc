@@ -67,6 +67,14 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
         return currentOrientation;
     }
 
+    private void onEvent(NavigationManager.Event2C.OnLocationForward event) {
+        postEvent2V(new Event2V.OnForwardNavigation(event.getSender()));
+    }
+
+    private void onEvent(NavigationManager.Event2C.OnLocationBack event) {
+        postEvent2V(new Event2V.OnBackNavigation(event.getSender()));
+    }
+
     private void showPortrait() {
         NavigationManager.Model navModel = navigationManager.getModel();
         String curLocId = "";

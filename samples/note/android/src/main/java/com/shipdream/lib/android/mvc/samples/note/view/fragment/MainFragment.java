@@ -26,7 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.controller.MvcController;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.R;
@@ -124,15 +123,11 @@ public class MainFragment extends MvcActivity.DelegateFragment {
         }
     }
 
-    @Override
-    protected void onEvent(MvcController.EventC2V.OnLocationForward event) {
-        super.onEvent(event);
+    private void onEvent(AppController.Event2V.OnForwardNavigation event) {
         updateNavigationUi();
     }
 
-    @Override
-    protected void onEvent(MvcController.EventC2V.OnLocationBack event) {
-        super.onEvent(event);
+    private void onEvent(AppController.Event2V.OnBackNavigation event) {
         updateNavigationUi();
     }
 

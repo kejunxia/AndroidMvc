@@ -18,6 +18,8 @@ package com.shipdream.lib.android.mvc.view;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentHostCallback;
 import android.support.v4.app.FragmentManager;
@@ -29,10 +31,10 @@ import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.__MvcGraphHelper;
-import com.shipdream.lib.android.mvc.controller.MvcController;
-import com.shipdream.lib.android.mvc.manager.internal.__MvcManagerHelper;
+import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.__MvcManagerHelper;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -146,6 +148,46 @@ public abstract class MvcActivity extends AppCompatActivity {
         delegateFragment.pendingOnViewReadyActions.add(runnable);
     }
 
+    private static class DelegateFragmentController extends BaseControllerImpl {
+        private Handler handler = new Handler(Looper.getMainLooper());
+
+        @Inject
+        private NavigationManager navigationManager;
+
+        private DelegateFragment delegateFragment;
+
+        private void onEvent(final NavigationManager.Event2C.OnLocationForward event) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    delegateFragment.handleForwardNavigation(event);
+                }
+            });
+        }
+
+        private void onEvent(final NavigationManager.Event2C.OnLocationBack event) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    delegateFragment.handleBackNavigation(event);
+                }
+            });
+        }
+
+        @Override
+        public Class modelType() {
+            return null;
+        }
+
+        private void navigateBack(Object sender) {
+            navigationManager.navigate(sender).back();
+        }
+
+        private NavLocation getCurrentLocation() {
+            return navigationManager.getModel().getCurrentLocation();
+        }
+    }
+
     /**
      * This fragment is the container fragment as a root of the activity. When navigating by
      * {@link NavigationManager}, new fragments will be created and replace the root view of this
@@ -161,7 +203,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         private List<Runnable> pendingOnViewReadyActions = new ArrayList<>();
 
         @Inject
-        private MvcController mvcController;
+        private DelegateFragmentController delegateFragmentController;
 
         /**
          * Hack to fix this <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a>
@@ -317,7 +359,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         public boolean onBackButtonPressed() {
             MvcFragment topFragment = null;
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-            NavLocation curLoc = mvcController.getCurrentLocation();
+            NavLocation curLoc = delegateFragmentController.getCurrentLocation();
             if (curLoc != null && curLoc.getLocationId() != null) {
                 topFragment = (MvcFragment) childFragmentManager().findFragmentByTag(
                         getFragmentTag(curLoc.getLocationId()));
@@ -328,7 +370,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                mvcController.navigate(this).back();
+                delegateFragmentController.navigateBack(this);
             }
             return true;
         }
@@ -349,6 +391,8 @@ public abstract class MvcActivity extends AppCompatActivity {
             if (savedInstanceState != null) {
                 notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
             }
+
+            delegateFragmentController.delegateFragment = this;
         }
 
         private boolean firstTimeRun = false;
@@ -469,7 +513,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          *
          * @param event The forward navigation event
          */
-        protected void onEvent(final MvcController.EventC2V.OnLocationForward event) {
+        private void handleForwardNavigation(final NavigationManager.Event2C.OnLocationForward event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -483,7 +527,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         @SuppressWarnings("unchecked")
-        private void performForwardNav(final MvcController.EventC2V.OnLocationForward event) {
+        private void performForwardNav(final NavigationManager.Event2C.OnLocationForward event) {
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
             FragmentManager fm = childFragmentManager();
 
@@ -553,7 +597,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          *
          * @param event The backward navigation event
          */
-        protected void onEvent(final MvcController.EventC2V.OnLocationBack event) {
+        private void handleBackNavigation(final NavigationManager.Event2C.OnLocationBack event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -566,7 +610,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        private void performBackNav(final MvcController.EventC2V.OnLocationBack event) {
+        private void performBackNav(final NavigationManager.Event2C.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
                 if (event.getNavigator() != null) {

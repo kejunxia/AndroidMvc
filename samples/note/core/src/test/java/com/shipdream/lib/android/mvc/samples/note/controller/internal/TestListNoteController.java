@@ -85,7 +85,7 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNavigateToNewNoteViewByCalling_ToCreateNewNote() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
+            public void onEvent(NavigationManager.Event2C.OnLocationForward event) {
             }
         }
 
@@ -96,8 +96,8 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
         controllerToTest.toCreateNote();
 
         //verify
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(1)).onEvent(navEvent.capture());
         //It should go to new note view
@@ -136,7 +136,7 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNavigateToNoteDetailViewWhenSelectANoteInNonSelectionModeWhenInPortraitMode() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
+            public void onEvent(NavigationManager.Event2C.OnLocationForward event) {
             }
         }
 
@@ -151,8 +151,8 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
         controllerToTest.selectNote(5);
 
         //verify
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(1)).onEvent(navEvent.capture());
         //It should go to new note view
@@ -163,7 +163,7 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNotNavigateToNoteDetailViewWhenSelectANoteInNonSelectionModeWhenInLandscapeMode() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
+            public void onEvent(NavigationManager.Event2C.OnLocationForward event) {
             }
         }
 
@@ -178,8 +178,8 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
         controllerToTest.selectNote(5);
 
         //verify
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(0)).onEvent(navEvent.capture());
     }
@@ -188,7 +188,7 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNotNavigateToNoteDetailViewWhenItIsInSelectionMode() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
+            public void onEvent(NavigationManager.Event2C.OnLocationForward event) {
             }
         }
 
@@ -212,8 +212,8 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
         controllerToTest.selectNote(1);
 
         //verify
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(0)).onEvent(navEvent.capture());
     }

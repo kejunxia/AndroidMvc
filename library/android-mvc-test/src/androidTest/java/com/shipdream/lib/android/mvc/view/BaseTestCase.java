@@ -29,7 +29,6 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.shipdream.lib.android.mvc.MvcGraphBridge;
-import com.shipdream.lib.android.mvc.controller.MvcController;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
@@ -74,7 +73,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
     protected LifeCycleValidator lifeCycleValidatorD;
 
     @Inject
-    protected MvcController mvcController;
+    protected NavigationManager navigationManager;
 
     protected T activity;
     protected android.app.Instrumentation instrumentation;
@@ -185,8 +184,8 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
     @After
     public void tearDown() throws Exception {
-        mvcController.navigate(this).back(null);
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back(null);
+        navigationManager.navigate(this).back();
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 

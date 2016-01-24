@@ -47,10 +47,7 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
      */
     Navigator navigate(Object sender);
 
-    /**
-     * Events
-     */
-    interface EventC2C {
+    interface Event2C {
         abstract class OnLocationChanged extends ValueChangeEventC<NavLocation> {
             private final Navigator navigator;
 
@@ -126,9 +123,6 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
             }
         }
 
-    }
-
-    interface Event2C {
         /**
          * Event2C to notify the controllers the app exists, for example by back button. Be aware, this
          * doesn't mean the process of the application is killed but only all navigable fragments

@@ -21,7 +21,7 @@ import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.TimerController;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.internal.TimerControllerImpl;
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.*;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Provides;
@@ -53,12 +53,12 @@ import static org.mockito.Mockito.verify;
 public class TestNavigationManager extends BaseNavigationManagerTest {
     //Define a subscriber class
     class ForwardListener {
-        public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
+        public void onEvent(NavigationManager.Event2C.OnLocationForward event) {
         }
     }
 
     class BackListener {
-        public void onEvent(NavigationManager.EventC2C.OnLocationBack event) {
+        public void onEvent(NavigationManager.Event2C.OnLocationBack event) {
         }
     }
 
@@ -81,8 +81,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         reset(forwardListener);
         navigationManager.navigate(this).to(locId5, locId3);
         //loc1 -> loc2 -> loc3 -> loc5
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId1);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId5);
@@ -117,8 +117,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         reset(forwardListener);
         navigationManager.navigate(this).to(locId5, null);
 
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId5);
@@ -142,8 +142,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         reset(backListener);
         navigationManager.navigate(this).back();
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId3);
@@ -156,7 +156,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         reset(backListener);
         navigationManager.navigate(this).back();
-        event = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId3);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId2);
@@ -168,7 +168,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         reset(backListener);
         navigationManager.navigate(this).back();
-        event = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId2);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId1);
@@ -179,7 +179,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         reset(backListener);
         navigationManager.navigate(this).back();
-        event = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId1);
         assertEquals(event.getValue().getCurrentValue(), null);
@@ -190,7 +190,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         //has already reached the start of the navigation, should not be able to navigate back any more
         reset(backListener);
         navigationManager.navigate(this).back();
-        event = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -204,8 +204,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         reset(backListener);
         navigationManager.navigate(this).back(locId2);
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId2);
@@ -227,8 +227,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         reset(backListener);
         navigationManager.navigate(this).back(null);
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId1);
@@ -305,8 +305,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.navigate(this).back(null);
 
         // Verify
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -322,8 +322,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.navigate(this).back("Bad Location");
 
         // Verify
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -337,8 +337,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.navigate(this).back("any location");
 
         // Verify
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -504,7 +504,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
 
         // Act
-        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, slower2Qualifier, new com.shipdream.lib.android.mvc.manager.internal.Preparer<TimerController>() {
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, slower2Qualifier, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -540,7 +540,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             }
         });
 
-        navigator = navigationManager.navigate(this).with(TimerController.class, slower3Qualifier, new com.shipdream.lib.android.mvc.manager.internal.Preparer<TimerController>() {
+        navigator = navigationManager.navigate(this).with(TimerController.class, slower3Qualifier, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -579,7 +579,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         final long fiveMinutes = 60 * 5;
 
         // Act
-        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, new com.shipdream.lib.android.mvc.manager.internal.Preparer<TimerController>() {
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -612,11 +612,11 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         Navigator navigator = navigationManager.navigate(this);
         Navigator spiedNavigator = spy(navigator);
 
-        verify(spiedNavigator, times(0)).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(com.shipdream.lib.android.mvc.manager.internal.Preparer.class));
+        verify(spiedNavigator, times(0)).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(Preparer.class));
 
         spiedNavigator.with(NavigationManager.class);
 
-        verify(spiedNavigator).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(com.shipdream.lib.android.mvc.manager.internal.Preparer.class));
+        verify(spiedNavigator).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(Preparer.class));
     }
 
     @Test
@@ -655,8 +655,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         navigationManager.navigate(this).to(locId1);
 
-        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> event =
-                ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event =
+                ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue(), null);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId1);
@@ -667,7 +667,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         reset(forwardListener);
         navigationManager.navigate(this).to(locId2);
 
-        event = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId1);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId2);
@@ -678,7 +678,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         reset(forwardListener);
         navigationManager.navigate(this).to(locId3);
 
-        event = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId2);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId3);
@@ -689,7 +689,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         reset(forwardListener);
         navigationManager.navigate(this).to(locId4);
 
-        event = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId3);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId4);

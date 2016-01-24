@@ -47,7 +47,7 @@ public class Navigator {
     private final Object sender;
     private OnSettled onSettled;
     private NavigationManagerImpl navigationManager;
-    private NavigationManager.EventC2C.OnLocationChanged navigateEvent;
+    private NavigationManager.Event2C.OnLocationChanged navigateEvent;
     private List<PendingReleaseInstance> pendingReleaseInstances;
 
     /**
@@ -185,7 +185,7 @@ public class Navigator {
 
     /**
      * Navigates to the specified location. Navigation only takes effect when the given locationId
-     * is different from the current location and raises {@link NavigationManager.EventC2C.OnLocationForward}
+     * is different from the current location and raises {@link NavigationManager.Event2C.OnLocationForward}
      *
      * <p>
      * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
@@ -211,7 +211,7 @@ public class Navigator {
      * When clearTopToLocationId is null, it clears all history. In other words, the current given
      * location will be the only location in the history stack and all other previous locations
      * will be cleared. Navigation only takes effect when the given locationId is different from the
-     * current location and raises {@link NavigationManager.EventC2C.OnLocationForward}
+     * current location and raises {@link NavigationManager.Event2C.OnLocationForward}
      *
      * <p>
      * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
@@ -286,14 +286,14 @@ public class Navigator {
 
             navigationManager.getModel().setCurrentLocation(currentLoc);
 
-            navigateEvent = new NavigationManager.EventC2C.OnLocationForward(sender, lastLoc,
+            navigateEvent = new NavigationManager.Event2C.OnLocationForward(sender, lastLoc,
                     currentLoc, clearTop, clearedTopToLocation, this);
         }
     }
 
     /**
      * Navigates one step back. If current location is null it doesn't take any effect otherwise
-     * raises a {@link NavigationManager.EventC2C.OnLocationBack} event when there is a previous
+     * raises a {@link NavigationManager.Event2C.OnLocationBack} event when there is a previous
      * location.
      */
     public void back() {
@@ -306,7 +306,7 @@ public class Navigator {
         NavLocation previousLoc = currentLoc.getPreviousLocation();
         navigationManager.getModel().setCurrentLocation(previousLoc);
 
-        navigateEvent = new NavigationManager.EventC2C.OnLocationBack(sender, currentLoc, previousLoc, false, this);
+        navigateEvent = new NavigationManager.Event2C.OnLocationBack(sender, currentLoc, previousLoc, false, this);
         go();
     }
 
@@ -314,7 +314,7 @@ public class Navigator {
      * Navigates back. If current location is null it doesn't take any effect. When toLocationId
      * is null, navigate to the very first location and clear all history prior to it, otherwise
      * navigate to location with given locationId and clear history prior to it. Then a
-     * {@link NavigationManager.EventC2C.OnLocationBack} event will be raised.
+     * {@link NavigationManager.Event2C.OnLocationBack} event will be raised.
      *
      * @param toLocationId Null when needs to navigate to the very first location and all history
      *                     locations will be above it will be cleared. Otherwise, the id of the
@@ -354,7 +354,7 @@ public class Navigator {
         }
         if(success) {
             navigationManager.getModel().setCurrentLocation(currentLoc);
-            navigateEvent = new NavigationManager.EventC2C.OnLocationBack(sender, previousLoc, currentLoc, true, this);
+            navigateEvent = new NavigationManager.Event2C.OnLocationBack(sender, previousLoc, currentLoc, true, this);
         }
         go();
     }
@@ -378,14 +378,14 @@ public class Navigator {
 
             navigationManager.postEvent2C(navigateEvent);
 
-            if (navigateEvent instanceof NavigationManager.EventC2C.OnLocationForward) {
+            if (navigateEvent instanceof NavigationManager.Event2C.OnLocationForward) {
                 String lastLocId = navigateEvent.getLastValue() == null ? null
                         : navigateEvent.getLastValue().getLocationId();
                 navigationManager.logger.trace("Nav Manager: Forward: {} -> {}", lastLocId,
                         navigateEvent.getCurrentValue().getLocationId());
             }
 
-            if (navigateEvent instanceof NavigationManager.EventC2C.OnLocationBack) {
+            if (navigateEvent instanceof NavigationManager.Event2C.OnLocationBack) {
                 NavLocation lastLoc = navigateEvent.getLastValue();
                 NavLocation currentLoc = navigateEvent.getCurrentValue();
                 navigationManager.logger.trace("Nav Manager: Backward: {} -> {}",

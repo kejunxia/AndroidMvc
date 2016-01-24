@@ -163,7 +163,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         verify(disposeCheckerBMock, times(0)).onDisposed();
         verify(disposeCheckerCMock, times(0)).onDisposed();
         verify(disposeCheckerDMock, times(0)).onDisposed();
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         waitTest(2000);
         verify(disposeCheckerAMock, times(0)).onDisposed();
@@ -188,7 +188,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         reset(disposeCheckerBMock);
         reset(disposeCheckerCMock);
         reset(disposeCheckerDMock);
-        mvcController.navigate(this).back(null);
+        navigationManager.navigate(this).back(null);
         waitTest(1000);
         verify(disposeCheckerAMock, times(0)).onDisposed();
         verify(disposeCheckerBMock, times(1)).onDisposed();
@@ -200,7 +200,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         reset(disposeCheckerBMock);
         reset(disposeCheckerCMock);
         reset(disposeCheckerDMock);
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest(2000);
         verify(disposeCheckerAMock, times(1)).onDisposed();
         verify(disposeCheckerBMock, times(0)).onDisposed();
@@ -224,21 +224,21 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
         testNavigateToD();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -250,7 +250,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -261,18 +261,18 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         testNavigateToA();
         testNavigateToC();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -281,14 +281,14 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         bringBack();
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
     }
@@ -306,25 +306,25 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         testNavigateToD();
         testNavigateToA();
 
-        mvcController.navigate(this).to(MvcTestActivityNavigation.Loc.C, MvcTestActivityNavigation.Loc.B);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, MvcTestActivityNavigation.Loc.B);
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -333,7 +333,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         bringBack();
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -344,7 +344,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         testNavigateToB();
         testNavigateToD();
         testNavigateToA();
-        mvcController.navigate(this).to(MvcTestActivityNavigation.Loc.C, null);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, null);
         waitTest();
 
         testNavigateToB();
@@ -354,7 +354,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest();
 
         testNavigateToA();
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -363,14 +363,14 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         bringBack();
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
     }
@@ -390,11 +390,11 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         testNavigateToD();
         testNavigateToA();
 
-        mvcController.navigate(this).back(MvcTestActivityNavigation.Loc.B);
+        navigationManager.navigate(this).back(MvcTestActivityNavigation.Loc.B);
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -403,11 +403,11 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         bringBack();
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -421,14 +421,14 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest();
 
         testNavigateToA();
-        mvcController.navigate(this).back(null);
+        navigationManager.navigate(this).back(null);
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
         testNavigateToB();
         testNavigateToD();
         testNavigateToA();
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -437,11 +437,11 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         bringBack();
         waitTest();
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
-        mvcController.navigate(this).back();
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
     }
@@ -504,25 +504,25 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
     }
 
     private void testNavigateToA() throws InterruptedException {
-        mvcController.navigate(this).to(MvcTestActivityNavigation.Loc.A);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A);
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     private void testNavigateToB() throws InterruptedException {
-        mvcController.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     private void testNavigateToC() throws InterruptedException {
-        mvcController.navigate(this).to(MvcTestActivityNavigation.Loc.C);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C);
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     private void testNavigateToD() throws InterruptedException {
-        mvcController.navigate(this).to(MvcTestActivityNavigation.Loc.D);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D);
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
     }

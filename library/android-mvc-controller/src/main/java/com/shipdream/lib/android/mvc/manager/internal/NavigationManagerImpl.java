@@ -16,14 +16,14 @@
 
 package com.shipdream.lib.android.mvc.manager.internal;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.*;
 
 /**
  * Implementation of {@link NavigationManager}
  */
 public class NavigationManagerImpl extends BaseManagerImpl<NavigationManager.Model>
         implements NavigationManager {
-    public boolean dumpHistoryOnLocationChange = false;
+    boolean dumpHistoryOnLocationChange = false;
 
     @Override
     public Class<Model> modelType() {
