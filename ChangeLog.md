@@ -1,5 +1,6 @@
 Version:2.1.0
 * Rename post event methods to postEvent2C and postEventCV which post events to controllers and views.
+* Change NavigationController to NavigationManager aligned with the new pattern. Controllers involving navigation now use injected navigation manager to navigate.
 
 Version:2.0.0
 * Controllers now are supposed to have one-to-one relationship with a view. In other words, a controller is an abstraction of a single view. Business logic should reside in controllers rather then views. Since a controller is a representation of a view, a view theoretically can be unit tested just by testing its abstraction in its corresponding controller.
