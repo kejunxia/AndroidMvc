@@ -19,6 +19,7 @@ package com.shipdream.lib.android.mvc.manager.internal;
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
+import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -27,6 +28,9 @@ import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A navigator consists of data for a navigation.It is created by {@link NavigationManager#navigate(Object)}
+ */
 public class Navigator {
     /**
      * The callback when the navigation is settled. Since Android Fragment doesn't invoke its call
@@ -47,7 +51,7 @@ public class Navigator {
     private final Object sender;
     private OnSettled onSettled;
     private NavigationManagerImpl navigationManager;
-    private NavigationManager.Event2C.OnLocationChanged navigateEvent;
+    private BaseEventC navigateEvent;
     private List<PendingReleaseInstance> pendingReleaseInstances;
 
     /**
@@ -379,15 +383,17 @@ public class Navigator {
             navigationManager.postEvent2C(navigateEvent);
 
             if (navigateEvent instanceof NavigationManager.Event2C.OnLocationForward) {
-                String lastLocId = navigateEvent.getLastValue() == null ? null
-                        : navigateEvent.getLastValue().getLocationId();
+                NavigationManager.Event2C.OnLocationForward event = (NavigationManager.Event2C.OnLocationForward) navigateEvent;
+                String lastLocId = event.getLastValue() == null ? null
+                        : event.getLastValue().getLocationId();
                 navigationManager.logger.trace("Nav Manager: Forward: {} -> {}", lastLocId,
-                        navigateEvent.getCurrentValue().getLocationId());
+                        event.getCurrentValue().getLocationId());
             }
 
             if (navigateEvent instanceof NavigationManager.Event2C.OnLocationBack) {
-                NavLocation lastLoc = navigateEvent.getLastValue();
-                NavLocation currentLoc = navigateEvent.getCurrentValue();
+                NavigationManager.Event2C.OnLocationBack event = (NavigationManager.Event2C.OnLocationBack) navigateEvent;
+                NavLocation lastLoc = event.getLastValue();
+                NavLocation currentLoc = event.getCurrentValue();
                 navigationManager.logger.trace("Nav Manager: Backward: {} -> {}",
                         lastLoc.getLocationId(),
                         currentLoc == null ? "null" : currentLoc.getLocationId());

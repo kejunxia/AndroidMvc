@@ -48,26 +48,13 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
     Navigator navigate(Object sender);
 
     interface Event2C {
-        abstract class OnLocationChanged extends ValueChangeEventC<NavLocation> {
-            private final Navigator navigator;
-
-            public OnLocationChanged(Object sender, NavLocation lastValue, NavLocation currentValue,
-                                     Navigator navigator) {
-                super(sender, lastValue, currentValue);
-                this.navigator = navigator;
-            }
-
-            public Navigator getNavigator() {
-                return navigator;
-            }
-        }
-
         /**
          * Event2C to notify views navigation will move forward.
          */
-        class OnLocationForward extends OnLocationChanged {
-            private boolean clearHistory;
-            private NavLocation locationWhereHistoryClearedUpTo;
+        class OnLocationForward extends ValueChangeEventC<NavLocation> {
+            private final Navigator navigator;
+            private final boolean clearHistory;
+            private final NavLocation locationWhereHistoryClearedUpTo;
 
             /**
              * Construct event to notify views navigation will move forward.
@@ -80,9 +67,10 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
             public OnLocationForward(Object sender, NavLocation lastValue, NavLocation currentValue,
                                      boolean clearHistory, NavLocation locationWhereHistoryClearedUpTo,
                                      Navigator navigator) {
-                super(sender, lastValue, currentValue, navigator);
+                super(sender, lastValue, currentValue);
                 this.clearHistory = clearHistory;
                 this.locationWhereHistoryClearedUpTo = locationWhereHistoryClearedUpTo;
+                this.navigator = navigator;
             }
 
             /**
@@ -101,18 +89,28 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
             public NavLocation getLocationWhereHistoryClearedUpTo() {
                 return locationWhereHistoryClearedUpTo;
             }
+
+            /**
+             * Gets the navigator
+             * @return {@link Navigator}
+             */
+            public Navigator getNavigator() {
+                return navigator;
+            }
         }
 
         /**
          * Event2C to notify views navigation will move backward.
          */
-        class OnLocationBack extends OnLocationChanged {
-            private boolean fastRewind;
+        class OnLocationBack extends ValueChangeEventC<NavLocation> {
+            private final Navigator navigator;
+            private final boolean fastRewind;
 
             public OnLocationBack(Object sender, NavLocation lastValue, NavLocation currentValue,
                                   boolean fastRewind, Navigator navigator) {
-                super(sender, lastValue, currentValue, navigator);
+                super(sender, lastValue, currentValue);
                 this.fastRewind = fastRewind;
+                this.navigator = navigator;
             }
 
             /**
@@ -120,6 +118,14 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
              */
             public boolean isFastRewind() {
                 return fastRewind;
+            }
+
+            /**
+             * Gets the navigator
+             * @return {@link Navigator}
+             */
+            public Navigator getNavigator() {
+                return navigator;
             }
         }
 
