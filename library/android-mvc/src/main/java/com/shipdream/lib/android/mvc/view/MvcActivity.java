@@ -90,14 +90,14 @@ public abstract class MvcActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
+        eventRegister.unregisterEventBuses();
+        eventRegister.onDestroy();
+
         if (toPrintAppExitMessage && logger.isTraceEnabled()) {
-            logger.trace("App Exits(UI): {} injected objects are still cached.",
+            logger.trace("App Exits(UI): {} injected beans are still cached.",
                     __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
             toPrintAppExitMessage = false;
         }
-
-        eventRegister.unregisterEventBuses();
-        eventRegister.onDestroy();
     }
 
     void performSuperBackKeyPressed() {
