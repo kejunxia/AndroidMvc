@@ -1,6 +1,6 @@
 package com.shipdream.lib.android.mvc.samples.note.controller.internal;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.samples.note.controller.NoteCreateController;
 import com.shipdream.lib.android.mvc.samples.note.manager.NoteManager;
@@ -11,7 +11,7 @@ import javax.inject.Inject;
 public class NoteCreateControllerImpl extends BaseControllerImpl<NoteCreateModel>
         implements NoteCreateController {
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Inject
     private NoteManager noteManager;
@@ -27,6 +27,6 @@ public class NoteCreateControllerImpl extends BaseControllerImpl<NoteCreateModel
             noteManager.addNote(title, content);
             postEvent2V(new EventC2V.OnNoteCreated(this));
         }
-        navigationController.navigate(this).back();
+        navigationManager.navigate(this).back();
     }
 }

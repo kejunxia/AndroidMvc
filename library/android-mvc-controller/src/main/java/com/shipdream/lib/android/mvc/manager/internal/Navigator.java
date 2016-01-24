@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.controller.internal;
+package com.shipdream.lib.android.mvc.manager.internal;
 
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -46,18 +46,18 @@ public class Navigator {
 
     private final Object sender;
     private OnSettled onSettled;
-    private NavigationControllerImpl navigationController;
-    private NavigationController.EventC2V.OnLocationChanged navigateEvent;
+    private NavigationManagerImpl navigationManager;
+    private NavigationManager.EventC2C.OnLocationChanged navigateEvent;
     private List<PendingReleaseInstance> pendingReleaseInstances;
 
     /**
      * Construct a {@link Navigator}
      * @param sender Who wants to navigate
-     * @param navigationController The navigation controller
+     * @param navigationManager The navigation manager
      */
-    Navigator(Object sender, NavigationControllerImpl navigationController) {
+    Navigator(Object sender, NavigationManagerImpl navigationManager) {
         this.sender = sender;
-        this.navigationController = navigationController;
+        this.navigationManager = navigationManager;
     }
 
     /**
@@ -103,7 +103,7 @@ public class Navigator {
         void setInitialValue(long howManySeconds);
      }
 
-     navigationController.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
+     navigationManager.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
         @Override
         public void prepare(TimerController instance) {
             long fiveMinutes = 60 * 5;
@@ -144,7 +144,7 @@ public class Navigator {
         void setInitialValue(long howManySeconds);
      }
 
-     navigationController.navigate(this).with(TimerController.class, null, new Preparer<TimerController>() {
+     navigationManager.navigate(this).with(TimerController.class, null, new Preparer<TimerController>() {
         @Override
         public void prepare(TimerController instance) {
             long fiveMinutes = 60 * 5;
@@ -185,7 +185,7 @@ public class Navigator {
 
     /**
      * Navigates to the specified location. Navigation only takes effect when the given locationId
-     * is different from the current location and raises {@link NavigationController.EventC2V.OnLocationForward}
+     * is different from the current location and raises {@link NavigationManager.EventC2C.OnLocationForward}
      *
      * <p>
      * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
@@ -211,7 +211,7 @@ public class Navigator {
      * When clearTopToLocationId is null, it clears all history. In other words, the current given
      * location will be the only location in the history stack and all other previous locations
      * will be cleared. Navigation only takes effect when the given locationId is different from the
-     * current location and raises {@link NavigationController.EventC2V.OnLocationForward}
+     * current location and raises {@link NavigationManager.EventC2C.OnLocationForward}
      *
      * <p>
      * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
@@ -240,7 +240,7 @@ public class Navigator {
         if (clearTop) {
             if (clearTopToLocationId != null) {
                 //find out the top most location in the history stack with clearTopToLocationId
-                NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+                NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
                 while (currentLoc != null) {
                     if (clearTopToLocationId.equals(currentLoc.getLocationId())) {
                         //Reverse the history to this location
@@ -258,7 +258,7 @@ public class Navigator {
             }
         }
 
-        NavLocation lastLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation lastLoc = navigationManager.getModel().getCurrentLocation();
         boolean locationChanged = false;
 
         if (clearTop) {
@@ -284,29 +284,29 @@ public class Navigator {
                 currentLoc._setPreviousLocation(clearedTopToLocation);
             }
 
-            navigationController.getModel().setCurrentLocation(currentLoc);
+            navigationManager.getModel().setCurrentLocation(currentLoc);
 
-            navigateEvent = new NavigationController.EventC2V.OnLocationForward(sender, lastLoc,
+            navigateEvent = new NavigationManager.EventC2C.OnLocationForward(sender, lastLoc,
                     currentLoc, clearTop, clearedTopToLocation, this);
         }
     }
 
     /**
      * Navigates one step back. If current location is null it doesn't take any effect otherwise
-     * raises a {@link NavigationController.EventC2V.OnLocationBack} event when there is a previous
+     * raises a {@link NavigationManager.EventC2C.OnLocationBack} event when there is a previous
      * location.
      */
     public void back() {
-        NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         if (currentLoc == null) {
-            navigationController.logger.warn("Current location should never be null before navigating backwards.");
+            navigationManager.logger.warn("Current location should never be null before navigating backwards.");
             return;
         }
 
         NavLocation previousLoc = currentLoc.getPreviousLocation();
-        navigationController.getModel().setCurrentLocation(previousLoc);
+        navigationManager.getModel().setCurrentLocation(previousLoc);
 
-        navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, currentLoc, previousLoc, false, this);
+        navigateEvent = new NavigationManager.EventC2C.OnLocationBack(sender, currentLoc, previousLoc, false, this);
         go();
     }
 
@@ -314,7 +314,7 @@ public class Navigator {
      * Navigates back. If current location is null it doesn't take any effect. When toLocationId
      * is null, navigate to the very first location and clear all history prior to it, otherwise
      * navigate to location with given locationId and clear history prior to it. Then a
-     * {@link NavigationController.EventC2V.OnLocationBack} event will be raised.
+     * {@link NavigationManager.EventC2C.OnLocationBack} event will be raised.
      *
      * @param toLocationId Null when needs to navigate to the very first location and all history
      *                     locations will be above it will be cleared. Otherwise, the id of the
@@ -322,9 +322,9 @@ public class Navigator {
      *                     location will be the second last one.
      */
     public void back(String toLocationId) {
-        NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         if (currentLoc == null) {
-            navigationController.logger.warn("Current location should never be null before navigating backwards.");
+            navigationManager.logger.warn("Current location should never be null before navigating backwards.");
             return;
         }
 
@@ -353,8 +353,8 @@ public class Navigator {
             currentLoc = currentLoc.getPreviousLocation();
         }
         if(success) {
-            navigationController.getModel().setCurrentLocation(currentLoc);
-            navigateEvent = new NavigationController.EventC2V.OnLocationBack(sender, previousLoc, currentLoc, true, this);
+            navigationManager.getModel().setCurrentLocation(currentLoc);
+            navigateEvent = new NavigationManager.EventC2C.OnLocationBack(sender, previousLoc, currentLoc, true, this);
         }
         go();
     }
@@ -376,19 +376,19 @@ public class Navigator {
     private void go() {
         if (navigateEvent != null) {
 
-            navigationController.postEvent2V(navigateEvent);
+            navigationManager.postEvent2C(navigateEvent);
 
-            if (navigateEvent instanceof NavigationController.EventC2V.OnLocationForward) {
+            if (navigateEvent instanceof NavigationManager.EventC2C.OnLocationForward) {
                 String lastLocId = navigateEvent.getLastValue() == null ? null
                         : navigateEvent.getLastValue().getLocationId();
-                navigationController.logger.trace("Nav Controller: Forward: {} -> {}", lastLocId,
+                navigationManager.logger.trace("Nav Manager: Forward: {} -> {}", lastLocId,
                         navigateEvent.getCurrentValue().getLocationId());
             }
 
-            if (navigateEvent instanceof NavigationController.EventC2V.OnLocationBack) {
+            if (navigateEvent instanceof NavigationManager.EventC2C.OnLocationBack) {
                 NavLocation lastLoc = navigateEvent.getLastValue();
                 NavLocation currentLoc = navigateEvent.getCurrentValue();
-                navigationController.logger.trace("Nav Controller: Backward: {} -> {}",
+                navigationManager.logger.trace("Nav Manager: Backward: {} -> {}",
                         lastLoc.getLocationId(),
                         currentLoc == null ? "null" : currentLoc.getLocationId());
 
@@ -413,7 +413,7 @@ public class Navigator {
                 } catch (ProviderMissingException e) {
                     //should not happen
                     //in case this happens just logs it
-                    navigationController.logger.warn("Failed to auto release {} after navigation settled", i.type.getName());
+                    navigationManager.logger.warn("Failed to auto release {} after navigation settled", i.type.getName());
                 }
             }
         }
@@ -424,9 +424,9 @@ public class Navigator {
      * @param sender The sender
      */
     private void checkAppExit(Object sender) {
-        NavLocation curLocation = navigationController.getModel().getCurrentLocation();
+        NavLocation curLocation = navigationManager.getModel().getCurrentLocation();
         if (curLocation == null) {
-            navigationController.postEvent2C(new NavigationController.EventC2C.OnAppExit(sender));
+            navigationManager.postEvent2C(new NavigationManager.Event2C.OnAppExit(sender));
         }
     }
 
@@ -434,16 +434,16 @@ public class Navigator {
      * Prints navigation history
      */
     private void dumpHistory() {
-        if (navigationController.dumpHistoryOnLocationChange) {
-            navigationController.logger.trace("");
-            navigationController.logger.trace("Nav Controller: dump: begin ---------------------------------------------->");
-            NavLocation curLoc = navigationController.getModel().getCurrentLocation();
+        if (navigationManager.dumpHistoryOnLocationChange) {
+            navigationManager.logger.trace("");
+            navigationManager.logger.trace("Nav Controller: dump: begin ---------------------------------------------->");
+            NavLocation curLoc = navigationManager.getModel().getCurrentLocation();
             while (curLoc != null) {
-                navigationController.logger.trace("Nav Controller: dump: {}({})", curLoc.getLocationId());
+                navigationManager.logger.trace("Nav Controller: dump: {}({})", curLoc.getLocationId());
                 curLoc = curLoc.getPreviousLocation();
             }
-            navigationController.logger.trace("Nav Controller: dump: end   ---------------------------------------------->");
-            navigationController.logger.trace("");
+            navigationManager.logger.trace("Nav Controller: dump: end   ---------------------------------------------->");
+            navigationManager.logger.trace("");
         }
     }
 }

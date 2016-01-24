@@ -54,7 +54,7 @@ public abstract class BaseManagerImpl<MODEL> extends MvcBean<MODEL> implements B
     }
 
     /**
-     * Post an event to other controllers. Event will be posted on the same thread as the caller.
+     * Post an event to other controllers. Event2C will be posted on the same thread as the caller.
      *
      * @param event event to controllers
      */

@@ -76,7 +76,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationController.navigateTo(this, SubFragment.class.getSimpleName());
+        mvcController.navigate(this).to(SubFragment.class.getSimpleName());
         waitTest(1200);
 
         lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -98,7 +98,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At A
-        navigationController.navigateBack(this);
+        mvcController.navigate(this).back();
         waitTest(1200);
         lifeCycleValidator.expect(
                 LifeCycle.onCreateViewNull,
@@ -156,7 +156,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationController.navigate(this).to(SubFragment.class.getSimpleName());
+        mvcController.navigate(this).to(SubFragment.class.getSimpleName());
         waitTest(1200);
 
         lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -184,7 +184,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> Back to home
-        navigationController.navigate(this).back();
+        mvcController.navigate(this).back();
         waitTest(1200);
 
         lifeCycleValidator.expect(
@@ -213,8 +213,8 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         lifeCycleValidatorC.expect();
 
-        navigationController.navigate(this).back(null);
-        navigationController.navigate(this).back();
+        mvcController.navigate(this).back(null);
+        mvcController.navigate(this).back();
         waitTest(1000);
     }
 
@@ -356,13 +356,13 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     @Test
     public void test_should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
         //=============================> At Sub Fragment
-        navigationController.navigateTo(this, SubFragment.class.getSimpleName());
+        mvcController.navigate(this).to(SubFragment.class.getSimpleName());
         waitTest(1200);
 
         lifeCycleValidator.reset();
 
         //=============================> At A
-        navigationController.navigateBack(this);
+        mvcController.navigate(this).back();
         waitTest(1200);
 
         lifeCycleValidator.expect(

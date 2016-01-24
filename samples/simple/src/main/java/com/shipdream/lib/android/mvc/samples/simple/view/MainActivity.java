@@ -16,8 +16,11 @@
 
 package com.shipdream.lib.android.mvc.samples.simple.view;
 
+import com.shipdream.lib.android.mvc.samples.simple.controller.AppController;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
+
+import javax.inject.Inject;
 
 /**
  * Single activity for the app
@@ -53,15 +56,15 @@ public class MainActivity extends MvcActivity {
      * full screen fragments inside it on navigation.
      */
     public static class ContainerFragment extends DelegateFragment {
+        @Inject
+        private AppController appController;
+
         /**
          * What to do when app starts for the first time
          */
         @Override
         protected void onStartUp() {
-            //Navigate to location a when app starts for the first time by navigation controller
-            //here we navigate to LocationA which result in load FragmentA mapped by the
-            //the method mapNavigationFragment above
-            getNavigationController().navigateTo(this, "LocationA");
+            appController.startApp(this);
         }
     }
 }

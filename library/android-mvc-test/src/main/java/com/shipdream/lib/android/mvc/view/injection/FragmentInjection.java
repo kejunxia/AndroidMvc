@@ -26,7 +26,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
@@ -45,7 +45,7 @@ public abstract class FragmentInjection extends MvcFragment {
     protected TextView textViewC;
 
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Override
     protected int getLayoutResId() {
@@ -85,7 +85,7 @@ public abstract class FragmentInjection extends MvcFragment {
                 }else if (item.equals("D")) {
                     loc = MvcTestActivityNavigation.Loc.D;
                 }
-                navigationController.navigate(view).to(loc);
+                navigationManager.navigate(view).to(loc);
             }
         });
 
@@ -101,7 +101,7 @@ public abstract class FragmentInjection extends MvcFragment {
     }
 
     private String printHistory() {
-        NavLocation curLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation curLoc = navigationManager.getModel().getCurrentLocation();
         String history = getLocName(curLoc);
         while(curLoc != null) {
             if(curLoc.getPreviousLocation() != null) {

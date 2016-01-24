@@ -97,7 +97,7 @@ public class EventBusImpl implements EventBus {
 
     public void post(Object event) {
         if(event == null) {
-            throw new IllegalArgumentException("Event bus can't post a NULL event");
+            throw new IllegalArgumentException("Event2C bus can't post a NULL event");
         }
 
         Map<Object, Method> subs = subscribers.get(event.getClass());

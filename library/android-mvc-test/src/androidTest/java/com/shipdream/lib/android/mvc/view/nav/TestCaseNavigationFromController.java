@@ -16,12 +16,11 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
-import com.shipdream.lib.android.mvc.controller.internal.Preparer;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.Preparer;
 import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Component;
-import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
 
@@ -50,7 +49,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     private Comp comp;
     private DisposeCheckerE disposeCheckerEMock;
@@ -137,7 +136,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
 
         final String val = "Value = " + new Random().nextInt();
 
-        navigationController.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
+        navigationManager.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
             @Override
             public void prepare(ControllerE instance) {
                 instance.setValue(val);
@@ -151,7 +150,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         //The controller should not be disposed yet
         verify(disposeCheckerEMock, times(0)).onDisposed();
 
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
 
         //Controller should be disposed after navigated away from fragment E
         waitTest();
@@ -167,7 +166,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         final String valG = "ValueG = " + new Random().nextInt();
 
         resetDisposeCheckers();
-        navigationController.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
+        navigationManager.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
             @Override
             public void prepare(ControllerE instance) {
                 instance.setValue(valE);
@@ -180,7 +179,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();
-        navigationController.navigate(this).with(ControllerF.class, new Preparer<ControllerF>() {
+        navigationManager.navigate(this).with(ControllerF.class, new Preparer<ControllerF>() {
             @Override
             public void prepare(ControllerF instance) {
                 instance.setValue(valF);
@@ -193,7 +192,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();
-        navigationController.navigate(this).with(ControllerG.class, new Preparer<ControllerG>() {
+        navigationManager.navigate(this).with(ControllerG.class, new Preparer<ControllerG>() {
             @Override
             public void prepare(ControllerG instance) {
                 instance.setValue(valG);
@@ -208,7 +207,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         resetDisposeCheckers();
         //The value set to controller e in Injector.getGraph().use should be retained during the
         //navigation
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(valF)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
@@ -216,7 +215,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         waitTest();
         onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
@@ -225,7 +224,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         waitTest();
         verify(disposeCheckerEMock, times(1)).onDisposed();
         verify(disposeCheckerFMock, times(0)).onDisposed();

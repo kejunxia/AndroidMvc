@@ -187,7 +187,7 @@ public abstract class MvcFragment extends Fragment {
      * Called when the fragment is about to create. Fields annotated by {@link Inject} will be
      * injected in this method.
      * </p>
-     * Event bus will be registered in this method
+     * Event2C bus will be registered in this method
      * <p/>
      */
     @Override
@@ -389,7 +389,7 @@ public abstract class MvcFragment extends Fragment {
 
     /**
      * Called when the fragment is no longer in use. This is called after onStop() and before onDetach().
-     * Event bus will be unregistered in the method.
+     * Event2C bus will be unregistered in the method.
      *
      * <p><b>Note that, when a new fragment to create and pushes this fragment to back stack,
      * onDestroy of this fragment will NOT be called. This method will be called until this fragment

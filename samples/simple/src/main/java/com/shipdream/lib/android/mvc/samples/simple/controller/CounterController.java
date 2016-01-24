@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.samples.simple.model.CounterModel;
 
@@ -44,14 +44,14 @@ public interface CounterController extends BaseController<CounterModel> {
     String convertNumberToEnglish(int number);
 
     /**
-     * Navigate to LocationB by {@link NavigationController}to show advance view that can update
+     * Navigate to LocationB by {@link NavigationManager}to show advance view that can update
      * count continuously by holding buttons.
      * @param sender
      */
     void goToAdvancedView(Object sender);
 
     /**
-     * Navigate back to LocationA by {@link NavigationController}to show basic view from LocationB
+     * Navigate back to LocationA by {@link NavigationManager}to show basic view from LocationB
      * @param sender
      */
     void goBackToBasicView(Object sender);
@@ -62,7 +62,7 @@ public interface CounterController extends BaseController<CounterModel> {
      */
     interface EventC2V {
         /**
-         * Event to notify views counter has been updated
+         * Event2C to notify views counter has been updated
          */
         class OnCounterUpdated extends BaseEventV {
             private final int count;

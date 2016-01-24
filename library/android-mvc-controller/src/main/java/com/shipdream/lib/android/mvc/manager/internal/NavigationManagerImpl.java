@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc;
+package com.shipdream.lib.android.mvc.manager.internal;
 
-import com.shipdream.lib.poke.ScopeCache;
-
-import java.util.Collection;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 
 /**
- * Helper class to work with MvcGraph. Internal use only. Don't use it in your app.
+ * Implementation of {@link NavigationManager}
  */
-public class __MvcGraphHelper {
-    /**
-     * Internal use. Gets all cached items this cache still manages
-     * @return The collection of cached times
-     */
-    public static Collection<ScopeCache.CachedItem> getAllCachedInstances(MvcGraph mvcGraph) {
-        return mvcGraph.singletonScopeCache.getCachedItems();
+public class NavigationManagerImpl extends BaseManagerImpl<NavigationManager.Model>
+        implements NavigationManager {
+    public boolean dumpHistoryOnLocationChange = false;
+
+    @Override
+    public Class<Model> modelType() {
+        return NavigationManager.Model.class;
     }
 
+    @Override
+    public Navigator navigate(Object sender) {
+        return new Navigator(sender, this);
+    }
 }

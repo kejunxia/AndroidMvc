@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.samples.note.controller.internal;
 
 import com.shipdream.lib.android.mvc.MvcGraph;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
 import com.shipdream.lib.android.mvc.samples.note.controller.NoteListController;
@@ -85,19 +85,19 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNavigateToNewNoteViewByCalling_ToCreateNewNote() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationController.EventC2V.OnLocationForward event) {
+            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
             }
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusV.register(monitor);
+        eventBusC.register(monitor);
 
         //act
         controllerToTest.toCreateNote();
 
         //verify
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(1)).onEvent(navEvent.capture());
         //It should go to new note view
@@ -136,12 +136,12 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNavigateToNoteDetailViewWhenSelectANoteInNonSelectionModeWhenInPortraitMode() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationController.EventC2V.OnLocationForward event) {
+            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
             }
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusV.register(monitor);
+        eventBusC.register(monitor);
 
         Assert.assertFalse(controllerToTest.inSelectionMode());
 
@@ -151,8 +151,8 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
         controllerToTest.selectNote(5);
 
         //verify
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(1)).onEvent(navEvent.capture());
         //It should go to new note view
@@ -163,12 +163,12 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNotNavigateToNoteDetailViewWhenSelectANoteInNonSelectionModeWhenInLandscapeMode() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationController.EventC2V.OnLocationForward event) {
+            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
             }
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusV.register(monitor);
+        eventBusC.register(monitor);
 
         Assert.assertFalse(controllerToTest.inSelectionMode());
 
@@ -178,8 +178,8 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
         controllerToTest.selectNote(5);
 
         //verify
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(0)).onEvent(navEvent.capture());
     }
@@ -188,12 +188,12 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
     public void shouldNotNavigateToNoteDetailViewWhenItIsInSelectionMode() {
         //arrange
         class Monitor {
-            public void onEvent(NavigationController.EventC2V.OnLocationForward event) {
+            public void onEvent(NavigationManager.EventC2C.OnLocationForward event) {
             }
         }
 
         Monitor monitor = mock(Monitor.class);
-        eventBusV.register(monitor);
+        eventBusC.register(monitor);
 
 
         Assert.assertFalse(controllerToTest.inSelectionMode());
@@ -212,8 +212,8 @@ public class TestListNoteController extends TestControllerBase<NoteListControlle
         controllerToTest.selectNote(1);
 
         //verify
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationForward> navEvent
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.EventC2C.OnLocationForward> navEvent
+                = ArgumentCaptor.forClass(NavigationManager.EventC2C.OnLocationForward.class);
         //Navigation event should be raised
         verify(monitor, times(0)).onEvent(navEvent.capture());
     }

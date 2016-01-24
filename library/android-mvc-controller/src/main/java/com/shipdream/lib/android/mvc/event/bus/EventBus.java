@@ -19,13 +19,13 @@ package com.shipdream.lib.android.mvc.event.bus;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 
 /**
- * Event bus post events based on event class type. Subscriber uses method naming pattern to handle
+ * Event2C bus post events based on event class type. Subscriber uses method naming pattern to handle
  * call back from raised events. To handle an event with class type [EventType], subscribers
  * just need to have method named as <b>onEvent([EventType] event)</b>. Accessibility of the method
  * doesn't matter, so private, protected, public and package access are all allowed. There is an
  * internal implementation {@link EventBusImpl}
  *
- * <p>Event will be posted on the <b>SAME</b> thread the caller is running on by calling
+ * <p>Event2C will be posted on the <b>SAME</b> thread the caller is running on by calling
  * {@link #post(Object)}</p>
  *
  * <p>Example:</p>
@@ -34,7 +34,7 @@ import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
  public class EventBusExample {
      private EventBus eventBus;
 
-     //Event definition
+     //Event2C definition
      public static class MyEvent {
         public String message;
      }
@@ -91,7 +91,7 @@ public interface EventBus {
 
     /**
      * Post the given event to all registered subscribers.
-     * <p>Event will be posted on the <b>SAME</b> thread the caller is running on</p>
+     * <p>Event2C will be posted on the <b>SAME</b> thread the caller is running on</p>
      *
      * @param event The event. Null is not allowed and will throw {@link IllegalArgumentException}
      */

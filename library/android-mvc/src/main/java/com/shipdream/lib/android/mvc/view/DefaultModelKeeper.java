@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.shipdream.lib.android.mvc.ModelKeeper;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ class DefaultModelKeeper implements ModelKeeper {
         if (type != null) {
             Parcelable parcelable = null;
 
-            if (NavigationController.Model.class == type) {
+            if (NavigationManager.Model.class == type) {
                 //Use navigation model keeper to save state
                 parcelable = navigationModelKeeper.saveState(model, type);
             } else {
@@ -92,7 +92,7 @@ class DefaultModelKeeper implements ModelKeeper {
             if (value instanceof Parcelable) {
                 parcelable = (Parcelable) value;
             }
-            if (NavigationController.Model.class == type) {
+            if (NavigationManager.Model.class == type) {
                 //Use navigation model keeper to restore state
                 state = (T) navigationModelKeeper.getState(parcelable, type);
                 logger.trace("Restore state by parcel state keeper - {}, {}ms used.",

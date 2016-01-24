@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraph;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterController;
@@ -135,12 +135,12 @@ public class TestCounterController {
     @Test
     public void should_navigate_to_locationB_when_go_to_advance_view_and_back_to_locationA_after_go_to_basic_view() {
         //Prepare
-        NavigationController navigationController = ((CounterControllerImpl) counterController).navigationController;
-        NavigationController.Model navModel = navigationController.getModel();
+        NavigationManager navigationManager = ((CounterControllerImpl) counterController).navigationManager;
+        NavigationManager.Model navModel = navigationManager.getModel();
         //App has not navigated to anywhere, current location should be null
         Assert.assertNull(navModel.getCurrentLocation());
         //Simulate navigating to location A
-        navigationController.navigateTo(this, "LocationA");
+        navigationManager.navigate(this).to("LocationA");
         //Verify: location should be changed to LocationA
         Assert.assertEquals(navModel.getCurrentLocation().getLocationId(), "LocationA");
 

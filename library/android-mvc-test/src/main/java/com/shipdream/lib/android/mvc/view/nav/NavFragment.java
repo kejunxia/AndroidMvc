@@ -21,7 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 import com.shipdream.lib.android.mvc.view.test.R;
 
@@ -33,7 +33,7 @@ public abstract class NavFragment extends MvcFragment {
     private Button clear;
 
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Inject
     private AnotherController anotherController;
@@ -51,7 +51,7 @@ public abstract class NavFragment extends MvcFragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationController.navigate(v).to(getNextFragmentLocId());
+                navigationManager.navigate(v).to(getNextFragmentLocId());
             }
         });
 
@@ -59,7 +59,7 @@ public abstract class NavFragment extends MvcFragment {
         clear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navigationController.navigate(view).back(null);
+                navigationManager.navigate(view).back(null);
             }
         });
 

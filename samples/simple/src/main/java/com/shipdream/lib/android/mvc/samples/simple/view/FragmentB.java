@@ -139,7 +139,7 @@ public class FragmentB extends MvcFragment {
         //Return true to not pass the back button pressed event to upper level handler.
         return true;
         //Or we can let the fragment manage back navigation back automatically where we don't
-        //override this method which will call NavigationController.navigateBack(Object sender)
+        //override this method which will call NavigationManager.navigateBack(Object sender)
         //automatically
     }
 

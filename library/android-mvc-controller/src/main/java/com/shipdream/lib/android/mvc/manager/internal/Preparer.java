@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.controller.internal;
+package com.shipdream.lib.android.mvc.manager.internal;
 
 /**
  * Preparer in which the injected instance will be configured before a navigation.

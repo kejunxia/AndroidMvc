@@ -16,8 +16,5 @@
 
 package android;
 
-/**
- * Created by kejun on 1/20/2016.
- */
 public class Phone {
 }

@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.simple.R;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterController;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
@@ -30,7 +30,7 @@ import javax.inject.Inject;
 
 public class FragmentA extends MvcFragment {
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Inject
     private CounterController counterController;
@@ -85,10 +85,10 @@ public class FragmentA extends MvcFragment {
             public void onClick(View v) {
                 //Use counterController to manage navigation to make navigation testable
                 counterController.goToAdvancedView(v);
-                //Or we can use NavigationController directly though it's harder to unit test on
+                //Or we can use NavigationManager directly though it's harder to unit test on
                 //controller level.
                 //example:
-                //navigationController.navigateTo(v, "LocationB");
+                //navigationManager.navigateTo(v, "LocationB");
             }
         });
 

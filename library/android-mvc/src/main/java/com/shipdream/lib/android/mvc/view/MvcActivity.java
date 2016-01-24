@@ -29,9 +29,10 @@ import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.__MvcGraphHelper;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
-import com.shipdream.lib.android.mvc.controller.internal.__MvcControllerHelper;
+import com.shipdream.lib.android.mvc.controller.MvcController;
+import com.shipdream.lib.android.mvc.manager.internal.__MvcManagerHelper;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -147,8 +148,8 @@ public abstract class MvcActivity extends AppCompatActivity {
 
     /**
      * This fragment is the container fragment as a root of the activity. When navigating by
-     * {@link NavigationController}, new fragments will be created and replace the root view of this
-     * fragment or pop out the stacked history fragments. {@link NavigationController} can be simply
+     * {@link NavigationManager}, new fragments will be created and replace the root view of this
+     * fragment or pop out the stacked history fragments. {@link NavigationManager} can be simply
      * injected into any fragments extending {@link MvcFragment} by fields annotated by @Inject.
      */
     public static abstract class DelegateFragment extends MvcFragment {
@@ -160,7 +161,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         private List<Runnable> pendingOnViewReadyActions = new ArrayList<>();
 
         @Inject
-        private NavigationController navigationController;
+        private MvcController mvcController;
 
         /**
          * Hack to fix this <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a>
@@ -312,20 +313,11 @@ public abstract class MvcActivity extends AppCompatActivity {
             return R.id.android_mvc_delegate_fragment_content;
         }
 
-        /**
-         * @return Navigation controller. Alternatively, {@link NavigationController} can be injected
-         * by @Inject in any other fragments which will share the same instance as this one, since
-         * all injected controllers would be singleton across the whole application.
-         */
-        public NavigationController getNavigationController() {
-            return navigationController;
-        }
-
         @Override
         public boolean onBackButtonPressed() {
             MvcFragment topFragment = null;
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-            NavLocation curLoc = navigationController.getModel().getCurrentLocation();
+            NavLocation curLoc = mvcController.getCurrentLocation();
             if (curLoc != null && curLoc.getLocationId() != null) {
                 topFragment = (MvcFragment) childFragmentManager().findFragmentByTag(
                         getFragmentTag(curLoc.getLocationId()));
@@ -336,7 +328,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                navigationController.navigate(this).back();
+                mvcController.navigate(this).back();
             }
             return true;
         }
@@ -393,9 +385,9 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         /**
-         * Called when the app starts up for the first time. Use {@link NavigationController} to
-         * navigate to the initial fragment in this callback. {@link NavigationController} can be
-         * obtained by {@link #getNavigationController()} or even be injected again. This callback is
+         * Called when the app starts up for the first time. Use {@link NavigationManager} to
+         * navigate to the initial fragment in this callback. {@link NavigationManager} can be
+         * obtained by inject {@link NavigationManager} to the view's controller. This callback is
          * equivalent to override {@link #onViewReady(View, Bundle, Reason)} and perform action when
          * reason of view ready of this {@link DelegateFragment} is {@link Reason#isFirstTime()}.
          * <p/>
@@ -477,7 +469,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          *
          * @param event The forward navigation event
          */
-        protected void onEvent(final NavigationController.EventC2V.OnLocationForward event) {
+        protected void onEvent(final MvcController.EventC2V.OnLocationForward event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -491,7 +483,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         @SuppressWarnings("unchecked")
-        private void performForwardNav(final NavigationController.EventC2V.OnLocationForward event) {
+        private void performForwardNav(final MvcController.EventC2V.OnLocationForward event) {
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
             FragmentManager fm = childFragmentManager();
 
@@ -542,7 +534,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (event.getNavigator() != null) {
-                            __MvcControllerHelper.destroyNavigator(event.getNavigator());
+                            __MvcManagerHelper.destroyNavigator(event.getNavigator());
                         }
 
                         logger.trace("Fragment ready: " + fragment.getClass().getSimpleName());
@@ -561,7 +553,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          *
          * @param event The backward navigation event
          */
-        protected void onEvent(final NavigationController.EventC2V.OnLocationBack event) {
+        protected void onEvent(final MvcController.EventC2V.OnLocationBack event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -574,11 +566,11 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        private void performBackNav(final NavigationController.EventC2V.OnLocationBack event) {
+        private void performBackNav(final MvcController.EventC2V.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
                 if (event.getNavigator() != null) {
-                    __MvcControllerHelper.destroyNavigator(event.getNavigator());
+                    __MvcManagerHelper.destroyNavigator(event.getNavigator());
                 }
 
                 MvcActivity mvcActivity = ((MvcActivity) getActivity());
@@ -607,7 +599,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             if (event.getNavigator() != null) {
-                                __MvcControllerHelper.destroyNavigator(event.getNavigator());
+                                __MvcManagerHelper.destroyNavigator(event.getNavigator());
                             }
                             currentFrag.unregisterOnViewReadyListener(this);
                         }

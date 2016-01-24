@@ -16,10 +16,11 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
-import com.shipdream.lib.android.mvc.controller.BaseControllerTest;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.controller.BaseTest;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
+import com.shipdream.lib.android.mvc.manager.internal.NavigationManagerImpl;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,25 +32,25 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class TestBaseControllerImpl extends BaseControllerTest {
+public class TestBaseImpl extends BaseTest {
 
     @Test
     public void should_return_getState_and_getStateType_correctly() throws Exception {
-        NavigationControllerImpl navigationController = new NavigationControllerImpl();
+        NavigationManagerImpl navigationManager = new NavigationManagerImpl();
 
-        Assert.assertTrue(navigationController.getModel() == navigationController.getModel());
-        Assert.assertTrue(navigationController.modelType() == navigationController.modelType());
+        Assert.assertTrue(navigationManager.getModel() == navigationManager.getModel());
+        Assert.assertTrue(navigationManager.modelType() == navigationManager.modelType());
     }
 
     @Test
     public void should_rebind_model_on_restoration_when_state_class_type_is_NOT_null() throws Exception {
-        NavigationControllerImpl navigationController = new NavigationControllerImpl();
+        NavigationManagerImpl navigationManager = new NavigationManagerImpl();
 
-        NavigationController.Model restoreState = mock(NavigationController.Model.class);
-        Assert.assertNotEquals(restoreState, navigationController.getModel());
+        NavigationManager.Model restoreState = mock(NavigationManager.Model.class);
+        Assert.assertNotEquals(restoreState, navigationManager.getModel());
 
-        navigationController.restoreModel(restoreState);
-        Assert.assertEquals(restoreState, navigationController.getModel());
+        navigationManager.restoreModel(restoreState);
+        Assert.assertEquals(restoreState, navigationManager.getModel());
     }
 
     class StatelessController extends BaseControllerImpl {
@@ -72,9 +73,9 @@ public class TestBaseControllerImpl extends BaseControllerTest {
 
     @Test (expected = IllegalArgumentException.class)
     public void should_throw_exception_on_binding_null_model() throws Exception {
-        NavigationControllerImpl navigationController = new NavigationControllerImpl();
+        NavigationManagerImpl navigationManager = new NavigationManagerImpl();
 
-        navigationController.bindModel(this, null);
+        navigationManager.bindModel(this, null);
     }
 
     class Event extends BaseEventC {

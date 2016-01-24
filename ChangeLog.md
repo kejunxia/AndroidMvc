@@ -28,7 +28,7 @@ Add reference/dereference method to MvcGraph
 Enhanced navigation controller:
 * allow config controller easier
 * allow call back after navigation is settled
-Fix issue that controllers configured by navigationController is not released correctly
+Fix issue that controllers configured by navigationManager is not released correctly
 
 Version: 1.4.1
 * Able to initialize the controller state referenced by next navigating fragment and retain the state until the navigation is fully performed when the navigation is requested directly via NavigationController in MvcGraph.use method.

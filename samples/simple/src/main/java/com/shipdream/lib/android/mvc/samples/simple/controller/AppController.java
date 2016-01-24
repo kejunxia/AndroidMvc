@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.controller;
+package com.shipdream.lib.android.mvc.samples.simple.controller;
 
-import com.shipdream.lib.android.mvc.controller.internal.NavigationControllerImpl;
+import com.shipdream.lib.android.mvc.controller.BaseController;
 
-import org.junit.Before;
-
-public class BaseNavigationControllerTest extends BaseControllerTest{
-    protected NavigationControllerImpl navigationController;
-
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        navigationController = new NavigationControllerImpl();
-        graph.inject(navigationController);
-        navigationController.onConstruct();
-    }
+public interface AppController extends BaseController {
+    void startApp(Object sender);
 }

@@ -1,7 +1,7 @@
 package com.shipdream.lib.android.mvc.samples.note.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.samples.note.model.NoteListModel;
 import com.shipdream.lib.android.mvc.samples.note.model.dto.Note;
@@ -60,7 +60,7 @@ public interface NoteListController extends BaseController<NoteListModel> {
     /**
      * Selects note with given id. If it's already in {@link #inSelectionMode()} add the note to the
      * selected list otherwise navigate to note detail page where there should be an event
-     * {@link NavigationController.EventC2V.OnLocationForward} raised.
+     * {@link NavigationManager.EventC2V.OnLocationForward} raised.
      * @param id The id
      */
     void selectNote(long id);

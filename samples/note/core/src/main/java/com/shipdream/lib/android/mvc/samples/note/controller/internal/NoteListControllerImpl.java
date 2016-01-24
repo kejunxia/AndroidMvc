@@ -1,6 +1,6 @@
 package com.shipdream.lib.android.mvc.samples.note.controller.internal;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
@@ -22,7 +22,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
     private AppController appController;
 
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Inject
     private NoteManager noteManager;
@@ -43,7 +43,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
 
     @Override
     public void toCreateNote() {
-        navigationController.navigate(this).to(LocId.NEW_NOTE);
+        navigationManager.navigate(this).to(LocId.NEW_NOTE);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class NoteListControllerImpl extends BaseControllerImpl<NoteListModel>
 
             if(appController.getCurrentOrientation() == AppController.Orientation.PORTRAIT) {
                 //Only navigate on portrait mode
-                navigationController.navigate(this).to(LocId.NOTE_HANDSET_DETAIL);
+                navigationManager.navigate(this).to(LocId.NOTE_HANDSET_DETAIL);
             } else {
                 EventC2V.OnNoteSelected event = new EventC2V.OnNoteSelected(this, noteManager.findNote(id));
                 postEvent2V(event);

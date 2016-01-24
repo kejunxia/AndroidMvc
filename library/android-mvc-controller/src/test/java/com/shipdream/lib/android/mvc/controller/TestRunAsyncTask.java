@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestRunAsyncTask extends BaseControllerTest {
+public class TestRunAsyncTask extends BaseTest {
     class EventMonitor {
         public void onEvent(MyControllerImpl.ResourceLoaded event) {}
 
