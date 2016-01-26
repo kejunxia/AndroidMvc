@@ -535,7 +535,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
             Class<? extends MvcFragment> fragmentClass = activity.mapNavigationFragment(event.getCurrentValue().getLocationId());
             if (fragmentClass == null) {
-                throw new RuntimeException("Must provide the class type of fragment for location: "
+                throw new RuntimeException("Cannot find fragment class mapped in MvcActivity.mapNavigationFragment(location) for location: "
                         + event.getCurrentValue().getLocationId());
             } else {
                 FragmentTransaction transaction = fm.beginTransaction();
