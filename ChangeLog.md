@@ -1,5 +1,14 @@
+Version:2.1.0
+* Rename post event methods to postEvent2C and postEventCV which post events to controllers and views.
+* Change NavigationController to NavigationManager aligned with the new pattern. Controllers involving navigation now use injected navigation manager to navigate.
+
 Version:2.0.0
-Simplified event and event bus structure.
+* Controllers now are supposed to have one-to-one relationship with a view. In other words, a controller is an abstraction of a single view. Business logic should reside in controllers rather then views. Since a controller is a representation of a view, a view theoretically can be unit tested just by testing its abstraction in its corresponding controller.
+* Shared logic by multiple controllers now are supposed to move to a shared manager. For example, a logged in user is commonly queried on multiple app pages(views). So controllers for these pages(views) need to access the shared logged in user state. The logged in user and login/logout functions can be wrapped in a LoginManager and shared by the controllers.
+* Add BaseManagerImpl which is the base class of managers.
+* BaseControllerImpl.postEventC2C renamed to BaseControllerImpl.postControllerEvent, BaseControllerImpl.postEventC2V renamed to BaseControllerImpl.postViewEvent
+* Remove EventBusV2V because to views it has no difference from EventBusC2V since views don't care where the events come from. Now there are only 2 event buses. EventBusC and EventBusV which are subscribed by controllers and views respectively.
+* BaseControllerImpl.getModelTypeClass() renamed to BaseControllerImpl.modelType(). So when typing method getModel() in AndroidStudio it doesn't show getModelTypeClass() by its intellisense to smooth code typing experience.
 
 Version:1.6.0
 * Add BaseManagerImpl. Logic and data shared by multiple controllers can be put into managers and injected into controllers.
@@ -20,7 +29,7 @@ Add reference/dereference method to MvcGraph
 Enhanced navigation controller:
 * allow config controller easier
 * allow call back after navigation is settled
-Fix issue that controllers configured by navigationController is not released correctly
+Fix issue that controllers configured by navigationManager is not released correctly
 
 Version: 1.4.1
 * Able to initialize the controller state referenced by next navigating fragment and retain the state until the navigation is fully performed when the navigation is requested directly via NavigationController in MvcGraph.use method.

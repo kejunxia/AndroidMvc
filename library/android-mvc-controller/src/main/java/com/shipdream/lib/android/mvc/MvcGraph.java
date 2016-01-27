@@ -16,11 +16,11 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.controller.internal.AsyncTask;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.controller.internal.Navigator;
-import com.shipdream.lib.android.mvc.controller.internal.Preparer;
+import com.shipdream.lib.android.mvc.manager.internal.Navigator;
+import com.shipdream.lib.android.mvc.manager.internal.Preparer;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
@@ -324,7 +324,7 @@ public class MvcGraph {
      * loose its model when the next fragment is loaded. This is because Android doesn't load
      * fragment immediately by fragment manager, instead navigation will be done in the future main
      * loop. Therefore, if the model of an injected instance needs to be carried to the next fragment
-     * navigated to, use {@link NavigationController#navigate(Object)}.{@link Navigator#with(Class, Annotation, Preparer)}</b></p>
+     * navigated to, use {@link NavigationManager#navigate(Object)}.{@link Navigator#with(Class, Annotation, Preparer)}</b></p>
      *
      * @param type The type of the injectable instance
      * @param qualifier Qualifier for the injectable instance

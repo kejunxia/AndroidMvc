@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.manager;
+package com.shipdream.lib.android.mvc.manager.internal;
 
 import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvc.manager.BaseManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ import javax.inject.Inject;
  * to controllers to notify the state change in the shared manager.
  * </p>
  */
-public abstract class BaseManagerImpl<MODEL> extends MvcBean<MODEL> {
+public abstract class BaseManagerImpl<MODEL> extends MvcBean<MODEL> implements BaseManager<MODEL> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -43,11 +44,21 @@ public abstract class BaseManagerImpl<MODEL> extends MvcBean<MODEL> {
     private EventBus eventBus2C;
 
     /**
-     * Post an event to other controllers. Event will be posted on the same thread as the caller.
+     * Bind model to this manager
+     * @param sender Who wants to bind it
+     * @param model The model to bind to this manager. CANNOT be NULL otherwise a runtime
+     */
+    @Override
+    public void bindModel(Object sender, MODEL model) {
+        super.bindModel(model);
+    }
+
+    /**
+     * Post an event to other controllers. Event2C will be posted on the same thread as the caller.
      *
      * @param event event to controllers
      */
-    protected void postControllerEvent(final BaseEventC event) {
+    protected void postEvent2C(final BaseEventC event) {
         if (eventBus2C != null) {
             eventBus2C.post(event);
         } else {

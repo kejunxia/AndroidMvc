@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.controller.internal;
+package com.shipdream.lib.android.mvc.manager.internal;
 
-/**
- * Preparer in which the injected instance will be configured before a navigation.
- */
-public interface Preparer<T> {
-    /**
-     * Prepare the state for a navigation
-     * @param instance The instance(usually a controller) that will be configured
-     */
-    void prepare(T instance);
+import com.shipdream.lib.android.mvc.controller.BaseTest;
+
+import org.junit.Before;
+
+public class BaseNavigationManagerTest extends BaseTest {
+    protected NavigationManagerImpl navigationManager;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        navigationManager = new NavigationManagerImpl();
+        graph.inject(navigationManager);
+        navigationManager.onConstruct();
+    }
 }

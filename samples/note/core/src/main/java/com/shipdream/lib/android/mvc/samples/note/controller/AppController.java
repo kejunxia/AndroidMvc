@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.samples.note.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 public interface AppController extends BaseController {
     /**
@@ -29,13 +30,23 @@ public interface AppController extends BaseController {
         LANDSCAPE
     }
 
-    /**
-     * Navigate the app to the initial location. Current logic is navigate the app to note list if
-     * the current location is null.
-     */
-    void navigateToInitialLocation();
+    void startApp(Object sender);
 
     void notifyOrientationChanged(Orientation lastOrientation, Orientation currentOrientation);
 
     Orientation getCurrentOrientation();
+
+    interface Event2V {
+        class OnForwardNavigation extends BaseEventV {
+            public OnForwardNavigation(Object sender) {
+                super(sender);
+            }
+        }
+
+        class OnBackNavigation extends BaseEventV {
+            public OnBackNavigation(Object sender) {
+                super(sender);
+            }
+        }
+    }
 }

@@ -73,7 +73,7 @@ ext {
     gitUrl = 'https://github.com/kejunxia/AndroidMvc.git'   // Git repository URL
     version = [
         major: 2,
-        minor: 0,
+        minor: 1,
         patch : 0
     ]
     libGroup = 'com.shipdream'

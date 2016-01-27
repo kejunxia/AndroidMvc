@@ -32,7 +32,7 @@ import java.util.concurrent.ExecutorService;
 
 import static org.mockito.Mockito.mock;
 
-public class BaseControllerTest {
+public class BaseTest {
     protected EventBus eventBusC;
     protected EventBus eventBusV;
     protected ExecutorService executorService;
@@ -81,25 +81,25 @@ public class BaseControllerTest {
     }
 
     static class ControllerDependencies extends MvcGraph.BaseDependencies {
-        private BaseControllerTest baseControllerTest;
+        private BaseTest baseTest;
 
-        public ControllerDependencies(BaseControllerTest baseControllerTest) {
-            this.baseControllerTest = baseControllerTest;
+        public ControllerDependencies(BaseTest baseTest) {
+            this.baseTest = baseTest;
         }
 
         @Override
         public EventBus createEventBusC() {
-            return baseControllerTest.eventBusC;
+            return baseTest.eventBusC;
         }
 
         @Override
         public EventBus createEventBusV() {
-            return baseControllerTest.eventBusV;
+            return baseTest.eventBusV;
         }
 
         @Override
         public ExecutorService createExecutorService() {
-            return baseControllerTest.executorService;
+            return baseTest.executorService;
         }
     }
 }

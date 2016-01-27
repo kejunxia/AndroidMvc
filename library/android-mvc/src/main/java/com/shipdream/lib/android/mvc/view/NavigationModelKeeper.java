@@ -20,26 +20,26 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 
 /**
  * Navigation model state keeper implemented by Android parcelable.
  */
-public class NavigationModelKeeper implements AndroidStateKeeper<NavigationController.Model> {
+public class NavigationModelKeeper implements AndroidStateKeeper<NavigationManager.Model> {
     @Override
-    public Parcelable saveState(NavigationController.Model state, Class<NavigationController.Model> stateType) {
+    public Parcelable saveState(NavigationManager.Model state, Class<NavigationManager.Model> stateType) {
         return new ModelParcelable(state);
     }
 
     @Override
-    public NavigationController.Model getState(Parcelable parceledState, Class<NavigationController.Model> stateType) {
+    public NavigationManager.Model getState(Parcelable parceledState, Class<NavigationManager.Model> stateType) {
         return ((ModelParcelable)parceledState).model;
     }
 
     //==================================================================================================
     //Parcelable to manage navigation model
     public static class ModelParcelable implements Parcelable {
-        private NavigationController.Model model;
+        private NavigationManager.Model model;
 
         public static final Parcelable.Creator<ModelParcelable> CREATOR
                 = new Parcelable.Creator<ModelParcelable>() {
@@ -52,12 +52,12 @@ public class NavigationModelKeeper implements AndroidStateKeeper<NavigationContr
             }
         };
 
-        private ModelParcelable(NavigationController.Model model) {
+        private ModelParcelable(NavigationManager.Model model) {
             this.model = model;
         }
 
         private ModelParcelable(Parcel in) {
-            model = new NavigationController.Model();
+            model = new NavigationManager.Model();
             int start = in.dataPosition();
             int size = in.readInt();
             int end = start + size;

@@ -446,16 +446,16 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
 	... other methods
 
     @Inject
-    NavigationController navigationController;
+    NavigationController navigationManager;
 
     @Override
     public void goToAdvancedView(Object sender) {
-        navigationController.navigateTo(sender, "LocationB");
+        navigationManager.navigateTo(sender, "LocationB");
     }
 
     @Override
     public void goBackToBasicView(Object sender) {
-        navigationController.navigateBack(sender);
+        navigationManager.navigateBack(sender);
     }
 
     ... other methods
@@ -480,7 +480,7 @@ public class FragmentA extends MvcFragment {
                 //Or we can use NavigationController directly though it's harder to unit test on
                 //controller level.
                 //example:
-                //navigationController.navigateTo(v, "LocationB");
+                //navigationManager.navigateTo(v, "LocationB");
             }
         });
 
@@ -512,12 +512,12 @@ public class FragmentB extends MvcFragment {
     @Test
     public void should_navigate_to_locationB_when_go_to_advance_view_and_back_to_locationA_after_go_to_basic_view() {
         //Prepare
-        NavigationController navigationController = ((CounterControllerImpl) counterController).navigationController;
-        NavigationController.Model navModel = navigationController.getModel();
+        NavigationController navigationManager = ((CounterControllerImpl) counterController).navigationManager;
+        NavigationController.Model navModel = navigationManager.getModel();
         //App has not navigated to anywhere, current location should be null
         Assert.assertNull(navModel.getCurrentLocation());
         //Simulate navigating to location A
-        navigationController.navigateTo(this, "LocationA");
+        navigationManager.navigateTo(this, "LocationA");
         //Verify: location should be changed to LocationA
         Assert.assertEquals(navModel.getCurrentLocation().getLocationId(), "LocationA");
 

@@ -26,7 +26,6 @@ import java.util.List;
 public class NoteModel {
     Note viewingNote;
     List<Note> notes;
-    List<Long> selectedNoteIds;
 
     public Note getViewingNote() {
         return viewingNote;
@@ -43,13 +42,4 @@ public class NoteModel {
     public void setNotes(List<Note> notes) {
         this.notes = notes;
     }
-
-    public List<Long> getSelectedNoteIds() {
-        return selectedNoteIds;
-    }
-
-    public void setSelectedNoteIds(List<Long> selectedNoteIds) {
-        this.selectedNoteIds = selectedNoteIds;
-    }
-
 }

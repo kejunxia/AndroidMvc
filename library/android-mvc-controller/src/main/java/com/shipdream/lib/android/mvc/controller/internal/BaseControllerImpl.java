@@ -24,7 +24,7 @@ import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
-import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
+import com.shipdream.lib.android.mvc.manager.internal.BaseManagerImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,12 +96,12 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     }
 
     /**
-     * Post an event to other controllers. The event will be posted on the same thread that the
+     * Post an event to controllers. The event will be posted on the same thread that the
      * caller is running on.
      *
      * @param event event to controllers
      */
-    protected void postControllerEvent(final BaseEventC event) {
+    protected void postEvent2C(final BaseEventC event) {
         if (eventBus2C != null) {
             eventBus2C.post(event);
         } else {
@@ -119,7 +119,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      *
      * @param event event to views
      */
-    protected void postViewEvent(final BaseEventV event) {
+    protected void postEvent2V(final BaseEventV event) {
         if (androidPoster != null) {
             //Run on android OS
             androidPoster.post(eventBus2V, event);

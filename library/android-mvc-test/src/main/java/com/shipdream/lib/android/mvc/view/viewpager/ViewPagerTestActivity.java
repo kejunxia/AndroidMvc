@@ -18,8 +18,11 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.content.Intent;
 
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
+
+import javax.inject.Inject;
 
 public class ViewPagerTestActivity extends MvcActivity {
 
@@ -37,9 +40,12 @@ public class ViewPagerTestActivity extends MvcActivity {
     }
 
     public static class HomeFragment extends DelegateFragment {
+        @Inject
+        private NavigationManager navigationManager;
+
         @Override
         protected void onStartUp() {
-            getNavigationController().navigate(this).to(ViewPagerHomeFragment.class.getSimpleName(), null);
+            navigationManager.navigate(this).to(ViewPagerHomeFragment.class.getSimpleName(), null);
         }
     }
 

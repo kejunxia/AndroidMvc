@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.controller.internal;
+package com.shipdream.lib.android.mvc.manager.internal;
+
+import com.shipdream.lib.android.mvc.manager.*;
 
 /**
- * Internal use.
+ * Implementation of {@link NavigationManager}
  */
-//This class is to help access package hidden methods in controller.internal
-public class __MvcControllerHelper {
-    public static void destroyNavigator(Navigator navigator) {
-        navigator.__destroy();
+public class NavigationManagerImpl extends BaseManagerImpl<NavigationManager.Model>
+        implements NavigationManager {
+    boolean dumpHistoryOnLocationChange = false;
+
+    @Override
+    public Class<Model> modelType() {
+        return NavigationManager.Model.class;
+    }
+
+    @Override
+    public Navigator navigate(Object sender) {
+        return new Navigator(sender, this);
     }
 }

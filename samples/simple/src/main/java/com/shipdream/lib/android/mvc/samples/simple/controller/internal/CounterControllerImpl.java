@@ -20,7 +20,7 @@
  */
 package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterController;
 import com.shipdream.lib.android.mvc.samples.simple.model.CounterModel;
@@ -32,7 +32,7 @@ import javax.inject.Inject;
  */
 public class CounterControllerImpl extends BaseControllerImpl<CounterModel> implements CounterController{
     @Inject
-    NavigationController navigationController;
+    NavigationManager navigationManager;
 
     /**
      * Just return the class type of the model managed by this controller
@@ -47,7 +47,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
         int count = getModel().getCount();
         getModel().setCount(++count);
         //Post controller to view event to views
-        postViewEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
+        postEvent2V(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
     }
 
     @Override
@@ -55,7 +55,7 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
         int count = getModel().getCount();
         getModel().setCount(--count);
         //Post controller to view event to views
-        postViewEvent(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
+        postEvent2V(new EventC2V.OnCounterUpdated(sender, count, convertNumberToEnglish(count)));
     }
 
     @Override
@@ -83,11 +83,11 @@ public class CounterControllerImpl extends BaseControllerImpl<CounterModel> impl
 
     @Override
     public void goToAdvancedView(Object sender) {
-        navigationController.navigateTo(sender, "LocationB");
+        navigationManager.navigate(sender).to("LocationB");
     }
 
     @Override
     public void goBackToBasicView(Object sender) {
-        navigationController.navigateBack(sender);
+        navigationManager.navigate(sender).back();
     }
 }

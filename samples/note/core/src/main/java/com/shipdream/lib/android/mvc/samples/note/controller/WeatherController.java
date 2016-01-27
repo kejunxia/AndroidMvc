@@ -43,11 +43,11 @@ public interface WeatherController extends BaseController<WeatherModel> {
     /**
      * Events from {@link WeatherController} to views.
      */
-    class EventC2V {
+    interface EventC2V {
         /**
          * Raised when weathers are updated successfully
          */
-        public static class OnWeatherWatchlistChanged extends BaseEventV {
+        class OnWeatherWatchlistChanged extends BaseEventV {
             public OnWeatherWatchlistChanged(Object sender) {
                 super(sender);
             }
@@ -56,7 +56,7 @@ public interface WeatherController extends BaseController<WeatherModel> {
         /**
          * Raised when it began to update weathers
          */
-        public static class OnWeathersUpdateBegan extends BaseEventV {
+        class OnWeathersUpdateBegan extends BaseEventV {
             public OnWeathersUpdateBegan(Object sender) {
                 super(sender);
             }
@@ -65,7 +65,7 @@ public interface WeatherController extends BaseController<WeatherModel> {
         /**
          * Raised when weathers are updated successfully
          */
-        public static class OnWeathersUpdated extends BaseEventV {
+        class OnWeathersUpdated extends BaseEventV {
             public OnWeathersUpdated(Object sender) {
                 super(sender);
             }
@@ -74,7 +74,7 @@ public interface WeatherController extends BaseController<WeatherModel> {
         /**
          * Raised when failed to update weathers
          */
-        public static class OnWeathersUpdateFailed extends BaseEventV {
+        class OnWeathersUpdateFailed extends BaseEventV {
             private final Exception exception;
             public OnWeathersUpdateFailed(Object sender, Exception exception) {
                 super(sender);

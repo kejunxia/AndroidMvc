@@ -19,8 +19,11 @@ package com.shipdream.lib.android.mvc.view.eventv2v;
 import android.os.Bundle;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
+
+import javax.inject.Inject;
 
 public class EventBusV2VActivity extends MvcActivity {
 
@@ -35,11 +38,14 @@ public class EventBusV2VActivity extends MvcActivity {
     }
 
     public static class HomeFragment extends DelegateFragment {
+        @Inject
+        private NavigationManager navigationManager;
+
         private boolean onViewStateRestoredCalled = false;
 
         @Override
         protected void onStartUp() {
-            getNavigationController().navigate(this).to("TestFragment", null);
+            navigationManager.navigate(this).to("TestFragment", null);
         }
 
         @Override

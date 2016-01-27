@@ -80,9 +80,9 @@ public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> imp
         if(getModel().getWeatherWatchlist().size() == 0) {
             String cities = gson.toJson(getModel().getWeatherWatchlist());
             preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
-            postViewEvent(new EventC2V.OnWeathersUpdated(sender));
+            postEvent2V(new EventC2V.OnWeathersUpdated(sender));
         } else {
-            postViewEvent(new EventC2V.OnWeathersUpdateBegan(sender));
+            postEvent2V(new EventC2V.OnWeathersUpdateBegan(sender));
 
             runAsyncTask(sender, new AsyncTask() {
                 @Override
@@ -98,13 +98,13 @@ public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> imp
                     String cities = gson.toJson(getModel().getWeatherWatchlist());
                     preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
                     //Weather updated, post successful event
-                    postViewEvent(new EventC2V.OnWeathersUpdated(sender));
+                    postEvent2V(new EventC2V.OnWeathersUpdated(sender));
                 }
             }, new AsyncExceptionHandler() {
                 @Override
                 public void handleException(Exception exception) {
                     //Weather failed, post error event
-                    postViewEvent(new EventC2V.OnWeathersUpdateFailed(sender, exception));
+                    postEvent2V(new EventC2V.OnWeathersUpdateFailed(sender, exception));
                 }
             });
         }

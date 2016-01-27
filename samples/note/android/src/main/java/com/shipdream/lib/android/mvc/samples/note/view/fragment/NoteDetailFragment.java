@@ -23,7 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shipdream.lib.android.mvc.samples.note.R;
-import com.shipdream.lib.android.mvc.samples.note.controller.NoteController;
+import com.shipdream.lib.android.mvc.samples.note.controller.NoteDetailController;
+import com.shipdream.lib.android.mvc.samples.note.controller.NoteListController;
 import com.shipdream.lib.android.mvc.samples.note.model.dto.Note;
 
 import org.slf4j.Logger;
@@ -37,7 +38,7 @@ public class NoteDetailFragment extends BaseFragment {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    private NoteController noteController;
+    private NoteDetailController noteDetailController;
 
     @Override
     protected int getLayoutResId() {
@@ -51,7 +52,7 @@ public class NoteDetailFragment extends BaseFragment {
         title = (TextView) view.findViewById(R.id.fragment_note_detail_title);
         content = (TextView) view.findViewById(R.id.fragment_note_detail_content);
 
-        Note note = noteController.getModel().getViewingNote();
+        Note note = noteDetailController.getViewingNote();
         displayNote(note);
     }
 
@@ -72,16 +73,14 @@ public class NoteDetailFragment extends BaseFragment {
     @Override
     public void onPause() {
         super.onPause();
-        if (isVisible()) {
-            noteController.updateViewingNote(this, title.getText().toString(), content.getText().toString());
-        }
+        noteDetailController.updateViewingNote(this, title.getText().toString(), content.getText().toString());
     }
 
-    private void onEvent(NoteController.EventC2V.OnNoteSelected event) {
+    private void onEvent(NoteListController.EventC2V.OnNoteSelected event) {
         displayNote(event.getNote());
     }
 
-    public void onEvent(NoteController.EventC2V.OnNoteUpdated event) {
+    public void onEvent(NoteDetailController.EventC2V.OnNoteUpdated event) {
         Toast.makeText(getActivity(), "Note updated.", Toast.LENGTH_SHORT).show();
         logger.debug("Note updated by {}", event.getSender().hashCode());
     }

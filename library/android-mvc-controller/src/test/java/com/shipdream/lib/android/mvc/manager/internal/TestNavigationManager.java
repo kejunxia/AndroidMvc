@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.controller.internal;
+package com.shipdream.lib.android.mvc.manager.internal;
 
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.controller.BaseNavigationControllerTest;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.TimerController;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.internal.TimerControllerImpl;
+import com.shipdream.lib.android.mvc.manager.*;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Provides;
@@ -51,14 +50,16 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestNavigationController extends BaseNavigationControllerTest {
+public class TestNavigationManager extends BaseNavigationManagerTest {
     //Define a subscriber class
     class ForwardListener {
-        public void onEvent(NavigationController.EventC2V.OnLocationForward event) {}
+        public void onEvent(NavigationManager.Event2C.OnLocationForward event) {
+        }
     }
 
     class BackListener {
-        public void onEvent(NavigationController.EventC2V.OnLocationBack event) {}
+        public void onEvent(NavigationManager.Event2C.OnLocationBack event) {
+        }
     }
 
     private String locId1 = "LocId1";
@@ -72,23 +73,23 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         ForwardListener forwardListener = prepareLocationHistory();
         //loc1 -> loc2 -> loc3 -> loc4
 
-        navigationController.navigateTo(this, locId2);
-        navigationController.navigateTo(this, locId4);
-        navigationController.navigateTo(this, locId1);
+        navigationManager.navigate(this).to(locId2);
+        navigationManager.navigate(this).to(locId4);
+        navigationManager.navigate(this).to(locId1);
         //loc1 -> loc2 -> loc3 -> loc4 -> loc2 -> loc4 -> loc1
 
         reset(forwardListener);
-        navigationController.navigateTo(this, locId5, locId3);
+        navigationManager.navigate(this).to(locId5, locId3);
         //loc1 -> loc2 -> loc3 -> loc5
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationForward> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId1);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId5);
         assertEquals(event.getValue().getLocationWhereHistoryClearedUpTo().getLocationId(), locId3);
         assertEquals(event.getValue().isClearHistory(), true);
 
-        NavigationController.Model model = navigationController.getModel();
+        NavigationManager.Model model = navigationManager.getModel();
         NavLocation curLoc = model.getCurrentLocation();
         assertEquals(curLoc.getLocationId(), locId5);
         curLoc = curLoc.getPreviousLocation();
@@ -101,7 +102,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(curLoc, null);
 
         //loc1 -> loc2 -> loc3 -> loc5
-        NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId5);
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId3);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation().getLocationId(), locId2);
@@ -114,10 +115,10 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         ForwardListener forwardListener = prepareLocationHistory();
 
         reset(forwardListener);
-        navigationController.navigateTo(this, locId5, null);
+        navigationManager.navigate(this).to(locId5, null);
 
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationForward> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId5);
@@ -126,7 +127,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(event.getValue().isClearHistory(), true);
 
         //Now the history should be loc1->loc2->loc5
-        NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId5);
         assertEquals(currentLoc.getPreviousLocation(), null);
     }
@@ -135,18 +136,18 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void shouldBeAbleToNavigateBackOneByOne() throws Exception {
         //mock the subscriber
         BackListener backListener = mock(BackListener.class);
-        eventBusV.register(backListener);
+        eventBusC.register(backListener);
 
         prepareLocationHistory();
 
         reset(backListener);
-        navigationController.navigateBack(this);
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        navigationManager.navigate(this).back();
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId3);
-        NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId3);
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId2);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation().getLocationId(), locId1);
@@ -154,42 +155,42 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
-        navigationController.navigateBack(this);
-        event = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        navigationManager.navigate(this).back();
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId3);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId2);
-        currentLoc = navigationController.getModel().getCurrentLocation();
+        currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId2);
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation(), null);
         Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
-        navigationController.navigateBack(this);
-        event = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        navigationManager.navigate(this).back();
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId2);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId1);
-        currentLoc = navigationController.getModel().getCurrentLocation();
+        currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation(), null);
         Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
-        navigationController.navigateBack(this);
-        event = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        navigationManager.navigate(this).back();
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId1);
         assertEquals(event.getValue().getCurrentValue(), null);
-        currentLoc = navigationController.getModel().getCurrentLocation();
+        currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc, null);
         Assert.assertFalse(event.getValue().isFastRewind());
 
         //has already reached the start of the navigation, should not be able to navigate back any more
         reset(backListener);
-        navigationController.navigateBack(this);
-        event = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        navigationManager.navigate(this).back();
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -197,18 +198,18 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void shouldBeAbleToNavigateBackToGivenLocation() throws Exception {
         //mock the subscriber
         BackListener backListener = mock(BackListener.class);
-        eventBusV.register(backListener);
+        eventBusC.register(backListener);
 
         prepareLocationHistory();
 
         reset(backListener);
-        navigationController.navigateBack(this, locId2);
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        navigationManager.navigate(this).back(locId2);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId2);
-        NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId2);
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation(), null);
@@ -220,18 +221,18 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void shouldBeAbleToNavigateBackToFirstLocation() throws Exception {
         //mock the subscriber
         BackListener backListener = mock(BackListener.class);
-        eventBusV.register(backListener);
+        eventBusC.register(backListener);
 
         prepareLocationHistory();
 
         reset(backListener);
-        navigationController.navigateBack(this, null);
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        navigationManager.navigate(this).back(null);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId1);
-        NavLocation currentLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId1);
         assertEquals(currentLoc.getPreviousLocation(), null);
 
@@ -242,11 +243,12 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_post_app_exit_event_on_the_last_back_of_linear_back_navigation() {
         //mock the subscriber
         class AppExitListener {
-            public void onEvent(NavigationController.EventC2C.OnAppExit event) {}
+            public void onEvent(NavigationManager.Event2C.OnAppExit event) {
+            }
         }
 
-        ArgumentCaptor<NavigationController.EventC2C.OnAppExit> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2C.OnAppExit.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnAppExit> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnAppExit.class);
 
         AppExitListener exitListener = mock(AppExitListener.class);
         eventBusC.register(exitListener);
@@ -254,16 +256,16 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         prepareLocationHistory();
 
         reset(exitListener);
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         verify(exitListener, times(1)).onEvent(event.capture());
     }
 
@@ -271,11 +273,12 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_post_app_exit_event_on_the_last_back_of_fast_back_navigation() {
         //mock the subscriber
         class AppExitListener {
-            public void onEvent(NavigationController.EventC2C.OnAppExit event) {}
+            public void onEvent(NavigationManager.Event2C.OnAppExit event) {
+            }
         }
 
-        ArgumentCaptor<NavigationController.EventC2C.OnAppExit> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2C.OnAppExit.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnAppExit> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnAppExit.class);
 
         AppExitListener exitListener = mock(AppExitListener.class);
         eventBusC.register(exitListener);
@@ -283,27 +286,27 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         prepareLocationHistory();
 
         reset(exitListener);
-        navigationController.navigateBack(this, null);
+        navigationManager.navigate(this).back(null);
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
         verify(exitListener, times(1)).onEvent(event.capture());
     }
 
     @Test
-         public void should_not_raise_navigate_back_event_when_navigate_to_first_location_from_the_first_location() throws Exception {
+    public void should_not_raise_navigate_back_event_when_navigate_to_first_location_from_the_first_location() throws Exception {
         // Arrange
         BackListener backListener = mock(BackListener.class);
-        eventBusV.register(backListener);
+        eventBusC.register(backListener);
 
-        navigationController.navigateTo(this, locId1);
+        navigationManager.navigate(this).to(locId1);
 
         // Arrange
-        navigationController.navigateBack(this, null);
+        navigationManager.navigate(this).back(null);
 
         // Verify
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -311,16 +314,16 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_not_raise_navigate_back_event_when_navigate_to_unknown_location() throws Exception {
         // Arrange
         BackListener backListener = mock(BackListener.class);
-        eventBusV.register(backListener);
+        eventBusC.register(backListener);
 
         prepareLocationHistory();
 
         // Arrange
-        navigationController.navigateBack(this, "Bad Location");
+        navigationManager.navigate(this).back("Bad Location");
 
         // Verify
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -328,14 +331,14 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_not_raise_navigate_back_event_when_fast_back_navigate_from_null_location() throws Exception {
         // Arrange
         BackListener backListener = mock(BackListener.class);
-        eventBusV.register(backListener);
+        eventBusC.register(backListener);
 
         // Arrange
-        navigationController.navigateBack(this, "any location");
+        navigationManager.navigate(this).back("any location");
 
         // Verify
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationBack> event
-                = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationBack.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
 
@@ -343,11 +346,11 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     public void should_be_able_to_log_navigation_history() throws Exception {
         // Arrange
         Logger logger = mock(Logger.class);
-        navigationController.dumpHistoryOnLocationChange = true;
-        navigationController.logger = logger;
+        navigationManager.dumpHistoryOnLocationChange = true;
+        navigationManager.logger = logger;
 
         // Act
-        navigationController.navigateTo(this, "any location", "back to location");
+        navigationManager.navigate(this).to("any location", "back to location");
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
@@ -356,7 +359,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         reset(logger);
 
         // Act
-        navigationController.navigateTo(this, "any location");
+        navigationManager.navigate(this).to("any location");
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
@@ -365,17 +368,17 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         reset(logger);
 
         // Act
-        navigationController.navigateBack(this);
+        navigationManager.navigate(this).back();
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
 
         // Arrange
         reset(logger);
-        navigationController.navigateTo(this, "some location");
+        navigationManager.navigate(this).to("some location");
 
         // Act
-        navigationController.navigateBack(this, null);
+        navigationManager.navigate(this).back(null);
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
@@ -395,11 +398,13 @@ public class TestNavigationController extends BaseNavigationControllerTest {
 
     @Qualifier
     @Retention(RUNTIME)
-    @interface Slower2 {}
+    @interface Slower2 {
+    }
 
     @Qualifier
     @Retention(RUNTIME)
-    @interface Slower3 {}
+    @interface Slower3 {
+    }
 
     @Slower2
     @Slower3
@@ -414,10 +419,11 @@ public class TestNavigationController extends BaseNavigationControllerTest {
             @Singleton
             @Slower2
             TimerController timerSlowerX2() {
-                return new TimerControllerImpl(){
+                return new TimerControllerImpl() {
                     {
                         onConstruct();
                     }
+
                     @Override
                     public void setInitialValue(long value) {
                         super.setInitialValue(value * 2);
@@ -448,13 +454,15 @@ public class TestNavigationController extends BaseNavigationControllerTest {
             @Singleton
             @Slower2
             TimerController timerSlowerX2() {
-                return new TimerControllerImpl(){
+                return new TimerControllerImpl() {
                     {
                         try {
                             onConstruct();
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
 
                     }
+
                     @Override
                     public void setInitialValue(long value) {
                         super.setInitialValue(value * 2);
@@ -466,12 +474,14 @@ public class TestNavigationController extends BaseNavigationControllerTest {
             @Singleton
             @Slower3
             TimerController timerSlowerX3() {
-                return new TimerControllerImpl(){
+                return new TimerControllerImpl() {
                     {
                         try {
                             onConstruct();
-                        } catch (Exception e) {}
+                        } catch (Exception e) {
+                        }
                     }
+
                     @Override
                     public void setInitialValue(long value) {
                         super.setInitialValue(value * 3);
@@ -494,7 +504,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         });
 
         // Act
-        Navigator navigator = navigationController.navigate(this).with(TimerController.class, slower2Qualifier, new Preparer<TimerController>() {
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, slower2Qualifier, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -530,7 +540,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
             }
         });
 
-        navigator = navigationController.navigate(this).with(TimerController.class, slower3Qualifier, new Preparer<TimerController>() {
+        navigator = navigationManager.navigate(this).with(TimerController.class, slower3Qualifier, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -569,7 +579,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         final long fiveMinutes = 60 * 5;
 
         // Act
-        Navigator navigator = navigationController.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -599,20 +609,20 @@ public class TestNavigationController extends BaseNavigationControllerTest {
 
     @Test
     public void should_invoke_singular_argument_with_method_of_navigator_correct() throws Exception {
-        Navigator navigator = navigationController.navigate(this);
+        Navigator navigator = navigationManager.navigate(this);
         Navigator spiedNavigator = spy(navigator);
 
-        verify(spiedNavigator, times(0)).with(eq(NavigationController.class), isNull(Annotation.class), isNull(Preparer.class));
+        verify(spiedNavigator, times(0)).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(Preparer.class));
 
-        spiedNavigator.with(NavigationController.class);
+        spiedNavigator.with(NavigationManager.class);
 
-        verify(spiedNavigator).with(eq(NavigationController.class), isNull(Annotation.class), isNull(Preparer.class));
+        verify(spiedNavigator).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(Preparer.class));
     }
 
     @Test
     public void should_return_correct_sender_by_navigator() throws Exception {
         // Act
-        Navigator navigator = navigationController.navigate(this);
+        Navigator navigator = navigationManager.navigate(this);
 
         Assert.assertTrue(this == navigator.getSender());
     }
@@ -623,7 +633,7 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         Navigator.OnSettled onSettled = mock(Navigator.OnSettled.class);
 
         // Act
-        Navigator navigator = navigationController.navigate(this).with(TimerController.class)
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class)
                 .onSettled(onSettled);
         navigator.to(TimerFragment.class.getName());
 
@@ -641,12 +651,12 @@ public class TestNavigationController extends BaseNavigationControllerTest {
     private ForwardListener prepareLocationHistory() {
         //mock the subscriber
         ForwardListener forwardListener = mock(ForwardListener.class);
-        eventBusV.register(forwardListener);
+        eventBusC.register(forwardListener);
 
-        navigationController.navigateTo(this, locId1);
+        navigationManager.navigate(this).to(locId1);
 
-        ArgumentCaptor<NavigationController.EventC2V.OnLocationForward> event =
-                ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event =
+                ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue(), null);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId1);
@@ -655,9 +665,9 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(event.getValue().isClearHistory(), false);
 
         reset(forwardListener);
-        navigationController.navigateTo(this, locId2);
+        navigationManager.navigate(this).to(locId2);
 
-        event = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId1);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId2);
@@ -666,9 +676,9 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(event.getValue().isClearHistory(), false);
 
         reset(forwardListener);
-        navigationController.navigateTo(this, locId3);
+        navigationManager.navigate(this).to(locId3);
 
-        event = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId2);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId3);
@@ -677,9 +687,9 @@ public class TestNavigationController extends BaseNavigationControllerTest {
         assertEquals(event.getValue().isClearHistory(), false);
 
         reset(forwardListener);
-        navigationController.navigateTo(this, locId4);
+        navigationManager.navigate(this).to(locId4);
 
-        event = ArgumentCaptor.forClass(NavigationController.EventC2V.OnLocationForward.class);
+        event = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId3);
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId4);

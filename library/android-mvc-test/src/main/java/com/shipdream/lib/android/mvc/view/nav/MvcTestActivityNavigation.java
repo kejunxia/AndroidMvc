@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.view.nav;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
@@ -69,12 +69,12 @@ public class MvcTestActivityNavigation extends MvcActivity {
 
     public static class HomeFragment extends DelegateFragment {
         @Inject
-        private NavigationController navigationController;
+        private NavigationManager navigationManager;
 
         @Override
         protected void onStartUp() {
             Log.d("MvcTesting", "navigate");
-            navigationController.navigate(this).to(Loc.A);
+            navigationManager.navigate(this).to(Loc.A);
         }
 
         @Override

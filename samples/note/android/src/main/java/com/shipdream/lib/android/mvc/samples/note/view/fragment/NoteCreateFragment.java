@@ -22,13 +22,13 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.shipdream.lib.android.mvc.samples.note.R;
-import com.shipdream.lib.android.mvc.samples.note.controller.NoteController;
+import com.shipdream.lib.android.mvc.samples.note.controller.NoteCreateController;
 
 import javax.inject.Inject;
 
 public class NoteCreateFragment extends BaseFragment {
     @Inject
-    private NoteController noteController;
+    private NoteCreateController noteCreateController;
 
     private EditText title;
     private EditText content;
@@ -53,11 +53,11 @@ public class NoteCreateFragment extends BaseFragment {
 
     @Override
     public boolean onBackButtonPressed() {
-        noteController.addNote(title.getText().toString(), content.getText().toString());
+        noteCreateController.addNote(title.getText().toString(), content.getText().toString());
         return true;
     }
 
-    public void onEvent(NoteController.EventC2V.OnNoteCreated event) {
+    public void onEvent(NoteCreateController.EventC2V.OnNoteCreated event) {
         Toast.makeText(getActivity(), "Note created.", Toast.LENGTH_SHORT).show();
     }
 }

@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvc.controller;
 
-import com.shipdream.lib.android.mvc.manager.BaseManagerImpl;
+import com.shipdream.lib.android.mvc.manager.internal.BaseManagerImpl;
 
 /**
  * <p>

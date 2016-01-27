@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
@@ -38,7 +38,7 @@ public class TabFragmentA extends BaseTabFragment {
     private TextView textView;
 
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Override
     protected int getLayoutResId() {
@@ -65,7 +65,7 @@ public class TabFragmentA extends BaseTabFragment {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationController.navigate(v).to(SubFragment.class.getSimpleName());
+                navigationManager.navigate(v).to(SubFragment.class.getSimpleName());
             }
         });
     }

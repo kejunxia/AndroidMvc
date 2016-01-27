@@ -16,11 +16,11 @@
 
 package com.shipdream.lib.android.mvc.samples.note.controller.internal;
 
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
-import com.shipdream.lib.android.mvc.samples.note.controller.NoteController;
+import com.shipdream.lib.android.mvc.samples.note.manager.NoteManager;
 import com.shipdream.lib.android.mvc.samples.note.model.NoteModel;
 
 import javax.inject.Inject;
@@ -29,10 +29,10 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
     private Orientation currentOrientation;
 
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Inject
-    private NoteController noteController;
+    private NoteManager noteManager;
 
     @Override
     public Class modelType() {
@@ -40,9 +40,10 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
     }
 
     @Override
-    public void navigateToInitialLocation() {
-        if(navigationController.getModel().getCurrentLocation() == null) {
-            navigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST);
+    public void startApp(Object sender) {
+        //Login a dump user. This should be done by a login api in real app.
+        if(navigationManager.getModel().getCurrentLocation() == null) {
+            navigationManager.navigate(this).to(LocId.NOTE_HANDSET_LIST);
         }
     }
 
@@ -66,8 +67,16 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
         return currentOrientation;
     }
 
+    private void onEvent(NavigationManager.Event2C.OnLocationForward event) {
+        postEvent2V(new Event2V.OnForwardNavigation(event.getSender()));
+    }
+
+    private void onEvent(NavigationManager.Event2C.OnLocationBack event) {
+        postEvent2V(new Event2V.OnBackNavigation(event.getSender()));
+    }
+
     private void showPortrait() {
-        NavigationController.Model navModel = navigationController.getModel();
+        NavigationManager.Model navModel = navigationManager.getModel();
         String curLocId = "";
         if (navModel.getCurrentLocation() != null) {
             curLocId = navModel.getCurrentLocation().getLocationId();
@@ -77,18 +86,18 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)
                 || curLocId.equals(LocId.NOTE_TABLET_LANDSCAPE)) {
             //Clear history and go to note list
-            navigationController.navigateTo(this, LocId.NOTE_HANDSET_LIST, null);
+            navigationManager.navigate(this).to( LocId.NOTE_HANDSET_LIST, null);
 
-            NoteModel noteModel = noteController.getModel();
+            NoteModel noteModel = noteManager.getModel();
             if(null != noteModel.getViewingNote()) {
                 //Was viewing note details, stack the detail location on top of note list
-                navigationController.navigateTo(this, LocId.NOTE_HANDSET_DETAIL);
+                navigationManager.navigate(this).to(LocId.NOTE_HANDSET_DETAIL);
             }
         }
     }
 
     private void showLandscape() {
-        NavigationController.Model navModel = navigationController.getModel();
+        NavigationManager.Model navModel = navigationManager.getModel();
         String curLocId = navModel.getCurrentLocation() == null ? null : navModel.getCurrentLocation().getLocationId();
         //If we are viewing note, use landscape location only and clear history locations
         if(curLocId == null
@@ -96,7 +105,7 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)
                 || curLocId.equals(LocId.NOTE_TABLET_LANDSCAPE)) {
             //Clear history and go to note landscape location
-            navigationController.navigateTo(this, LocId.NOTE_TABLET_LANDSCAPE, null);
+            navigationManager.navigate(this).to( LocId.NOTE_TABLET_LANDSCAPE, null);
         }
     }
 }

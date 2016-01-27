@@ -26,7 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.controller.NavigationController;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.R;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
@@ -45,7 +45,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
     private View navHome;
     private View navWeather;
     @Inject
-    private NavigationController navigationController;
+    private NavigationManager navigationManager;
 
     @Override
     protected int getLayoutResId() {
@@ -76,7 +76,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
                  * Note the 3rd parameter which indicates navigating to locations on main menu will
                  * clear all history where back key will exit the app
                  */
-                navigationController.navigateTo(v, LocId.NOTE_HANDSET_LIST, null);
+                navigationManager.navigate(v).to(LocId.NOTE_HANDSET_LIST, null);
                 drawerLayout.closeDrawers();
             }
         });
@@ -89,7 +89,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
                  * Note the 3rd parameter which indicates navigating to locations on main menu will
                  * clear all history where back key will exit the app
                  */
-                navigationController.navigateTo(v, LocId.WEATHERS, null);
+                navigationManager.navigate(v).to(LocId.WEATHERS, null);
                 drawerLayout.closeDrawers();
             }
         });
@@ -103,7 +103,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
 
     @Override
     protected void onStartUp() {
-        appController.navigateToInitialLocation();
+        appController.startApp(this);
     }
 
     @Override
@@ -123,20 +123,16 @@ public class MainFragment extends MvcActivity.DelegateFragment {
         }
     }
 
-    @Override
-    protected void onEvent(NavigationController.EventC2V.OnLocationForward event) {
-        super.onEvent(event);
+    private void onEvent(AppController.Event2V.OnForwardNavigation event) {
         updateNavigationUi();
     }
 
-    @Override
-    protected void onEvent(NavigationController.EventC2V.OnLocationBack event) {
-        super.onEvent(event);
+    private void onEvent(AppController.Event2V.OnBackNavigation event) {
         updateNavigationUi();
     }
 
     private void updateNavigationUi() {
-        NavLocation curLoc = navigationController.getModel().getCurrentLocation();
+        NavLocation curLoc = navigationManager.getModel().getCurrentLocation();
         if (curLoc != null && curLoc.getPreviousLocation() != null) {
             //Has history location,should show back nav icon
             toolbar.setNavigationIcon(R.drawable.ic_action_navigation_back_menu);
