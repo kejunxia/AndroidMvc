@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
  * {@link BaseControllerImpl#runAsyncTask(Object, java.util.concurrent.ExecutorService, AsyncTask)}
  * or {@link BaseControllerImpl#runAsyncTask(Object, java.util.concurrent.ExecutorService, AsyncTask, AsyncExceptionHandler)}
  *
- * @deprecated use {@link Task} and see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Monitor.Callback)}
+ * @deprecated use {@link Task} and see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)}
  */
 public abstract class AsyncTask {
     /**

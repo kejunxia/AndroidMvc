@@ -100,7 +100,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
     @Test
     public void should_trigger_onException_in_custom_callback() throws Exception {
-        Monitor.Callback callback = mock(Monitor.Callback.class);
+        Task.Callback callback = mock(Task.Callback.class);
 
         final RuntimeException e = new RuntimeException("Intentional exception");
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
@@ -122,7 +122,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
     @Test
     public void should_trigger_onCalled_with_non_interrupted_in_custom_callback() throws Exception {
-        final Monitor.Callback callback = mock(Monitor.Callback.class);
+        final Task.Callback callback = mock(Task.Callback.class);
 
         Monitor monitor1 = controller.runTaskCustomCallback(this, new Task() {
             @Override
@@ -160,7 +160,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
     @Test
     public void should_trigger_onCalled_with_interrupted_in_custom_callback() throws Exception {
-        Monitor.Callback callback = mock(Monitor.Callback.class);
+        Task.Callback callback = mock(Task.Callback.class);
 
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
             @Override
@@ -183,7 +183,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
     @Test
     public void should_trigger_onStarted_and_onSuccess_in_custom_callback() throws Exception {
-        Monitor.Callback callback = mock(Monitor.Callback.class);
+        Task.Callback callback = mock(Task.Callback.class);
 
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
             @Override

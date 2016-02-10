@@ -22,6 +22,36 @@ package com.shipdream.lib.android.mvc.controller.internal;
  */
 public interface Task {
     /**
+     * The callback for the execution of a {@link Task}
+     */
+    public static abstract class Callback {
+        /**
+         * Called when the execution of the task starts
+         */
+        void onStarted() {}
+
+        /**
+         * Called when the execution of the task completes successfully
+         */
+        abstract void onSuccess();
+
+        /**
+         * Called when the execution of the task is cancelled
+         * @param interrupted true when the task is cancelled while the task is running.
+         *                    false when the task is cancelled before it starts running
+         */
+        void onCancelled(boolean interrupted){}
+
+        /**
+         * Called when the execution of the task encounters exceptions. Note that an
+         * {@link InterruptedException} caused by cancelling won't trigger this callback but
+         * {@link #onCancelled(boolean)} with argument equals true
+         * @param e The exception
+         */
+        void onException(Exception e){}
+    }
+
+    /**
      * Override this method to define what this task does.
      * @throws Exception exception occurring during the execution
      */

@@ -25,36 +25,6 @@ import java.util.concurrent.Future;
  */
 public class Monitor {
     /**
-     * The callback for the execution of a {@link Task}
-     */
-    public static abstract class Callback {
-        /**
-         * Called when the execution of the task starts
-         */
-        void onStarted() {}
-
-        /**
-         * Called when the execution of the task completes successfully
-         */
-        abstract void onSuccess();
-
-        /**
-         * Called when the execution of the task is cancelled
-         * @param interrupted true when the task is cancelled while the task is running.
-         *                    false when the task is cancelled before it starts running
-         */
-        void onCancelled(boolean interrupted){}
-
-        /**
-         * Called when the execution of the task encounters exceptions. Note that an
-         * {@link InterruptedException} caused by cancelling won't trigger this callback but
-         * {@link #onCancelled(boolean)} with argument equals true
-         * @param e The exception
-         */
-        void onException(Exception e){}
-    }
-
-    /**
      * State of executing phases of {@link AsyncTask}
      */
     public enum State {
@@ -85,7 +55,7 @@ public class Monitor {
         INTERRUPTED
     }
 
-    private final Callback callback;
+    private final Task.Callback callback;
     private Future future;
     private State state;
     private Task task;
@@ -95,7 +65,7 @@ public class Monitor {
      * @param task The task being monitored
      * @param callback The callback for the execution of the task. It can be null.
      */
-    public Monitor(Task task, Callback callback) {
+    public Monitor(Task task, Task.Callback callback) {
         this.state = State.NOT_STARTED;
         this.task = task;
         this.callback = callback;

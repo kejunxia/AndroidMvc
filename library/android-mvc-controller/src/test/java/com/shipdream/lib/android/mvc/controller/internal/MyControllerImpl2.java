@@ -38,7 +38,7 @@ public class MyControllerImpl2 extends BaseControllerImpl {
         return null;
     }
 
-    public Monitor runTaskCustomCallback(final Object sender, final Task task, Monitor.Callback callback) {
+    public Monitor runTaskCustomCallback(final Object sender, final Task task, Task.Callback callback) {
         return super.runTask(this, task, callback);
     }
 
@@ -47,7 +47,7 @@ public class MyControllerImpl2 extends BaseControllerImpl {
     }
 
     public Monitor runTask(final Object sender, final Task task) {
-        return runTask(this, task, new Monitor.Callback() {
+        return runTask(this, task, new Task.Callback() {
             @Override
             public void onStarted() {
                 postEvent2V(new ResourceLoadStarted(sender, task));
@@ -71,7 +71,7 @@ public class MyControllerImpl2 extends BaseControllerImpl {
     }
 
     public Monitor runTask(final Object sender, ExecutorService executorService, final Task task) {
-        return runTask(this, executorService, task, new Monitor.Callback() {
+        return runTask(this, executorService, task, new Task.Callback() {
             @Override
             public void onStarted() {
                 postEvent2V(new ResourceLoadStarted(sender, task));

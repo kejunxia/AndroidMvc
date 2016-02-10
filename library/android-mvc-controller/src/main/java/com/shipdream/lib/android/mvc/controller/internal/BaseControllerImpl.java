@@ -163,7 +163,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      *
      * @since 2.2.0
      */
-    protected Monitor runTask(Object sender, final Task task, final Monitor.Callback callback) {
+    protected Monitor runTask(Object sender, final Task task, final Task.Callback callback) {
         return runTask(sender, executorService, task, callback);
     }
 
@@ -181,7 +181,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * @since 2.2.0
      */
     protected Monitor runTask(Object sender, ExecutorService executorService,
-                              final Task task, final Monitor.Callback callback) {
+                              final Task task, final Task.Callback callback) {
         final Monitor monitor = new Monitor(task, callback);
 
         monitor.setFuture(executorService.submit(new Callable<Void>() {
@@ -240,8 +240,8 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * @param asyncTask task to execute
      * @return returns the reference of {@link AsyncTask} that can be used to query its state and cancel it.
      *
-     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Monitor.Callback)} and
-     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Monitor.Callback)}
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, final AsyncTask asyncTask) {
         return runAsyncTask(sender, executorService, asyncTask, null);
@@ -256,8 +256,8 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * @param asyncExceptionHandler error handler for the exception during running the task
      * @return the reference of {@link AsyncTask} that can be used to query its state and cancel it.
      *
-     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Monitor.Callback)} and
-     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Monitor.Callback)}
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, final AsyncTask asyncTask,
                                      final AsyncExceptionHandler asyncExceptionHandler) {
@@ -277,8 +277,8 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * @param asyncTask       task to execute
      * @return the reference of {@link AsyncTask} that can be used to query its state and cancel it.
      *
-     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Monitor.Callback)} and
-     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Monitor.Callback)}
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, ExecutorService executorService,
                                      final AsyncTask asyncTask) {
@@ -298,8 +298,8 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      *                              task will be suppressed with warning level log.
      * @return the reference of {@link AsyncTask} that can be used to query its state and cancel it.
      *
-     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Monitor.Callback)} and
-     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Monitor.Callback)}
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, ExecutorService executorService,
                                      final AsyncTask asyncTask,
