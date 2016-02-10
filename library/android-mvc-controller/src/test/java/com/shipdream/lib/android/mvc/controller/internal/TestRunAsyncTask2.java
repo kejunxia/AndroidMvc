@@ -27,6 +27,7 @@ import org.mockito.ArgumentCaptor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -99,6 +100,43 @@ public class TestRunAsyncTask2 extends BaseTest {
     }
 
     @Test
+    public void cancelled_task_should_not_call_onSuccess() throws Exception {
+        final Task.Callback callback = mock(Task.Callback.class);
+
+        Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
+            @Override
+            public void execute() throws Exception {
+                for (int i = 0; i < 100; i++) {
+                    loadPercentage = i + 1;
+                    Thread.sleep(2);
+                }
+
+                synchronized (callback) {
+                    callback.notify();
+                }
+            }
+        }, callback);
+
+        Thread.sleep(100);
+
+        monitor.cancel(false);
+
+        synchronized (callback) {
+            callback.wait();
+        }
+
+        Thread.sleep(100);
+
+        Assert.assertEquals(Monitor.State.CANCELED, monitor.getState());
+
+        verify(callback).onStarted();
+        verify(callback).onCancelled(eq(false));
+        verify(callback, times(0)).onSuccess();
+        verify(callback, times(0)).onException(any(Exception.class));
+        Assert.assertEquals(100, loadPercentage);
+    }
+
+    @Test
     public void should_trigger_onException_in_custom_callback() throws Exception {
         Task.Callback callback = mock(Task.Callback.class);
 
@@ -121,64 +159,30 @@ public class TestRunAsyncTask2 extends BaseTest {
     }
 
     @Test
-    public void should_trigger_onCalled_with_non_interrupted_in_custom_callback() throws Exception {
+    public void should_trigger_onCancelled_with_interrupted_in_custom_callback() throws Exception {
         final Task.Callback callback = mock(Task.Callback.class);
-
-        Monitor monitor1 = controller.runTaskCustomCallback(this, new Task() {
-            @Override
-            public void execute() throws Exception {
-                synchronized (callback) {
-                    callback.wait();
-                }
-            }
-        }, callback);
-
-        Monitor monitor2 = controller.runTaskCustomCallback(this, new Task() {
-            @Override
-            public void execute() throws Exception {
-
-            }
-        }, callback);
-
-        Thread.sleep(100);
-
-        monitor2.cancel(true);
-
-        synchronized (callback) {
-            callback.notify();
-        }
-
-        Thread.sleep(100);
-
-        Assert.assertEquals(Monitor.State.CANCELED, monitor2.getState());
-
-        //task 1 started
-        verify(callback, times(1)).onStarted();
-        //task 2 cancelled
-        verify(callback, times(1)).onCancelled(eq(false));
-    }
-
-    @Test
-    public void should_trigger_onCalled_with_interrupted_in_custom_callback() throws Exception {
-        Task.Callback callback = mock(Task.Callback.class);
 
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
             @Override
             public void execute() throws Exception {
-                Thread.sleep(1000);
+                for (int i = 0; i < 100; i++) {
+                    loadPercentage = i + 1;
+                    Thread.sleep(10);
+                }
             }
         }, callback);
 
         Thread.sleep(100);
-
         monitor.cancel(true);
 
-        Thread.sleep(100);
+        Thread.sleep(1000);
 
         Assert.assertEquals(Monitor.State.INTERRUPTED, monitor.getState());
 
         verify(callback).onStarted();
         verify(callback).onCancelled(eq(true));
+
+        Assert.assertTrue(loadPercentage < 100);
     }
 
     @Test
@@ -509,4 +513,5 @@ public class TestRunAsyncTask2 extends BaseTest {
         //Cancel again should have no effect
         Assert.assertFalse(monitor.cancel(true));
     }
+
 }

@@ -128,11 +128,13 @@ public class Monitor {
             case STARTED:
                 if (future != null) {
                     boolean cancelled = future.cancel(mayInterruptIfRunning);
-                    if (cancelled) {
+                    if (mayInterruptIfRunning && cancelled) {
                         state = State.INTERRUPTED;
-                        if (callback != null) {
-                            callback.onCancelled(true);
-                        }
+                    } else {
+                        state = State.CANCELED;
+                    }
+                    if (callback != null) {
+                        callback.onCancelled(mayInterruptIfRunning);
                     }
                     return cancelled;
                 } else {

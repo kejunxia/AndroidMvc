@@ -199,10 +199,12 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
                 try {
                     task.execute();
 
-                    monitor.setState(Monitor.State.DONE);
+                    if (monitor.getState() != Monitor.State.CANCELED) {
+                        monitor.setState(Monitor.State.DONE);
 
-                    if (callback != null) {
-                        callback.onSuccess();
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
                     }
                 } catch (Exception e) {
                     boolean interruptedByCancel = false;
