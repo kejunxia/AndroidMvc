@@ -24,7 +24,7 @@ public interface Task {
     /**
      * The callback for the execution of a {@link Task}
      */
-    public static abstract class Callback {
+    abstract class Callback {
         /**
          * Called when the execution of the task starts
          */
