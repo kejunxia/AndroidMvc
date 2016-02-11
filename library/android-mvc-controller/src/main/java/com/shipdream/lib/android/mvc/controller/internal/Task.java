@@ -28,19 +28,19 @@ public interface Task {
         /**
          * Called when the execution of the task starts
          */
-        void onStarted() {}
+        public void onStarted() {}
 
         /**
          * Called when the execution of the task completes successfully
          */
-        abstract void onSuccess();
+        public abstract void onSuccess();
 
         /**
          * Called when the execution of the task is cancelled
          * @param interrupted true when the task is cancelled while the task is running.
          *                    false when the task is cancelled before it starts running
          */
-        void onCancelled(boolean interrupted){}
+        public void onCancelled(boolean interrupted){}
 
         /**
          * Called when the execution of the task encounters exceptions. Note that an
@@ -48,7 +48,7 @@ public interface Task {
          * {@link #onCancelled(boolean)} with argument equals true
          * @param e The exception
          */
-        void onException(Exception e){}
+        public void onException(Exception e){}
     }
 
     /**
