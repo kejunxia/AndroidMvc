@@ -71,7 +71,7 @@ public class TestRunAsyncTask2 extends BaseTest {
     public void should_be_able_to_run_async_task_successfully() throws Exception {
         Monitor monitor = controller.runTask(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 //wait about 0.1 seconds in total
                 for (int i = 0; i < 100; i++) {
                     Thread.sleep(1);
@@ -105,7 +105,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 for (int i = 0; i < 100; i++) {
                     loadPercentage = i + 1;
                     Thread.sleep(2);
@@ -143,7 +143,7 @@ public class TestRunAsyncTask2 extends BaseTest {
         final RuntimeException e = new RuntimeException("Intentional exception");
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 throw e;
             }
         }, callback);
@@ -164,7 +164,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 for (int i = 0; i < 100; i++) {
                     loadPercentage = i + 1;
                     Thread.sleep(10);
@@ -191,7 +191,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
         Monitor monitor = controller.runTaskCustomCallback(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
 
             }
         }, callback);
@@ -208,7 +208,7 @@ public class TestRunAsyncTask2 extends BaseTest {
     public void should_be_able_to_run_task_without_callback() throws Exception {
         Monitor monitor = controller.runTaskWithoutCallback(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
 
             }
         });
@@ -224,7 +224,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
         Monitor monitor = controller.runTask(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 //wait about 3 seconds in total
                 for (int i = 0; i < 100; i++) {
                     Thread.sleep(30);
@@ -267,7 +267,7 @@ public class TestRunAsyncTask2 extends BaseTest {
         ExecutorService singleThreadService = Executors.newSingleThreadExecutor();
         final Task task1 = new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 synchronized (lock) {
                     lock.wait(200);
                 }
@@ -279,7 +279,7 @@ public class TestRunAsyncTask2 extends BaseTest {
         }
         T2 task2 = new T2() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 synchronized (lock) {
                     lock.wait(200);
                 }
@@ -334,7 +334,7 @@ public class TestRunAsyncTask2 extends BaseTest {
     public void should_be_able_to_interrupted_task_while_it_is_running() throws Exception {
         Monitor monitor = controller.runTask(this, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 //wait about 3 seconds in total
                 for (int i = 0; i < 100; i++) {
                     Thread.sleep(30);
@@ -366,7 +366,7 @@ public class TestRunAsyncTask2 extends BaseTest {
         final Object waiter = new Object();
         Monitor monitor = controller.runTask(this, executorService, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 for (int i = 0; i < 100; i++) {
                     Thread.sleep(1);
                     loadPercentage = i + 1;
@@ -400,7 +400,7 @@ public class TestRunAsyncTask2 extends BaseTest {
     public void cancel_without_interrupted_flag_on_running_task_should_has_no_effect() throws Exception {
         Monitor monitor = controller.runTask(this, executorService, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 throw new RuntimeException("Intentional error");
             }
         });
@@ -422,7 +422,7 @@ public class TestRunAsyncTask2 extends BaseTest {
     public void cancel_erred_task_should_has_no_effect() throws Exception {
         Monitor monitor = controller.runTask(this, executorService, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 throw new RuntimeException("Intentional error");
             }
         });
@@ -445,7 +445,7 @@ public class TestRunAsyncTask2 extends BaseTest {
         final Object lock = new Object();
         Task t1 = new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 Thread.sleep(200);
 
                 synchronized (lock) {
@@ -456,7 +456,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 
         Task t2 = new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
             }
         };
 
@@ -498,7 +498,7 @@ public class TestRunAsyncTask2 extends BaseTest {
         final Object lock = new Object();
         Monitor monitor = controller.runTask(this, executorService, new Task() {
             @Override
-            public void execute() throws Exception {
+            public void execute(Monitor monitor) throws Exception {
                 synchronized (lock) {
                     lock.wait();
                 }

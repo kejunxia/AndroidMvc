@@ -53,7 +53,8 @@ public interface Task {
 
     /**
      * Override this method to define what this task does.
+     * @param monitor The monitor to track the execution of this task
      * @throws Exception exception occurring during the execution
      */
-    void execute() throws Exception;
+    void execute(Monitor monitor) throws Exception;
 }

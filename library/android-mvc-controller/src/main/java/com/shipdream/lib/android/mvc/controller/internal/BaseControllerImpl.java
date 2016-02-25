@@ -197,7 +197,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
                 }
 
                 try {
-                    task.execute();
+                    task.execute(monitor);
 
                     if (monitor.getState() != Monitor.State.CANCELED) {
                         monitor.setState(Monitor.State.DONE);
