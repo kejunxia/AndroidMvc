@@ -51,8 +51,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
     public void testShouldRetainInjectionsOfFragmentAAfterNavigatedToFragmentB() throws Throwable {
         //=============================> At A
         lifeCycleValidatorA.expect(LifeCycle.onCreateNull,
-                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
+            LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
@@ -64,12 +64,12 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //BUT onDestroy of previous Fragment(FragmentA) is not called when it's pushed to back stack
         lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorB.expect(LifeCycle.onCreateNull,
-                LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
+            LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB")));
+            "Added by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB")));
+            "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
         navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C);
@@ -77,12 +77,12 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //=============================> At C
         lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
+            LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
         onView(withId(R.id.textA)).check(matches(withText("")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB\n" +
-                "Added by FragmentC")));
+            "Added by FragmentB\n" +
+            "Added by FragmentC")));
         onView(withId(R.id.textC)).check(matches(withText("Added by FragmentC")));
 
         navigationManager.navigate(this).back();
@@ -92,18 +92,17 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //View is newly created again
         //onPoppedOutToFront is called when the fragment pops out from back stack
         lifeCycleValidatorB.expect(
-                LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyFirstTime,
-                LifeCycle.onViewReadyPopOut,
-                LifeCycle.onPoppedOutToFront);
+            LifeCycle.onCreateViewNull,
+            LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyPopOut,
+            LifeCycle.onPoppedOutToFront);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB\n" +
-                "Added by FragmentB")));
+            "Added by FragmentB\n" +
+            "Added by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB\n" +
-                "Added by FragmentC\n" +
-                "Added by FragmentB")));
+            "Added by FragmentB\n" +
+            "Added by FragmentC\n" +
+            "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
         navigationManager.navigate(this).back();
@@ -114,20 +113,19 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //View is newly created again
         //onPoppedOutToFront is called when the fragment pops out from back stack
         lifeCycleValidatorA.expect(
-                LifeCycle.onCreateViewNull,
-                LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyFirstTime,
-                LifeCycle.onViewReadyPopOut,
-                LifeCycle.onPoppedOutToFront);
+            LifeCycle.onCreateViewNull,
+            LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyPopOut,
+            LifeCycle.onPoppedOutToFront);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB\n" +
-                "Added by FragmentB\n" +
-                "Added by FragmentA")));
+            "Added by FragmentB\n" +
+            "Added by FragmentB\n" +
+            "Added by FragmentA")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB\n" +
-                "Added by FragmentC\n" +
-                "Added by FragmentB\n" +
-                "Added by FragmentA")));
+            "Added by FragmentB\n" +
+            "Added by FragmentC\n" +
+            "Added by FragmentB\n" +
+            "Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
     }
 
@@ -147,9 +145,9 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         waitTest();
         //=============================> At B
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB")));
+            "Added by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB")));
+            "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
         pressHome();
@@ -158,10 +156,98 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         bringBack();
         waitTest(1200);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB\nAdded by FragmentB")));
+            "Added by FragmentB\nAdded by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
-                "Added by FragmentB\nAdded by FragmentB")));
+            "Added by FragmentB\nAdded by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
+    }
+
+    @Test
+    public void should_not_set_first_time_flag_for_creating_view_reason_on_back_nav_without_kill() throws Throwable {
+        if (isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "should_not_set_first_time_flag_for_creating_view_reason_on_back_nav not tested as Don't Keep Activities setting is enabled");
+            return;
+        }
+
+        waitTest();
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNull,
+            LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        waitTest();
+
+        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
+
+        lifeCycleValidatorB.expect(LifeCycle.onCreateNull,
+            LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
+
+        navigationManager.navigate(this).back();
+        waitTest();
+
+        lifeCycleValidatorB.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+
+        lifeCycleValidatorA.expect(LifeCycle.onCreateViewNull,
+            LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyPopOut,
+            LifeCycle.onPoppedOutToFront);
+    }
+
+    @Test
+    public void should_not_set_first_time_flag_for_creating_view_reason_on_back_nav_with_kill() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "should_not_set_first_time_flag_for_creating_view_reason_on_back_nav not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
+
+        waitTest();
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNull,
+            LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        waitTest();
+        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack,
+            LifeCycle.onDestroyView);
+
+        lifeCycleValidatorB.expect(LifeCycle.onCreateNull,
+            LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+            LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
+
+        pressHome();
+        waitTest(1200);
+
+        lifeCycleValidatorA.expect(LifeCycle.onDestroy);
+
+        lifeCycleValidatorB.expect(
+            LifeCycle.onDestroyView,
+            LifeCycle.onDestroy);
+
+        bringBack();
+        waitTest(1200);
+
+        lifeCycleValidatorB.expect(LifeCycle.onCreateNotNull,
+            LifeCycle.onCreateViewNotNull,
+            LifeCycle.onViewReadyNewInstance,
+            LifeCycle.onViewCreatedNotNull,
+            LifeCycle.onViewReadyRestore);
+
+        //Fragment itself is recreated
+        lifeCycleValidatorA.expect(LifeCycle.onCreateNotNull);
+
+        navigationManager.navigate(this).back();
+        waitTest();
+
+        lifeCycleValidatorA.expect(
+            LifeCycle.onCreateViewNotNull,
+            LifeCycle.onViewCreatedNotNull,
+            LifeCycle.onViewReadyNewInstance,
+            LifeCycle.onViewReadyRestore,
+            LifeCycle.onViewReadyPopOut,
+            LifeCycle.onPoppedOutToFront);
+
+        lifeCycleValidatorB.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
     }
 
 }

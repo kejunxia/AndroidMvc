@@ -86,6 +86,8 @@ public abstract class MvcFragment extends Fragment {
         /**
          * @return Indicates whether the fragment view is created when the fragment is created for
          * the first time. When this flag is true it's a good time to initialize the state fragment.
+         *
+         * <p>false will be returned when the view is created by rotation, back navigation or restoration</p>
          */
         public boolean isFirstTime() {
             return this.isFirstTime;
@@ -282,15 +284,16 @@ public abstract class MvcFragment extends Fragment {
             reason.isRotated = true;
         }
 
+        if (restoring) {
+            reason.isRestored = true;
+        } else if (!orientationChanged && !aboutToPopOut) {
+            //When the view is created not by orientation change nor poping out from back stack
+            reason.isFirstTime = true;
+        }
+
         if (aboutToPopOut) {
             reason.isPoppedOut = true;
             aboutToPopOut = false;
-        }
-
-        if (restoring) {
-            reason.isRestored = true;
-        } else if (!orientationChanged) {
-            reason.isFirstTime = true;
         }
 
         onViewReady(view, savedInstanceState, reason);
