@@ -37,7 +37,7 @@ android {
     }
 
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
-    buildToolsVersion rootProject.lib.androidBuildToolVersion
+    buildToolsVersion rootProject.ext.androidBuildToolVersion
 
     defaultConfig {
         applicationId "com.shipdream.lib.android.mvc.view.test"
