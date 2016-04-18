@@ -538,24 +538,22 @@ public abstract class MvcActivity extends AppCompatActivity {
                 throw new RuntimeException("Cannot find fragment class mapped in MvcActivity.mapNavigationFragment(location) for location: "
                         + event.getCurrentValue().getLocationId());
             } else {
-                FragmentTransaction transaction = fm.beginTransaction();
-                String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
+                MvcFragment currentFragment = null;
+                if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
+                    currentFragment = (MvcFragment) fm.findFragmentByTag(
+                            getFragmentTag(event.getLastValue().getLocationId()));
+                }
 
-                final MvcFragment fragment;
+                final MvcFragment nextFragment;
                 try {
-                    fragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
+                    nextFragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to instantiate fragment: " + fragmentClass.getName(), e);
                 }
 
-                MvcFragment lastFrag = null;
-                if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
-                    lastFrag = (MvcFragment) fm.findFragmentByTag(
-                            getFragmentTag(event.getLastValue().getLocationId()));
-                }
                 if (!event.isClearHistory()) {
-                    if (lastFrag != null) {
-                        lastFrag.onPushingToBackStack();
+                    if (currentFragment != null) {
+                        currentFragment.onPushingToBackStack();
                     }
                 } else {
                     NavLocation clearTopToLocation = event.getLocationWhereHistoryClearedUpTo();
@@ -574,19 +572,28 @@ public abstract class MvcActivity extends AppCompatActivity {
                     logger.trace("Cleared fragment back stack up to {}", tagPopTo);
                 }
 
-                fragment.registerOnViewReadyListener(new Runnable() {
+                final FragmentTransaction transaction = fm.beginTransaction();
+                if (currentFragment != null) {
+                    currentFragment.onExitTransaction(transaction);
+                }
+
+                nextFragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
+                        nextFragment.onEnterTransaction(transaction);
+
                         if (event.getNavigator() != null) {
                             __MvcManagerHelper.destroyNavigator(event.getNavigator());
                         }
 
-                        logger.trace("Fragment ready: " + fragment.getClass().getSimpleName());
+                        logger.trace("Fragment ready: " + nextFragment.getClass().getSimpleName());
 
-                        fragment.unregisterOnViewReadyListener(this);
+                        nextFragment.unregisterOnViewReadyListener(this);
                     }
                 });
-                transaction.replace(getContentLayoutResId(), fragment, fragmentTag);
+
+                String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
+                transaction.replace(getContentLayoutResId(), nextFragment, fragmentTag);
                 transaction.addToBackStack(fragmentTag);
                 transaction.commit();
             }
