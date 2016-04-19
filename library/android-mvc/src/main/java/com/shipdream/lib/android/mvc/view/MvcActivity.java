@@ -573,15 +573,9 @@ public abstract class MvcActivity extends AppCompatActivity {
                 }
 
                 final FragmentTransaction transaction = fm.beginTransaction();
-                if (currentFragment != null) {
-                    currentFragment.onExitTransaction(transaction);
-                }
-
                 nextFragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
-                        nextFragment.onEnterTransaction(transaction);
-
                         if (event.getNavigator() != null) {
                             __MvcManagerHelper.destroyNavigator(event.getNavigator());
                         }
@@ -595,6 +589,9 @@ public abstract class MvcActivity extends AppCompatActivity {
                 String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
                 transaction.replace(getContentLayoutResId(), nextFragment, fragmentTag);
                 transaction.addToBackStack(fragmentTag);
+                if (currentFragment != null) {
+                    currentFragment.onFragmentTransaction(transaction, nextFragment);
+                }
                 transaction.commit();
             }
         }

@@ -466,11 +466,7 @@ public abstract class MvcFragment extends Fragment {
         return false;
     }
 
-    protected void onExitTransaction(FragmentTransaction transaction) {
-
-    }
-
-    protected void onEnterTransaction(FragmentTransaction transaction) {
+    protected void onFragmentTransaction(FragmentTransaction transaction, MvcFragment nextFragment) {
 
     }
 
