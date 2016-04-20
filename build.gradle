@@ -82,8 +82,8 @@ ext {
 
     androidMinSdkVersion = 14
     androidCompileSdkVersion = 23
-    androidBuildToolVersion = "23.0.2"
-    supportLibVersion = "23.2.1"
+    androidBuildToolVersion = "23.0.3"
+    supportLibVersion = "23.3.0"
     androidTargetSdkVersion = androidCompileSdkVersion
     lib = [
             androidMinSdk: 'com.google.android:android:4.0.1.2',

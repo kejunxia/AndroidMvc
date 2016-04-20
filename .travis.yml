@@ -7,7 +7,7 @@ android:
     - tools
 
     # The BuildTools version used by your project
-    - build-tools-23.0.2
+    - build-tools-23.0.3
 
     # The SDK version used to compile your project
     - android-23
@@ -38,3 +38,12 @@ env:
 
 after_success:
 - ./gradlew coveralls
+
+env:
+  global:
+    # Add this
+    - MALLOC_ARENA_MAX=2
+    - ADB_INSTALL_TIMEOUT=10
+
+# Add this
+sudo: required
