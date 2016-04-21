@@ -29,6 +29,7 @@ import com.shipdream.lib.android.mvc.manager.internal.BaseManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
@@ -61,7 +62,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     /**
      * Called when the controller is constructed. Note that it could be called either when the
      * controller is instantiated for the first time or restored by views.
-     *
+     * <p/>
      * <p>The model of the controller will be instantiated by model's default no-argument
      * constructor here whe {@link #modelType()} doesn't return null.</p>
      */
@@ -87,6 +88,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
 
     /**
      * Model represents the state of the view this controller is managing.
+     *
      * @return Null if the controller doesn't need to get its model saved and restored automatically
      * when {@link #modelType()} returns null.
      */
@@ -133,6 +135,103 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
     }
 
     /**
+     * Run a task on threads supplied by injected {@link ExecutorService} without a callback. By
+     * default it runs tasks on separate threads by {@link ExecutorService} injected from AndroidMvc
+     * framework. A simple {@link ExecutorService} that runs tasks on the same thread in test cases
+     * to make the test easier.
+     * @param sender          Who wants run the task
+     * @param task            The task
+     * @return The monitor to track the state of the execution of the task. It also can cancel the
+     * task.
+     *
+     * @since 2.2.0
+     */
+    protected Monitor runTask(Object sender, final Task task) {
+        return runTask(sender, executorService, task, null);
+    }
+
+    /**
+     * Run a task on threads supplied by injected {@link ExecutorService}. By default it runs tasks
+     * on separate threads by {@link ExecutorService} injected from AndroidMvc framework. A simple
+     * {@link ExecutorService} that runs tasks on the same thread in test cases to make the test
+     * easier.
+     * @param sender          Who wants run the task
+     * @param task            The task
+     * @param callback        The callback
+     * @return The monitor to track the state of the execution of the task. It also can cancel the
+     * task.
+     *
+     * @since 2.2.0
+     */
+    protected Monitor runTask(Object sender, final Task task, final Task.Callback callback) {
+        return runTask(sender, executorService, task, callback);
+    }
+
+    /**
+     * Run a task on the threads supplied by the given {@link ExecutorService}. The task could be
+     * run either asynchronously or synchronously depending on the given executorService.
+     *
+     * @param sender          Who wants run the task
+     * @param executorService The executor service managing how the task will be run
+     * @param task            The task
+     * @param callback        The callback
+     * @return The monitor to track the state of the execution of the task. It also can cancel the
+     * task.
+     *
+     * @since 2.2.0
+     */
+    protected Monitor runTask(Object sender, ExecutorService executorService,
+                              final Task task, final Task.Callback callback) {
+        final Monitor monitor = new Monitor(task, callback);
+
+        monitor.setFuture(executorService.submit(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                if (monitor.getState() == Monitor.State.CANCELED) {
+                    return null;
+                }
+
+                monitor.setState(Monitor.State.STARTED);
+                if (callback != null) {
+                    callback.onStarted();
+                }
+
+                try {
+                    task.execute(monitor);
+
+                    if (monitor.getState() != Monitor.State.CANCELED) {
+                        monitor.setState(Monitor.State.DONE);
+
+                        if (callback != null) {
+                            callback.onSuccess();
+                        }
+                    }
+                } catch (Exception e) {
+                    boolean interruptedByCancel = false;
+                    if (e instanceof InterruptedException) {
+                        if (monitor.getState() == Monitor.State.INTERRUPTED) {
+                            interruptedByCancel = true;
+                        }
+                    }
+                    //If the exception is an interruption caused by cancelling, then ignore it
+                    if (!interruptedByCancel) {
+                        monitor.setState(Monitor.State.ERRED);
+                        if (callback != null) {
+                            callback.onException(e);
+                        }
+                    }
+                }
+
+                return null;
+            }
+        }));
+
+        return monitor;
+    }
+
+    //region Deprecated methods
+
+    /**
      * Run async task on the default ExecutorService injected as a field of this class. Exceptions
      * occur during running the task will be suppressed but logged at warning level. <b>Be careful,
      * only use this method when you are sure there will be no exceptions occur during the execution
@@ -142,6 +241,9 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * @param sender    who initiated this task
      * @param asyncTask task to execute
      * @return returns the reference of {@link AsyncTask} that can be used to query its state and cancel it.
+     *
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, final AsyncTask asyncTask) {
         return runAsyncTask(sender, executorService, asyncTask, null);
@@ -155,6 +257,9 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * @param asyncTask             task to execute
      * @param asyncExceptionHandler error handler for the exception during running the task
      * @return the reference of {@link AsyncTask} that can be used to query its state and cancel it.
+     *
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, final AsyncTask asyncTask,
                                      final AsyncExceptionHandler asyncExceptionHandler) {
@@ -173,6 +278,9 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      * @param executorService the executor service provided to execute the async task
      * @param asyncTask       task to execute
      * @return the reference of {@link AsyncTask} that can be used to query its state and cancel it.
+     *
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, ExecutorService executorService,
                                      final AsyncTask asyncTask) {
@@ -191,6 +299,9 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
      *                              is given all exceptions occur during the execution of the async
      *                              task will be suppressed with warning level log.
      * @return the reference of {@link AsyncTask} that can be used to query its state and cancel it.
+     *
+     * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+     * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
      */
     protected AsyncTask runAsyncTask(Object sender, ExecutorService executorService,
                                      final AsyncTask asyncTask,
@@ -217,5 +328,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
 
         return asyncTask;
     }
+
+    //endregion
 
 }

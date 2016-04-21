@@ -16,11 +16,15 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * Object to wrap up a task that can be run asynchronously by {@link BaseControllerImpl#runAsyncTask(Object, AsyncTask)},
  * {@link BaseControllerImpl#runAsyncTask(Object, AsyncTask, AsyncExceptionHandler)},
  * {@link BaseControllerImpl#runAsyncTask(Object, java.util.concurrent.ExecutorService, AsyncTask)}
  * or {@link BaseControllerImpl#runAsyncTask(Object, java.util.concurrent.ExecutorService, AsyncTask, AsyncExceptionHandler)}
+ *
+ * @deprecated use {@link Task} and see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)}
  */
 public abstract class AsyncTask {
     /**

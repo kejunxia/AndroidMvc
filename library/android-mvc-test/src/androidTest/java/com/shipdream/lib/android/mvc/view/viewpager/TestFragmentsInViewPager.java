@@ -103,21 +103,18 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidator.expect(
                 LifeCycle.onCreateViewNull,
                 LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyFirstTime,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
 
         lifeCycleValidatorA.expect(
                 LifeCycle.onCreateViewNull,
                 LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyFirstTime,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
 
         lifeCycleValidatorB.expect(
                 LifeCycle.onCreateViewNull,
                 LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyFirstTime,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
 
@@ -368,7 +365,6 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidator.expect(
                 LifeCycle.onCreateViewNull,
                 LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyFirstTime,
                 LifeCycle.onViewReadyPopOut,
                 LifeCycle.onPoppedOutToFront);
     }

@@ -16,8 +16,13 @@
 
 package com.shipdream.lib.android.mvc.controller.internal;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * Interface to handle exceptions of {@link AsyncTask}
+ *
+ * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
+ * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
  */
 public interface AsyncExceptionHandler {
     /**

@@ -1,3 +1,10 @@
+Version:2.2.0
+* Run async task with callback with more granular controls.
+* Pass in monitor to Task#execute(Monitor monitor) so that the monitor can be used in concrete Task#execute body and passed to events to cancel the tasks.
+* Fix the issue of onViewReady reason. Now reason.firstTime of view ready should be false when the fragment is popped out from back stack
+* Add new lifecycle of fragment to config shared elements between navigating fragments
+* Update support lib to 23.3.0
+
 Version:2.1.0
 * Rename post event methods to postEvent2C and postEventCV which post events to controllers and views.
 * Change NavigationController to NavigationManager aligned with the new pattern. Controllers involving navigation now use injected navigation manager to navigate.
