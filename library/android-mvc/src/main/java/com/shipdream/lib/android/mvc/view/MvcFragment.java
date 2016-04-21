@@ -361,6 +361,16 @@ public abstract class MvcFragment extends Fragment {
     protected void onPushingToBackStack() {
     }
 
+    /**
+     * Called when this fragment is being replaced by the nextFragment and right before the
+     * fragment transaction is committed. If transaction between fragments need to specify shared
+     * elements, do it here.
+     * @param transaction The transaction being committing
+     * @param nextFragment Next fragment is going to
+     */
+    protected void onPreTransactionCommit(FragmentTransaction transaction, MvcFragment nextFragment) {
+    }
+
     boolean aboutToPopOut = false;
 
     /**
@@ -464,10 +474,6 @@ public abstract class MvcFragment extends Fragment {
      */
     public boolean onBackButtonPressed() {
         return false;
-    }
-
-    protected void onFragmentTransaction(FragmentTransaction transaction, MvcFragment nextFragment) {
-
     }
 
     /**

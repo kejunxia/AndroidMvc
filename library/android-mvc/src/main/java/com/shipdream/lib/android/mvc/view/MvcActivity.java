@@ -590,7 +590,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 transaction.replace(getContentLayoutResId(), nextFragment, fragmentTag);
                 transaction.addToBackStack(fragmentTag);
                 if (currentFragment != null) {
-                    currentFragment.onFragmentTransaction(transaction, nextFragment);
+                    currentFragment.onPreTransactionCommit(transaction, nextFragment);
                 }
                 transaction.commit();
             }
