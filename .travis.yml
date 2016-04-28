@@ -38,3 +38,12 @@ env:
 
 after_success:
 - ./gradlew coveralls
+
+env:
+  global:
+    # Add this
+    - MALLOC_ARENA_MAX=2
+    - ADB_INSTALL_TIMEOUT=10
+
+# Add this
+sudo: required
