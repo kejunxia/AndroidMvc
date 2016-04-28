@@ -590,16 +590,16 @@ public abstract class MvcActivity extends AppCompatActivity {
                 transaction.replace(getContentLayoutResId(), nextFragment, fragmentTag);
                 transaction.addToBackStack(fragmentTag);
                 if (currentFragment != null) {
-                    invokeOnPreTransactionCommit(transaction, currentFragment, nextFragment);
+                    invokeOnPreNavigationTransaction(transaction, currentFragment, nextFragment);
                 }
                 transaction.commit();
             }
         }
 
         //Invoke OnPreTransactionCommit for fragment and its child fragments recursively
-        private void invokeOnPreTransactionCommit(FragmentTransaction transaction,
-                                                  MvcFragment currentFragment,
-                                                  MvcFragment nextFragment) {
+        private void invokeOnPreNavigationTransaction(FragmentTransaction transaction,
+                                                      MvcFragment currentFragment,
+                                                      MvcFragment nextFragment) {
             if (currentFragment != null) {
                 List<Fragment> children = currentFragment.getChildFragmentManager().getFragments();
                 if (children != null) {
@@ -607,11 +607,11 @@ public abstract class MvcActivity extends AppCompatActivity {
                     for (int i = 0; i < size; i++) {
                         Fragment f = children.get(i);
                         if (f instanceof MvcFragment) {
-                            invokeOnPreTransactionCommit(transaction, (MvcFragment)f, nextFragment);
+                            invokeOnPreNavigationTransaction(transaction, (MvcFragment)f, nextFragment);
                         }
                     }
                 }
-                currentFragment.onPreTransactionCommit(transaction, nextFragment);
+                currentFragment.onPreNavigationTransaction(transaction, nextFragment);
             }
         }
 
