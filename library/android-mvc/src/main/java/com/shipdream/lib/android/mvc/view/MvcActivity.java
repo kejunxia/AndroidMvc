@@ -600,18 +600,19 @@ public abstract class MvcActivity extends AppCompatActivity {
         private void invokeOnPreTransactionCommit(FragmentTransaction transaction,
                                                   MvcFragment currentFragment,
                                                   MvcFragment nextFragment) {
-            List<Fragment> children = currentFragment.getChildFragmentManager().getFragments();
-            int size = children.size();
-            if (children != null && size > 0) {
-                for (int i = 0; i < size; i++) {
-                    Fragment f = children.get(i);
-                    if (f instanceof MvcFragment) {
-                        invokeOnPreTransactionCommit(transaction, (MvcFragment)f, nextFragment);
+            if (currentFragment != null) {
+                List<Fragment> children = currentFragment.getChildFragmentManager().getFragments();
+                if (children != null) {
+                    int size = children.size();
+                    for (int i = 0; i < size; i++) {
+                        Fragment f = children.get(i);
+                        if (f instanceof MvcFragment) {
+                            invokeOnPreTransactionCommit(transaction, (MvcFragment)f, nextFragment);
+                        }
                     }
-
                 }
+                currentFragment.onPreTransactionCommit(transaction, nextFragment);
             }
-            currentFragment.onPreTransactionCommit(transaction, nextFragment);
         }
 
         /**
