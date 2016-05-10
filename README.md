@@ -55,3 +55,144 @@ compile "com.shipdream:android-mvc:[LatestVersion]"
 
 ## Dependency injection with reference count
 [See the documentation of Poke](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
+
+#### Code snippets:
+- **View**:
+```java
+public class WeatherListFragment extends BaseFragment {
+    private Button buttonRefresh;
+    private ProgressDialog progressDialog;
+
+    @Inject
+    private WeatherController weatherController;
+    
+    @Override
+    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
+        super.onViewReady(view, savedInstanceState, reason);
+
+        buttonRefresh = (Button) view.findViewById(R.id.fragment_weather_list_buttonRefresh);
+        buttonRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                weatherController.updateAllCities(view);
+            }
+        });
+        
+        //Automatically update weathers of all cities on first creation.
+        if (reason.isFirstTime()) {
+            weatherController.updateAllCities(this);
+        }
+    }
+    
+    public void onEvent(WeatherController.EventC2V.OnWeathersUpdateBegan event) {
+        ...
+        progressDialog.show();
+    }
+    
+    public void onEvent(WeatherController.EventC2V.OnWeathersUpdated event) {
+        updateList();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
+    }
+}
+```
+- **Controller**:
+```java
+public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> implements
+        WeatherController{
+    static final String PREF_KEY_WEATHER_CITIES = "PrefKey:Weather:Cities";
+    private Gson gson = new Gson();
+
+    @Inject
+    private WeatherService weatherService;
+
+    @Inject
+    private PreferenceService preferenceService;
+
+    @Override
+    public Class<WeatherModel> modelType() {
+        return WeatherModel.class;
+    }
+
+    @Override
+    public void updateAllCities(final Object sender) {
+        if(getModel().getWeatherWatchlist().size() == 0) {
+            String cities = gson.toJson(getModel().getWeatherWatchlist());
+            preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
+            postEvent2V(new EventC2V.OnWeathersUpdated(sender));
+        } else {
+            postEvent2V(new EventC2V.OnWeathersUpdateBegan(sender));
+
+            runAsyncTask(sender, new AsyncTask() {
+                @Override
+                public void execute() throws Exception {
+                    List<Integer> ids = new ArrayList<>();
+                    for(WeatherModel.City city : getModel().getWeatherWatchlist().keySet()) {
+                        ids.add(city.id());
+                    }
+                    for (WeatherInfo weatherInfo : weatherService.getWeathers(ids).getList()) {
+                        getModel().getWeatherWatchlist().put(findCityById(weatherInfo.getId()), weatherInfo);
+                    }
+
+                    String cities = gson.toJson(getModel().getWeatherWatchlist());
+                    preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
+                    //Weather updated, post successful event
+                    postEvent2V(new EventC2V.OnWeathersUpdated(sender));
+                }
+            }, new AsyncExceptionHandler() {
+                @Override
+                public void handleException(Exception exception) {
+                    //Weather failed, post error event
+                    postEvent2V(new EventC2V.OnWeathersUpdateFailed(sender, exception));
+                }
+            });
+        }
+    }
+
+    private WeatherModel.City findCityById(int id) {
+        for(int i = 0; i < WeatherModel.City.values().length; i++) {
+            if (WeatherModel.City.values()[i].id() == id) {
+                return WeatherModel.City.values()[i];
+            }
+        }
+        return null;
+    }
+}
+```
+- **Service**:
+```java
+//Just a sample, you can use anything to access cloud api e.g. Retrofit
+public class WeatherServiceImpl implements WeatherService{
+    private final static String APPKEY = "123213123123213213123213";
+    private OkHttpClient httpClient;
+    private Gson gson;
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    public WeatherServiceImpl() {
+        httpClient = new OkHttpClient();
+        gson = new Gson();
+    }
+
+    @Override
+    public WeatherListResponse getWeathers(List<Integer> ids) throws IOException {
+        String idsStr = "";
+        for (Integer id : ids) {
+            if (!idsStr.isEmpty()) {
+                idsStr += ", ";
+            }
+            idsStr += String.valueOf(id);
+        }
+        String url = String.format("http://api.openweathermap.org/data/2.5/group?id=%s&appId=%s",
+                URLEncoder.encode(idsStr, "UTF-8"), APPKEY);
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+        Response resp = httpClient.newCall(request).execute();
+        String responseStr = resp.body().string();
+        logger.debug("Weather Service Response: {}", responseStr);
+        return gson.fromJson(responseStr, WeatherListResponse.class);
+    }
+}
+```
