@@ -13,7 +13,7 @@
 
 See the illustration below
 
-![AndroidMvc Layers](http://i.imgur.com/PsA2VG0.png)
+![AndroidMvc Layers](http://i.imgur.com/dfW8TLM.png)
 
 ## Features
   - Easy to apply MVC/MVVM pattern for Android development
