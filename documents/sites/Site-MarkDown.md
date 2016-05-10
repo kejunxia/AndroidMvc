@@ -26,7 +26,7 @@ First of all, let's look at some problems of the Android development below:
     - __onOrientationChanged(int lastOrientation, int currentOrientation):__ When app rotated
     - __onPushingToBackStack():__ When current page is pushed into back stack and navigate to next page
     - __onPoppedOutToFront():__ When last page is becomes the top page on backwards navigation
-  - Manage navigation by NavigationController which is also testable
+  - Manage navigation by NavigationManager which is also testable
   - Event driven views
   - [Dependency injection to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
   - Optimized memory consumption. Since most data are abstracted out to models, fragments are much leaner. When fragments are pushed to back stack, AndroidMvc will release controllers the fragments hold. Therefore most of the memory used by the models of the controllers will be freed. When the fragments are popped out of the back stack, AndroidMvc will resume the models of their controllers automatically.
@@ -62,13 +62,7 @@ compile "com.shipdream:android-mvc:[LatestVersion]"
    See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/note) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)
 
 ## Overview
-![alt Android-Mvc-Pattern](https://github.com/kejunxia/AndroidMvc/blob/master/documents/imgs/Android-Mvc-Pattern.jpg?raw=true)
-
-AndroidMvc is event driven. To isolate events between different layers, there are 3 event buses pre-setup in the framework:
-
-- **EventBusC2V** (Controllers to Views): One way event bus routing events from controllers to views. Events sent to views will be guaranteed to be run on Android UI thread by the framework.
-- **EventBusC2C** (Controllers to Controllers): Routes events among controllers. Events will be received on the same thread who send them.
-- **EventBusV2V** (Views to views): Routes events among views. Events will be received on the same thread who send them.
+![AndroidMvc Layers](http://i.imgur.com/dfW8TLM.png)
 
 #### View
 All views should be **as lean as possible** because their responsibilities are only to capture user interactions and display data. Then as long as controllers are unit tested properly it's less likely to make mistake on view layer. Therefore, business logic can be maximally abstracted away from views into controllers. As a result, more business logic can be unit tested against controllers directly.
@@ -83,7 +77,7 @@ Controllers manage business logic including how to retrieve, calculate, format a
 Note that, in this MVC design, all controllers are **SINGLETON** application wide so that the state of controllers are guaranteed from the same source of truth.
 
 #### Model
-Models in AndroidMVC design encapsulate and represent the state of controllers. So each controller has only one model object to represent the state of the specific business logic. When the controllers are requested to process data, they will manage the model and box and format part of or entire model into an event subscribed by view and notify the views to update themselves by the data conveyed by the event. Alternatively, the views can also directly read the model from the controllers injected into them as long as their is no much formatting requirement. But make sure, views should NOT change the value of models directly which should be only done by controllers.
+Models in AndroidMVC design encapsulate and represent the state of views. So each controller has only one model object to represent the state of the specific business logic. When the controllers are requested to process data, they will manage the model and box and format part of or entire model into an event subscribed by view and notify the views to update themselves by the data conveyed by the event. Alternatively, the views can also directly read the model from the controllers injected into them as long as their is no much formatting requirement. But make sure, views should NOT change the value of models directly which should be only done by controllers.
 
 In addition, to reduce boiler plate code, AndroidMvc framework will automatically save and restore the instance state of the controller models. So we don't need to always manually write code manually to use saveInstanceState and restore them in onCreate.
 
@@ -94,7 +88,12 @@ Once a event is defined, it can be broadcast to multiple views who subscribe to 
 
 To use it as a traditional **MVVM** or an Ajax like MVVM is totally depending on how the events are designed. For example, we can define only one event for a controller called EventC2V.OnModelUpdate and whenever the controller updates the model it raise this event. In this way, it's exactly the same as the traditional **MVVM** pattern. Also we can divide the update of model into more granular events, then it's like Ajax in web app and the earlier approach is like to refresh the whole page whenever there is a model update.
 
+AndroidMvc is event driven. To isolate events between different layers, there are 3 event buses pre-setup in the framework:
 
+- **EventBusC2V** (Controllers to Views): One way event bus routing events from controllers to views. Events sent to views will be guaranteed to be run on Android UI thread by the framework.
+- **EventBusC2C** (Controllers to Controllers): Routes events among controllers. Events will be received on the same thread who send them.
+- **EventBusV2V** (Views to views): Routes events among views. Events will be received on the same thread who send them.
+- 
 ## Using AndroidMvc
 
 Let's take a simple app counting number as an example. The counter app has two navigation locations:
@@ -153,10 +152,8 @@ public class MainActivity extends MvcActivity {
          */
         @Override
         protected void onStartUp() {
-            //Navigate to location a when app starts for the first time by navigation controller
-            //here we navigate to LocationA which result in load FragmentA mapped by the
-            //the method mapNavigationFragment above
-            getNavigationController().navigateTo(this, "LocationA");
+            //startApp method of appController will navigate the app to the landing page
+            appController.startApp(this);
         }
     }
 }
@@ -418,21 +415,21 @@ public class TestCounterController {
 }
 ````
 ##### 5. Navigation
-Instead creating, replacing or popping full screen fragments by FragmentManager of Android Activity, AndroidMvc provides NavigationController to manage navigation. Therefore, navigation logic can be abstracted out from View layer. To make navigation easier to be tested, we can inject NavigationController to CounterController and then test the model of NavigationController to verify if navigation location is changed as expected.
+Instead creating, replacing or popping full screen fragments by FragmentManager of Android Activity, AndroidMvc provides NavigationManager to manage navigation. Therefore, navigation logic can be abstracted out from View layer. To make navigation easier to be tested, we can inject NavigationManager to CounterController and then test the model of NavigationManager to verify if navigation location is changed as expected.
 ##### 5.1. Add two methods to CounterController to wrap navigation logic
 ````java
 public interface CounterController extends BaseController<CounterModel> {
 	... other methods
 
-	/**
-     * Navigate to LocationB by {@link NavigationController}to show advance view that can update
+    /**
+     * Navigate to LocationB by {@link NavigationManager}to show advance view that can update
      * count continuously by holding buttons.
      * @param sender
      */
     void goToAdvancedView(Object sender);
 
     /**
-     * Navigate back to LocationA by {@link NavigationController}to show basic view from LocationB
+     * Navigate back to LocationA by {@link NavigationManager}to show basic view from LocationB
      * @param sender
      */
     void goBackToBasicView(Object sender);
@@ -440,22 +437,22 @@ public interface CounterController extends BaseController<CounterModel> {
 	... other methods
 }
 ````
-##### 5.2. Inject NavigationController to CounterControllerImpl and implement navigation methods
+##### 5.2. Inject NavigationManager to CounterControllerImpl and implement navigation methods
 ````java
 public class CounterControllerImpl extends BaseControllerImpl<CounterModel> implements CounterController{
 	... other methods
 
     @Inject
-    NavigationController navigationManager;
+    NavigationManager navigationManager;
 
     @Override
     public void goToAdvancedView(Object sender) {
-        navigationManager.navigateTo(sender, "LocationB");
+        navigationManager.navigate(sender).to("LocationB");
     }
 
     @Override
     public void goBackToBasicView(Object sender) {
-        navigationManager.navigateBack(sender);
+        navigationManager.navigate(sender).back();
     }
 
     ... other methods
@@ -477,7 +474,7 @@ public class FragmentA extends MvcFragment {
             public void onClick(View v) {
                 //Use counterController to manage navigation to make navigation testable
                 counterController.goToAdvancedView(v);
-                //Or we can use NavigationController directly though it's harder to unit test on
+                //Or we can use navigationManager directly though it's harder to unit test on
                 //controller level.
                 //example:
                 //navigationManager.navigateTo(v, "LocationB");
@@ -500,7 +497,7 @@ public class FragmentB extends MvcFragment {
         //Return true to not pass the back button pressed event to upper level handler.
         return true;
         //Or we can let the fragment manage back navigation back automatically where we don't
-        //override this method which will call NavigationController.navigateBack(Object sender)
+        //override this method which will call NavigationManager.navigate(this).back()
         //automatically
     }
 
@@ -512,8 +509,8 @@ public class FragmentB extends MvcFragment {
     @Test
     public void should_navigate_to_locationB_when_go_to_advance_view_and_back_to_locationA_after_go_to_basic_view() {
         //Prepare
-        NavigationController navigationManager = ((CounterControllerImpl) counterController).navigationManager;
-        NavigationController.Model navModel = navigationManager.getModel();
+        NavigationManager navigationManager = ((CounterControllerImpl) counterController).navigationManager;
+        NavigationManager.Model navModel = navigationManager.getModel();
         //App has not navigated to anywhere, current location should be null
         Assert.assertNull(navModel.getCurrentLocation());
         //Simulate navigating to location A
