@@ -24,6 +24,8 @@ import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +34,60 @@ import java.util.List;
  * A navigator consists of data for a navigation.It is created by {@link NavigationManager#navigate(Object)}
  */
 public class Navigator {
+    /**
+     * Configuration of forwarding navigation.
+     */
+    public static class Forwarder {
+        boolean interim = false;
+        boolean clearHistory = false;
+        String clearToLocationId = null;
+
+        /**
+         * Set whether this location navigating to is an interim location that won't be pushed to
+         * history back stack.
+         * @return
+         */
+        public Forwarder setInterim(boolean interim){
+            this.interim = interim;
+            return this;
+        }
+
+        /**
+         * Indicates this location navigating to is an interim location that won't be pushed to
+         * history back stack.
+         * @return
+         */
+        public boolean isInterim() {
+            return interim;
+        }
+
+        /**
+         * Clear history to the first matched locationId. For example, current history is
+         * A->B->A->C->B, clearToLocationId("A") will pop B and C and leave the back stack as A->B->A.
+         *
+         * <p>Note that, if {@link #clearAll()} is called, this method has no effect</p>
+         * @param locationId The location id clear up to
+         * @return This instance
+         */
+        public Forwarder clearTo(@NotNull String locationId) {
+            clearHistory = true;
+            clearToLocationId = locationId;
+            return this;
+        }
+
+        /**
+         * Clear all history.
+         *
+         * <p>Note that, if this method is called, {@link #clearTo(String)} will have no effect</p>
+         * @return This instance
+         */
+        public Forwarder clearAll() {
+            clearHistory = true;
+            clearToLocationId = null;
+            return this;
+        }
+    }
+
     /**
      * The callback when the navigation is settled. Since Android Fragment doesn't invoke its call
      * back like onCreate, onCreateView and etc after a fragment manager commits fragment transaction,
@@ -49,6 +105,7 @@ public class Navigator {
     }
 
     private final Object sender;
+    private Forwarder forwarder;
     private OnSettled onSettled;
     private NavigationManagerImpl navigationManager;
     private BaseEventC navigateEvent;
@@ -70,6 +127,14 @@ public class Navigator {
      */
     public Object getSender() {
         return sender;
+    }
+
+    /**
+     * The forward navigation configuration.
+     * @return Forwarder
+     */
+    public Forwarder getForwarder() {
+        return forwarder;
     }
 
     /**
@@ -205,7 +270,7 @@ public class Navigator {
      * @param locationId           The id of the location navigate to
      */
     public void to(String locationId) {
-        doNavigateTo(locationId, false, null);
+        doNavigateTo(locationId);
         go();
     }
 
@@ -232,14 +297,35 @@ public class Navigator {
      * @param clearTopToLocationId Null if all history locations want to be cleared otherwise, the
      *                             id of the location the history will be exclusively cleared up to
      *                             which will be the second last location after navigation.
+     * @deprecated
      */
     public void to(String locationId, String clearTopToLocationId) {
-        doNavigateTo(locationId, true, clearTopToLocationId);
+        Forwarder forwarder = new Forwarder();
+        if (clearTopToLocationId == null) {
+            forwarder.clearAll();
+        } else {
+            forwarder.clearTo(clearTopToLocationId);
+        }
+
+        doNavigateTo(locationId);
         go();
     }
 
-    private void doNavigateTo(String locationId, boolean clearTop,
-                              String clearTopToLocationId) {
+    public void to(String locationId, @NotNull Forwarder forwarder) {
+        this.forwarder = forwarder;
+        doNavigateTo(locationId);
+        go();
+    }
+
+    private void doNavigateTo(String locationId) {
+        boolean clearTop = false;
+        String clearTopToLocationId = null;
+
+        if (forwarder != null) {
+            clearTop = forwarder.clearHistory;
+            clearTopToLocationId = forwarder.clearToLocationId;
+        }
+
         NavLocation clearedTopToLocation = null;
         if (clearTop) {
             if (clearTopToLocationId != null) {

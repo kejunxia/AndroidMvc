@@ -34,6 +34,7 @@ import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.Navigator;
 import com.shipdream.lib.android.mvc.manager.internal.__MvcManagerHelper;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
@@ -588,7 +589,12 @@ public abstract class MvcActivity extends AppCompatActivity {
 
                 String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
                 transaction.replace(getContentLayoutResId(), nextFragment, fragmentTag);
-                transaction.addToBackStack(fragmentTag);
+
+                Navigator.Forwarder forwarder = event.getNavigator().getForwarder();
+                if (forwarder != null && !forwarder.isInterim()) {
+                    transaction.addToBackStack(fragmentTag);
+                }
+
                 if (currentFragment != null) {
                     invokeOnPreNavigationTransaction(transaction, currentFragment, nextFragment);
                 }

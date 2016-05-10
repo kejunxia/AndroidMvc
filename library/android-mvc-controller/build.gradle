@@ -54,6 +54,8 @@ sourceSets {
 }
 
 dependencies {
+    compile 'com.intellij:annotations:12.0'
+
     compile project(':library:poke')
 
     compile rootProject.lib.slf4jApi
