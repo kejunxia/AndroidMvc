@@ -40,7 +40,7 @@ public class Navigator {
     public static class Forwarder {
         boolean interim = false;
         boolean clearHistory = false;
-        String clearToLocationId = null;
+        String clearToLocationId;
 
         /**
          * Set whether this location navigating to is an interim location that won't be pushed to
@@ -300,7 +300,7 @@ public class Navigator {
      * @deprecated
      */
     public void to(String locationId, String clearTopToLocationId) {
-        Forwarder forwarder = new Forwarder();
+        this.forwarder = new Forwarder();
         if (clearTopToLocationId == null) {
             forwarder.clearAll();
         } else {
@@ -319,20 +319,20 @@ public class Navigator {
 
     private void doNavigateTo(String locationId) {
         boolean clearTop = false;
-        String clearTopToLocationId = null;
+        String clearToLocationId = null;
 
         if (forwarder != null) {
             clearTop = forwarder.clearHistory;
-            clearTopToLocationId = forwarder.clearToLocationId;
+            clearToLocationId = forwarder.clearToLocationId;
         }
 
         NavLocation clearedTopToLocation = null;
         if (clearTop) {
-            if (clearTopToLocationId != null) {
+            if (clearToLocationId != null) {
                 //find out the top most location in the history stack with clearTopToLocationId
                 NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
                 while (currentLoc != null) {
-                    if (clearTopToLocationId.equals(currentLoc.getLocationId())) {
+                    if (clearToLocationId.equals(currentLoc.getLocationId())) {
                         //Reverse the history to this location
                         clearedTopToLocation = currentLoc;
                         break;

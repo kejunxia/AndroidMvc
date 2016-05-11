@@ -115,7 +115,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         ForwardListener forwardListener = prepareLocationHistory();
 
         reset(forwardListener);
-        navigationManager.navigate(this).to(locId5, null);
+        navigationManager.navigate(this).to(locId5, new Navigator.Forwarder().clearAll());
 
         ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event
                 = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);

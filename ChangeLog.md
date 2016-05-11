@@ -1,3 +1,8 @@
+Version:2.3
+* New navigation method that allow configuring the location not pushed to back stack
+* Uplift Android Support Lib to 23.4.0
+* Uplift espresso to 2.2.2, test runner to 0.5.0
+
 Version:2.2.0
 * Run async task with callback with more granular controls.
 * Pass in monitor to Task#execute(Monitor monitor) so that the monitor can be used in concrete Task#execute body and passed to events to cancel the tasks.

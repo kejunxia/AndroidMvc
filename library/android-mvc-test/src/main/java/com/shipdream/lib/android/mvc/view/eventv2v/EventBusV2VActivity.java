@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.Navigator;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
@@ -45,7 +46,7 @@ public class EventBusV2VActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to("TestFragment", null);
+            navigationManager.navigate(this).to("TestFragment", new Navigator.Forwarder().clearAll());
         }
 
         @Override

@@ -591,7 +591,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 transaction.replace(getContentLayoutResId(), nextFragment, fragmentTag);
 
                 Navigator.Forwarder forwarder = event.getNavigator().getForwarder();
-                if (forwarder != null && !forwarder.isInterim()) {
+                if (forwarder == null || (forwarder != null && !forwarder.isInterim())) {
                     transaction.addToBackStack(fragmentTag);
                 }
 

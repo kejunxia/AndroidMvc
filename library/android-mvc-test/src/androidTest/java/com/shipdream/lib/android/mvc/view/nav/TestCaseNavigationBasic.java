@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.manager.internal.NavigationManagerImpl;
+import com.shipdream.lib.android.mvc.manager.internal.Navigator;
 import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Component;
@@ -67,7 +68,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
     @Override
     protected void waitTest() throws InterruptedException {
-        waitTest(200);
+        waitTest(300);
     }
 
     public static class Comp extends Component{
@@ -344,7 +345,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         testNavigateToB();
         testNavigateToD();
         testNavigateToA();
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, null);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().clearAll());
         waitTest();
 
         testNavigateToB();
