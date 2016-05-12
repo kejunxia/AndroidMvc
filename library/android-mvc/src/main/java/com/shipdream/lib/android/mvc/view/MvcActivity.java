@@ -488,24 +488,15 @@ public abstract class MvcActivity extends AppCompatActivity {
          * {@link MvcBean} objects those fragments holding will be saved into this root
          * fragment's outState bundle.
          */
-        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(MvcFragment fragment, boolean selfManaged) {
-            if (fragment != null) {
-                fragment.isStateManagedByRootDelegateFragment = selfManaged;
-
-                List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
-                if (frags != null) {
-                    int size = frags.size();
-                    for (int i = 0; i < size; i++) {
-                        MvcFragment frag = (MvcFragment) frags.get(i);
-                        if (frag != null) {
-                            if (frag.isAdded() && frag instanceof MvcFragment) {
-                                frag.isStateManagedByRootDelegateFragment = selfManaged;
-                            }
-                            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(frag, selfManaged);
-                        }
+        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(MvcFragment fragment, final boolean selfManaged) {
+            traverseFragmentAndSubFragments(fragment, new FragmentManipulator() {
+                @Override
+                public void manipulate(Fragment fragment) {
+                    if (fragment != null && fragment.isAdded() && fragment instanceof MvcFragment) {
+                        ((MvcFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
                     }
                 }
-            }
+            });
         }
 
         /**
@@ -524,6 +515,27 @@ public abstract class MvcActivity extends AppCompatActivity {
             } else {
                 performForwardNav(event);
             }
+        }
+
+        private void traverseFragmentAndSubFragments(Fragment fragment, FragmentManipulator manipulator) {
+            if (fragment != null) {
+                manipulator.manipulate(fragment);
+
+                List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
+                if (frags != null) {
+                    int size = frags.size();
+                    for (int i = 0; i < size; i++) {
+                        MvcFragment frag = (MvcFragment) frags.get(i);
+                        if (frag != null) {
+                            manipulator.manipulate(frag);
+                        }
+                    }
+                }
+            }
+        }
+
+        interface FragmentManipulator {
+            void manipulate(Fragment fragment);
         }
 
         @SuppressWarnings("unchecked")
@@ -592,34 +604,28 @@ public abstract class MvcActivity extends AppCompatActivity {
                 }
                 if (!interim) {
                     transaction.addToBackStack(fragmentTag);
-                    if (lastFragment != null) {
-                        lastFragment.onPushingToBackStack();
-                    }
+                    traverseFragmentAndSubFragments(lastFragment, new FragmentManipulator() {
+                        @Override
+                        public void manipulate(Fragment fragment) {
+                            if (fragment != null && fragment instanceof MvcFragment) {
+                                ((MvcFragment)fragment).onPushingToBackStack();
+                            }
+                        }
+                    });
                 }
 
                 if (lastFragment != null) {
-                    invokeOnPreNavigationTransaction(transaction, lastFragment, currentFragment);
+                    //Invoke OnPreTransactionCommit for fragment and its child fragments recursively
+                    traverseFragmentAndSubFragments(lastFragment, new FragmentManipulator() {
+                        @Override
+                        public void manipulate(Fragment fragment) {
+                            if (fragment != null && fragment instanceof MvcFragment) {
+                                ((MvcFragment)fragment).onPreNavigationTransaction(transaction, currentFragment);
+                            }
+                        }
+                    });
                 }
                 transaction.commit();
-            }
-        }
-
-        //Invoke OnPreTransactionCommit for fragment and its child fragments recursively
-        private void invokeOnPreNavigationTransaction(FragmentTransaction transaction,
-                                                      MvcFragment currentFragment,
-                                                      MvcFragment nextFragment) {
-            if (currentFragment != null) {
-                List<Fragment> children = currentFragment.getChildFragmentManager().getFragments();
-                if (children != null) {
-                    int size = children.size();
-                    for (int i = 0; i < size; i++) {
-                        Fragment f = children.get(i);
-                        if (f instanceof MvcFragment) {
-                            invokeOnPreNavigationTransaction(transaction, (MvcFragment)f, nextFragment);
-                        }
-                    }
-                }
-                currentFragment.onPreNavigationTransaction(transaction, nextFragment);
             }
         }
 
@@ -659,27 +665,26 @@ public abstract class MvcActivity extends AppCompatActivity {
                 String currentFragTag = getFragmentTag(currentLoc.getLocationId());
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
-                    currentFrag.aboutToPopOut = true;
-
-                    //TODO: Need to recursively traverse
-                    List<Fragment> subFragments = currentFrag.getChildFragmentManager().getFragments();
-                    if (subFragments != null && !subFragments.isEmpty()) {
-                        for (Fragment fragment : subFragments) {
-                            if (fragment instanceof MvcFragment) {
-                                ((MvcFragment) fragment).aboutToPopOut = true;
-                            }
-                        }
-                    }
-
-                    currentFrag.registerOnViewReadyListener(new Runnable() {
+                    traverseFragmentAndSubFragments(currentFrag, new FragmentManipulator() {
                         @Override
-                        public void run() {
-                            if (event.getNavigator() != null) {
-                                __MvcManagerHelper.destroyNavigator(event.getNavigator());
+                        public void manipulate(Fragment fragment) {
+                            if (fragment != null && fragment instanceof MvcFragment) {
+                                final MvcFragment frag = ((MvcFragment)fragment);
+                                frag.aboutToPopOut = true;
+                                frag.registerOnViewReadyListener(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (event.getNavigator() != null) {
+                                            __MvcManagerHelper.destroyNavigator(event.getNavigator());
+                                        }
+                                        frag.unregisterOnViewReadyListener(this);
+                                    }
+                                });
                             }
-                            currentFrag.unregisterOnViewReadyListener(this);
                         }
                     });
+
+
                 }
 
                 if (event.isFastRewind()) {
