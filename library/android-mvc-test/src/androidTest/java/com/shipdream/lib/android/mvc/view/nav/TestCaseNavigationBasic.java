@@ -523,6 +523,85 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void test_should_be_able_to_skip_interim_item_with_clear_history_nav_location() throws InterruptedException {
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A);
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D,
+                new Navigator.Forwarder().clearTo(MvcTestActivityNavigation.Loc.B));
+        waitTest();
+        onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_should_pass_nav_location_when_clear_history_land_on_interim_location() throws InterruptedException {
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A);
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D,
+                new Navigator.Forwarder().clearTo(MvcTestActivityNavigation.Loc.C));
+        waitTest();
+        onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_nav_back_from_interim_location_should_be_same_as_from_non_interim_locaiton() throws InterruptedException {
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A);
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C);
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+    }
+
     private void testNavigateToA() throws InterruptedException {
         navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A);
         waitTest();
