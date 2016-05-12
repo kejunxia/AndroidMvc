@@ -504,6 +504,25 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         Assert.assertEquals(gson.toJson(originalModel), gson.toJson(currentModel));
     }
 
+    @Test
+    public void test_should_not_push_fragments_to_back_stack_with_interim_nav_location() throws InterruptedException {
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A);
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B, new Navigator.Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C);
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+    }
+
     private void testNavigateToA() throws InterruptedException {
         navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A);
         waitTest();

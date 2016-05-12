@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.Navigator;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 import com.shipdream.lib.android.mvc.view.test.R;
 
@@ -51,7 +52,8 @@ public abstract class NavFragment extends MvcFragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationManager.navigate(v).to(getNextFragmentLocId());
+                boolean interim = getNextFragmentLocId().contains("C");
+                navigationManager.navigate(v).to(getNextFragmentLocId(), new Navigator.Forwarder().setInterim(interim));
             }
         });
 

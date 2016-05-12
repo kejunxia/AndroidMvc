@@ -34,7 +34,6 @@ import com.shipdream.lib.android.mvc.__MvcGraphHelper;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Navigator;
 import com.shipdream.lib.android.mvc.manager.internal.__MvcManagerHelper;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
@@ -539,24 +538,20 @@ public abstract class MvcActivity extends AppCompatActivity {
                 throw new RuntimeException("Cannot find fragment class mapped in MvcActivity.mapNavigationFragment(location) for location: "
                         + event.getCurrentValue().getLocationId());
             } else {
-                MvcFragment currentFragment = null;
+                MvcFragment lastFragment = null;
                 if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
-                    currentFragment = (MvcFragment) fm.findFragmentByTag(
+                    lastFragment = (MvcFragment) fm.findFragmentByTag(
                             getFragmentTag(event.getLastValue().getLocationId()));
                 }
 
-                final MvcFragment nextFragment;
+                final MvcFragment currentFragment;
                 try {
-                    nextFragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
+                    currentFragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to instantiate fragment: " + fragmentClass.getName(), e);
                 }
 
-                if (!event.isClearHistory()) {
-                    if (currentFragment != null) {
-                        currentFragment.onPushingToBackStack();
-                    }
-                } else {
+                if (event.isClearHistory()) {
                     NavLocation clearTopToLocation = event.getLocationWhereHistoryClearedUpTo();
                     String tagPopTo = clearTopToLocation == null ? null : getFragmentTag(clearTopToLocation.getLocationId());
 
@@ -574,29 +569,36 @@ public abstract class MvcActivity extends AppCompatActivity {
                 }
 
                 final FragmentTransaction transaction = fm.beginTransaction();
-                nextFragment.registerOnViewReadyListener(new Runnable() {
+                currentFragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
                         if (event.getNavigator() != null) {
                             __MvcManagerHelper.destroyNavigator(event.getNavigator());
                         }
 
-                        logger.trace("Fragment ready: " + nextFragment.getClass().getSimpleName());
+                        logger.trace("Fragment ready: " + currentFragment.getClass().getSimpleName());
 
-                        nextFragment.unregisterOnViewReadyListener(this);
+                        currentFragment.unregisterOnViewReadyListener(this);
                     }
                 });
 
                 String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
-                transaction.replace(getContentLayoutResId(), nextFragment, fragmentTag);
+                transaction.replace(getContentLayoutResId(), currentFragment, fragmentTag);
 
-                Navigator.Forwarder forwarder = event.getNavigator().getForwarder();
-                if (forwarder == null || (forwarder != null && !forwarder.isInterim())) {
+                boolean interim = false;
+                NavLocation lastLocation = event.getLastValue();
+                if (lastLocation != null && lastLocation.isInterim()) {
+                    interim = true;
+                }
+                if (!interim) {
                     transaction.addToBackStack(fragmentTag);
+                    if (lastFragment != null) {
+                        lastFragment.onPushingToBackStack();
+                    }
                 }
 
-                if (currentFragment != null) {
-                    invokeOnPreNavigationTransaction(transaction, currentFragment, nextFragment);
+                if (lastFragment != null) {
+                    invokeOnPreNavigationTransaction(transaction, lastFragment, currentFragment);
                 }
                 transaction.commit();
             }
@@ -659,6 +661,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 if (currentFrag != null) {
                     currentFrag.aboutToPopOut = true;
 
+                    //TODO: Need to recursively traverse
                     List<Fragment> subFragments = currentFrag.getChildFragmentManager().getFragments();
                     if (subFragments != null && !subFragments.isEmpty()) {
                         for (Fragment fragment : subFragments) {
