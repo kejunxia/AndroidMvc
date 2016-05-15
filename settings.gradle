@@ -28,3 +28,4 @@ include 'samples:note:android'
 include 'samples:note:core'
 
 include 'samples:simple'
+include 'samples:simple-mvp'
