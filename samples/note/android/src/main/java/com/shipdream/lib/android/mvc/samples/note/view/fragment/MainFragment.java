@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Navigator;
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.R;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
@@ -77,7 +77,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
                  * Note the 3rd parameter which indicates navigating to locations on main menu will
                  * clear all history where back key will exit the app
                  */
-                navigationManager.navigate(v).to(LocId.NOTE_HANDSET_LIST, new Navigator.Forwarder().clearAll());
+                navigationManager.navigate(v).to(LocId.NOTE_HANDSET_LIST, new Forwarder().clearAll());
                 drawerLayout.closeDrawers();
             }
         });
@@ -90,7 +90,7 @@ public class MainFragment extends MvcActivity.DelegateFragment {
                  * Note the 3rd parameter which indicates navigating to locations on main menu will
                  * clear all history where back key will exit the app
                  */
-                navigationManager.navigate(v).to(LocId.WEATHERS, new Navigator.Forwarder().clearAll());
+                navigationManager.navigate(v).to(LocId.WEATHERS, new Forwarder().clearAll());
                 drawerLayout.closeDrawers();
             }
         });

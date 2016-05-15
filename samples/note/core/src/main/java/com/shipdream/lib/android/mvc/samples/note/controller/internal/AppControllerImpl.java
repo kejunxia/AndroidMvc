@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvc.samples.note.controller.internal;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.manager.internal.Navigator;
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
 import com.shipdream.lib.android.mvc.samples.note.manager.NoteManager;
@@ -87,7 +87,7 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)
                 || curLocId.equals(LocId.NOTE_TABLET_LANDSCAPE)) {
             //Clear history and go to note list
-            navigationManager.navigate(this).to(LocId.NOTE_HANDSET_LIST, new Navigator.Forwarder().clearAll());
+            navigationManager.navigate(this).to(LocId.NOTE_HANDSET_LIST, new Forwarder().clearAll());
 
             NoteModel noteModel = noteManager.getModel();
             if(null != noteModel.getViewingNote()) {
@@ -106,7 +106,7 @@ public class AppControllerImpl extends BaseControllerImpl implements AppControll
                 || curLocId.equals(LocId.NOTE_HANDSET_LIST)
                 || curLocId.equals(LocId.NOTE_TABLET_LANDSCAPE)) {
             //Clear history and go to note landscape location
-            navigationManager.navigate(this).to( LocId.NOTE_TABLET_LANDSCAPE, new Navigator.Forwarder().clearAll());
+            navigationManager.navigate(this).to( LocId.NOTE_TABLET_LANDSCAPE, new Forwarder().clearAll());
         }
     }
 }

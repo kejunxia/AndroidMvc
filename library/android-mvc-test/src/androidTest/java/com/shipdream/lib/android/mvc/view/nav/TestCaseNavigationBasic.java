@@ -21,8 +21,8 @@ import android.content.pm.ActivityInfo;
 import com.google.gson.Gson;
 import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.manager.internal.NavigationManagerImpl;
-import com.shipdream.lib.android.mvc.manager.internal.Navigator;
 import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Component;
@@ -345,7 +345,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         testNavigateToB();
         testNavigateToD();
         testNavigateToA();
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().clearAll());
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Forwarder().clearAll());
         waitTest();
 
         testNavigateToB();
@@ -510,7 +510,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B, new Navigator.Forwarder().setInterim(true));
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B, new Forwarder().setInterim(true));
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -533,12 +533,12 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().setInterim(true));
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Forwarder().setInterim(true));
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
 
         navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D,
-                new Navigator.Forwarder().clearTo(MvcTestActivityNavigation.Loc.B));
+                new Forwarder().clearTo(MvcTestActivityNavigation.Loc.B));
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -557,12 +557,12 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().setInterim(true));
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Forwarder().setInterim(true));
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
 
         navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D,
-                new Navigator.Forwarder().clearTo(MvcTestActivityNavigation.Loc.C));
+                new Forwarder().clearTo(MvcTestActivityNavigation.Loc.C));
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
@@ -581,7 +581,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Navigator.Forwarder().setInterim(true));
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C, new Forwarder().setInterim(true));
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
 

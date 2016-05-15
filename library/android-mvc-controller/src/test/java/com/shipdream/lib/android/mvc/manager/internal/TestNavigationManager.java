@@ -21,7 +21,7 @@ import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.TimerController;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.internal.TimerControllerImpl;
-import com.shipdream.lib.android.mvc.manager.*;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Provides;
@@ -40,6 +40,7 @@ import javax.inject.Singleton;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class TestNavigationManager extends BaseNavigationManagerTest {
     //Define a subscriber class
@@ -115,7 +117,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         ForwardListener forwardListener = prepareLocationHistory();
 
         reset(forwardListener);
-        navigationManager.navigate(this).to(locId5, new Navigator.Forwarder().clearAll());
+        navigationManager.navigate(this).to(locId5, new Forwarder().clearAll());
 
         ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event
                 = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
@@ -343,9 +345,10 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
     }
 
     @Test
-    public void should_be_able_to_log_navigation_history() throws Exception {
+    public void should_be_able_to_log_navigation_history_with_trace_eanbled() throws Exception {
         // Arrange
         Logger logger = mock(Logger.class);
+        when(logger.isTraceEnabled()).thenReturn(true);
         navigationManager.dumpHistoryOnLocationChange = true;
         navigationManager.logger = logger;
 
@@ -382,6 +385,49 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
+    }
+
+    @Test
+    public void should_not_log_navigation_history_without_trace_eanbled() throws Exception {
+        // Arrange
+        Logger logger = mock(Logger.class);
+        when(logger.isTraceEnabled()).thenReturn(false);
+        navigationManager.dumpHistoryOnLocationChange = true;
+        navigationManager.logger = logger;
+
+        // Act
+        navigationManager.navigate(this).to("any location", "back to location");
+
+        // Verify
+        verify(logger, atLeast(0)).trace(anyString());
+
+        // Arrange
+        reset(logger);
+
+        // Act
+        navigationManager.navigate(this).to("any location");
+
+        // Verify
+        verify(logger, atLeast(0)).trace(anyString());
+
+        // Arrange
+        reset(logger);
+
+        // Act
+        navigationManager.navigate(this).back();
+
+        // Verify
+        verify(logger, atLeast(0)).trace(anyString());
+
+        // Arrange
+        reset(logger);
+        navigationManager.navigate(this).to("some location");
+
+        // Act
+        navigationManager.navigate(this).back(null);
+
+        // Verify
+        verify(logger, atLeast(0)).trace(anyString());
     }
 
     private static class TimerFragmentX2 {
@@ -643,6 +689,29 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigator.__destroy();
 
         verify(onSettled, times(1)).run();
+    }
+
+    @Test
+    public void interim_forwarder_should_instruct_navigation_not_push_location_to_back_stack(){
+        ForwardListener forwardListener = mock(ForwardListener.class);
+        eventBusC.register(forwardListener);
+
+        // Act
+        Navigator navigator = navigationManager.navigate(this);
+        Forwarder forwarder = new Forwarder();
+
+        Assert.assertFalse(forwarder.isInterim());
+
+        forwarder.setInterim(true);
+        Assert.assertTrue(forwarder.isInterim());
+
+        navigator.to(TimerFragment.class.getName(), forwarder);
+
+        ArgumentCaptor<NavigationManager.Event2C.OnLocationForward> event
+                = ArgumentCaptor.forClass(NavigationManager.Event2C.OnLocationForward.class);
+        verify(forwardListener).onEvent(event.capture());
+        assertEquals(event.getValue().getCurrentValue().getLocationId(), TimerFragment.class.getName());
+        assertTrue(event.getValue().getCurrentValue().isInterim());
     }
 
     /**

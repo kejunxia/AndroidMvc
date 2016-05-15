@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.view.lifecycle;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Navigator;
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
@@ -41,7 +41,7 @@ public class MvcTestActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to("TestFragment", new Navigator.Forwarder().clearAll());
+            navigationManager.navigate(this).to("TestFragment", new Forwarder().clearAll());
         }
     }
 

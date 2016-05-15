@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 import android.content.Intent;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Navigator;
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
@@ -46,7 +46,7 @@ public class ViewPagerTestActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(ViewPagerHomeFragment.class.getSimpleName(), new Navigator.Forwarder().clearAll());
+            navigationManager.navigate(this).to(ViewPagerHomeFragment.class.getSimpleName(), new Forwarder().clearAll());
         }
     }
 
