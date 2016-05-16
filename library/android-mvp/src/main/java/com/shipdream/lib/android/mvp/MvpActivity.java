@@ -27,7 +27,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.R;
+import com.shipdream.lib.android.mvp.view.R;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.poke.util.ReflectUtils;
 

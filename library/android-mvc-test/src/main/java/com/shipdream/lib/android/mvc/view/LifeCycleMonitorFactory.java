@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view;
+package com.shipdream.lib.android.mvp.view;
 
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorD;
 
 public interface LifeCycleMonitorFactory {
     LifeCycleMonitor provideLifeCycleMonitor();

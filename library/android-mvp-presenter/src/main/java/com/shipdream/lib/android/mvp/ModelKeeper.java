@@ -23,11 +23,9 @@ package com.shipdream.lib.android.mvp;
 public interface ModelKeeper {
     /**
      * Save model into this {@link ModelKeeper}
-     * @param model The model to save
-     * @param type The class type of the model
-     * @param <T>
+     * @param bean The bean of whose model will be saved
      */
-    <T> void saveModel(T model, Class<T> type);
+    void saveModel(Bean bean);
 
     /**
      * Retrieves model

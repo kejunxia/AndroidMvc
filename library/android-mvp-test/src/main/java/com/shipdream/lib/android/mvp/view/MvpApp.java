@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvp.view;
 
 import android.app.Application;
 
-import com.shipdream.lib.android.mvc.view.BuildConfig;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;

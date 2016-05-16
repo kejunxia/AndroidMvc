@@ -23,8 +23,8 @@ import android.widget.TextView;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.view.MvpApp;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.test.R;
-import com.shipdream.lib.android.mvp.view.viewpager.controller.TabController;
+import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvp.view.viewpager.presenter.TabPresenter;
 
 import javax.inject.Inject;
 
@@ -33,7 +33,7 @@ public class TabFragmentA extends BaseTabFragment {
     static final String RESTORE_TEXT = "Restored TabA";
 
     @Inject
-    TabController tabController;
+    TabPresenter tabPresenter;
 
     private TextView textView;
 
@@ -57,9 +57,9 @@ public class TabFragmentA extends BaseTabFragment {
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
         if (reason.isFirstTime()) {
             textView.setText(INIT_TEXT);
-            tabController.setName(RESTORE_TEXT);
+            tabPresenter.setName(RESTORE_TEXT);
         } else if (reason.isRestored()) {
-            textView.setText(tabController.getModel().getName());
+            textView.setText(tabPresenter.getModel().getName());
         }
 
         textView.setOnClickListener(new View.OnClickListener() {

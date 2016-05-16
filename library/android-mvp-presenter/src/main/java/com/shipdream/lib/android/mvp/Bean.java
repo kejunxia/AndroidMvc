@@ -54,7 +54,8 @@ public abstract class Bean<MODEL> {
             try {
                 return new ReflectUtils.newObjectByType<>(type).newInstance();
             } catch (Exception e) {
-                throw new RuntimeException("Fail to instantiate model by its default constructor");
+                throw new RuntimeException(
+                        String.format("Fail to instantiate model of %s by its default constructor", type.getName()), e);
             }
         }
     }

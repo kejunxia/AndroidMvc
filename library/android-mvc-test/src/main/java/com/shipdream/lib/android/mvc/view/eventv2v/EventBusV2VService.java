@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.eventv2v;
+package com.shipdream.lib.android.mvp.view.eventv2v;
 
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.shipdream.lib.android.mvc.view.MvcService;
+import com.shipdream.lib.android.mvp.view.MvcService;
 
 public class EventBusV2VService extends MvcService {
     @Override

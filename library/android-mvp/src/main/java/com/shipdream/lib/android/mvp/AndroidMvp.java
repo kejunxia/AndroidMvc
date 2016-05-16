@@ -56,7 +56,7 @@ public class AndroidMvp {
         }
     }
 
-    static final String MVP_SATE_PREFIX = "$android.mvp.state:";
+    static final String MVP_SATE_PREFIX = "__android.mvp.state:";
 
     static {
         Injector.configGraph(new DefaultPresenterDependencies());
@@ -82,7 +82,7 @@ public class AndroidMvp {
      *                          {@link AndroidModelKeeper#getModel(Parcelable, Class)}
      */
     public static void setCustomStateKeeper(AndroidModelKeeper customStateKeeper) {
-        ModelKeeperHolder.stateKeeper.customStateKeeper = customStateKeeper;
+        ModelKeeperHolder.stateKeeper.customModelKeeper = customStateKeeper;
     }
 
 }

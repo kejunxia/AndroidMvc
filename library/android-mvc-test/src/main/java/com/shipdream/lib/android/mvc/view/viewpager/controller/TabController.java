@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.viewpager.controller;
+package com.shipdream.lib.android.mvp.view.viewpager.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
-import com.shipdream.lib.android.mvc.view.viewpager.TabModel;
+import com.shipdream.lib.android.mvp.view.viewpager.TabModel;
 
 public interface TabController extends BaseController<TabModel> {
      void setName(String name);

@@ -40,7 +40,7 @@ android {
     buildToolsVersion rootProject.ext.androidBuildToolVersion
 
     defaultConfig {
-        applicationId "com.shipdream.lib.android.mvc.view.test"
+        applicationId "com.shipdream.lib.android.mvp.view.test"
         minSdkVersion rootProject.ext.androidMinSdkVersion
         targetSdkVersion rootProject.ext.androidTargetSdkVersion
         versionCode 1

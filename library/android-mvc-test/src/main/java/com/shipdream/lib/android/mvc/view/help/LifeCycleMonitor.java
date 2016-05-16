@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.help;
+package com.shipdream.lib.android.mvp.view.help;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 public interface LifeCycleMonitor {
     void onCreate(Bundle savedInstanceState);

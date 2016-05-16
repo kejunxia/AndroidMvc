@@ -22,13 +22,18 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvp.MvpFragment;
-import com.shipdream.lib.android.mvp.view.eventv2v.controller.V2VTestController;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.eventv2v.controller.V2VTestPresenter;
+import com.shipdream.lib.android.mvp.view.test.R;
 
-public class EventBusV2VFragment extends MvpFragment {
+import javax.inject.Inject;
+
+public class EventBusV2VFragment extends MvpFragment implements V2VTestPresenter.View{
     private TextView textView;
     private View buttonDialog;
     private View buttonService;
+
+    @Inject
+    V2VTestPresenter presenter;
 
     @Override
     protected int getLayoutResId() {
@@ -38,6 +43,8 @@ public class EventBusV2VFragment extends MvpFragment {
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
+
+        presenter.view = this;
 
         textView = (TextView) view.findViewById(R.id.fragment_mvc_v2v_text);
 
@@ -64,8 +71,8 @@ public class EventBusV2VFragment extends MvpFragment {
         textView.setText(event.getText());
     }
 
-    private void onEvent(V2VTestController.EventC2V.OnButtonUpdated onButtonUpdated) {
-        postEvent2V(new Events.OnDialogButtonChanged(onButtonUpdated.getSender(), onButtonUpdated.getText()));
+    @Override
+    public void updateDialogButton(String text) {
+        postEvent2V(new Events.OnDialogButtonChanged(this, text));
     }
-
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.viewpager;
+package com.shipdream.lib.android.mvp.view.viewpager;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,10 +23,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcApp;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.MvcApp;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.test.R;
 
 public class ViewPagerHomeFragment extends MvcFragment {
     ViewPager viewPager;

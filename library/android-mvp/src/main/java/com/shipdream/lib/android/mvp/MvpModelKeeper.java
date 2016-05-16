@@ -30,47 +30,49 @@ class MvpModelKeeper implements ModelKeeper {
     private static Gson gson;
     private Logger logger = LoggerFactory.getLogger(getClass());
     private AndroidModelKeeper navigationModelKeeper = new NavigationModelKeeperModelKeeper();
-    AndroidModelKeeper customStateKeeper;
+    AndroidModelKeeper customModelKeeper;
     Bundle bundle;
 
     MvpModelKeeper() {
         gson = new GsonBuilder().create();
     }
 
-    private static String getStateKey(String stateTypeName) {
-        return AndroidMvp.MVP_SATE_PREFIX + stateTypeName;
+    private static String getModelKey(String modelTypeName) {
+        return AndroidMvp.MVP_SATE_PREFIX + modelTypeName.replace("com.shipdream.lib.android.mvp", "mvp");
     }
 
-    //TODO: first param should be Bean and bean's state should be saved recursively
-    @SuppressWarnings("unchecked")
+    //TODO: first param should be Bean and bean's model should be saved recursively
     @Override
-    public <T> void saveModel(T model, Class<T> type) {
+    public void saveModel(Bean bean) {
+        Class type = bean.modelType();
         if (type != null) {
             Parcelable parcelable = null;
 
+            Object model = bean.getModel();
+
             if (NavigationManager.Model.class == type) {
-                //Use navigation model keeper to save state
+                //Use navigation model keeper to save model
                 parcelable = navigationModelKeeper.saveModel(model, type);
             } else {
-                if (customStateKeeper != null) {
-                    //Use customs state manager to restore state
-                    parcelable = customStateKeeper.saveModel(model, type);
+                if (customModelKeeper != null) {
+                    //Use customs model manager to restore model
+                    parcelable = customModelKeeper.saveModel(model, type);
                 }
             }
 
             long ts = System.currentTimeMillis();
             if (parcelable != null) {
-                String stateKey = getStateKey(type.getName());
-                bundle.putParcelable(stateKey, parcelable);
-                logger.trace("Save state by parcel state keeper - {}, {}ms used.",
+                String modelKey = getModelKey(type.getName());
+                bundle.putParcelable(modelKey, parcelable);
+                logger.trace("Save model by parcel model keeper - {}, {}ms used.",
                         type.getName(), System.currentTimeMillis() - ts);
             } else {
-                //Use Gson to restore state
-                String stateKey = getStateKey(type.getName());
+                //Use Gson to restore model
+                String modelKey = getModelKey(type.getName());
                 String json = gson.toJson(model);
-                bundle.putString(stateKey, json);
+                bundle.putString(modelKey, json);
 
-                logger.trace("Save state by JSON - {}, {}ms used. Content: {}",
+                logger.trace("Save model by JSON - {}, {}ms used. Content: {}",
                         type.getName(), System.currentTimeMillis() - ts, json);
             }
         }
@@ -79,63 +81,63 @@ class MvpModelKeeper implements ModelKeeper {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T retrieveModel(Class<T> type) {
-        T state = null;
+        T model = null;
         if (type != null) {
             long ts = System.currentTimeMillis();
-            String stateKey = getStateKey(type.getName());
-            Object value = bundle.get(stateKey);
+            String modelKey = getModelKey(type.getName());
+            Object value = bundle.get(modelKey);
             Parcelable parcelable = null;
             if (value instanceof Parcelable) {
                 parcelable = (Parcelable) value;
             }
             if (NavigationManager.Model.class == type) {
-                //Use navigation model keeper to restore state
-                state = (T) navigationModelKeeper.getModel(parcelable, type);
-                logger.trace("Restore state by parcel state keeper - {}, {}ms used.",
+                //Use navigation model keeper to restore model
+                model = (T) navigationModelKeeper.getModel(parcelable, type);
+                logger.trace("Restore model by parcel model keeper - {}, {}ms used.",
                         type.getName(), System.currentTimeMillis() - ts);
             } else {
-                //Use custom state keeper or gson state keeper to restore state.
-                if (customStateKeeper != null) {
+                //Use custom model keeper or gson model keeper to restore model.
+                if (customModelKeeper != null) {
                     if (parcelable != null) {
-                        //Use custom state manager to restore state
-                        state = (T) customStateKeeper.getModel(parcelable, type);
-                        logger.trace("Restore state by parcel state keeper - {}, {}ms used.",
+                        //Use custom model manager to restore model
+                        model = (T) customModelKeeper.getModel(parcelable, type);
+                        logger.trace("Restore model by parcel model keeper - {}, {}ms used.",
                                 type.getName(), System.currentTimeMillis() - ts);
                     }
                 }
-                if (state == null) {
-                    //State is not restored successfully by custom state keeper nor navigation
-                    //model keeper. So try to use Gson to restore state
-                    state = deserialize(bundle, type);
+                if (model == null) {
+                    //Model is not restored successfully by custom model keeper nor navigation
+                    //model keeper. So try to use Gson to restore model
+                    model = deserialize(bundle, type);
                 }
             }
 
-            if (state == null) {
-                throw new IllegalStateException("Can't find restore state for " + type.getName());
+            if (model == null) {
+                throw new IllegalStateException("Can't find restore model for " + type.getName());
             }
         }
-        return state;
+        return model;
     }
 
     private <T> T deserialize(Bundle outState, Class<T> type) {
-        T state;
+        T model;
         long ts = System.currentTimeMillis();
 
-        String stateKey = getStateKey(type.getName());
-        String json = outState.getString(stateKey);
+        String modelKey = getModelKey(type.getName());
+        String json = outState.getString(modelKey);
         try {
             //recover the model
-            state = gson.fromJson(json, type);
+            model = gson.fromJson(json, type);
             //rebind the model to the controller
         } catch (JsonSyntaxException exception) {
             String errorMessage = String.format(
-                    "Failed to restore state(%s) by json deserialization", type.getName());
+                    "Failed to restore model(%s) by json deserialization", type.getName());
             throw new RuntimeException(errorMessage, exception);
         }
 
-        logger.trace("Restore state by JSON - {}, {}ms used.",
+        logger.trace("Restore model by JSON - {}, {}ms used.",
                 type.getName(), System.currentTimeMillis() - ts);
 
-        return state;
+        return model;
     }
 }

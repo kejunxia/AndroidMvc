@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.nav.internal;
+package com.shipdream.lib.android.mvp.view.nav.internal;
 
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.view.nav.AnotherController;
+import com.shipdream.lib.android.mvp.view.nav.AnotherController;
 
 public class AnotherControllerImpl extends BaseControllerImpl<AnotherController.Model>
         implements AnotherController {

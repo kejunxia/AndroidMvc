@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.nav;
+package com.shipdream.lib.android.mvp.view.nav;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
 

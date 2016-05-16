@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.samples.note.view.fragment;
 import android.support.v7.widget.Toolbar;
 
 import com.shipdream.lib.android.mvc.samples.note.R;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 public abstract class BaseFragment extends MvcFragment {
     protected Toolbar getToolBar() {

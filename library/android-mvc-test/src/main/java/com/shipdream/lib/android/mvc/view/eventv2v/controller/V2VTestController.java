@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.eventv2v.controller;
+package com.shipdream.lib.android.mvp.view.eventv2v.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.event.BaseEventV;

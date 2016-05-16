@@ -22,8 +22,8 @@ import android.os.Parcelable;
 
 import com.shipdream.lib.android.mvc.samples.note.service.android.PreferenceService;
 import com.shipdream.lib.android.mvc.samples.note.view.internal.PreferenceServiceImpl;
-import com.shipdream.lib.android.mvc.view.AndroidMvc;
-import com.shipdream.lib.android.mvc.view.AndroidStateKeeper;
+import com.shipdream.lib.android.mvp.view.AndroidMvc;
+import com.shipdream.lib.android.mvp.view.AndroidStateKeeper;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;

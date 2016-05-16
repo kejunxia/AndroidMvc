@@ -23,7 +23,7 @@ import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
-import com.shipdream.lib.android.mvp.view.injection.controller.ControllerA;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterA;
 import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
 
 import javax.inject.Inject;
@@ -49,7 +49,7 @@ public class InjectionTestActivityTestRootFragment extends MvpActivity {
         private NavigationManager navigationManager;
 
         @Inject
-        private ControllerA controllerA;
+        private PresenterA presenterA;
 
         @Override
         protected void onStartUp() {
@@ -61,7 +61,7 @@ public class InjectionTestActivityTestRootFragment extends MvpActivity {
             super.onViewReady(view, savedInstanceState, reason);
 
             if (savedInstanceState != null) {
-                controllerA.addTag("OK");
+                presenterA.addTag("OK");
             }
         }
 

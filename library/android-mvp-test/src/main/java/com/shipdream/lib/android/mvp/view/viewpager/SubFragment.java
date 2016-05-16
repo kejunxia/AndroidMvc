@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvp.view.viewpager;
 
 import com.shipdream.lib.android.mvp.MvpFragment;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.test.R;
 
 public class SubFragment extends MvpFragment {
     @Override

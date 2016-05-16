@@ -70,7 +70,7 @@ class ModelKeeperHolder {
                 } catch (IllegalAccessException e) {
                     //ignore
                 }
-                stateKeeper.saveModel(bean.getModel(), bean.modelType());
+                stateKeeper.saveModel(bean);
             }
         }
     }

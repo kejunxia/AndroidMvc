@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view;
+package com.shipdream.lib.android.mvp.view;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

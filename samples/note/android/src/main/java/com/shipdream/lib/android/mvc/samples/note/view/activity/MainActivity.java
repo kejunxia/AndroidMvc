@@ -23,8 +23,8 @@ import com.shipdream.lib.android.mvc.samples.note.view.fragment.NoteDetailFragme
 import com.shipdream.lib.android.mvc.samples.note.view.fragment.NoteListFragment;
 import com.shipdream.lib.android.mvc.samples.note.view.fragment.NoteTabletLandscape;
 import com.shipdream.lib.android.mvc.samples.note.view.fragment.WeatherListFragment;
-import com.shipdream.lib.android.mvc.view.MvcActivity;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvcActivity;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 public class MainActivity extends MvcActivity {
     @Override

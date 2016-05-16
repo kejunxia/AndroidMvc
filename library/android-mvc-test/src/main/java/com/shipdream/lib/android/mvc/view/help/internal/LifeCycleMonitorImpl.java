@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.help.internal;
+package com.shipdream.lib.android.mvp.view.help.internal;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcFragment;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -30,7 +30,7 @@ import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.test.R;
 
 import java.util.List;
 

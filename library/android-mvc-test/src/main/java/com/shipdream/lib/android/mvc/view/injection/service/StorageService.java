@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection.service;
+package com.shipdream.lib.android.mvp.view.injection.service;
 
 public interface StorageService {
     class Storage {

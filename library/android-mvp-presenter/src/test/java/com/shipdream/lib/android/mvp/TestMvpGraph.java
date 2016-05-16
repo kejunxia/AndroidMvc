@@ -381,9 +381,6 @@ public class TestMvpGraph {
     public void should_be_able_save_and_restore_state_correctly()
             throws ProvideException, ProviderConflictException {
         Bean beanMock = mock(Bean.class);
-        Object mockState = mock(Object.class);
-        when(beanMock.getModel()).thenReturn(mockState);
-        when(beanMock.modelType()).thenReturn(Object.class);
 
         List<Bean> mvpBeen = new ArrayList();
         mvpBeen.add(beanMock);
@@ -397,7 +394,7 @@ public class TestMvpGraph {
         // Verify
         verify(beanMock, times(1)).getModel();
         verify(beanMock, times(1)).modelType();
-        verify(modelKeeperMock).saveModel(eq(mockState), eq(Object.class));
+        verify(modelKeeperMock).saveModel(beanMock);
 
         // Arrange
         reset(modelKeeperMock);

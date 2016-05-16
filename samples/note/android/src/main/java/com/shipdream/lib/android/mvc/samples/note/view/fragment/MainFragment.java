@@ -31,7 +31,7 @@ import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.samples.note.LocId;
 import com.shipdream.lib.android.mvc.samples.note.R;
 import com.shipdream.lib.android.mvc.samples.note.controller.AppController;
-import com.shipdream.lib.android.mvc.view.MvcActivity;
+import com.shipdream.lib.android.mvp.view.MvcActivity;
 
 import javax.inject.Inject;
 

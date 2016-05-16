@@ -22,24 +22,25 @@ import android.view.View;
 import com.shipdream.lib.android.mvp.view.MvpApp;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
-import com.shipdream.lib.android.mvp.view.injection.controller.ControllerA;
-import com.shipdream.lib.android.mvp.view.injection.controller.ControllerB;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterA;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterB;
 
 import javax.inject.Inject;
 
 public class FragmentB extends FragmentInjection {
     @Inject
-    private ControllerA controllerA;
+    private PresenterA presenterA;
 
+    //TODO: should be removed if designed correctly
     @Inject
-    private ControllerB controllerB;
+    private PresenterB presenterB;
 
     private LifeCycleMonitorB lifeCycleMonitorB = MvpApp.lifeCycleMonitorFactory.provideLifeCycleMonitorB();
 
     @Override
     protected void setUpData() {
-        controllerA.addTag("Added by " + getClass().getSimpleName());
-        controllerB.addTag("Added by " + getClass().getSimpleName());
+        presenterA.addTag("Added by " + getClass().getSimpleName());
+        presenterB.addTag("Added by " + getClass().getSimpleName());
     }
 
     @Override
@@ -50,8 +51,8 @@ public class FragmentB extends FragmentInjection {
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-        displayTags(textViewA, controllerA.getTags());
-        displayTags(textViewB, controllerB.getTags());
+        displayTags(textViewA, presenterA.getTags());
+        displayTags(textViewB, presenterB.getTags());
     }
 
     @Override

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.viewpager;
+package com.shipdream.lib.android.mvp.view.viewpager;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.view.MvcApp;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.MvcApp;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.test.R;
 
 public class TabFragmentC extends BaseTabFragment {
     private TextView textView;

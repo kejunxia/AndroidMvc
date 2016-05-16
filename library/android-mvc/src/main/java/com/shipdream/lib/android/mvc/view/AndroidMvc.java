@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view;
+package com.shipdream.lib.android.mvp.view;
 
 import android.os.Parcelable;
 import android.support.annotation.NonNull;

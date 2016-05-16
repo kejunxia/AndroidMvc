@@ -16,7 +16,7 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.shipdream.lib.android.mvc.view.test">
+    package="com.shipdream.lib.android.mvp.view.test">
 
     <application
         android:name="com.shipdream.lib.android.mvp.view.MvpApp"

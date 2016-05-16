@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.nav.internal;
+package com.shipdream.lib.android.mvp.view.nav.internal;
 
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.view.nav.ControllerE;
-import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerE;
+import com.shipdream.lib.android.mvp.view.nav.ControllerE;
+import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerE;
 
 import javax.inject.Inject;
 

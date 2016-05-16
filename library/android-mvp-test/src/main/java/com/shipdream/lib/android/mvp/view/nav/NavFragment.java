@@ -24,7 +24,7 @@ import android.widget.Button;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpFragment;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.test.R;
 
 import javax.inject.Inject;
 
@@ -37,7 +37,7 @@ public abstract class NavFragment extends MvpFragment {
     private NavigationManager navigationManager;
 
     @Inject
-    private AnotherController anotherController;
+    private AnotherPresenter anotherPresenter;
 
     @Override
     protected int getLayoutResId() {
@@ -65,7 +65,7 @@ public abstract class NavFragment extends MvpFragment {
             }
         });
 
-        anotherController.populateData();
+        anotherPresenter.populateData();
     }
 
     @Override

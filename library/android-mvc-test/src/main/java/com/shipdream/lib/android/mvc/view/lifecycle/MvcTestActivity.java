@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.lifecycle;
+package com.shipdream.lib.android.mvp.view.lifecycle;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvc.view.MvcActivity;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvcActivity;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 import javax.inject.Inject;
 

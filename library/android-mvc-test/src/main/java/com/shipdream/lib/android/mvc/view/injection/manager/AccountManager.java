@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection.manager;
+package com.shipdream.lib.android.mvp.view.injection.manager;
 
 public interface AccountManager {
     class Session {

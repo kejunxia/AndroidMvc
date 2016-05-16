@@ -21,16 +21,16 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvp.MvpFragment;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.test.R;
 
 import javax.inject.Inject;
 
 public class NavFragmentF extends MvpFragment {
     @Inject
-    private ControllerF controllerF;
+    private PresenterF presenterF;
 
     @Inject
-    private ControllerG controllerG;
+    private PresenterG presenterG;
 
     private TextView textView;
 
@@ -44,7 +44,7 @@ public class NavFragmentF extends MvpFragment {
         super.onViewReady(view, savedInstanceState, reason);
         textView = (TextView) view.findViewById(R.id.nav_frag_e_text);
 
-        textView.setText(controllerF.getValue());
+        textView.setText(presenterF.getValue());
     }
 
 }

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection.manager.internal;
+package com.shipdream.lib.android.mvp.view.injection.manager.internal;
 
 import com.shipdream.lib.android.mvc.manager.internal.BaseManagerImpl;
-import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
-import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
+import com.shipdream.lib.android.mvp.view.injection.manager.AccountManager;
+import com.shipdream.lib.android.mvp.view.injection.service.StorageService;
 
 import javax.inject.Inject;
 

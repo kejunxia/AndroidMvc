@@ -29,7 +29,7 @@ import com.shipdream.lib.android.mvc.samples.note.R;
 import com.shipdream.lib.android.mvc.samples.note.controller.WeatherController;
 import com.shipdream.lib.android.mvc.samples.note.model.WeatherModel;
 import com.shipdream.lib.android.mvc.samples.note.model.dto.WeatherInfo;
-import com.shipdream.lib.android.mvc.view.MvcDialogFragment;
+import com.shipdream.lib.android.mvp.view.MvcDialogFragment;
 
 import java.util.Map;
 

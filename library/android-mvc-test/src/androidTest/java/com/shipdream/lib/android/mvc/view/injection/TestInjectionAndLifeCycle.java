@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection;
+package com.shipdream.lib.android.mvp.view.injection;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.BaseTestCase;
-import com.shipdream.lib.android.mvc.view.LifeCycle;
-import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.BaseTestCase;
+import com.shipdream.lib.android.mvp.view.LifeCycle;
+import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.test.R;
 
 import org.junit.Test;
 

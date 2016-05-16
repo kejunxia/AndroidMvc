@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view;
+package com.shipdream.lib.android.mvp.view;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;

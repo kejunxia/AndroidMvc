@@ -399,7 +399,7 @@ public class MvpGraph {
         int size = mvpBeen.size();
         for (int i = 0; i < size; i++) {
             Bean bean = mvpBeen.get(i);
-            modelKeeper.saveModel(bean.getModel(), bean.modelType());
+            modelKeeper.saveModel(bean);
         }
     }
 
