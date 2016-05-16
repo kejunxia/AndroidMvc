@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.view.lifecycle;
 
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
+import com.shipdream.lib.android.mvp.view.lifecycle.MvcTestActivity;
 
 public abstract class BaseTestCaseLifeCycle extends BaseTestCase <MvcTestActivity> {
 

@@ -29,12 +29,16 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.shipdream.lib.android.mvc.MvcGraphBridge;
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.android.mvp.manager.NavigationManager;
+import com.shipdream.lib.android.mvp.view.LifeCycleMonitorFactory;
+import com.shipdream.lib.android.mvp.view.MvpApp;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.android.mvp.view.AndroidMvc;
+import com.shipdream.lib.android.mvp.view.MvcActivity;
 import com.shipdream.lib.poke.ScopeCache;
 
 import org.junit.After;
@@ -146,7 +150,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         lifeCycleValidatorD = new LifeCycleValidator(lifeCycleMonitorMockD);
 
 
-        MvcApp.lifeCycleMonitorFactory = new LifeCycleMonitorFactory() {
+        MvpApp.lifeCycleMonitorFactory = new LifeCycleMonitorFactory() {
             @Override
             public LifeCycleMonitor provideLifeCycleMonitor() {
                 return lifeCycleMonitorMock;

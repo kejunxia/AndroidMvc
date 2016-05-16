@@ -16,10 +16,18 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Preparer;
-import com.shipdream.lib.android.mvc.view.AndroidMvc;
+import com.shipdream.lib.android.mvp.manager.NavigationManager;
+import com.shipdream.lib.android.mvp.manager.internal.Preparer;
+import com.shipdream.lib.android.mvp.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
+import com.shipdream.lib.android.mvp.view.nav.ControllerE;
+import com.shipdream.lib.android.mvp.view.nav.ControllerF;
+import com.shipdream.lib.android.mvp.view.nav.ControllerG;
+import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerE;
+import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerF;
+import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerG;
+import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.nav.NavFragmentA;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;

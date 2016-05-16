@@ -1,11 +1,11 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.presenter;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 
 import javax.inject.Inject;
 
-import shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 
 public class CounterBasicPresenter extends AbstractPresenter {
     public interface View {

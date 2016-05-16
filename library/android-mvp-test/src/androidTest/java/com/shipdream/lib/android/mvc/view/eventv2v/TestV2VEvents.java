@@ -17,7 +17,8 @@
 package com.shipdream.lib.android.mvc.view.eventv2v;
 
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
-import com.shipdream.lib.android.mvc.view.eventv2v.controller.V2VTestController;
+import com.shipdream.lib.android.mvp.view.eventv2v.EventBusV2VActivity;
+import com.shipdream.lib.android.mvp.view.eventv2v.controller.V2VTestController;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;

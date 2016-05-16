@@ -19,9 +19,15 @@ package com.shipdream.lib.android.mvc.view.nav;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvc.view.AndroidMvc;
+import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
+import com.shipdream.lib.android.mvp.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
+import com.shipdream.lib.android.mvp.view.nav.AnotherController;
+import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.nav.NavFragmentA;
+import com.shipdream.lib.android.mvp.view.nav.NavFragmentB;
+import com.shipdream.lib.android.mvp.view.nav.NavFragmentC;
+import com.shipdream.lib.android.mvp.view.nav.NavFragmentD;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ScopeCache;
 

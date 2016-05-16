@@ -16,11 +16,11 @@
 
 package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 
-import com.shipdream.lib.android.mvc.Injector;
-import com.shipdream.lib.android.mvc.MvcGraph;
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
+import com.shipdream.lib.android.mvp.Injector;
+import com.shipdream.lib.android.mvp.MvcGraph;
+import com.shipdream.lib.android.mvp.manager.NavigationManager;
+import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;

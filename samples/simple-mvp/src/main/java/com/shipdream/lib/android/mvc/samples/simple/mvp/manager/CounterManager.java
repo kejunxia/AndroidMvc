@@ -1,8 +1,8 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.manager;
 
-import com.shipdream.lib.android.mvc.event.BaseEventC;
+import com.shipdream.lib.android.mvp.event.BaseEventC;
 
-import shipdream.lib.android.mvp.AbstractManager;
+import com.shipdream.lib.android.mvp.AbstractManager;
 
 public class CounterManager extends AbstractManager<CounterManager.CounterModel> {
     /**

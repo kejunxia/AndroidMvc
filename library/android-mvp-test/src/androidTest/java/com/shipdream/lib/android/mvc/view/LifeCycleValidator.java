@@ -19,7 +19,8 @@ package com.shipdream.lib.android.mvc.view;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;

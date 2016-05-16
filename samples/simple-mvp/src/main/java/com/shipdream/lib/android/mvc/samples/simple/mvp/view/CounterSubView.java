@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterSubViewPresenter;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 import javax.inject.Inject;
 

@@ -3,8 +3,8 @@ package com.shipdream.lib.android.mvc.samples.simple.mvp;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.EntryPresenter;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.CounterDetailView;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.CounterBasicView;
-import com.shipdream.lib.android.mvc.view.MvcActivity;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvcActivity;
+import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 import javax.inject.Inject;
 

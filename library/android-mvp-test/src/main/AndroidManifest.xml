@@ -19,26 +19,26 @@
     package="com.shipdream.lib.android.mvc.view.test">
 
     <application
-        android:name="com.shipdream.lib.android.mvc.view.MvcApp"
+        android:name="com.shipdream.lib.android.mvp.view.MvpApp"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
-        <activity android:name="com.shipdream.lib.android.mvc.view.lifecycle.MvcTestActivity"
+        <activity android:name="com.shipdream.lib.android.mvp.view.lifecycle.MvcTestActivity"
                   android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
         </activity>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation"
+        <activity android:name="com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.viewpager.ViewPagerTestActivity"
+        <activity android:name="com.shipdream.lib.android.mvp.view.viewpager.ViewPagerTestActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.viewpager.ViewPagerTestActivityTop"
+        <activity android:name="com.shipdream.lib.android.mvp.view.viewpager.ViewPagerTestActivityTop"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.injection.InjectionTestActivity"
+        <activity android:name="com.shipdream.lib.android.mvp.view.injection.InjectionTestActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,17 +46,17 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.eventv2v.EventBusV2VActivity"
+        <activity android:name="com.shipdream.lib.android.mvp.view.eventv2v.EventBusV2VActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.injection.InjectionTestActivityStateManagedObjects"
+        <activity android:name="com.shipdream.lib.android.mvp.view.injection.InjectionTestActivityStateManagedObjects"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.injection.InjectionTestActivityTestRootFragment"
+        <activity android:name="com.shipdream.lib.android.mvp.view.injection.InjectionTestActivityTestRootFragment"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <service android:name="com.shipdream.lib.android.mvc.view.eventv2v.EventBusV2VService"/>
+        <service android:name="com.shipdream.lib.android.mvp.view.eventv2v.EventBusV2VService"/>
     </application>
 
 </manifest>

@@ -21,6 +21,8 @@ import android.util.Log;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvp.view.viewpager.SubFragment;
+import com.shipdream.lib.android.mvp.view.viewpager.ViewPagerTestActivity;
 
 import org.junit.Test;
 
