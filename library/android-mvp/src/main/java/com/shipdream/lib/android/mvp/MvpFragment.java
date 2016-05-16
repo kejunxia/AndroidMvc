@@ -212,7 +212,7 @@ public abstract class MvpFragment extends Fragment {
 
         if (!isStateManagedByRootDelegateFragment) {
             if (savedInstanceState != null) {
-                ModelKeeperHolder.restoreModelOfInjectedMvcBeanFields(savedInstanceState, this);
+//                ModelKeeperHolder.restoreModelOfInjectedMvcBeanFields(savedInstanceState, this);
             }
         }
     }
@@ -320,9 +320,6 @@ public abstract class MvpFragment extends Fragment {
      * {@link #onViewCreated(View, Bundle)} and provide an extra flag to indicate the {@link Reason}
      * why this callback is invoked.
      *
-     * <p>Note: When savedInstanceState is non-null, causedByRotation will <b>always be false</b> as the
-     * recreation is not just caused by rotation but isStateManagedByRootDelegateFragment the view killed by OS, since the
-     * fragment retains instance.</p>
      * @param view The root view of the fragment
      * @param savedInstanceState The savedInstanceState when the fragment is being recreated after
      *                           its enclosing activity is killed by OS, otherwise null including on
@@ -424,7 +421,7 @@ public abstract class MvpFragment extends Fragment {
         outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
 
         if (!isStateManagedByRootDelegateFragment) {
-            ModelKeeperHolder.saveModelOfInjectedMvcBeanFields(outState, this);
+//            ModelKeeperHolder.saveModelOfInjectedMvcBeanFields(outState, this);
         }
     }
 

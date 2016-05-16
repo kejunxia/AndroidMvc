@@ -483,14 +483,14 @@ public abstract class MvpActivity extends AppCompatActivity {
          * fragment's outState bundle.
          */
         private void notifyAllSubMvpFragmentsTheirStateIsManagedByMe(MvpFragment fragment, final boolean selfManaged) {
-            traverseFragmentAndSubFragments(fragment, new FragmentManipulator() {
-                @Override
-                public void manipulate(Fragment fragment) {
-                    if (fragment != null && fragment.isAdded() && fragment instanceof MvpFragment) {
-                        ((MvpFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
-                    }
-                }
-            });
+//            traverseFragmentAndSubFragments(fragment, new FragmentManipulator() {
+//                @Override
+//                public void manipulate(Fragment fragment) {
+//                    if (fragment != null && fragment.isAdded() && fragment instanceof MvpFragment) {
+//                        ((MvpFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
+//                    }
+//                }
+//            });
         }
 
         /**
@@ -521,7 +521,7 @@ public abstract class MvpActivity extends AppCompatActivity {
                     for (int i = 0; i < size; i++) {
                         MvpFragment frag = (MvpFragment) frags.get(i);
                         if (frag != null) {
-                            manipulator.manipulate(frag);
+                            traverseFragmentAndSubFragments(frag, manipulator);
                         }
                     }
                 }
