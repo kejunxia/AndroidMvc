@@ -40,7 +40,8 @@ buildscript {
 // Only report code coverage for projects that are distrubuted
 def jacocoCoveredProjects = [
         project(":library:poke"),
-        project(":library:android-mvc-controller")
+//        project(":library:android-mvc-controller")
+        project(":library:android-mvp-core")
 ]
 
 allprojects {

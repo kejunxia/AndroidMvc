@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2016 Kejun Xia
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <string name="app_name">MvcTest</string>
+
+    <string-array name="injection_test_locations">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+    </string-array>
+
+    <string name="mvc_fragment_text">Mvc Delegate Fragment is here</string>
+    <string name="alert_dialog1_title">Alert Dialog1 Title</string>
+    <string name="alert_dialog1_message">Alert Dialog1 Message</string>
+    <string name="alert_dialog2_title">Alert Dialog2 Title</string>
+    <string name="alert_dialog2_message">Alert Dialog2 Message</string>
+    <string name="custom_dialog1_title">Custom Dialog1 Title</string>
+    <string name="custom_dialog1_body">Custom Dialog1 Body</string>
+    <string name="custom_dialog2_title">Custom Dialog1 Title</string>
+    <string name="custom_dialog2_body">Custom Dialog2 Body</string>
+</resources>

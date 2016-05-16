@@ -1,7 +1,6 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.manager;
 
 import com.shipdream.lib.android.mvc.event.BaseEventC;
-import com.shipdream.lib.android.mvc.manager.internal.BaseManagerImpl;
 
 import shipdream.lib.android.mvp.AbstractManager;
 

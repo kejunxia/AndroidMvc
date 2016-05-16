@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc-test'
-include ':library:android-mvc'
-include ':library:android-mvc-controller'
+//include ':library:android-mvc-test'
+//include ':library:android-mvc'
+//include ':library:android-mvc-controller'
+include ':library:android-mvp-test'
+include ':library:android-mvp'
+include ':library:android-mvp-presenter'
 include ':library:poke'
 
 include ':extension:service-core'
@@ -24,8 +27,8 @@ include ':extension:service-mediastore'
 
 include 'samples:benchmark'
 
-include 'samples:note:android'
-include 'samples:note:core'
+//include 'samples:note:android'
+//include 'samples:note:core'
 
-include 'samples:simple'
+//include 'samples:simple'
 include 'samples:simple-mvp'

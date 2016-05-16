@@ -17,7 +17,7 @@
 apply plugin: 'com.android.application'
 
 dependencies {
-    compile project(':library:android-mvc')
+    compile project(':library:android-mvp')
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     testCompile rootProject.ext.lib.junit
