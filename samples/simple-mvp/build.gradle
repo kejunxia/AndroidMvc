@@ -39,6 +39,7 @@ android {
     buildToolsVersion rootProject.ext.androidBuildToolVersion
 
     defaultConfig {
+        applicationId "com.shipdream.lib.android.mvc.samples.simple.mvp"
         minSdkVersion rootProject.ext.androidMinSdkVersion
         targetSdkVersion rootProject.ext.androidTargetSdkVersion
         versionCode 1

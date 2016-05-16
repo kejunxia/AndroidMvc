@@ -3,7 +3,9 @@ package com.shipdream.lib.android.mvc.samples.simple.mvp.manager;
 import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.manager.internal.BaseManagerImpl;
 
-public class CounterManager extends BaseManagerImpl<CounterManager.CounterModel>{
+import shipdream.lib.android.mvp.AbstractManager;
+
+public class CounterManager extends AbstractManager<CounterManager.CounterModel> {
     /**
      * Namespace the events for this controller by nested interface so that all its events would
      * be referenced as CounterController.EventC2V.BlaBlaEvent.
@@ -49,4 +51,27 @@ public class CounterManager extends BaseManagerImpl<CounterManager.CounterModel>
         getModel().setCount(count);
         postEvent2C(new Event2C.OnCounterUpdated(sender, count));
     }
+
+    public String convertNumberToEnglish(int number) {
+        if (number < -3) {
+            return "Less than negative three";
+        } else  if (number == -3) {
+            return "Negative three";
+        } else  if (number == -2) {
+            return "Negative two";
+        } else  if (number == -1) {
+            return "Negative one";
+        } else if (number == 0) {
+            return "Zero";
+        } else if (number == 1) {
+            return "One";
+        } else if (number == 2) {
+            return "Two";
+        } else if (number == 3) {
+            return "Three";
+        } else {
+            return "Greater than three";
+        }
+    }
+
 }

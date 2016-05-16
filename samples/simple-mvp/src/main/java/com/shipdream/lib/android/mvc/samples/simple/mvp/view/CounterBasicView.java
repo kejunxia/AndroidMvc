@@ -6,18 +6,18 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.samples.simple.R;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterPresenter;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterBasicPresenter;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
 import javax.inject.Inject;
 
-public class EntryView extends MvcFragment implements CounterPresenter.View {
+public class CounterBasicView extends MvcFragment implements CounterBasicPresenter.View {
     @Inject
     private NavigationManager navigationManager;
 
     @Inject
-    private CounterPresenter presenter;
+    private CounterBasicPresenter presenter;
 
     private TextView display;
     private Button increment;
@@ -29,7 +29,7 @@ public class EntryView extends MvcFragment implements CounterPresenter.View {
      */
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_a;
+        return R.layout.fragment_counter_entry;
     }
 
     /**
@@ -44,6 +44,8 @@ public class EntryView extends MvcFragment implements CounterPresenter.View {
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
+
+        presenter.view = this;
 
         display = (TextView) view.findViewById(R.id.fragment_a_counterDisplay);
         increment = (Button) view.findViewById(R.id.fragment_a_buttonIncrement);
@@ -68,7 +70,7 @@ public class EntryView extends MvcFragment implements CounterPresenter.View {
             @Override
             public void onClick(View v) {
                 //Use counterController to manage navigation to make navigation testable
-                presenter.goToAdvancedView(v);
+                presenter.goToDetailView(v);
                 //Or we can use NavigationManager directly though it's harder to unit test on
                 //controller level.
                 //example:
@@ -77,7 +79,7 @@ public class EntryView extends MvcFragment implements CounterPresenter.View {
         });
 
         if (reason.isFirstTime()) {
-            EntrySubView f = new EntrySubView();
+            CounterSubView f = new CounterSubView();
 
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();

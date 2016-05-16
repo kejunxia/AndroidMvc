@@ -24,14 +24,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.samples.simple.R;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterPresenter;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterDetailPresenter;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.service.CountService;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
 import javax.inject.Inject;
 
-public class CounterView extends MvcFragment {
+public class CounterDetailView extends MvcFragment implements CounterDetailPresenter.View{
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;
@@ -60,7 +60,7 @@ public class CounterView extends MvcFragment {
     }
 
     @Inject
-    private CounterPresenter presenter;
+    private CounterDetailPresenter presenter;
 
     private TextView display;
     private Button increment;
@@ -72,7 +72,7 @@ public class CounterView extends MvcFragment {
 
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_b;
+        return R.layout.fragment_counter_detail;
     }
 
     @Override
@@ -84,6 +84,8 @@ public class CounterView extends MvcFragment {
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
+
+        presenter.view = this;
 
         display = (TextView) view.findViewById(R.id.fragment_b_counterDisplay);
         increment = (Button) view.findViewById(R.id.fragment_b_buttonIncrement);
@@ -142,6 +144,11 @@ public class CounterView extends MvcFragment {
         //Or we can let the fragment manage back navigation back automatically where we don't
         //override this method which will call NavigationManager.navigateBack(Object sender)
         //automatically
+    }
+
+    @Override
+    public void onCounterUpdated(int count, String countInEnglish) {
+        updateCountDisplay(presenter.getCount());
     }
 
     private void startContinuousIncrement() {

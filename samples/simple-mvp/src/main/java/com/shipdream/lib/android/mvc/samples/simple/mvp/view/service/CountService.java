@@ -19,11 +19,10 @@ package com.shipdream.lib.android.mvc.samples.simple.mvp.view.service;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
-import com.shipdream.lib.android.mvc.samples.simple.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.MainActivity;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterServicePresenter;
 import com.shipdream.lib.android.mvc.view.MvcService;
@@ -32,11 +31,10 @@ import javax.inject.Inject;
 
 public class CountService extends MvcService implements CounterServicePresenter.View{
     @Inject
-    private CounterServicePresenter counterPresenter;
+    private CounterServicePresenter presenter;
 
     private final static int NOTIFICATION_ID = 0;
 
-    private Handler handler;
     private NotificationManager notificationManager;
 
     @Override
@@ -47,14 +45,15 @@ public class CountService extends MvcService implements CounterServicePresenter.
     @Override
     public void onCreate() {
         super.onCreate();
-        handler = new Handler();
+        presenter.view = this;
+
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        counterPresenter.stopAutoIncrement();
+        presenter.stopAutoIncrement();
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
@@ -65,7 +64,7 @@ public class CountService extends MvcService implements CounterServicePresenter.
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        counterPresenter.startAutoIncrement();
+        presenter.startAutoIncrement();
         return START_NOT_STICKY;
     }
 

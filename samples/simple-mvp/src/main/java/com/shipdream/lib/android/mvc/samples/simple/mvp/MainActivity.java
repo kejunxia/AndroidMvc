@@ -1,8 +1,8 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp;
 
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.EntryPresenter;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.view.CounterView;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.view.EntryView;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.view.CounterDetailView;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.view.CounterBasicView;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 
@@ -18,9 +18,9 @@ public class MainActivity extends MvcActivity {
     protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
         switch (locationId) {
             case "LocationA":
-                return EntryView.class;
+                return CounterBasicView.class;
             case "LocationB":
-                return CounterView.class;
+                return CounterDetailView.class;
             default:
                 return null;
         }

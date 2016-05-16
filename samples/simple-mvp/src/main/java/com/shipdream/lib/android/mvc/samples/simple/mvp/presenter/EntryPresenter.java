@@ -1,10 +1,11 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.presenter;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import shipdream.lib.android.mvp.AbstractPresenter;
 
 import javax.inject.Inject;
 
-public class EntryPresenter {
+public class EntryPresenter extends AbstractPresenter {
     @Inject
     private NavigationManager navigationManager;
 

@@ -16,5 +16,5 @@
   -->
 
 <resources>
-    <string name="app_name">AndMvc-Simple</string>
+    <string name="app_name">AndMvp-Simple</string>
 </resources>
