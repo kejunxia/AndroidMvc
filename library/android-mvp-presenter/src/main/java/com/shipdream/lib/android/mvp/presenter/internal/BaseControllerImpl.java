@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.controller.internal;
+package com.shipdream.lib.android.mvp.presenter.internal;
 
 
-import com.shipdream.lib.android.mvp.MvcBean;
-import com.shipdream.lib.android.mvp.controller.BaseController;
+import com.shipdream.lib.android.mvp.MvpBean;
+import com.shipdream.lib.android.mvp.presenter.BaseController;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
@@ -40,7 +40,7 @@ import javax.inject.Inject;
  * out into a manager extending {@link BaseManagerImpl}. For example, a common  scenario is multiple
  * controllers can share an AccountManager and monitor the account change events.
  */
-public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implements BaseController<MODEL> {
+public abstract class BaseControllerImpl<MODEL> extends MvpBean<MODEL> implements BaseController<MODEL> {
     interface AndroidPoster {
         void post(EventBus eventBusV, BaseEventV eventV);
     }
@@ -136,7 +136,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
 
     /**
      * Run a task on threads supplied by injected {@link ExecutorService} without a callback. By
-     * default it runs tasks on separate threads by {@link ExecutorService} injected from AndroidMvc
+     * default it runs tasks on separate threads by {@link ExecutorService} injected from AndroidMvp
      * framework. A simple {@link ExecutorService} that runs tasks on the same thread in test cases
      * to make the test easier.
      * @param sender          Who wants run the task
@@ -152,7 +152,7 @@ public abstract class BaseControllerImpl<MODEL> extends MvcBean<MODEL> implement
 
     /**
      * Run a task on threads supplied by injected {@link ExecutorService}. By default it runs tasks
-     * on separate threads by {@link ExecutorService} injected from AndroidMvc framework. A simple
+     * on separate threads by {@link ExecutorService} injected from AndroidMvp framework. A simple
      * {@link ExecutorService} that runs tasks on the same thread in test cases to make the test
      * easier.
      * @param sender          Who wants run the task

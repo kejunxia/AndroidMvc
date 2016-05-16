@@ -16,8 +16,8 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.MvcGraph;
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintModel;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.PrintControllerImpl;
@@ -71,7 +71,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
     @Test
     public void controllerShouldBeOverrideAfterExplicitlyRegistration()
             throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        MvcGraph graph = new MvcGraph(new BaseControllerDependencies());
+        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
 
         graph.register(new PrinterComponent(new MockPrinter()));
 
@@ -85,7 +85,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
     @Test
     public void shouldRecoverDefaultUsingDefaultImplAfterExplicitlyUnregistration()
             throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        MvcGraph graph = new MvcGraph(new BaseControllerDependencies());
+        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
 
         PrinterComponent component = new PrinterComponent(new MockPrinter());
         graph.register(component);

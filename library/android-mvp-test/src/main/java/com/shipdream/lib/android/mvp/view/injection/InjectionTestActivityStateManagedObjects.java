@@ -18,17 +18,17 @@ package com.shipdream.lib.android.mvp.view.injection;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.MvpActivity;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
+import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
 
 import javax.inject.Inject;
 
-public class InjectionTestActivityStateManagedObjects extends MvcActivity {
+public class InjectionTestActivityStateManagedObjects extends MvpActivity {
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
+    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
         switch (locationId) {
-            case MvcTestActivityNavigation.Loc.D:
+            case MvpTestActivityNavigation.Loc.D:
                 return FragmentD.class;
             default:
                 return null;
@@ -46,7 +46,7 @@ public class InjectionTestActivityStateManagedObjects extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D, new Forwarder().clearAll());
+            navigationManager.navigate(this).to(MvpTestActivityNavigation.Loc.D, new Forwarder().clearAll());
         }
     }
 

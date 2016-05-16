@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvp.manager.internal;
 
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcGraphException;
+import com.shipdream.lib.android.mvp.MvpGraphException;
 import com.shipdream.lib.android.mvp.NavLocation;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
@@ -38,7 +38,7 @@ public class Navigator {
      * The callback when the navigation is settled. Since Android Fragment doesn't invoke its call
      * back like onCreate, onCreateView and etc after a fragment manager commits fragment transaction,
      * if something needs to be done after the fragment being navigated to is ready to show
-     * (MvcFragment.onViewReady is called), put the actions in here.
+     * (MvpFragment.onViewReady is called), put the actions in here.
      */
     public interface OnSettled {
         void run();
@@ -81,9 +81,9 @@ public class Navigator {
      *
      * @param type The class type of the instance needs to be prepared
      * @return This navigator
-     * @throws MvcGraphException Raised when the required injectable object cannot be injected
+     * @throws MvpGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type) throws MvcGraphException {
+    public <T> Navigator with(Class<T> type) throws MvpGraphException {
         with(type, null, null);
         return this;
     }
@@ -93,7 +93,7 @@ public class Navigator {
      * navigated to. It's an equivalent way to pass arguments to the next fragment.For example, when
      * next fragment needs to have a pre set page title name, the controller referenced by the
      * fragment can be prepared here and set the title in the controller's model. Then in the
-     * MvcFragment.onViewReady bind the value of the page title from the controller's model to the
+     * MvpFragment.onViewReady bind the value of the page title from the controller's model to the
      * fragment.
      *
      * <p>Example:</p>
@@ -123,9 +123,9 @@ public class Navigator {
      * @param type The class type of the instance needs to be prepared
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws MvcGraphException Raised when the required injectable object cannot be injected
+     * @throws MvpGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws MvcGraphException {
+    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws MvpGraphException {
         with(type, null, preparer);
         return this;
     }
@@ -134,7 +134,7 @@ public class Navigator {
      * Prepare the instance subject to being injected for the fragment being navigated to. It's an
      * equivalent way to pass arguments to the next fragment.For example, when next fragment needs
      * to have a pre set page title name, the controller referenced by the fragment can be prepared
-     * here and set the title in the controller's model. Then in the MvcFragment.onViewReady bind
+     * here and set the title in the controller's model. Then in the MvpFragment.onViewReady bind
      * the value of the page title from the controller's model to the fragment.
      *
      * <p>Example:</p>
@@ -165,9 +165,9 @@ public class Navigator {
      * @param qualifier The qualifier
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws MvcGraphException Raised when the required injectable object cannot be injected
+     * @throws MvpGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvcGraphException {
+    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvpGraphException {
         try {
             T instance = Injector.getGraph().reference(type, qualifier);
 
@@ -184,7 +184,7 @@ public class Navigator {
             pendingReleaseInstance.qualifier = qualifier;
             pendingReleaseInstances.add(pendingReleaseInstance);
         } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+            throw new MvpGraphException(e.getMessage(), e);
         }
         return this;
     }
@@ -400,7 +400,7 @@ public class Navigator {
     }
 
     /**
-     * Sets the call back when fragment being navigated to is ready to show(MvcFragment.onViewReady
+     * Sets the call back when fragment being navigated to is ready to show(MvpFragment.onViewReady
      * is called).
      * @param onSettled {@link OnSettled} call back
      * @return The navigator itself

@@ -19,8 +19,8 @@ package com.shipdream.lib.android.mvc.view;
 import android.os.Bundle;
 import android.view.View;
 
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
 
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
@@ -151,11 +151,11 @@ public class LifeCycleValidator {
         reset();
     }
 
-    private class NewInstanceMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class NewInstanceMatcher extends ArgumentMatcher<MvpFragment.Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isNewInstance()) {
+            if (argument instanceof MvpFragment.Reason) {
+                if (((MvpFragment.Reason) argument).isNewInstance()) {
                     return true;
                 }
             }
@@ -163,11 +163,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class FirstTimeMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class FirstTimeMatcher extends ArgumentMatcher<MvpFragment.Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isFirstTime()) {
+            if (argument instanceof MvpFragment.Reason) {
+                if (((MvpFragment.Reason) argument).isFirstTime()) {
                     return true;
                 }
             }
@@ -175,11 +175,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class RestoreMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class RestoreMatcher extends ArgumentMatcher<MvpFragment.Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isRestored()) {
+            if (argument instanceof MvpFragment.Reason) {
+                if (((MvpFragment.Reason) argument).isRestored()) {
                     return true;
                 }
             }
@@ -187,11 +187,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class RotateMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class RotateMatcher extends ArgumentMatcher<MvpFragment.Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isRotated()) {
+            if (argument instanceof MvpFragment.Reason) {
+                if (((MvpFragment.Reason) argument).isRotated()) {
                     return true;
                 }
             }
@@ -199,11 +199,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class PopOutMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class PopOutMatcher extends ArgumentMatcher<MvpFragment.Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isPoppedOut()) {
+            if (argument instanceof MvpFragment.Reason) {
+                if (((MvpFragment.Reason) argument).isPoppedOut()) {
                     return true;
                 }
             }

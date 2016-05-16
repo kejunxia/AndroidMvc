@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvp.controller;
 
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcGraph;
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 
@@ -42,7 +42,7 @@ public class BaseTest {
         eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
 
-        Injector.configGraph(new MvcGraph.BaseDependencies() {
+        Injector.configGraph(new MvpGraph.BaseDependencies() {
             @Override
             public EventBus createEventBusC() {
                 return eventBusC;
@@ -60,7 +60,7 @@ public class BaseTest {
         });
     }
 
-    protected MvcGraph graph;
+    protected MvpGraph graph;
 
     @Before
     public void setUp() throws Exception {
@@ -80,7 +80,7 @@ public class BaseTest {
         Logger.getRootLogger().addAppender(console);
     }
 
-    static class ControllerDependencies extends MvcGraph.BaseDependencies {
+    static class ControllerDependencies extends MvpGraph.BaseDependencies {
         private BaseTest baseTest;
 
         public ControllerDependencies(BaseTest baseTest) {

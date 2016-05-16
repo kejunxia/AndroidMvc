@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.view.viewpager.controller.internal;
 
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.view.viewpager.TabModel;
 import com.shipdream.lib.android.mvp.view.viewpager.controller.TabController;
 

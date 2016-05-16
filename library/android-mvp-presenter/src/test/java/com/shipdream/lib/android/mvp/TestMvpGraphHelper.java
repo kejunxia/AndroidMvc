@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcGraph;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
@@ -33,14 +31,14 @@ import javax.inject.Singleton;
 
 import static org.mockito.Mockito.mock;
 
-public class TestMvcGraphHelper {
+public class TestMvpGraphHelper {
     @After
     public void tearDown() throws Exception {
-        Injector.mvcGraph = null;
+        Injector.mvpGraph = null;
     }
 
     @Test(expected = RuntimeException.class)
-    public void should_raise_exception_when_getting_mvc_graph_before_configuring_it() {
+    public void should_raise_exception_when_getting_mvp_graph_before_configuring_it() {
         Injector.getGraph();
     }
 
@@ -54,7 +52,7 @@ public class TestMvcGraphHelper {
     }
 
     @Test(expected = RuntimeException.class)
-    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvc_graph_dependencies() {
+    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvp_graph_dependencies() {
         Injector.getGraph().register(new Component() {
             @Provides
             @EventBusC
@@ -67,7 +65,7 @@ public class TestMvcGraphHelper {
         //Register an event bus that will raise a duplicate registering exception when register the
         //BaseDependencies
 
-        MvcGraph.BaseDependencies baseDependencies = new MvcGraph.BaseDependencies() {
+        MvpGraph.BaseDependencies baseDependencies = new MvpGraph.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return mock(ExecutorService.class);
@@ -78,8 +76,8 @@ public class TestMvcGraphHelper {
     }
 
     @Test(expected = RuntimeException.class)
-    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvc_graph_by_injector() {
-        MvcGraph.BaseDependencies baseDependencies = new MvcGraph.BaseDependencies() {
+    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvp_graph_by_injector() {
+        MvpGraph.BaseDependencies baseDependencies = new MvpGraph.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return mock(ExecutorService.class);

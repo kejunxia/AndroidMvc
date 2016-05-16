@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvp.manager.internal;
 
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcGraphException;
+import com.shipdream.lib.android.mvp.MvpGraphException;
 import com.shipdream.lib.android.mvp.NavLocation;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.TimerController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.TimerControllerImpl;
@@ -458,7 +458,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
     }
 
-    @Test(expected = MvcGraphException.class)
+    @Test(expected = MvpGraphException.class)
     public void should_catch_invocation_exception_when_NPE_detected_on_injection() throws Exception {
         Component com = new Component() {
             @Provides

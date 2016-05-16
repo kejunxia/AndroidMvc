@@ -20,12 +20,12 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpActivity;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 
 import javax.inject.Inject;
 
-public class MvcTestActivityNavigation extends MvcActivity {
+public class MvpTestActivityNavigation extends MvpActivity {
     public static class Loc {
         public static final String A = "TestNavigationFragmentA";
         public static final String B = "TestNavigationFragmentB";
@@ -37,7 +37,7 @@ public class MvcTestActivityNavigation extends MvcActivity {
     }
 
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
+    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
         switch(locationId) {
             case Loc.A :
                 return NavFragmentA.class;

@@ -27,11 +27,11 @@ import android.widget.TextView;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterDetailPresenter;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.service.CountService;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 
 import javax.inject.Inject;
 
-public class CounterDetailView extends MvcFragment implements CounterDetailPresenter.View{
+public class CounterDetailView extends MvpFragment implements CounterDetailPresenter.View{
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;

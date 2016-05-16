@@ -19,9 +19,9 @@ package com.shipdream.lib.android.mvp.view.eventv2v;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.shipdream.lib.android.mvp.view.MvcService;
+import com.shipdream.lib.android.mvp.view.MvpService;
 
-public class EventBusV2VService extends MvcService {
+public class EventBusV2VService extends MvpService {
     @Override
     public IBinder onBind(Intent intent) {
         return null;

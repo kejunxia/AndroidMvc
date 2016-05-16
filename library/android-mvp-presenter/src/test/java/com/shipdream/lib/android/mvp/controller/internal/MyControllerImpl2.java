@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvp.controller.internal;
 
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvp.controller.internal.Monitor;
-import com.shipdream.lib.android.mvp.controller.internal.Task;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.presenter.internal.Monitor;
+import com.shipdream.lib.android.mvp.presenter.internal.Task;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 
 import org.slf4j.Logger;

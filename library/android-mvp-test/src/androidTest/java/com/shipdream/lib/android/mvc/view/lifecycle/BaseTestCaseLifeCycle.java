@@ -17,12 +17,12 @@
 package com.shipdream.lib.android.mvc.view.lifecycle;
 
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
-import com.shipdream.lib.android.mvp.view.lifecycle.MvcTestActivity;
+import com.shipdream.lib.android.mvp.view.lifecycle.MvpTestActivity;
 
-public abstract class BaseTestCaseLifeCycle extends BaseTestCase <MvcTestActivity> {
+public abstract class BaseTestCaseLifeCycle extends BaseTestCase <MvpTestActivity> {
 
     public BaseTestCaseLifeCycle() {
-        super(MvcTestActivity.class);
+        super(MvpTestActivity.class);
     }
 
     @Override

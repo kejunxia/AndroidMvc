@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal;
 
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.TimerController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.TimerModel;
 

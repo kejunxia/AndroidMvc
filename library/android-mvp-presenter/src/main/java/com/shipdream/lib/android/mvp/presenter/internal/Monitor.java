@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.controller.internal;
+package com.shipdream.lib.android.mvp.presenter.internal;
 
 import java.util.concurrent.Future;
 

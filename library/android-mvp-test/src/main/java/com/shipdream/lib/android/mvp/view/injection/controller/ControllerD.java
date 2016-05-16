@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.view.injection.controller;
 
-import com.shipdream.lib.android.mvp.controller.BaseController;
+import com.shipdream.lib.android.mvp.presenter.BaseController;
 import com.shipdream.lib.android.mvp.view.injection.manager.AccountManager;
 
 import java.util.List;

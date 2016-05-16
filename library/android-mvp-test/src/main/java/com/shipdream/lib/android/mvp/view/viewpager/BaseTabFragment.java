@@ -19,10 +19,10 @@ package com.shipdream.lib.android.mvp.view.viewpager;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 
-public abstract class BaseTabFragment extends MvcFragment {
+public abstract class BaseTabFragment extends MvpFragment {
     protected abstract LifeCycleMonitor getLifeCycleMonitor();
 
     @Override

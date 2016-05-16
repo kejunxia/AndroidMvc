@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.controller;
+package com.shipdream.lib.android.mvp.presenter;
 
 import com.shipdream.lib.android.mvp.manager.internal.BaseManagerImpl;
 
@@ -28,7 +28,7 @@ import com.shipdream.lib.android.mvp.manager.internal.BaseManagerImpl;
  * encapsulated in the event.
  * </p>
  * <p>
- * Model of the controller will be saved and restored automatically by the MvcFramework. So at any
+ * Model of the controller will be saved and restored automatically by the MvpFramework. So at any
  * time the view can update its state based on the date retrieved from {@link #getModel()}
  * </p>
  *

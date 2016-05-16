@@ -6,11 +6,11 @@ import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterSubViewPresenter;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 
 import javax.inject.Inject;
 
-public class CounterSubView extends MvcFragment implements CounterSubViewPresenter.View {
+public class CounterSubView extends MvpFragment implements CounterSubViewPresenter.View {
     @Inject
     private CounterSubViewPresenter presenter;
 
@@ -22,7 +22,7 @@ public class CounterSubView extends MvcFragment implements CounterSubViewPresent
     }
 
     @Override
-    public void onViewReady(View view, Bundle savedInstanceState, MvcFragment.Reason reason) {
+    public void onViewReady(View view, Bundle savedInstanceState, MvpFragment.Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
 
         presenter.view = this;

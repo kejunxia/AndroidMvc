@@ -26,7 +26,7 @@ public class NavFragmentB extends NavFragment{
 
     @Override
     protected String getNextFragmentLocId() {
-        return MvcTestActivityNavigation.Loc.C;
+        return MvpTestActivityNavigation.Loc.C;
     }
 
     @Override

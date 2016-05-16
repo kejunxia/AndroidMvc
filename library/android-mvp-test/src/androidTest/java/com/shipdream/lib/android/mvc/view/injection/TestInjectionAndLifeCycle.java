@@ -21,7 +21,7 @@ import android.util.Log;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvp.view.injection.InjectionTestActivity;
-import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
@@ -58,7 +58,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        navigationManager.navigate(this).to(MvpTestActivityNavigation.Loc.B);
         waitTest();
         //=============================> At B
         //onDestroyView is always called when a fragment is pushed to back stack
@@ -73,7 +73,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.C);
+        navigationManager.navigate(this).to(MvpTestActivityNavigation.Loc.C);
         waitTest();
         //=============================> At C
         lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -142,7 +142,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        navigationManager.navigate(this).to(MvpTestActivityNavigation.Loc.B);
         waitTest();
         //=============================> At B
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
@@ -175,7 +175,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
             LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        navigationManager.navigate(this).to(MvpTestActivityNavigation.Loc.B);
         waitTest();
 
         lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -207,7 +207,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
             LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B);
+        navigationManager.navigate(this).to(MvpTestActivityNavigation.Loc.B);
         waitTest();
         lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack,
             LifeCycle.onDestroyView);

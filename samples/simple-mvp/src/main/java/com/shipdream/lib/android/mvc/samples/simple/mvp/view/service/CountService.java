@@ -25,11 +25,11 @@ import android.support.v4.app.NotificationCompat;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.MainActivity;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterServicePresenter;
-import com.shipdream.lib.android.mvp.view.MvcService;
+import com.shipdream.lib.android.mvp.view.MvpService;
 
 import javax.inject.Inject;
 
-public class CountService extends MvcService implements CounterServicePresenter.View{
+public class CountService extends MvpService implements CounterServicePresenter.View{
     @Inject
     private CounterServicePresenter presenter;
 

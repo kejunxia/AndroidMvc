@@ -9,7 +9,7 @@ import javax.inject.Inject;
  * Abstract view presenter. Presenter will subscribe to {@link EventBusC}
  * @param <MODEL> The view model of the presenter.
  */
-public class AbstractPresenter<MODEL> extends MvcBean<MODEL> {
+public class AbstractPresenter<MODEL> extends MvpBean<MODEL> {
     @Inject
     @EventBusC
     EventBus eventBus2C;

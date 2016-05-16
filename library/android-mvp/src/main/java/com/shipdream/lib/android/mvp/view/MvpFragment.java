@@ -23,7 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.shipdream.lib.android.mvp.MvcBean;
+import com.shipdream.lib.android.mvp.MvpBean;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 
@@ -32,10 +32,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
 
 /**
- * Fragment to help utilize MVC pattern. {@link #setRetainInstance(boolean)} will be set true by
+ * Fragment to help utilize Mvp pattern. {@link #setRetainInstance(boolean)} will be set true by
  * default. Don't set it false which will result unexpected behaviour and life cycles. Controllers
  * and other dependencies can be injected by fields annotated by @{@link Inject}. See
- * {@link AndroidMvc} to check out how to do the injection.
+ * {@link AndroidMvp} to check out how to do the injection.
  *
  * <p>
  * This fragment uses life cycles slightly different from original Android Fragment.
@@ -54,7 +54,7 @@ import javax.inject.Inject;
  * action after the first {@link #onViewReady(View, Bundle, Reason)} lifecycle of the fragment
  * </p>
  */
-public abstract class MvcFragment extends Fragment {
+public abstract class MvpFragment extends Fragment {
     private Object newInstanceChecker;
 
     /**
@@ -100,9 +100,9 @@ public abstract class MvcFragment extends Fragment {
          * OS and restored. <br><br>
          *
          * <p>Although when a fragment is restored all fields of the fragment will be recreated
-         * ({@link #isNewInstance()} = true), MVC framework will automatically restore the
+         * ({@link #isNewInstance()} = true), Mvp framework will automatically restore the
          * state(model) of injected controllers held by the fragment . So when a fragment is being
-         * restored, only re-instantiate its non-controller fields. All injected {@link MvcBean}
+         * restored, only re-instantiate its non-controller fields. All injected {@link MvpBean}
          * including controllers will be restored by the framework itself.</p>
          */
         public boolean isRestored() {
@@ -140,7 +140,7 @@ public abstract class MvcFragment extends Fragment {
         }
     }
 
-    private final static String STATE_LAST_ORIENTATION = DefaultModelKeeper.MVC_SATE_PREFIX + "LastOrientation--__";
+    private final static String STATE_LAST_ORIENTATION = DefaultModelKeeper.MVP_SATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
     private boolean fragmentComesBackFromBackground = false;
@@ -175,14 +175,14 @@ public abstract class MvcFragment extends Fragment {
 
     private void injectDependencies() {
         if (!dependenciesInjected) {
-            AndroidMvc.graph().inject(this);
+            AndroidMvp.graph().inject(this);
             dependenciesInjected = true;
         }
     }
 
     private void releaseDependencies() {
         if (dependenciesInjected) {
-            AndroidMvc.graph().release(this);
+            AndroidMvp.graph().release(this);
             dependenciesInjected = false;
         }
     }
@@ -220,7 +220,7 @@ public abstract class MvcFragment extends Fragment {
     }
 
     /**
-     * This Android lifecycle callback is sealed. {@link MvcFragment} will always use the
+     * This Android lifecycle callback is sealed. {@link MvpFragment} will always use the
      * layout returned by {@link #getLayoutResId()} to inflate the view. Instead, do actions to
      * prepare views in {@link #onViewReady(View, Bundle, Reason)} where all injected dependencies
      * and all restored state will be ready to use.
@@ -259,7 +259,7 @@ public abstract class MvcFragment extends Fragment {
 
         final boolean restoring = savedInstanceState != null;
         if (restoring && isStateManagedByRootDelegateFragment) {
-            ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
+            ((MvpActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
                 @Override
                 public void run() {
                     doOnViewCreatedCallBack(view, savedInstanceState, restoring);
@@ -371,7 +371,7 @@ public abstract class MvcFragment extends Fragment {
      * @param transaction The transaction being committing
      * @param nextFragment Next fragment is going to
      */
-    protected void onPreNavigationTransaction(FragmentTransaction transaction, MvcFragment nextFragment) {
+    protected void onPreNavigationTransaction(FragmentTransaction transaction, MvpFragment nextFragment) {
     }
 
     boolean aboutToPopOut = false;

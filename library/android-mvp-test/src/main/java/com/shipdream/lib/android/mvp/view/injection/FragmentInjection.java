@@ -27,16 +27,16 @@ import android.widget.TextView;
 
 import com.shipdream.lib.android.mvp.NavLocation;
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public abstract class FragmentInjection extends MvcFragment {
+public abstract class FragmentInjection extends MvpFragment {
     private Spinner spinner;
     private Button buttonGo;
     private Toolbar toolbar;
@@ -77,13 +77,13 @@ public abstract class FragmentInjection extends MvcFragment {
                 String loc = "";
                 CharSequence item = adapter.getItem(position);
                 if (item.equals("A")) {
-                    loc = MvcTestActivityNavigation.Loc.A;
+                    loc = MvpTestActivityNavigation.Loc.A;
                 } else if (item.equals("B")) {
-                    loc = MvcTestActivityNavigation.Loc.B;
+                    loc = MvpTestActivityNavigation.Loc.B;
                 } else if (item.equals("C")) {
-                    loc = MvcTestActivityNavigation.Loc.C;
+                    loc = MvpTestActivityNavigation.Loc.C;
                 }else if (item.equals("D")) {
-                    loc = MvcTestActivityNavigation.Loc.D;
+                    loc = MvpTestActivityNavigation.Loc.D;
                 }
                 navigationManager.navigate(view).to(loc);
             }

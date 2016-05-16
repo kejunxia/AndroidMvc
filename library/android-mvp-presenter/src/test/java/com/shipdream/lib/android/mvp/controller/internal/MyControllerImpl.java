@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvp.controller.internal;
 
-import com.shipdream.lib.android.mvp.controller.internal.AsyncExceptionHandler;
-import com.shipdream.lib.android.mvp.controller.internal.AsyncTask;
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.presenter.internal.AsyncExceptionHandler;
+import com.shipdream.lib.android.mvp.presenter.internal.AsyncTask;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 
 import org.mockito.invocation.InvocationOnMock;

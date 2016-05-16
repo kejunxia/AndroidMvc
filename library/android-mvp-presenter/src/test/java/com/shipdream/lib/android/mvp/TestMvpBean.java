@@ -16,27 +16,25 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.MvcBean;
-
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestMvcBean {
+public class TestMvpBean {
     @Test(expected = IllegalArgumentException.class)
-    public void should_throw_exception_when_bind_null_to_a_mvcBean() {
-        MvcBean mvcBean = new MvcBean() {
+    public void should_throw_exception_when_bind_null_to_a_mvpBean() {
+        MvpBean mvpBean = new MvpBean() {
             @Override
             public Class modelType() {
                 return String.class;
             }
         };
 
-        mvcBean.bindModel(null);
+        mvpBean.bindModel(null);
     }
 
     @Test
-    public void should_rebind_state_after_restoring_mvcBean() {
-        MvcBean<String> mvcBean = new MvcBean() {
+    public void should_rebind_state_after_restoring_mvpBean() {
+        MvpBean<String> mvpBean = new MvpBean() {
 
             @Override
             public Class modelType() {
@@ -44,16 +42,16 @@ public class TestMvcBean {
             }
         };
 
-        Assert.assertNull(mvcBean.getModel());
+        Assert.assertNull(mvpBean.getModel());
 
-        mvcBean.restoreModel("A");
+        mvpBean.restoreModel("A");
 
-        Assert.assertEquals("A", mvcBean.getModel());
+        Assert.assertEquals("A", mvpBean.getModel());
     }
 
     @Test
-    public void should_call_on_restore_call_back_after_a_stateful_mvcBean_is_restored() {
-        class MyMvcBean extends MvcBean<String> {
+    public void should_call_on_restore_call_back_after_a_stateful_mvpBean_is_restored() {
+        class MyMvpBean extends MvpBean<String> {
             private boolean called = false;
 
             @Override
@@ -68,18 +66,18 @@ public class TestMvcBean {
             }
         };
 
-        MyMvcBean mvcBean = new MyMvcBean();
+        MyMvpBean mvpBean = new MyMvpBean();
 
-        Assert.assertFalse(mvcBean.called);
+        Assert.assertFalse(mvpBean.called);
 
-        mvcBean.restoreModel("A");
+        mvpBean.restoreModel("A");
 
-        Assert.assertTrue(mvcBean.called);
+        Assert.assertTrue(mvpBean.called);
     }
 
     @Test
-    public void should_not_call_on_restore_call_back_after_a_non_stateful_mvcBean_is_restored() {
-        class MyMvcBean extends MvcBean<String> {
+    public void should_not_call_on_restore_call_back_after_a_non_stateful_mvpBean_is_restored() {
+        class MyMvpBean extends MvpBean<String> {
             private boolean called = false;
 
             @Override
@@ -94,45 +92,45 @@ public class TestMvcBean {
             }
         };
 
-        MyMvcBean mvcBean = new MyMvcBean();
+        MyMvpBean mvpBean = new MyMvpBean();
 
-        Assert.assertFalse(mvcBean.called);
+        Assert.assertFalse(mvpBean.called);
 
-        mvcBean.restoreModel("A");
+        mvpBean.restoreModel("A");
 
-        Assert.assertFalse(mvcBean.called);
+        Assert.assertFalse(mvpBean.called);
     }
 
-    public void should_create_state_instance_on_construct_when_the_state_type_is_specified_for_a_mvcBean() {
-        class MyMvcBean extends MvcBean<String> {
+    public void should_create_state_instance_on_construct_when_the_state_type_is_specified_for_a_mvpBean() {
+        class MyMvpBean extends MvpBean<String> {
             @Override
             public Class modelType() {
                 return String.class;
             }
         };
-        MyMvcBean mvcBean = new MyMvcBean();
+        MyMvpBean mvpBean = new MyMvpBean();
 
-        Assert.assertNull(mvcBean.getModel());
+        Assert.assertNull(mvpBean.getModel());
 
-        mvcBean.onConstruct();
+        mvpBean.onConstruct();
 
-        Assert.assertNotNull(mvcBean.getModel());
+        Assert.assertNotNull(mvpBean.getModel());
     }
 
-    public void should_NOT_create_state_instance_on_construct_when_the_state_type_is_null_for_a_mvcBean() {
-        class MyMvcBean extends MvcBean {
+    public void should_NOT_create_state_instance_on_construct_when_the_state_type_is_null_for_a_mvpBean() {
+        class MyMvpBean extends MvpBean {
             @Override
             public Class modelType() {
                 return null;
             }
         };
-        MyMvcBean mvcBean = new MyMvcBean();
+        MyMvpBean mvpBean = new MyMvpBean();
 
-        Assert.assertNull(mvcBean.getModel());
+        Assert.assertNull(mvpBean.getModel());
 
-        mvcBean.onConstruct();
+        mvpBean.onConstruct();
 
-        Assert.assertNull(mvcBean.getModel());
+        Assert.assertNull(mvpBean.getModel());
     }
 
     @Test(expected = RuntimeException.class)
@@ -141,48 +139,48 @@ public class TestMvcBean {
             {int x = 1 / 0;}
         }
 
-        class MyMvcBean extends MvcBean<BadClass> {
+        class MyMvpBean extends MvpBean<BadClass> {
             @Override
             public Class<BadClass> modelType() {
                 return BadClass.class;
             }
         };
 
-        MyMvcBean mvcBean = new MyMvcBean();
+        MyMvpBean mvpBean = new MyMvpBean();
 
-        mvcBean.onConstruct();
+        mvpBean.onConstruct();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void should_throw_exception_when_binding_null_to_stateful_mvcBean() {
-        class MyMvcBean extends MvcBean<String> {
+    public void should_throw_exception_when_binding_null_to_stateful_mvpBean() {
+        class MyMvpBean extends MvpBean<String> {
             @Override
             public Class<String> modelType() {
                 return String.class;
             }
         };
 
-        MyMvcBean mvcBean = new MyMvcBean();
+        MyMvpBean mvpBean = new MyMvpBean();
 
-        mvcBean.bindModel(null);
+        mvpBean.bindModel(null);
     }
 
     @Test
-    public void should_be_able_to_successfully_bind_state_to_stateful_mvcBean() {
-        class MyMvcBean extends MvcBean<String> {
+    public void should_be_able_to_successfully_bind_state_to_stateful_mvpBean() {
+        class MyMvpBean extends MvpBean<String> {
             @Override
             public Class<String> modelType() {
                 return String.class;
             }
         };
 
-        MyMvcBean mvcBean = new MyMvcBean();
+        MyMvpBean mvpBean = new MyMvpBean();
 
-        Assert.assertNotEquals("B", mvcBean.getModel());
+        Assert.assertNotEquals("B", mvpBean.getModel());
 
-        mvcBean.bindModel("B");
+        mvpBean.bindModel("B");
 
-        Assert.assertEquals("B", mvcBean.getModel());
+        Assert.assertEquals("B", mvpBean.getModel());
     }
 
 }

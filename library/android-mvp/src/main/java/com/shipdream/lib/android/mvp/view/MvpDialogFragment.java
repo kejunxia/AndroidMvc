@@ -25,12 +25,12 @@ import com.shipdream.lib.android.mvp.event.BaseEventV;
 
 /**
  * This dialog fragment can either use {@link AlertDialog.Builder} to build a alert dialog or use
- * {@link MvcFragment} as an nested fragment for custom view dialog, as a result the underlying
+ * {@link MvpFragment} as an nested fragment for custom view dialog, as a result the underlying
  * doesn't need to be designed with awareness how it is going to be used and can be reused as a
  * normal fragment as well. This class is FINAL and don't extend this class to custom your dialog.
  * <p/>
  */
-public class MvcDialogFragment extends DialogFragment {
+public class MvpDialogFragment extends DialogFragment {
     private EventRegister eventRegister;
 
     @Override
@@ -41,7 +41,7 @@ public class MvcDialogFragment extends DialogFragment {
             setRetainInstance(true);
         }
 
-        AndroidMvc.graph().inject(this);
+        AndroidMvp.graph().inject(this);
 
         eventRegister = new EventRegister(this);
         eventRegister.onCreate();
@@ -72,7 +72,7 @@ public class MvcDialogFragment extends DialogFragment {
         super.onDestroy();
         eventRegister.unregisterEventBuses();
         eventRegister.onDestroy();
-        AndroidMvc.graph().release(this);
+        AndroidMvp.graph().release(this);
     }
 
     /**

@@ -8,11 +8,11 @@ import android.widget.TextView;
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.CounterBasicPresenter;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 
 import javax.inject.Inject;
 
-public class CounterBasicView extends MvcFragment implements CounterBasicPresenter.View {
+public class CounterBasicView extends MvpFragment implements CounterBasicPresenter.View {
     @Inject
     private NavigationManager navigationManager;
 
@@ -25,7 +25,7 @@ public class CounterBasicView extends MvcFragment implements CounterBasicPresent
     private Button buttonShowAdvancedView;
 
     /**
-     * @return Layout id used to inflate the view of this MvcFragment.
+     * @return Layout id used to inflate the view of this MvpFragment.
      */
     @Override
     protected int getLayoutResId() {

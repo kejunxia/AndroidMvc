@@ -22,10 +22,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvp.view.MvcDialogFragment;
+import com.shipdream.lib.android.mvp.view.MvpDialogFragment;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-public class EventBusV2VDialogFragment extends MvcDialogFragment {
+public class EventBusV2VDialogFragment extends MvpDialogFragment {
     private TextView textView;
     private View button;
 

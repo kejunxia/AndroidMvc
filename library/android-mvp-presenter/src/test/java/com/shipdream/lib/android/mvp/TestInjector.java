@@ -16,9 +16,6 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcGraph;
-import com.shipdream.lib.android.mvp.__MvcGraphHelper;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
@@ -36,23 +33,23 @@ import static org.mockito.Mockito.mock;
 public class TestInjector {
     @After
     public void tearDown() throws Exception {
-        Injector.mvcGraph = null;
+        Injector.mvpGraph = null;
     }
 
     @Test(expected = RuntimeException.class)
-    public void should_raise_exception_when_getting_mvc_graph_before_configuring_it() {
+    public void should_raise_exception_when_getting_mvp_graph_before_configuring_it() {
         Injector.getGraph();
     }
 
     @Test
-    public void should_return_all_cahced_instances_by___MvcGraphHelper() {
-        Injector.configGraph(new MvcGraph.BaseDependencies() {
+    public void should_return_all_cached_instances_by___MvpGraphHelper() {
+        Injector.configGraph(new MvpGraph.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return mock(ExecutorService.class);
             }
         });
-        Assert.assertEquals(0, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(0, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
 
         class View1 {
             @Inject
@@ -62,7 +59,7 @@ public class TestInjector {
 
         View1 v1 = new View1();
         Injector.getGraph().inject(v1);
-        Assert.assertEquals(1, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(1, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
 
         class View2 {
             @Inject
@@ -72,7 +69,7 @@ public class TestInjector {
 
         View2 v2 = new View2();
         Injector.getGraph().inject(v2);
-        Assert.assertEquals(1, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(1, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
 
         class View3 {
             @Inject
@@ -82,6 +79,6 @@ public class TestInjector {
 
         View3 v3 = new View3();
         Injector.getGraph().inject(v3);
-        Assert.assertEquals(2, __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(2, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
     }
 }

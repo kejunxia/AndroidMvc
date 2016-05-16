@@ -29,13 +29,13 @@ import android.view.View;
 
 import com.shipdream.lib.android.mvc.view.R;
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcBean;
+import com.shipdream.lib.android.mvp.MvpBean;
 import com.shipdream.lib.android.mvp.NavLocation;
-import com.shipdream.lib.android.mvp.__MvcGraphHelper;
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.__MvpGraphHelper;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.manager.internal.__MvcManagerHelper;
+import com.shipdream.lib.android.mvp.manager.internal.__MvpManagerHelper;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -47,9 +47,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public abstract class MvcActivity extends AppCompatActivity {
+public abstract class MvpActivity extends AppCompatActivity {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
+    private static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvp:Fragment:";
     private DelegateFragment delegateFragment;
     boolean toPrintAppExitMessage = false;
 
@@ -69,7 +69,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         eventRegister.registerEventBuses();
 
-        setContentView(R.layout.mvc_activity);
+        setContentView(R.layout.mvp_activity);
         delegateFragment = (DelegateFragment) getSupportFragmentManager().findFragmentByTag(
                 getDelegateFragmentTag());
 
@@ -82,7 +82,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 throw new RuntimeException("Failed to instantiate delegate fragment.", e);
             }
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.android_mvc_activity_root, delegateFragment, getDelegateFragmentTag());
+            trans.replace(R.id.android_mvp_activity_root, delegateFragment, getDelegateFragmentTag());
             trans.commit();
         }
     }
@@ -96,7 +96,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         if (toPrintAppExitMessage && logger.isTraceEnabled()) {
             logger.trace("App Exits(UI): {} injected beans are still cached.",
-                    __MvcGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+                    __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
             toPrintAppExitMessage = false;
         }
     }
@@ -109,9 +109,9 @@ public abstract class MvcActivity extends AppCompatActivity {
      * Provides class types of fragments to present navigation location of given location id.
      *
      * @param locationId The location id in string
-     * @return The class type of the {@link MvcFragment}
+     * @return The class type of the {@link MvpFragment}
      */
-    protected abstract Class<? extends MvcFragment> mapNavigationFragment(String locationId);
+    protected abstract Class<? extends MvpFragment> mapNavigationFragment(String locationId);
 
     /**
      * Provides the class type of the delegate fragment which is the root fragment holding fragments
@@ -130,7 +130,7 @@ public abstract class MvcActivity extends AppCompatActivity {
     /**
      * Post an event from this view to other views. Events sent to views should be managed by controllers.
      * <p>However, it's handy in some scenarios. For example, when routing intent received by Activities to
-     * Fragments, EventBusV is a handy solution. Note that the AndroidMvc framework is a single
+     * Fragments, EventBusV is a handy solution. Note that the AndroidMvp framework is a single
      * Activity design and it manages views on fragment level and fragments don't have
      * onNewIntent(Intent intent) method. When a fragment needs to handle an intent, use eventBusV
      * to route the intent to fragments from the main activity.</p>
@@ -193,10 +193,10 @@ public abstract class MvcActivity extends AppCompatActivity {
      * This fragment is the container fragment as a root of the activity. When navigating by
      * {@link NavigationManager}, new fragments will be created and replace the root view of this
      * fragment or pop out the stacked history fragments. {@link NavigationManager} can be simply
-     * injected into any fragments extending {@link MvcFragment} by fields annotated by @Inject.
+     * injected into any fragments extending {@link MvpFragment} by fields annotated by @Inject.
      */
-    public static abstract class DelegateFragment extends MvcFragment {
-        private static final String MVC_STATE_BUNDLE_KEY = DefaultModelKeeper.MVC_SATE_PREFIX + "RootBundle";
+    public static abstract class DelegateFragment extends MvpFragment {
+        private static final String MVP_STATE_BUNDLE_KEY = DefaultModelKeeper.MVP_SATE_PREFIX + "RootBundle";
         private Logger logger = LoggerFactory.getLogger(getClass());
         //Track if the state is saved and not able to commit fragment transaction
         private boolean canCommitFragmentTransaction = false;
@@ -335,7 +335,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          */
         @Override
         protected int getLayoutResId() {
-            return R.layout.android_mvc_delegate_fragment;
+            return R.layout.android_mvp_delegate_fragment;
         }
 
         /**
@@ -347,22 +347,22 @@ public abstract class MvcActivity extends AppCompatActivity {
          *                               method is not.
          */
         protected int getContentLayoutResId() {
-            if (getLayoutResId() != R.layout.android_mvc_delegate_fragment) {
+            if (getLayoutResId() != R.layout.android_mvp_delegate_fragment) {
                 String msg = String.format("%s.getContentLayoutResId() must be overridden to " +
                                 "provide the layout that is used to hold navigating fragments.",
                         getClass().getName());
                 throw new IllegalStateException(msg);
             }
-            return R.id.android_mvc_delegate_fragment_content;
+            return R.id.android_mvp_delegate_fragment_content;
         }
 
         @Override
         public boolean onBackButtonPressed() {
-            MvcFragment topFragment = null;
+            MvpFragment topFragment = null;
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
             NavLocation curLoc = delegateFragmentController.getCurrentLocation();
             if (curLoc != null && curLoc.getLocationId() != null) {
-                topFragment = (MvcFragment) childFragmentManager().findFragmentByTag(
+                topFragment = (MvpFragment) childFragmentManager().findFragmentByTag(
                         getFragmentTag(curLoc.getLocationId()));
             }
 
@@ -384,13 +384,13 @@ public abstract class MvcActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setHasOptionsMenu(true);
-            MvcActivity activity = ((MvcActivity) getActivity());
+            MvpActivity activity = ((MvpActivity) getActivity());
             activity.delegateFragment = this;
         }
 
         void onPreViewReady(final View view, final Bundle savedInstanceState) {
             if (savedInstanceState != null) {
-                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
+                notifyAllSubMvpFragmentsTheirStateIsManagedByMe(this, true);
             }
 
             delegateFragmentController.delegateFragment = this;
@@ -412,12 +412,12 @@ public abstract class MvcActivity extends AppCompatActivity {
             super.onViewStateRestored(savedInstanceState);
 
             if (savedInstanceState != null) {
-                Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
+                Bundle mvpOutState = savedInstanceState.getBundle(MVP_STATE_BUNDLE_KEY);
                 long ts = System.currentTimeMillis();
-                DefaultStateKeeperHolder.restoreStateOfAllControllers(mvcOutState);
+                DefaultStateKeeperHolder.restoreStateOfAllControllers(mvpOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
-                notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, false);
+                notifyAllSubMvpFragmentsTheirStateIsManagedByMe(this, false);
 
                 if (pendingOnViewReadyActions != null) {
                     int size = pendingOnViewReadyActions.size();
@@ -476,25 +476,25 @@ public abstract class MvcActivity extends AppCompatActivity {
             super.onSaveInstanceState(outState);
 
             long ts = System.currentTimeMillis();
-            Bundle mvcOutState = new Bundle();
-            DefaultStateKeeperHolder.saveStateOfAllControllers(mvcOutState);
-            outState.putBundle(MVC_STATE_BUNDLE_KEY, mvcOutState);
+            Bundle mvpOutState = new Bundle();
+            DefaultStateKeeperHolder.saveStateOfAllControllers(mvpOutState);
+            outState.putBundle(MVP_STATE_BUNDLE_KEY, mvpOutState);
             logger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
-            notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
+            notifyAllSubMvpFragmentsTheirStateIsManagedByMe(this, true);
         }
 
         /**
-         * Notify all sub MvcFragments theirs state is managed by this root fragment. So all
-         * {@link MvcBean} objects those fragments holding will be saved into this root
+         * Notify all sub MvpFragments theirs state is managed by this root fragment. So all
+         * {@link MvpBean} objects those fragments holding will be saved into this root
          * fragment's outState bundle.
          */
-        private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(MvcFragment fragment, final boolean selfManaged) {
+        private void notifyAllSubMvpFragmentsTheirStateIsManagedByMe(MvpFragment fragment, final boolean selfManaged) {
             traverseFragmentAndSubFragments(fragment, new FragmentManipulator() {
                 @Override
                 public void manipulate(Fragment fragment) {
-                    if (fragment != null && fragment.isAdded() && fragment instanceof MvcFragment) {
-                        ((MvcFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
+                    if (fragment != null && fragment.isAdded() && fragment instanceof MvpFragment) {
+                        ((MvpFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
                     }
                 }
             });
@@ -526,7 +526,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 if (frags != null) {
                     int size = frags.size();
                     for (int i = 0; i < size; i++) {
-                        MvcFragment frag = (MvcFragment) frags.get(i);
+                        MvpFragment frag = (MvpFragment) frags.get(i);
                         if (frag != null) {
                             manipulator.manipulate(frag);
                         }
@@ -544,22 +544,22 @@ public abstract class MvcActivity extends AppCompatActivity {
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
             FragmentManager fm = childFragmentManager();
 
-            MvcActivity activity = ((MvcActivity) getActivity());
+            MvpActivity activity = ((MvpActivity) getActivity());
 
-            Class<? extends MvcFragment> fragmentClass = activity.mapNavigationFragment(event.getCurrentValue().getLocationId());
+            Class<? extends MvpFragment> fragmentClass = activity.mapNavigationFragment(event.getCurrentValue().getLocationId());
             if (fragmentClass == null) {
-                throw new RuntimeException("Cannot find fragment class mapped in MvcActivity.mapNavigationFragment(location) for location: "
+                throw new RuntimeException("Cannot find fragment class mapped in MvpActivity.mapNavigationFragment(location) for location: "
                         + event.getCurrentValue().getLocationId());
             } else {
-                MvcFragment lastFragment = null;
+                MvpFragment lastFragment = null;
                 if (event.getLastValue() != null && event.getLastValue().getLocationId() != null) {
-                    lastFragment = (MvcFragment) fm.findFragmentByTag(
+                    lastFragment = (MvpFragment) fm.findFragmentByTag(
                             getFragmentTag(event.getLastValue().getLocationId()));
                 }
 
-                final MvcFragment currentFragment;
+                final MvpFragment currentFragment;
                 try {
-                    currentFragment = (MvcFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
+                    currentFragment = (MvpFragment) new ReflectUtils.newObjectByType(fragmentClass).newInstance();
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to instantiate fragment: " + fragmentClass.getName(), e);
                 }
@@ -586,7 +586,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (event.getNavigator() != null) {
-                            __MvcManagerHelper.destroyNavigator(event.getNavigator());
+                            __MvpManagerHelper.destroyNavigator(event.getNavigator());
                         }
 
                         logger.trace("Fragment ready: " + currentFragment.getClass().getSimpleName());
@@ -608,8 +608,8 @@ public abstract class MvcActivity extends AppCompatActivity {
                     traverseFragmentAndSubFragments(lastFragment, new FragmentManipulator() {
                         @Override
                         public void manipulate(Fragment fragment) {
-                            if (fragment != null && fragment instanceof MvcFragment) {
-                                ((MvcFragment)fragment).onPushingToBackStack();
+                            if (fragment != null && fragment instanceof MvpFragment) {
+                                ((MvpFragment)fragment).onPushingToBackStack();
                             }
                         }
                     });
@@ -620,8 +620,8 @@ public abstract class MvcActivity extends AppCompatActivity {
                     traverseFragmentAndSubFragments(lastFragment, new FragmentManipulator() {
                         @Override
                         public void manipulate(Fragment fragment) {
-                            if (fragment != null && fragment instanceof MvcFragment) {
-                                ((MvcFragment)fragment).onPreNavigationTransaction(transaction, currentFragment);
+                            if (fragment != null && fragment instanceof MvpFragment) {
+                                ((MvpFragment)fragment).onPreNavigationTransaction(transaction, currentFragment);
                             }
                         }
                     });
@@ -652,31 +652,31 @@ public abstract class MvcActivity extends AppCompatActivity {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
                 if (event.getNavigator() != null) {
-                    __MvcManagerHelper.destroyNavigator(event.getNavigator());
+                    __MvpManagerHelper.destroyNavigator(event.getNavigator());
                 }
 
-                MvcActivity mvcActivity = ((MvcActivity) getActivity());
+                MvpActivity mvpActivity = ((MvpActivity) getActivity());
                 //Back to null which should finish the current activity
-                mvcActivity.performSuperBackKeyPressed();
-                mvcActivity.toPrintAppExitMessage = true;
+                mvpActivity.performSuperBackKeyPressed();
+                mvpActivity.toPrintAppExitMessage = true;
             } else {
                 //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
                 FragmentManager fm = childFragmentManager();
 
                 String currentFragTag = getFragmentTag(currentLoc.getLocationId());
-                final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
+                final MvpFragment currentFrag = (MvpFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
                     traverseFragmentAndSubFragments(currentFrag, new FragmentManipulator() {
                         @Override
                         public void manipulate(Fragment fragment) {
-                            if (fragment != null && fragment instanceof MvcFragment) {
-                                final MvcFragment frag = ((MvcFragment)fragment);
+                            if (fragment != null && fragment instanceof MvpFragment) {
+                                final MvpFragment frag = ((MvpFragment)fragment);
                                 frag.aboutToPopOut = true;
                                 frag.registerOnViewReadyListener(new Runnable() {
                                     @Override
                                     public void run() {
                                         if (event.getNavigator() != null) {
-                                            __MvcManagerHelper.destroyNavigator(event.getNavigator());
+                                            __MvpManagerHelper.destroyNavigator(event.getNavigator());
                                         }
                                         frag.unregisterOnViewReadyListener(this);
                                     }

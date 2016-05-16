@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.view.eventv2v.controller;
 
-import com.shipdream.lib.android.mvp.controller.BaseController;
+import com.shipdream.lib.android.mvp.presenter.BaseController;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 
 public interface V2VTestController extends BaseController {

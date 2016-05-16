@@ -24,7 +24,7 @@ import com.shipdream.lib.android.mvp.event.BaseEventV;
  * Android service can be thought as a kind of view sitting on top and driven by controller which
  * manage the state of the app.
  */
-public abstract class MvcService extends Service{
+public abstract class MvpService extends Service{
     private EventRegister eventRegister;
 
     /**
@@ -34,7 +34,7 @@ public abstract class MvcService extends Service{
     public void onCreate() {
         super.onCreate();
 
-        AndroidMvc.graph().inject(this);
+        AndroidMvp.graph().inject(this);
 
         eventRegister = new EventRegister(this);
         eventRegister.onCreate();
@@ -49,7 +49,7 @@ public abstract class MvcService extends Service{
         super.onDestroy();
         eventRegister.unregisterEventBuses();
         eventRegister.onDestroy();
-        AndroidMvc.graph().release(this);
+        AndroidMvp.graph().release(this);
     }
 
     /**

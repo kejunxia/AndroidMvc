@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvc.view.nav;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvp.manager.internal.Preparer;
-import com.shipdream.lib.android.mvp.view.AndroidMvc;
+import com.shipdream.lib.android.mvp.view.AndroidMvp;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.android.mvp.view.nav.ControllerE;
 import com.shipdream.lib.android.mvp.view.nav.ControllerF;
@@ -26,7 +26,7 @@ import com.shipdream.lib.android.mvp.view.nav.ControllerG;
 import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerE;
 import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerF;
 import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerG;
-import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
 import com.shipdream.lib.android.mvp.view.nav.NavFragmentA;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
@@ -53,7 +53,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActivityNavigation> {
+public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActivityNavigation> {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -65,7 +65,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     private DisposeCheckerG disposeCheckerGMock;
 
     public TestCaseNavigationFromController() {
-        super(MvcTestActivityNavigation.class);
+        super(MvpTestActivityNavigation.class);
     }
 
     @Override
@@ -129,13 +129,13 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         }).when(disposeCheckerGMock).onDisposed();
         comp = new Comp(mvcSingletonCache);
         comp.testCaseNavigation = this;
-        AndroidMvc.graph().register(comp);
+        AndroidMvp.graph().register(comp);
     }
 
     @Override
     protected void cleanDependencies() {
         super.cleanDependencies();
-        AndroidMvc.graph().unregister(comp);
+        AndroidMvp.graph().unregister(comp);
     }
 
     @Test
@@ -149,7 +149,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
             public void prepare(ControllerE instance) {
                 instance.setValue(val);
             }
-        }).to(MvcTestActivityNavigation.Loc.E);
+        }).to(MvpTestActivityNavigation.Loc.E);
 
         //The value set to controller e in Injector.getGraph().use should be retained during the
         //navigation
@@ -179,7 +179,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
             public void prepare(ControllerE instance) {
                 instance.setValue(valE);
             }
-        }).to(MvcTestActivityNavigation.Loc.E);
+        }).to(MvpTestActivityNavigation.Loc.E);
         waitTest();
         onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
@@ -192,7 +192,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
             public void prepare(ControllerF instance) {
                 instance.setValue(valF);
             }
-        }).to(MvcTestActivityNavigation.Loc.F);
+        }).to(MvpTestActivityNavigation.Loc.F);
         waitTest();
         onView(withText(valF)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
@@ -205,7 +205,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
             public void prepare(ControllerG instance) {
                 instance.setValue(valG);
             }
-        }).to(MvcTestActivityNavigation.Loc.G);
+        }).to(MvpTestActivityNavigation.Loc.G);
         waitTest();
         onView(withText(valG)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
@@ -228,7 +228,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
         verify(disposeCheckerFMock, times(1)).onDisposed();
-        //__MvcGraphHelper retaining all cache is dangerous. Try to only retain relevant injected instances.
+        //__MvpGraphHelper retaining all cache is dangerous. Try to only retain relevant injected instances.
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();

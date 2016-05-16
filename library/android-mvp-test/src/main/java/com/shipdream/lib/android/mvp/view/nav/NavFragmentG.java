@@ -20,12 +20,12 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
 
-public class NavFragmentG extends MvcFragment {
+public class NavFragmentG extends MvpFragment {
     @Inject
     private ControllerG controllerG;
 

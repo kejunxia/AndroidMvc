@@ -20,11 +20,11 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.shipdream.lib.android.mvp.view.MvpApp;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-public class MvcTestFragment extends MvcFragment {
+public class MvpTestFragment extends MvpFragment {
     private LifeCycleMonitor lifeCycleMonitor = MvpApp.lifeCycleMonitorFactory.provideLifeCycleMonitor();
 
     @Override

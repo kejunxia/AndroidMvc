@@ -17,6 +17,8 @@
 package com.shipdream.lib.android.mvp.controller.internal;
 
 import com.shipdream.lib.android.mvp.controller.BaseTest;
+import com.shipdream.lib.android.mvp.presenter.internal.Monitor;
+import com.shipdream.lib.android.mvp.presenter.internal.Task;
 
 import org.junit.After;
 import org.junit.Assert;

@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvp.view;
 import android.os.Bundle;
 
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcBean;
+import com.shipdream.lib.android.mvp.MvpBean;
 
 import java.lang.reflect.Field;
 
@@ -50,15 +50,15 @@ class DefaultStateKeeperHolder {
         stateKeeper.bundle = outState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (MvcBean.class.isAssignableFrom(field.getType())) {
-                MvcBean mvcBean = null;
+            if (MvpBean.class.isAssignableFrom(field.getType())) {
+                MvpBean mvpBean = null;
                 try {
                     field.setAccessible(true);
-                    mvcBean = (MvcBean) field.get(object);
+                    mvpBean = (MvpBean) field.get(object);
                 } catch (IllegalAccessException e) {
                     //ignore
                 }
-                stateKeeper.saveModel(mvcBean.getModel(), mvcBean.modelType());
+                stateKeeper.saveModel(mvpBean.getModel(), mvpBean.modelType());
             }
         }
     }
@@ -68,12 +68,12 @@ class DefaultStateKeeperHolder {
         stateKeeper.bundle = savedState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (MvcBean.class.isAssignableFrom(field.getType())) {
+            if (MvpBean.class.isAssignableFrom(field.getType())) {
                 try {
                     field.setAccessible(true);
-                    MvcBean mvcBean = (MvcBean) field.get(object);
-                    Object value = stateKeeper.retrieveModel(mvcBean.modelType());
-                    mvcBean.restoreModel(value);
+                    MvpBean mvpBean = (MvpBean) field.get(object);
+                    Object value = stateKeeper.retrieveModel(mvpBean.modelType());
+                    mvpBean.restoreModel(value);
                 } catch (IllegalAccessException e) {
                     //ignore
                 }

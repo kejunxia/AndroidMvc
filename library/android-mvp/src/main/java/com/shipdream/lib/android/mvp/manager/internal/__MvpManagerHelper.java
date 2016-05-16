@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp;
+package com.shipdream.lib.android.mvp.manager.internal;
 
-public class MvcGraphException extends RuntimeException {
-    public MvcGraphException(String message, Throwable cause) {
-        super(message, cause);
+import com.shipdream.lib.android.mvp.manager.internal.Navigator;
+
+/**
+ * Internal use.
+ */
+//This class is to help access package hidden methods in controller.internal
+public class __MvpManagerHelper {
+    public static void destroyNavigator(Navigator navigator) {
+        navigator.__destroy();
     }
 }

@@ -21,11 +21,11 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvp.view.eventv2v.controller.V2VTestController;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-public class EventBusV2VFragment extends MvcFragment {
+public class EventBusV2VFragment extends MvpFragment {
     private TextView textView;
     private View buttonDialog;
     private View buttonService;

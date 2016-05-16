@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class DefaultModelKeeper implements ModelKeeper {
-    static final String MVC_SATE_PREFIX = "__--AndroidMvc:State:";
+    static final String MVP_SATE_PREFIX = "__--AndroidMvp:State:";
 
     private static Gson gson;
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -42,7 +42,7 @@ class DefaultModelKeeper implements ModelKeeper {
     }
 
     private static String getStateKey(String stateTypeName) {
-        return MVC_SATE_PREFIX + stateTypeName;
+        return MVP_SATE_PREFIX + stateTypeName;
     }
 
 

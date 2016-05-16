@@ -18,11 +18,11 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.poke.util.ReflectUtils;
 
-public abstract class MvcBean<MODEL> {
+public abstract class MvpBean<MODEL> {
     private MODEL model;
 
     /**
-     * Bind model to MvcBean
+     * Bind model to MvpBean
      * @param model non-null model
      * @throws IllegalArgumentException thrown when null is being bound
      */
@@ -35,11 +35,11 @@ public abstract class MvcBean<MODEL> {
     }
 
     /**
-     * Called when the MvcBean is injected for the first time or restored when a new instance of
-     * this MvcBean needs to be instantiated.
+     * Called when the MvpBean is injected for the first time or restored when a new instance of
+     * this MvpBean needs to be instantiated.
      *
-     * <p>The model of the MvcBean will be instantiated by model's default no-argument constructor.
-     * However, if the MvcBean needs to be restored, a new instance of model restored by
+     * <p>The model of the MvpBean will be instantiated by model's default no-argument constructor.
+     * However, if the MvpBean needs to be restored, a new instance of model restored by
      * {@link #restoreModel(Object)} will replace the model created by this method.</p>
      */
     public void onConstruct() {
@@ -60,15 +60,15 @@ public abstract class MvcBean<MODEL> {
     }
 
     /**
-     * Called when the MvcBean is disposed. This occurs when the MvcBean is de-referenced and
+     * Called when the MvpBean is disposed. This occurs when the MvpBean is de-referenced and
      * not retained by any other objects.
      */
     public void onDisposed() {
     }
 
     /**
-     * Model represents the state of this MvcBean.
-     * @return Null if the MvcBean doesn't need to get its model saved and restored automatically.
+     * Model represents the state of this MvpBean.
+     * @return Null if the MvpBean doesn't need to get its model saved and restored automatically.
      */
     public MODEL getModel() {
         return model;
@@ -77,20 +77,20 @@ public abstract class MvcBean<MODEL> {
     /**
      * Provides the type class of the model.
      * @return Implementing class should return the type class of the model that will be used by
-     * this MvcBean to instantiate its model in {@link #onConstruct()} and restores model in
-     * {@link #restoreModel(Object)}. Returning null is allowed which means this MvcBean doesn't
+     * this MvpBean to instantiate its model in {@link #onConstruct()} and restores model in
+     * {@link #restoreModel(Object)}. Returning null is allowed which means this MvpBean doesn't
      * have a model needs to be automatically saved and restored.
      */
     public abstract Class<MODEL> modelType();
 
     /**
-     * Restores the model of this MvcBean.
+     * Restores the model of this MvpBean.
      * <p>
      * Note that when {@link #modelType()} returns null, this method will have no effect.
      * </p>
      *
      * @param restoredModel The restored model by {@link ModelKeeper} that will be rebound to the
-     *                      MvcBean.
+     *                      MvpBean.
      */
     public void restoreModel(MODEL restoredModel) {
         if (modelType() != null) {

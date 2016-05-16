@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.view.nav.internal;
 
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.view.nav.AnotherController;
 
 public class AnotherControllerImpl extends BaseControllerImpl<AnotherController.Model>

@@ -17,7 +17,7 @@ import javax.inject.Inject;
  *               serialized and deserialized by fragments when the manager is injected into a
  *               fragment as a class's field directly or indirectly(held by presenter's field).
  */
-public abstract class AbstractManager<MODEL> extends MvcBean<MODEL> implements BaseManager<MODEL> {
+public abstract class AbstractManager<MODEL> extends MvpBean<MODEL> implements BaseManager<MODEL> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject

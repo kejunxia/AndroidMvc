@@ -18,16 +18,16 @@ package com.shipdream.lib.android.mvp.view.lifecycle;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpActivity;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 
 import javax.inject.Inject;
 
-public class MvcTestActivity extends MvcActivity {
+public class MvpTestActivity extends MvpActivity {
 
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
-        return MvcTestFragment.class;
+    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
+        return MvpTestFragment.class;
     }
 
     @Override

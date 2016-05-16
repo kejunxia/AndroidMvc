@@ -24,11 +24,11 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 
 import com.shipdream.lib.android.mvp.view.MvpApp;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-public class ViewPagerHomeFragment extends MvcFragment {
+public class ViewPagerHomeFragment extends MvpFragment {
     ViewPager viewPager;
 
     private PagerAdapter pagerAdapter;
@@ -103,7 +103,7 @@ public class ViewPagerHomeFragment extends MvcFragment {
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {
-        private Class<? extends MvcFragment>[] tabs = new Class[]{
+        private Class<? extends MvpFragment>[] tabs = new Class[]{
                 TabFragmentA.class,
                 TabFragmentB.class,
                 TabFragmentC.class

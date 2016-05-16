@@ -23,13 +23,13 @@ import android.widget.Button;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
 
 
-public abstract class NavFragment extends MvcFragment {
+public abstract class NavFragment extends MvpFragment {
     private Button next;
     private Button clear;
 

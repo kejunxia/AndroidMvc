@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.controller;
 
-import com.shipdream.lib.android.mvp.controller.internal.AsyncTask;
+import com.shipdream.lib.android.mvp.presenter.internal.AsyncTask;
 import com.shipdream.lib.android.mvp.controller.internal.MyControllerImpl;
 
 import org.junit.Assert;

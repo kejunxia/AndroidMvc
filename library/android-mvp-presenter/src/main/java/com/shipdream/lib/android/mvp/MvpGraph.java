@@ -17,8 +17,8 @@
 package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.controller.internal.AsyncTask;
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
+import com.shipdream.lib.android.mvp.presenter.internal.AsyncTask;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.manager.internal.Navigator;
 import com.shipdream.lib.android.mvp.manager.internal.Preparer;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
@@ -58,7 +58,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * {@link MvcGraph} injects instances and all its nested dependencies to target object
+ * {@link MvpGraph} injects instances and all its nested dependencies to target object
  * recursively. By default, all injected instances and their dependencies that are located by
  * naming convention will be <b>SINGLETON</b>. It can also register custom injections by
  * {@link #register(Component)}.
@@ -84,19 +84,19 @@ import javax.inject.Singleton;
  * be taken into account.
  * <p/>
  */
-public class MvcGraph {
+public class MvpGraph {
     private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
-    List<MvcBean> mvcBeans = new ArrayList<>();
+    List<MvpBean> mvpBeen = new ArrayList<>();
 
     //Composite graph to hide methods
     Graph graph;
 
-    public MvcGraph(BaseDependencies baseDependencies)
+    public MvpGraph(BaseDependencies baseDependencies)
             throws ProvideException, ProviderConflictException {
         singletonScopeCache = new ScopeCache();
-        defaultProviderFinder = new DefaultProviderFinder(MvcGraph.this);
+        defaultProviderFinder = new DefaultProviderFinder(MvpGraph.this);
         defaultProviderFinder.register(new __Component(singletonScopeCache, baseDependencies));
 
         graph = new SimpleGraph(defaultProviderFinder);
@@ -108,12 +108,12 @@ public class MvcGraph {
 
                 if (obj != null) {
                     //When the cached instance is still there free and dispose it.
-                    if (obj instanceof MvcBean) {
-                        MvcBean bean = (MvcBean) obj;
+                    if (obj instanceof MvpBean) {
+                        MvpBean bean = (MvpBean) obj;
                         bean.onDisposed();
-                        mvcBeans.remove(obj);
+                        mvpBeen.remove(obj);
 
-                        logger.trace("--MvcBean freed - '{}'.",
+                        logger.trace("--MvpBean freed - '{}'.",
                                 obj.getClass().getSimpleName());
                     }
                 }
@@ -216,7 +216,7 @@ public class MvcGraph {
         try {
             graph.use(type, Inject.class, consumer);
         } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+            throw new MvpGraphException(e.getMessage(), e);
         }
     }
 
@@ -247,10 +247,10 @@ public class MvcGraph {
             private Os os;
         }
 
-        mvcGraph.register(new DeviceComponent());
+        mvpGraph.register(new DeviceComponent());
 
         //OsReferenceCount = 0
-        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+        mvpGraph.use(Os.class, null, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //First time to create the instance.
@@ -261,10 +261,10 @@ public class MvcGraph {
         //OsReferenceCount = 0
 
         final Device device = new Device();
-        mvcGraph.inject(device);  //OsReferenceCount = 1
+        mvpGraph.inject(device);  //OsReferenceCount = 1
         //New instance created and cached
 
-        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+        mvpGraph.use(Os.class, null, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //Since reference count is greater than 0, cached instance will be reused
@@ -275,10 +275,10 @@ public class MvcGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 1
 
-        mvcGraph.release(device);  //OsReferenceCount = 0
+        mvpGraph.release(device);  //OsReferenceCount = 0
         //Last instance released, so next time a new instance will be created
 
-        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+        mvpGraph.use(Os.class, null, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
@@ -289,7 +289,7 @@ public class MvcGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 0
 
-        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+        mvpGraph.use(Os.class, null, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
@@ -301,11 +301,11 @@ public class MvcGraph {
         //OsReferenceCount = 0
         //Cached instance cleared again
 
-        mvcGraph.use(Os.class, null, new Consumer<Os>() {
+        mvpGraph.use(Os.class, null, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
-                mvcGraph.inject(device);
+                mvpGraph.inject(device);
                 //Injection will reuse the cached instance and increment the reference count
                 //OsReferenceCount = 2
 
@@ -316,7 +316,7 @@ public class MvcGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 1
 
-        mvcGraph.release(device);  //OsReferenceCount = 0
+        mvpGraph.release(device);  //OsReferenceCount = 0
      * </pre>
      *
      * <p><b>Note that, if navigation is involved in {@link Consumer#consume(Object)}, though the
@@ -329,13 +329,13 @@ public class MvcGraph {
      * @param type The type of the injectable instance
      * @param qualifier Qualifier for the injectable instance
      * @param consumer Consume to use the instance
-     * @throws MvcGraphException throw when there are exceptions during the consumption of the instance
+     * @throws MvpGraphException throw when there are exceptions during the consumption of the instance
      */
     public <T> void use(final Class<T> type, final Annotation qualifier, final Consumer<T> consumer) {
         try {
             graph.use(type, qualifier, Inject.class, consumer);
         } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+            throw new MvpGraphException(e.getMessage(), e);
         }
     }
 
@@ -349,7 +349,7 @@ public class MvcGraph {
         try {
             graph.inject(target, Inject.class);
         } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+            throw new MvpGraphException(e.getMessage(), e);
         }
     }
 
@@ -364,7 +364,7 @@ public class MvcGraph {
         try {
             graph.release(target, Inject.class);
         } catch (ProviderMissingException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+            throw new MvpGraphException(e.getMessage(), e);
         }
     }
 
@@ -395,9 +395,9 @@ public class MvcGraph {
      * @param modelKeeper The model keeper managing the model
      */
     public void saveAllModels(ModelKeeper modelKeeper) {
-        int size = mvcBeans.size();
+        int size = mvpBeen.size();
         for (int i = 0; i < size; i++) {
-            MvcBean bean = mvcBeans.get(i);
+            MvpBean bean = mvpBeen.get(i);
             modelKeeper.saveModel(bean.getModel(), bean.modelType());
         }
     }
@@ -408,12 +408,12 @@ public class MvcGraph {
      */
     @SuppressWarnings("unchecked")
     public void restoreAllModels(ModelKeeper modelKeeper) {
-        int size = mvcBeans.size();
+        int size = mvpBeen.size();
         for (int i = 0; i < size; i++) {
-            MvcBean bean = mvcBeans.get(i);
+            MvpBean bean = mvpBeen.get(i);
             Object model = modelKeeper.retrieveModel(bean.modelType());
             if(model != null) {
-                mvcBeans.get(i).restoreModel(model);
+                mvpBeen.get(i).restoreModel(model);
             }
         }
     }
@@ -490,13 +490,13 @@ public class MvcGraph {
     }
 
     static class DefaultProviderFinder extends ProviderFinderByRegistry {
-        private final MvcGraph mvcGraph;
+        private final MvpGraph mvpGraph;
         private final ImplClassLocator defaultImplClassLocator;
         private Map<Class, Provider> providers = new HashMap<>();
 
-        private DefaultProviderFinder(MvcGraph mvcGraph) {
-            this.mvcGraph = mvcGraph;
-            defaultImplClassLocator = new ImplClassLocatorByPattern(mvcGraph.singletonScopeCache);
+        private DefaultProviderFinder(MvpGraph mvpGraph) {
+            this.mvpGraph = mvpGraph;
+            defaultImplClassLocator = new ImplClassLocatorByPattern(mvpGraph.singletonScopeCache);
         }
 
         @SuppressWarnings("unchecked")
@@ -515,7 +515,7 @@ public class MvcGraph {
                             impClass = type;
                         }
 
-                        provider = new MvcProvider<>(mvcGraph.mvcBeans, type, impClass);
+                        provider = new MvpProvider<>(mvpGraph.mvpBeen, type, impClass);
                         provider.setScopeCache(defaultImplClassLocator.getScopeCache());
                         providers.put(type, provider);
                     } catch (ImplClassNotFoundException e) {
@@ -527,13 +527,13 @@ public class MvcGraph {
         }
     }
 
-    private static class MvcProvider<T> extends ProviderByClassType<T> {
-        private final Logger logger = LoggerFactory.getLogger(MvcGraph.class);
-        private List<MvcBean> mvcBeans;
+    private static class MvpProvider<T> extends ProviderByClassType<T> {
+        private final Logger logger = LoggerFactory.getLogger(MvpGraph.class);
+        private List<MvpBean> mvpBeen;
 
-        public MvcProvider(List<MvcBean> mvcBeans, Class<T> type, Class<? extends T> implementationClass) {
+        public MvpProvider(List<MvpBean> mvpBeen, Class<T> type, Class<? extends T> implementationClass) {
             super(type, implementationClass);
-            this.mvcBeans = mvcBeans;
+            this.mvpBeen = mvpBeen;
         }
 
         @SuppressWarnings("unchecked")
@@ -544,19 +544,19 @@ public class MvcGraph {
             registerOnInjectedListener(new OnInjectedListener() {
                 @Override
                 public void onInjected(Object object) {
-                    if (object instanceof MvcBean) {
-                        MvcBean bean = (MvcBean) object;
+                    if (object instanceof MvpBean) {
+                        MvpBean bean = (MvpBean) object;
                         bean.onConstruct();
 
-                        logger.trace("++MvcBean injected - '{}'.",
+                        logger.trace("++MvpBean injected - '{}'.",
                                 object.getClass().getSimpleName());
                     }
                     unregisterOnInjectedListener(this);
                 }
             });
 
-            if (newInstance instanceof MvcBean) {
-                mvcBeans.add((MvcBean) newInstance);
+            if (newInstance instanceof MvpBean) {
+                mvpBeen.add((MvpBean) newInstance);
             }
 
             return newInstance;

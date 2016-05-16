@@ -20,15 +20,15 @@ import android.content.Intent;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpActivity;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 
 import javax.inject.Inject;
 
-public class ViewPagerTestActivity extends MvcActivity {
+public class ViewPagerTestActivity extends MvpActivity {
 
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
+    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
         if (locationId.equals(SubFragment.class.getSimpleName())) {
             return SubFragment.class;
         }

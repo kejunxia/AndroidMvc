@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvp.controller.internal;
 
 import com.shipdream.lib.android.mvp.inject.BaseControllerDependencies;
-import com.shipdream.lib.android.mvp.MvcGraph;
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 
 import org.junit.Test;
@@ -32,7 +32,7 @@ public class TestControllerInjectionByComponent {
 
     @Test
     public void dependenciesOfBaseControllerImplShouldBeInjected() throws Exception{
-        MvcGraph graph = new MvcGraph(new BaseControllerDependencies());
+        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
 
         TestBadView testView = new TestBadView();
         graph.inject(testView);

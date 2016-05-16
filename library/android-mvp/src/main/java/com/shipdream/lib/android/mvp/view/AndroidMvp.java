@@ -20,7 +20,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcGraph;
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.presenter.internal.AndroidPosterImpl;
 
 import java.util.concurrent.ExecutorService;
@@ -30,15 +30,15 @@ import java.util.concurrent.ThreadFactory;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
 /**
- * {@link AndroidMvc} will generate a default {@link MvcGraph} for injection. To replace
- * {@link MvcGraph.BaseDependencies} use {@link Injector#configGraph(MvcGraph.BaseDependencies)}.
+ * {@link AndroidMvp} will generate a default {@link MvpGraph} for injection. To replace
+ * {@link MvpGraph.BaseDependencies} use {@link Injector#configGraph(MvpGraph.BaseDependencies)}.
  * By default, the graph uses naming convention to locate the implementations of dependencies. See
- * {@link MvcGraph} how it works.
+ * {@link MvpGraph} how it works.
  */
-public class AndroidMvc {
-    private static class DefaultControllerDependencies extends MvcGraph.BaseDependencies {
+public class AndroidMvp {
+    private static class DefaultControllerDependencies extends MvpGraph.BaseDependencies {
         private static ExecutorService sNetworkExecutorService;
-        private final static String BACKGROUND_THREAD_NAME = "AndroidMvcDefaultBackgroundThread";
+        private final static String BACKGROUND_THREAD_NAME = "AndroidMvpDefaultBackgroundThread";
 
         @Override
         public ExecutorService createExecutorService() {
@@ -65,14 +65,14 @@ public class AndroidMvc {
         AndroidPosterImpl.init();
     }
 
-    private AndroidMvc() {
+    private AndroidMvp() {
     }
 
     /**
-     * The graph to inject dependencies for mvc components.
-     * @return The {@link MvcGraph}
+     * The graph to inject dependencies for mvp components.
+     * @return The {@link MvpGraph}
      */
-    public static MvcGraph graph() {
+    public static MvpGraph graph() {
         return Injector.getGraph();
     }
 

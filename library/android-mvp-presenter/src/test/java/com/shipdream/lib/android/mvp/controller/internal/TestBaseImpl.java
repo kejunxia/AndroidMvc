@@ -21,6 +21,7 @@ import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.android.mvp.manager.internal.NavigationManagerImpl;
+import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 
 import org.junit.Assert;
 import org.junit.Test;

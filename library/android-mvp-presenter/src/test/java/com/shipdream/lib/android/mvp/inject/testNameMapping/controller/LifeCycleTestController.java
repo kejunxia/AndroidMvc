@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import com.shipdream.lib.android.mvp.controller.BaseController;
+import com.shipdream.lib.android.mvp.presenter.BaseController;
 
 public interface LifeCycleTestController extends BaseController {
     interface Proxy {

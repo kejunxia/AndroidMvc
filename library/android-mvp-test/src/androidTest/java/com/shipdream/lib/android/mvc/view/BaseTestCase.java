@@ -30,15 +30,15 @@ import android.test.suitebuilder.annotation.LargeTest;
 
 import com.shipdream.lib.android.mvc.MvcGraphBridge;
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
+import com.shipdream.lib.android.mvp.view.AndroidMvp;
 import com.shipdream.lib.android.mvp.view.LifeCycleMonitorFactory;
+import com.shipdream.lib.android.mvp.view.MvpActivity;
 import com.shipdream.lib.android.mvp.view.MvpApp;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorD;
-import com.shipdream.lib.android.mvp.view.AndroidMvc;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
 import com.shipdream.lib.poke.ScopeCache;
 
 import org.junit.After;
@@ -63,7 +63,7 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentationTestCase2<T> {
+public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentationTestCase2<T> {
     protected LifeCycleValidator lifeCycleValidator;
     protected LifeCycleMonitor lifeCycleMonitorMock;
 
@@ -132,7 +132,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
         injectDependencies(scopeCache);
 
-        AndroidMvc.graph().inject(this);
+        AndroidMvp.graph().inject(this);
 
         lifeCycleMonitorMock = mock(LifeCycleMonitor.class);
         lifeCycleValidator = new LifeCycleValidator(lifeCycleMonitorMock);
@@ -200,7 +200,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         lifeCycleValidatorD.reset();
 
         cleanDependencies();
-        AndroidMvc.graph().release(this);
+        AndroidMvp.graph().release(this);
         Assert.assertTrue(scopeCache.getCacheMap().size() == 0);
 
         activity.runOnUiThread(new Runnable() {
@@ -208,7 +208,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
                 FragmentManager fm = activity.getSupportFragmentManager();
 
                 if (fragment != null) {
-                    AndroidMvc.graph().release(fragment);
+                    AndroidMvp.graph().release(fragment);
                     try {
                         fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
                     } catch (Exception e) {
@@ -221,7 +221,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
                         for (int i = 0; i < size; i++) {
                             Fragment frag = frags.get(i);
                             if (frag != null) {
-                                AndroidMvc.graph().release(frag);
+                                AndroidMvp.graph().release(frag);
                                 try {
                                     fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
                                 } catch (Exception e) {

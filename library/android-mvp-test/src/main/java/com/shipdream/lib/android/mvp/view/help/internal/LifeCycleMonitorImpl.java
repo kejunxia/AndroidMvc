@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvp.view.help.internal;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class LifeCycleMonitorImpl implements LifeCycleMonitor {
     }
 
     @Override
-    public void onViewReady(View rootView, Bundle savedInstanceState, MvcFragment.Reason reason) {
+    public void onViewReady(View rootView, Bundle savedInstanceState, MvpFragment.Reason reason) {
         logger.info("Lifecycle method invoked: onViewReady, reason?: " + reason.toString());
     }
 

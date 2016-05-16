@@ -16,10 +16,10 @@
 
 package com.shipdream.lib.android.mvp.view.viewpager;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-public class SubFragment extends MvcFragment {
+public class SubFragment extends MvpFragment {
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_view_pager_sub;

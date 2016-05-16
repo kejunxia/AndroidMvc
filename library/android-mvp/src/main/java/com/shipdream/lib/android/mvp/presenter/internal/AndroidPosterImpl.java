@@ -19,7 +19,6 @@ package com.shipdream.lib.android.mvp.presenter.internal;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.shipdream.lib.android.mvp.controller.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 

@@ -21,15 +21,15 @@ import android.view.View;
 
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvp.view.MvpActivity;
+import com.shipdream.lib.android.mvp.view.MvpFragment;
 
 import javax.inject.Inject;
 
-public class EventBusV2VActivity extends MvcActivity {
+public class EventBusV2VActivity extends MvpActivity {
 
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
+    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
         return EventBusV2VFragment.class;
     }
 

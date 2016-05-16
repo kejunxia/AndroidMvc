@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.manager.internal;
+package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.manager.internal.Navigator;
+import com.shipdream.lib.poke.ScopeCache;
+
+import java.util.Collection;
 
 /**
- * Internal use.
+ * Helper class to work with MvpGraph. Internal use only. Don't use it in your app.
  */
-//This class is to help access package hidden methods in controller.internal
-public class __MvcManagerHelper {
-    public static void destroyNavigator(Navigator navigator) {
-        navigator.__destroy();
+public class __MvpGraphHelper {
+    /**
+     * Internal use. Gets all cached items this cache still manages
+     * @return The collection of cached times
+     */
+    public static Collection<ScopeCache.CachedItem> getAllCachedInstances(MvpGraph mvpGraph) {
+        return mvpGraph.singletonScopeCache.getCachedItems();
     }
+
 }

@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvcGraph;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.manager.internal.BaseManagerImpl;
@@ -35,7 +33,7 @@ import static org.mockito.Mockito.verify;
 public class TestManagerImpl {
     @After
     public void tearDown() throws Exception {
-        Injector.mvcGraph = null;
+        Injector.mvpGraph = null;
     }
 
     @Test
@@ -79,7 +77,7 @@ public class TestManagerImpl {
 
         final EventBus bus = mock(EventBus.class);
 
-        Injector.configGraph(new MvcGraph.BaseDependencies() {
+        Injector.configGraph(new MvpGraph.BaseDependencies() {
             @Override
             protected EventBus createEventBusC() {
                 return bus;

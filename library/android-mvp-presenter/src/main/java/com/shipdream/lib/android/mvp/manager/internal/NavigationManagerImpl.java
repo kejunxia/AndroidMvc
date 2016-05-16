@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.manager.internal;
 
-import com.shipdream.lib.android.mvc.manager.*;
 import com.shipdream.lib.android.mvp.manager.NavigationManager;
 
 /**

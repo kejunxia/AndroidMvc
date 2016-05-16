@@ -16,20 +16,8 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.poke.ScopeCache;
-
-import java.util.Collection;
-
-/**
- * Helper class to work with MvcGraph. Internal use only. Don't use it in your app.
- */
-public class __MvcGraphHelper {
-    /**
-     * Internal use. Gets all cached items this cache still manages
-     * @return The collection of cached times
-     */
-    public static Collection<ScopeCache.CachedItem> getAllCachedInstances(MvcGraph mvcGraph) {
-        return mvcGraph.singletonScopeCache.getCachedItems();
+public class MvpGraphException extends RuntimeException {
+    public MvpGraphException(String message, Throwable cause) {
+        super(message, cause);
     }
-
 }

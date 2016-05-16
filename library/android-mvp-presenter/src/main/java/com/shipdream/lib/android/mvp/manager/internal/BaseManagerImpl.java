@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.manager.internal;
 
-import com.shipdream.lib.android.mvp.MvcBean;
+import com.shipdream.lib.android.mvp.MvpBean;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
@@ -36,7 +36,7 @@ import javax.inject.Inject;
  * to controllers to notify the state change in the shared manager.
  * </p>
  */
-public abstract class BaseManagerImpl<MODEL> extends MvcBean<MODEL> implements BaseManager<MODEL> {
+public abstract class BaseManagerImpl<MODEL> extends MvpBean<MODEL> implements BaseManager<MODEL> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
