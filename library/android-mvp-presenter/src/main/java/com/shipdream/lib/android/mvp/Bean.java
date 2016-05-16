@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.poke.util.ReflectUtils;
 
-public abstract class MvpBean<MODEL> {
+public abstract class Bean<MODEL> {
     private MODEL model;
 
     /**

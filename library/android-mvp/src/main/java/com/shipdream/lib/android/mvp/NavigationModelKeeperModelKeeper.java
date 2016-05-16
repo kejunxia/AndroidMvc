@@ -22,15 +22,15 @@ import android.os.Parcelable;
 /**
  * Navigation model state keeper implemented by Android parcelable.
  */
-public class NavigationModelKeeper implements AndroidStateKeeper<NavigationManager.Model> {
+public class NavigationModelKeeperModelKeeper implements AndroidModelKeeper<NavigationManager.Model> {
     @Override
-    public Parcelable saveState(NavigationManager.Model state, Class<NavigationManager.Model> stateType) {
-        return new ModelParcelable(state);
+    public Parcelable saveModel(NavigationManager.Model model, Class<NavigationManager.Model> modelType) {
+        return new ModelParcelable(model);
     }
 
     @Override
-    public NavigationManager.Model getState(Parcelable parceledState, Class<NavigationManager.Model> stateType) {
-        return ((ModelParcelable)parceledState).model;
+    public NavigationManager.Model getModel(Parcelable parceledModel, Class<NavigationManager.Model> modelType) {
+        return ((ModelParcelable) parceledModel).model;
     }
 
     //==================================================================================================

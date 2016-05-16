@@ -189,7 +189,7 @@ public abstract class MvpActivity extends AppCompatActivity {
      * injected into any fragments extending {@link MvpFragment} by fields annotated by @Inject.
      */
     public static abstract class DelegateFragment extends MvpFragment {
-        private static final String MVP_STATE_BUNDLE_KEY = DefaultModelKeeper.MVP_SATE_PREFIX + "RootBundle";
+        private static final String MVP_STATE_BUNDLE_KEY = AndroidMvp.MVP_SATE_PREFIX + "RootBundle";
         private Logger logger = LoggerFactory.getLogger(getClass());
         //Track if the state is saved and not able to commit fragment transaction
         private boolean canCommitFragmentTransaction = false;
@@ -407,7 +407,7 @@ public abstract class MvpActivity extends AppCompatActivity {
             if (savedInstanceState != null) {
                 Bundle mvpOutState = savedInstanceState.getBundle(MVP_STATE_BUNDLE_KEY);
                 long ts = System.currentTimeMillis();
-                DefaultStateKeeperHolder.restoreStateOfAllControllers(mvpOutState);
+                ModelKeeperHolder.restoreAllModels(mvpOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
                 notifyAllSubMvpFragmentsTheirStateIsManagedByMe(this, false);
@@ -470,7 +470,7 @@ public abstract class MvpActivity extends AppCompatActivity {
 
             long ts = System.currentTimeMillis();
             Bundle mvpOutState = new Bundle();
-            DefaultStateKeeperHolder.saveStateOfAllControllers(mvpOutState);
+            ModelKeeperHolder.saveAllModels(mvpOutState);
             outState.putBundle(MVP_STATE_BUNDLE_KEY, mvpOutState);
             logger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
@@ -479,7 +479,7 @@ public abstract class MvpActivity extends AppCompatActivity {
 
         /**
          * Notify all sub MvpFragments theirs state is managed by this root fragment. So all
-         * {@link MvpBean} objects those fragments holding will be saved into this root
+         * {@link Bean} objects those fragments holding will be saved into this root
          * fragment's outState bundle.
          */
         private void notifyAllSubMvpFragmentsTheirStateIsManagedByMe(MvpFragment fragment, final boolean selfManaged) {

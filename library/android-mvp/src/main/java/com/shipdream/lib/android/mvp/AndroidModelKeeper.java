@@ -23,16 +23,16 @@ import android.os.Parcelable;
  * performance
  * @param <T>
  */
-public interface AndroidStateKeeper <T> {
+public interface AndroidModelKeeper<T> {
     /**
      * Save the given state into {@link Parcelable}
-     * @param state the state to save
+     * @param model the model to save
      */
-    Parcelable saveState(T state, Class<T> stateType);
+    Parcelable saveModel(T model, Class<T> modelType);
 
     /**
      * Restore state from the {@link Parcelable}
-     * @return The restored state
+     * @return The restored model
      */
-    T getState(Parcelable parceledState, Class<T> stateType);
+    T getModel(Parcelable parceledModel, Class<T> modelType);
 }

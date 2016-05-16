@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvp.view.nav;
 
-import com.shipdream.lib.android.mvp.MvpBean;
+import com.shipdream.lib.android.mvp.Bean;
 
-public class DisposeCheckerG extends MvpBean {
+public class DisposeCheckerG extends Bean {
     @Override
     public Class modelType() {
         return null;

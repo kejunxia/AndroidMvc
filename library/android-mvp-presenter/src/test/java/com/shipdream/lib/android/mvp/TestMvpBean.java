@@ -22,19 +22,19 @@ import org.junit.Test;
 public class TestMvpBean {
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_when_bind_null_to_a_mvpBean() {
-        MvpBean mvpBean = new MvpBean() {
+        Bean bean = new Bean() {
             @Override
             public Class modelType() {
                 return String.class;
             }
         };
 
-        mvpBean.bindModel(null);
+        bean.bindModel(null);
     }
 
     @Test
     public void should_rebind_state_after_restoring_mvpBean() {
-        MvpBean<String> mvpBean = new MvpBean() {
+        Bean<String> bean = new Bean() {
 
             @Override
             public Class modelType() {
@@ -42,16 +42,16 @@ public class TestMvpBean {
             }
         };
 
-        Assert.assertNull(mvpBean.getModel());
+        Assert.assertNull(bean.getModel());
 
-        mvpBean.restoreModel("A");
+        bean.restoreModel("A");
 
-        Assert.assertEquals("A", mvpBean.getModel());
+        Assert.assertEquals("A", bean.getModel());
     }
 
     @Test
     public void should_call_on_restore_call_back_after_a_stateful_mvpBean_is_restored() {
-        class MyMvpBean extends MvpBean<String> {
+        class MyBean extends Bean<String> {
             private boolean called = false;
 
             @Override
@@ -66,7 +66,7 @@ public class TestMvpBean {
             }
         };
 
-        MyMvpBean mvpBean = new MyMvpBean();
+        MyBean mvpBean = new MyBean();
 
         Assert.assertFalse(mvpBean.called);
 
@@ -77,7 +77,7 @@ public class TestMvpBean {
 
     @Test
     public void should_not_call_on_restore_call_back_after_a_non_stateful_mvpBean_is_restored() {
-        class MyMvpBean extends MvpBean<String> {
+        class MyBean extends Bean<String> {
             private boolean called = false;
 
             @Override
@@ -92,7 +92,7 @@ public class TestMvpBean {
             }
         };
 
-        MyMvpBean mvpBean = new MyMvpBean();
+        MyBean mvpBean = new MyBean();
 
         Assert.assertFalse(mvpBean.called);
 
@@ -102,13 +102,13 @@ public class TestMvpBean {
     }
 
     public void should_create_state_instance_on_construct_when_the_state_type_is_specified_for_a_mvpBean() {
-        class MyMvpBean extends MvpBean<String> {
+        class MyBean extends Bean<String> {
             @Override
             public Class modelType() {
                 return String.class;
             }
         };
-        MyMvpBean mvpBean = new MyMvpBean();
+        MyBean mvpBean = new MyBean();
 
         Assert.assertNull(mvpBean.getModel());
 
@@ -118,13 +118,13 @@ public class TestMvpBean {
     }
 
     public void should_NOT_create_state_instance_on_construct_when_the_state_type_is_null_for_a_mvpBean() {
-        class MyMvpBean extends MvpBean {
+        class MyBean extends Bean {
             @Override
             public Class modelType() {
                 return null;
             }
         };
-        MyMvpBean mvpBean = new MyMvpBean();
+        MyBean mvpBean = new MyBean();
 
         Assert.assertNull(mvpBean.getModel());
 
@@ -139,42 +139,42 @@ public class TestMvpBean {
             {int x = 1 / 0;}
         }
 
-        class MyMvpBean extends MvpBean<BadClass> {
+        class MyBean extends Bean<BadClass> {
             @Override
             public Class<BadClass> modelType() {
                 return BadClass.class;
             }
         };
 
-        MyMvpBean mvpBean = new MyMvpBean();
+        MyBean mvpBean = new MyBean();
 
         mvpBean.onConstruct();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_when_binding_null_to_stateful_mvpBean() {
-        class MyMvpBean extends MvpBean<String> {
+        class MyBean extends Bean<String> {
             @Override
             public Class<String> modelType() {
                 return String.class;
             }
         };
 
-        MyMvpBean mvpBean = new MyMvpBean();
+        MyBean mvpBean = new MyBean();
 
         mvpBean.bindModel(null);
     }
 
     @Test
     public void should_be_able_to_successfully_bind_state_to_stateful_mvpBean() {
-        class MyMvpBean extends MvpBean<String> {
+        class MyBean extends Bean<String> {
             @Override
             public Class<String> modelType() {
                 return String.class;
             }
         };
 
-        MyMvpBean mvpBean = new MyMvpBean();
+        MyBean mvpBean = new MyBean();
 
         Assert.assertNotEquals("B", mvpBean.getModel());
 

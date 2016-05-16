@@ -33,7 +33,6 @@ class EventRegister {
     @EventBusV
     private EventBus eventBusV;
 
-    private AndroidPosterImpl androidPoster;
     private static Handler handler;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -45,31 +44,31 @@ class EventRegister {
     }
 
     /**
-     * Register c2v and v2v event buses.
+     * Register event bus for views.
      */
     void registerEventBuses() {
         if (!eventsRegistered) {
             eventBusV.register(androidComponent);
             eventsRegistered = true;
-            logger.trace("+Event2C bus registered for view - '{}'.",
+            logger.trace("+Event2V bus registered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());
         } else {
-            logger.trace("!Event2C bus already registered for view - '{}' and its controllers.",
+            logger.trace("!Event2V bus already registered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
         }
     }
 
     /**
-     * Unregister c2v and v2v event buses.
+     * Unregister event bus for views.
      */
     void unregisterEventBuses() {
         if (eventsRegistered) {
             eventBusV.unregister(androidComponent);
             eventsRegistered = false;
-            logger.trace("-Event2C bus unregistered for view - '{}' and its controllers.",
+            logger.trace("-Event2V bus unregistered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
         } else {
-            logger.trace("!Event2C bus already unregistered for view - '{}'.",
+            logger.trace("!Event2V bus already unregistered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());
         }
     }

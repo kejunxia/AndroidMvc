@@ -32,7 +32,7 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
  * {@link MvpGraph} how it works.
  */
 public class AndroidMvp {
-    private static class DefaultControllerDependencies extends MvpGraph.BaseDependencies {
+    private static class DefaultPresenterDependencies extends MvpGraph.BaseDependencies {
         private static ExecutorService sNetworkExecutorService;
         private final static String BACKGROUND_THREAD_NAME = "AndroidMvpDefaultBackgroundThread";
 
@@ -56,9 +56,10 @@ public class AndroidMvp {
         }
     }
 
+    static final String MVP_SATE_PREFIX = "$android.mvp.state:";
+
     static {
-        Injector.configGraph(new DefaultControllerDependencies());
-        AndroidPosterImpl.init();
+        Injector.configGraph(new DefaultPresenterDependencies());
     }
 
     private AndroidMvp() {
@@ -77,11 +78,11 @@ public class AndroidMvp {
      * Other objects will still be saved and restored by json serialization.
      * @param customStateKeeper The State keeper use {@link Parcelable} to save and restore state.
      *                          If any state doesn't need to be managed by this state keeper return
-     *                          null in its {@link AndroidStateKeeper#saveState(Object, Class)} and
-     *                          {@link AndroidStateKeeper#getState(Parcelable, Class)}
+     *                          null in its {@link AndroidModelKeeper#saveModel(Object, Class)} and
+     *                          {@link AndroidModelKeeper#getModel(Parcelable, Class)}
      */
-    public static void setCustomStateKeeper(AndroidStateKeeper customStateKeeper) {
-        DefaultStateKeeperHolder.stateKeeper.customStateKeeper = customStateKeeper;
+    public static void setCustomStateKeeper(AndroidModelKeeper customStateKeeper) {
+        ModelKeeperHolder.stateKeeper.customStateKeeper = customStateKeeper;
     }
 
 }

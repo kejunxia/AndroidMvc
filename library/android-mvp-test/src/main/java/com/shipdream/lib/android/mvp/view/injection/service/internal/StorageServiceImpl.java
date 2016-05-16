@@ -16,10 +16,10 @@
 
 package com.shipdream.lib.android.mvp.view.injection.service.internal;
 
-import com.shipdream.lib.android.mvp.MvpBean;
+import com.shipdream.lib.android.mvp.Bean;
 import com.shipdream.lib.android.mvp.view.injection.service.StorageService;
 
-public class StorageServiceImpl extends MvpBean<StorageService.Storage> implements StorageService{
+public class StorageServiceImpl extends Bean<StorageService.Storage> implements StorageService{
     @Override
     public Class<StorageService.Storage> modelType() {
         return StorageService.Storage.class;

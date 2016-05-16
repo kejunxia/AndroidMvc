@@ -26,24 +26,22 @@ import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class DefaultModelKeeper implements ModelKeeper {
-    static final String MVP_SATE_PREFIX = "__--AndroidMvp:State:";
-
+class MvpModelKeeper implements ModelKeeper {
     private static Gson gson;
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private AndroidStateKeeper navigationModelKeeper = new NavigationModelKeeper();
-    AndroidStateKeeper customStateKeeper;
+    private AndroidModelKeeper navigationModelKeeper = new NavigationModelKeeperModelKeeper();
+    AndroidModelKeeper customStateKeeper;
     Bundle bundle;
 
-    DefaultModelKeeper() {
+    MvpModelKeeper() {
         gson = new GsonBuilder().create();
     }
 
     private static String getStateKey(String stateTypeName) {
-        return MVP_SATE_PREFIX + stateTypeName;
+        return AndroidMvp.MVP_SATE_PREFIX + stateTypeName;
     }
 
-
+    //TODO: first param should be Bean and bean's state should be saved recursively
     @SuppressWarnings("unchecked")
     @Override
     public <T> void saveModel(T model, Class<T> type) {
@@ -52,11 +50,11 @@ class DefaultModelKeeper implements ModelKeeper {
 
             if (NavigationManager.Model.class == type) {
                 //Use navigation model keeper to save state
-                parcelable = navigationModelKeeper.saveState(model, type);
+                parcelable = navigationModelKeeper.saveModel(model, type);
             } else {
                 if (customStateKeeper != null) {
                     //Use customs state manager to restore state
-                    parcelable = customStateKeeper.saveState(model, type);
+                    parcelable = customStateKeeper.saveModel(model, type);
                 }
             }
 
@@ -92,7 +90,7 @@ class DefaultModelKeeper implements ModelKeeper {
             }
             if (NavigationManager.Model.class == type) {
                 //Use navigation model keeper to restore state
-                state = (T) navigationModelKeeper.getState(parcelable, type);
+                state = (T) navigationModelKeeper.getModel(parcelable, type);
                 logger.trace("Restore state by parcel state keeper - {}, {}ms used.",
                         type.getName(), System.currentTimeMillis() - ts);
             } else {
@@ -100,7 +98,7 @@ class DefaultModelKeeper implements ModelKeeper {
                 if (customStateKeeper != null) {
                     if (parcelable != null) {
                         //Use custom state manager to restore state
-                        state = (T) customStateKeeper.getState(parcelable, type);
+                        state = (T) customStateKeeper.getModel(parcelable, type);
                         logger.trace("Restore state by parcel state keeper - {}, {}ms used.",
                                 type.getName(), System.currentTimeMillis() - ts);
                     }

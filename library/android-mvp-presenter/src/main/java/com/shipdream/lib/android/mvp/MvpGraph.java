@@ -89,7 +89,7 @@ public class MvpGraph {
     private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
-    List<MvpBean> mvpBeen = new ArrayList<>();
+    List<Bean> mvpBeen = new ArrayList<>();
 
     //Composite graph to hide methods
     Graph graph;
@@ -109,8 +109,8 @@ public class MvpGraph {
 
                 if (obj != null) {
                     //When the cached instance is still there free and dispose it.
-                    if (obj instanceof MvpBean) {
-                        MvpBean bean = (MvpBean) obj;
+                    if (obj instanceof Bean) {
+                        Bean bean = (Bean) obj;
                         bean.onDisposed();
                         mvpBeen.remove(obj);
 
@@ -398,7 +398,7 @@ public class MvpGraph {
     public void saveAllModels(ModelKeeper modelKeeper) {
         int size = mvpBeen.size();
         for (int i = 0; i < size; i++) {
-            MvpBean bean = mvpBeen.get(i);
+            Bean bean = mvpBeen.get(i);
             modelKeeper.saveModel(bean.getModel(), bean.modelType());
         }
     }
@@ -411,7 +411,7 @@ public class MvpGraph {
     public void restoreAllModels(ModelKeeper modelKeeper) {
         int size = mvpBeen.size();
         for (int i = 0; i < size; i++) {
-            MvpBean bean = mvpBeen.get(i);
+            Bean bean = mvpBeen.get(i);
             Object model = modelKeeper.retrieveModel(bean.modelType());
             if(model != null) {
                 mvpBeen.get(i).restoreModel(model);
@@ -530,9 +530,9 @@ public class MvpGraph {
 
     private static class MvpProvider<T> extends ProviderByClassType<T> {
         private final Logger logger = LoggerFactory.getLogger(MvpGraph.class);
-        private List<MvpBean> mvpBeen;
+        private List<Bean> mvpBeen;
 
-        public MvpProvider(List<MvpBean> mvpBeen, Class<T> type, Class<? extends T> implementationClass) {
+        public MvpProvider(List<Bean> mvpBeen, Class<T> type, Class<? extends T> implementationClass) {
             super(type, implementationClass);
             this.mvpBeen = mvpBeen;
         }
@@ -545,8 +545,8 @@ public class MvpGraph {
             registerOnInjectedListener(new OnInjectedListener() {
                 @Override
                 public void onInjected(Object object) {
-                    if (object instanceof MvpBean) {
-                        MvpBean bean = (MvpBean) object;
+                    if (object instanceof Bean) {
+                        Bean bean = (Bean) object;
                         bean.onConstruct();
 
                         logger.trace("++MvpBean injected - '{}'.",
@@ -556,8 +556,8 @@ public class MvpGraph {
                 }
             });
 
-            if (newInstance instanceof MvpBean) {
-                mvpBeen.add((MvpBean) newInstance);
+            if (newInstance instanceof Bean) {
+                mvpBeen.add((Bean) newInstance);
             }
 
             return newInstance;

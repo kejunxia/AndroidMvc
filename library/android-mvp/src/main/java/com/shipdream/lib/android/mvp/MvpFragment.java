@@ -100,7 +100,7 @@ public abstract class MvpFragment extends Fragment {
          * <p>Although when a fragment is restored all fields of the fragment will be recreated
          * ({@link #isNewInstance()} = true), Mvp framework will automatically restore the
          * state(model) of injected controllers held by the fragment . So when a fragment is being
-         * restored, only re-instantiate its non-controller fields. All injected {@link MvpBean}
+         * restored, only re-instantiate its non-controller fields. All injected {@link Bean}
          * including controllers will be restored by the framework itself.</p>
          */
         public boolean isRestored() {
@@ -138,7 +138,7 @@ public abstract class MvpFragment extends Fragment {
         }
     }
 
-    private final static String STATE_LAST_ORIENTATION = DefaultModelKeeper.MVP_SATE_PREFIX + "LastOrientation--__";
+    private final static String STATE_LAST_ORIENTATION = AndroidMvp.MVP_SATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
     private boolean fragmentComesBackFromBackground = false;
@@ -212,7 +212,7 @@ public abstract class MvpFragment extends Fragment {
 
         if (!isStateManagedByRootDelegateFragment) {
             if (savedInstanceState != null) {
-                DefaultStateKeeperHolder.restoreControllerStateByTheirOwn(savedInstanceState, this);
+                ModelKeeperHolder.restoreModelOfInjectedMvcBeanFields(savedInstanceState, this);
             }
         }
     }
@@ -424,7 +424,7 @@ public abstract class MvpFragment extends Fragment {
         outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
 
         if (!isStateManagedByRootDelegateFragment) {
-            DefaultStateKeeperHolder.saveControllerStateOfTheirOwn(outState, this);
+            ModelKeeperHolder.saveModelOfInjectedMvcBeanFields(outState, this);
         }
     }
 

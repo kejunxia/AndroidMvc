@@ -20,57 +20,77 @@ import android.os.Bundle;
 
 import java.lang.reflect.Field;
 
+import javax.inject.Inject;
+
 /**
  * This class holds a stateKeeper as a singleton.
  */
-class DefaultStateKeeperHolder {
-    static DefaultModelKeeper stateKeeper;
+class ModelKeeperHolder {
+    static MvpModelKeeper stateKeeper;
 
     static {
-        stateKeeper = new DefaultModelKeeper();
+        stateKeeper = new MvpModelKeeper();
     }
 
-    static void saveStateOfAllControllers(Bundle outState) {
+    /**
+     * Save model of all {@link Bean}s currently live in the {@link Injector#getGraph()}
+     * @param outState the out state
+     */
+    static void saveAllModels(Bundle outState) {
         stateKeeper.bundle = outState;
         Injector.getGraph().saveAllModels(stateKeeper);
         stateKeeper.bundle = null;
     }
 
-    static void restoreStateOfAllControllers(Bundle savedState) {
+    /**
+     * Restore model of all {@link Bean}s currently live in the {@link Injector#getGraph()}
+     * @Bundle savedState the saved state
+     */
+    static void restoreAllModels(Bundle savedState) {
         stateKeeper.bundle = savedState;
         Injector.getGraph().restoreAllModels(stateKeeper);
         stateKeeper.bundle = null;
     }
 
-    static void saveControllerStateOfTheirOwn(Bundle outState, Object object) {
+    /**
+     * Save model of all {@link Bean}s held by fields marked by @{@link Inject} of the given object
+     * @param outState The out state
+     * @param object The object whose fields marked by @{@link Inject} will be saved.
+     */
+    static void saveModelOfInjectedMvcBeanFields(Bundle outState, Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
         stateKeeper.bundle = outState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (MvpBean.class.isAssignableFrom(field.getType())) {
-                MvpBean mvpBean = null;
+            if (Bean.class.isAssignableFrom(field.getType())) {
+                Bean bean = null;
                 try {
                     field.setAccessible(true);
-                    mvpBean = (MvpBean) field.get(object);
+                    bean = (Bean) field.get(object);
                 } catch (IllegalAccessException e) {
                     //ignore
                 }
-                stateKeeper.saveModel(mvpBean.getModel(), mvpBean.modelType());
+                stateKeeper.saveModel(bean.getModel(), bean.modelType());
             }
         }
     }
 
-    static void restoreControllerStateByTheirOwn(Bundle savedState, Object object) {
+    /**
+     * Restore model of all {@link Bean}s held by fields marked by @{@link Inject} of the given object
+     * @param savedState The saved state
+     * @param object The object whose fields marked by @{@link Inject} will be restored.
+     */
+    static void restoreModelOfInjectedMvcBeanFields(Bundle savedState, Object object) {
         Field[] fields = object.getClass().getDeclaredFields();
         stateKeeper.bundle = savedState;
         for (int i = 0; i < fields.length; i++) {
             Field field = fields[i];
-            if (MvpBean.class.isAssignableFrom(field.getType())) {
+            if (Bean.class.isAssignableFrom(field.getType())) {
                 try {
                     field.setAccessible(true);
-                    MvpBean mvpBean = (MvpBean) field.get(object);
-                    Object value = stateKeeper.retrieveModel(mvpBean.modelType());
-                    mvpBean.restoreModel(value);
+                    Bean bean = (Bean) field.get(object);
+                    Object value = stateKeeper.retrieveModel(bean.modelType());
+                    bean.restoreModel(value);
                 } catch (IllegalAccessException e) {
                     //ignore
                 }

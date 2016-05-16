@@ -380,13 +380,13 @@ public class TestMvpGraph {
     @Test
     public void should_be_able_save_and_restore_state_correctly()
             throws ProvideException, ProviderConflictException {
-        MvpBean mvpBeanMock = mock(MvpBean.class);
+        Bean beanMock = mock(Bean.class);
         Object mockState = mock(Object.class);
-        when(mvpBeanMock.getModel()).thenReturn(mockState);
-        when(mvpBeanMock.modelType()).thenReturn(Object.class);
+        when(beanMock.getModel()).thenReturn(mockState);
+        when(beanMock.modelType()).thenReturn(Object.class);
 
-        List<MvpBean> mvpBeen = new ArrayList();
-        mvpBeen.add(mvpBeanMock);
+        List<Bean> mvpBeen = new ArrayList();
+        mvpBeen.add(beanMock);
         mvpGraph.mvpBeen = mvpBeen;
 
         final ModelKeeper modelKeeperMock = mock(ModelKeeper.class);
@@ -395,8 +395,8 @@ public class TestMvpGraph {
         mvpGraph.saveAllModels(modelKeeperMock);
 
         // Verify
-        verify(mvpBeanMock, times(1)).getModel();
-        verify(mvpBeanMock, times(1)).modelType();
+        verify(beanMock, times(1)).getModel();
+        verify(beanMock, times(1)).modelType();
         verify(modelKeeperMock).saveModel(eq(mockState), eq(Object.class));
 
         // Arrange
@@ -408,7 +408,7 @@ public class TestMvpGraph {
         mvpGraph.restoreAllModels(modelKeeperMock);
 
         // Verify
-        verify(mvpBeanMock).restoreModel(eq(stateMock));
+        verify(beanMock).restoreModel(eq(stateMock));
     }
 
     interface UnimplementedInterface{}

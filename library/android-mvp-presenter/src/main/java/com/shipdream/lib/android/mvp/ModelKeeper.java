@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvp;
 
 /**
- * ModelKeeper can save model of objects implementing {@link MvpBean} into it. The model can
+ * ModelKeeper can save model of objects implementing {@link Bean} into it. The model can
  * be got back from the keeper later on.
  */
 public interface ModelKeeper {

@@ -1,9 +1,7 @@
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
-import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,23 +15,13 @@ import javax.inject.Inject;
  * Abstract view presenter. Presenter will subscribe to {@link EventBusC}
  * @param <MODEL> The view model of the presenter.
  */
-public class AbstractPresenter<MODEL> extends MvpBean<MODEL> {
-    interface AndroidPoster {
-        void post(EventBus eventBusV, BaseEventV eventV);
-    }
-
-    static AndroidPoster androidPoster;
-
+public class AbstractPresenter<MODEL> extends Bean<MODEL> {
     @Inject
     @EventBusC
     EventBus eventBus2C;
 
     @Inject
-    @EventBusV
-    EventBus eventBus2V;
-
-    @Inject
-    ExecutorService executorService;
+    protected ExecutorService executorService;
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -78,29 +66,6 @@ public class AbstractPresenter<MODEL> extends MvpBean<MODEL> {
 
     public void bindModel(Object sender, MODEL model) {
         super.bindModel(model);
-    }
-
-    /**
-     * Post an event to views on
-     * <ul>
-     * <li>Android main thread -- when detected android OS. Note that, if the caller is on main thread, event will be
-     * execute immediately on the main thread. Otherwise it will be post to the main thread message queue.</li>
-     * <li>Same thread of caller -- if on usual JVM</li>
-     * </ul>
-     *
-     * @param event event to views
-     */
-    protected void postEvent2V(final BaseEventV event) {
-        if (androidPoster != null) {
-            //Run on android OS
-            androidPoster.post(eventBus2V, event);
-        } else {
-            if (eventBus2V != null) {
-                eventBus2V.post(event);
-            } else {
-                logger.warn("Trying to post event {} to EventBusV which is null", event.getClass().getName());
-            }
-        }
     }
 
     /**
