@@ -41,7 +41,7 @@ buildscript {
 def jacocoCoveredProjects = [
         project(":library:poke"),
 //        project(":library:android-mvc-controller")
-        project(":library:android-mvp-core")
+        project(":library:android-mvp-presenter")
 ]
 
 allprojects {
