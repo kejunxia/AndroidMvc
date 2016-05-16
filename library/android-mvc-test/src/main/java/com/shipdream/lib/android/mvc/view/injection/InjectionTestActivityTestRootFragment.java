@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
@@ -52,7 +53,7 @@ public class InjectionTestActivityTestRootFragment extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A, null);
+            navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A, new Forwarder().clearAll());
         }
 
         @Override

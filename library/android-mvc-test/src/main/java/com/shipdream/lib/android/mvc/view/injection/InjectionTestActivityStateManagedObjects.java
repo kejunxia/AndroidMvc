@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.view.injection;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
 import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
@@ -45,7 +46,7 @@ public class InjectionTestActivityStateManagedObjects extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D, null);
+            navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.D, new Forwarder().clearAll());
         }
     }
 

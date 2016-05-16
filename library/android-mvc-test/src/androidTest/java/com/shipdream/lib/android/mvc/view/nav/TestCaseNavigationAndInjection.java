@@ -19,6 +19,7 @@ package com.shipdream.lib.android.mvc.view.nav;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
+import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Graph;
@@ -215,7 +216,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         waitTest();
         resetGraphMonitorCounts();
         //Now clear history up to A and put C on it. Then A should pop out without re
-        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B, null);
+        navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.B, new Forwarder().clearAll());
         //->B
         waitTest();
         Assert.assertEquals(fm.getFragments().size(), 4);

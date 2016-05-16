@@ -24,6 +24,8 @@ import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
@@ -205,7 +207,7 @@ public class Navigator {
      * @param locationId           The id of the location navigate to
      */
     public void to(String locationId) {
-        doNavigateTo(locationId, false, null);
+        doNavigateTo(locationId, null);
         go();
     }
 
@@ -232,21 +234,46 @@ public class Navigator {
      * @param clearTopToLocationId Null if all history locations want to be cleared otherwise, the
      *                             id of the location the history will be exclusively cleared up to
      *                             which will be the second last location after navigation.
+     * @deprecated
      */
     public void to(String locationId, String clearTopToLocationId) {
-        doNavigateTo(locationId, true, clearTopToLocationId);
+        Forwarder forwarder = new Forwarder();
+        if (clearTopToLocationId == null) {
+            forwarder.clearAll();
+        } else {
+            forwarder.clearTo(clearTopToLocationId);
+        }
+
+        doNavigateTo(locationId, forwarder);
         go();
     }
 
-    private void doNavigateTo(String locationId, boolean clearTop,
-                              String clearTopToLocationId) {
+    /**
+     * Navigate to the next location.
+     * @param locationId The id of the location navigating to.
+     * @param forwarder The configuration by {@link Forwarder} of the forward navigation.
+     */
+    public void to(String locationId, @NotNull Forwarder forwarder) {
+        doNavigateTo(locationId, forwarder);
+        go();
+    }
+
+    private void doNavigateTo(String locationId, Forwarder forwarder) {
+        boolean clearTop = false;
+        String clearToLocationId = null;
+
+        if (forwarder != null) {
+            clearTop = forwarder.clearHistory;
+            clearToLocationId = forwarder.clearToLocationId;
+        }
+
         NavLocation clearedTopToLocation = null;
         if (clearTop) {
-            if (clearTopToLocationId != null) {
+            if (clearToLocationId != null) {
                 //find out the top most location in the history stack with clearTopToLocationId
                 NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
                 while (currentLoc != null) {
-                    if (clearTopToLocationId.equals(currentLoc.getLocationId())) {
+                    if (clearToLocationId.equals(currentLoc.getLocationId())) {
                         //Reverse the history to this location
                         clearedTopToLocation = currentLoc;
                         break;
@@ -280,6 +307,11 @@ public class Navigator {
         if (locationChanged) {
             NavLocation currentLoc = new NavLocation();
             currentLoc._setLocationId(locationId);
+
+            if (forwarder != null) {
+                currentLoc._setInterim(forwarder.interim);
+            }
+
             if (!clearTop) {
                 //Remember last location as previous location
                 currentLoc._setPreviousLocation(lastLoc);
@@ -308,6 +340,10 @@ public class Navigator {
         }
 
         NavLocation previousLoc = currentLoc.getPreviousLocation();
+        while (previousLoc != null && previousLoc.isInterim()) {
+            previousLoc = previousLoc.getPreviousLocation();
+        }
+
         navigationManager.getModel().setCurrentLocation(previousLoc);
 
         navigateEvent = new NavigationManager.Event2C.OnLocationBack(sender, currentLoc, previousLoc, false, this);
@@ -379,24 +415,27 @@ public class Navigator {
      */
     private void go() {
         if (navigateEvent != null) {
-
             navigationManager.postEvent2C(navigateEvent);
 
-            if (navigateEvent instanceof NavigationManager.Event2C.OnLocationForward) {
-                NavigationManager.Event2C.OnLocationForward event = (NavigationManager.Event2C.OnLocationForward) navigateEvent;
-                String lastLocId = event.getLastValue() == null ? null
-                        : event.getLastValue().getLocationId();
-                navigationManager.logger.trace("Nav Manager: Forward: {} -> {}", lastLocId,
-                        event.getCurrentValue().getLocationId());
+            if (navigationManager.logger.isTraceEnabled()) {
+                if (navigateEvent instanceof NavigationManager.Event2C.OnLocationForward) {
+                    NavigationManager.Event2C.OnLocationForward event = (NavigationManager.Event2C.OnLocationForward) navigateEvent;
+                    String lastLocId = event.getLastValue() == null ? null
+                            : event.getLastValue().getLocationId();
+                    navigationManager.logger.trace("Nav Manager: Forward: {} -> {}", lastLocId,
+                            event.getCurrentValue().getLocationId());
+                }
             }
 
             if (navigateEvent instanceof NavigationManager.Event2C.OnLocationBack) {
-                NavigationManager.Event2C.OnLocationBack event = (NavigationManager.Event2C.OnLocationBack) navigateEvent;
-                NavLocation lastLoc = event.getLastValue();
-                NavLocation currentLoc = event.getCurrentValue();
-                navigationManager.logger.trace("Nav Manager: Backward: {} -> {}",
-                        lastLoc.getLocationId(),
-                        currentLoc == null ? "null" : currentLoc.getLocationId());
+                if (navigationManager.logger.isTraceEnabled()) {
+                    NavigationManager.Event2C.OnLocationBack event = (NavigationManager.Event2C.OnLocationBack) navigateEvent;
+                    NavLocation lastLoc = event.getLastValue();
+                    NavLocation currentLoc = event.getCurrentValue();
+                    navigationManager.logger.trace("Nav Manager: Backward: {} -> {}",
+                            lastLoc.getLocationId(),
+                            currentLoc == null ? "null" : currentLoc.getLocationId());
+                }
 
                 checkAppExit(sender);
             }

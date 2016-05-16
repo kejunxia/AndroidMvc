@@ -18,6 +18,7 @@ package com.shipdream.lib.android.mvc;
 
 public class NavLocation {
     private String locationId;
+    private boolean interim = false;
     private NavLocation previousLocation;
 
     /**
@@ -28,10 +29,25 @@ public class NavLocation {
     }
 
     /**
+     * Indicates whether the location is interim. Interim location will be skipped on back navigation.
+     * @return Whether this location is interim.
+     */
+    public boolean isInterim() {
+        return interim;
+    }
+
+    /**
      * Internal use. Don't set this from view layer.
      */
     public void _setLocationId(String locationId) {
         this.locationId = locationId;
+    }
+
+    /**
+     * Internal use. Don't set this from view layer.
+     */
+    public void _setInterim(boolean interim) {
+        this.interim = interim;
     }
 
     /**

@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 
 import com.shipdream.lib.android.mvc.MvcBean;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
+import com.shipdream.lib.android.mvc.manager.NavigationManager;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -362,13 +363,15 @@ public abstract class MvcFragment extends Fragment {
     }
 
     /**
-     * Called when this fragment is being replaced by the nextFragment and right before the
-     * fragment transaction is committed. If transaction between fragments need to specify shared
-     * elements, do it here.
+     * Called when {@link NavigationManager#navigate(Object)} is invoked and this fragment is acting
+     * as a navigable page. This fragment will be replaced by the nextFragment. This method is called
+     * right before the transaction is committed. This is the ideal place to
+     * {@link FragmentTransaction#addSharedElement(View, String)}.
+     *
      * @param transaction The transaction being committing
      * @param nextFragment Next fragment is going to
      */
-    protected void onPreTransactionCommit(FragmentTransaction transaction, MvcFragment nextFragment) {
+    protected void onPreNavigationTransaction(FragmentTransaction transaction, MvcFragment nextFragment) {
     }
 
     boolean aboutToPopOut = false;
