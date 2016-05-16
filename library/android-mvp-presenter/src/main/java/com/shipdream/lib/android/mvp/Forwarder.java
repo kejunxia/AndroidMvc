@@ -1,4 +1,4 @@
-package com.shipdream.lib.android.mvp.manager.internal;
+package com.shipdream.lib.android.mvp;
 
 import org.jetbrains.annotations.NotNull;
 

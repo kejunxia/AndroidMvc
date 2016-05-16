@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.manager.internal.Preparer;
-import com.shipdream.lib.android.mvp.view.AndroidMvp;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.Preparer;
+import com.shipdream.lib.android.mvp.AndroidMvp;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.android.mvp.view.nav.ControllerE;
 import com.shipdream.lib.android.mvp.view.nav.ControllerF;

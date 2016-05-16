@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.view;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvpFragment;
+import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 
 import org.mockito.ArgumentMatcher;

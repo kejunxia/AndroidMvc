@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import com.shipdream.lib.android.mvp.presenter.BaseController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.manager.InkManager;
 
 public interface PrinterController2 extends BaseController<PrintModel> {

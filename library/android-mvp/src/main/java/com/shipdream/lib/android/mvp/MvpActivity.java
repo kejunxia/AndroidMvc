@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvp;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -28,14 +28,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.view.R;
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvpBean;
-import com.shipdream.lib.android.mvp.NavLocation;
-import com.shipdream.lib.android.mvp.__MvpGraphHelper;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.manager.internal.__MvpManagerHelper;
-import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -96,7 +89,7 @@ public abstract class MvpActivity extends AppCompatActivity {
 
         if (toPrintAppExitMessage && logger.isTraceEnabled()) {
             logger.trace("App Exits(UI): {} injected beans are still cached.",
-                    __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+                    Injector.getGraph().singletonScopeCache.getCachedItems().size());
             toPrintAppExitMessage = false;
         }
     }
@@ -149,7 +142,7 @@ public abstract class MvpActivity extends AppCompatActivity {
         delegateFragment.pendingOnViewReadyActions.add(runnable);
     }
 
-    private static class DelegateFragmentController extends BaseControllerImpl {
+    private static class DelegateFragmentPresenter extends AbstractPresenter {
         private Handler handler = new Handler(Looper.getMainLooper());
 
         @Inject
@@ -204,7 +197,7 @@ public abstract class MvpActivity extends AppCompatActivity {
         private List<Runnable> pendingOnViewReadyActions = new ArrayList<>();
 
         @Inject
-        private DelegateFragmentController delegateFragmentController;
+        private DelegateFragmentPresenter delegateFragmentPresenter;
 
         /**
          * Hack to fix this <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a>
@@ -360,7 +353,7 @@ public abstract class MvpActivity extends AppCompatActivity {
         public boolean onBackButtonPressed() {
             MvpFragment topFragment = null;
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-            NavLocation curLoc = delegateFragmentController.getCurrentLocation();
+            NavLocation curLoc = delegateFragmentPresenter.getCurrentLocation();
             if (curLoc != null && curLoc.getLocationId() != null) {
                 topFragment = (MvpFragment) childFragmentManager().findFragmentByTag(
                         getFragmentTag(curLoc.getLocationId()));
@@ -371,7 +364,7 @@ public abstract class MvpActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                delegateFragmentController.navigateBack(this);
+                delegateFragmentPresenter.navigateBack(this);
             }
             return true;
         }
@@ -393,7 +386,7 @@ public abstract class MvpActivity extends AppCompatActivity {
                 notifyAllSubMvpFragmentsTheirStateIsManagedByMe(this, true);
             }
 
-            delegateFragmentController.delegateFragment = this;
+            delegateFragmentPresenter.delegateFragment = this;
         }
 
         private boolean firstTimeRun = false;
@@ -585,10 +578,7 @@ public abstract class MvpActivity extends AppCompatActivity {
                 currentFragment.registerOnViewReadyListener(new Runnable() {
                     @Override
                     public void run() {
-                        if (event.getNavigator() != null) {
-                            __MvpManagerHelper.destroyNavigator(event.getNavigator());
-                        }
-
+                        destroyNavigator(event.getNavigator());
                         logger.trace("Fragment ready: " + currentFragment.getClass().getSimpleName());
 
                         currentFragment.unregisterOnViewReadyListener(this);
@@ -651,9 +641,7 @@ public abstract class MvpActivity extends AppCompatActivity {
         private void performBackNav(final NavigationManager.Event2C.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
-                if (event.getNavigator() != null) {
-                    __MvpManagerHelper.destroyNavigator(event.getNavigator());
-                }
+                destroyNavigator(event.getNavigator());
 
                 MvpActivity mvpActivity = ((MvpActivity) getActivity());
                 //Back to null which should finish the current activity
@@ -675,9 +663,7 @@ public abstract class MvpActivity extends AppCompatActivity {
                                 frag.registerOnViewReadyListener(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (event.getNavigator() != null) {
-                                            __MvpManagerHelper.destroyNavigator(event.getNavigator());
-                                        }
+                                        destroyNavigator(event.getNavigator());
                                         frag.unregisterOnViewReadyListener(this);
                                     }
                                 });
@@ -724,6 +710,12 @@ public abstract class MvpActivity extends AppCompatActivity {
                             event.getLastValue() != null ? event.getLastValue().getLocationId() : null,
                             currentLoc.getLocationId());
                 }
+            }
+        }
+
+        private static void destroyNavigator(Navigator navigator) {
+            if (navigator != null) {
+                navigator.destroy();
             }
         }
     }

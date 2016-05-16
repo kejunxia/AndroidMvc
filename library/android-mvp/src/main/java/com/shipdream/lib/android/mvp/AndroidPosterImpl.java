@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.presenter.internal;
+package com.shipdream.lib.android.mvp;
 
 import android.os.Handler;
 import android.os.Looper;
@@ -25,7 +25,7 @@ import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AndroidPosterImpl implements BaseControllerImpl.AndroidPoster {
+public class AndroidPosterImpl implements AbstractPresenter.AndroidPoster {
     private static Handler handler;
     private static Logger logger = LoggerFactory.getLogger(AndroidPosterImpl.class);
 
@@ -33,7 +33,7 @@ public class AndroidPosterImpl implements BaseControllerImpl.AndroidPoster {
      * Internal use. Don't call me from your app.
      */
     public static void init() {
-        BaseControllerImpl.androidPoster = new AndroidPosterImpl();
+        AbstractPresenter.androidPoster = new AndroidPosterImpl();
     }
 
     @Override

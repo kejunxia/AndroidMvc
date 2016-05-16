@@ -16,8 +16,23 @@
 
 package com.shipdream.lib.android.mvp;
 
-public class MvpGraphException extends RuntimeException {
-    public MvpGraphException(String message, Throwable cause) {
-        super(message, cause);
-    }
+import android.os.Parcelable;
+
+/**
+ * Implements this interface to use {@link Parcelable} to save and restore state with better
+ * performance
+ * @param <T>
+ */
+public interface AndroidStateKeeper <T> {
+    /**
+     * Save the given state into {@link Parcelable}
+     * @param state the state to save
+     */
+    Parcelable saveState(T state, Class<T> stateType);
+
+    /**
+     * Restore state from the {@link Parcelable}
+     * @return The restored state
+     */
+    T getState(Parcelable parceledState, Class<T> stateType);
 }

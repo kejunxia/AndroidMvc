@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.manager;
+package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.NavLocation;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.ValueChangeEventC;
-import com.shipdream.lib.android.mvp.manager.internal.Navigator;
 
 /**
  * Controller to navigate among different fragments in the SAME activity.
  */
-public interface NavigationManager extends BaseManager<NavigationManager.Model> {
+public class NavigationManager extends AbstractManager<NavigationManager.Model> {
     /**
      * Model/State of navigation manager manage the navigation history
      */
-    class Model {
+    public static class Model {
         private NavLocation currentLocation;
 
         public NavLocation getCurrentLocation() {
@@ -40,14 +38,7 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
         }
     }
 
-    /**
-     * Initiates a {@link Navigator} to start navigation.
-     * @param sender Who wants to navigate
-     * @return A new instance of {@link Navigator}
-     */
-    Navigator navigate(Object sender);
-
-    interface Event2C {
+    public interface Event2C {
         /**
          * Event2C to notify views navigation will move forward.
          */
@@ -141,6 +132,22 @@ public interface NavigationManager extends BaseManager<NavigationManager.Model> 
                 super(sender);
             }
         }
+    }
+
+    boolean dumpHistoryOnLocationChange = false;
+
+    @Override
+    public Class<Model> modelType() {
+        return NavigationManager.Model.class;
+    }
+
+    /**
+     * Initiates a {@link Navigator} to start navigation.
+     * @param sender Who wants to navigate
+     * @return A new instance of {@link Navigator}
+     */
+    public Navigator navigate(Object sender) {
+        return new Navigator(sender, this);
     }
 
 }

@@ -41,15 +41,19 @@ public class TestInjector {
         Injector.getGraph();
     }
 
+    private int getGraphSize() {
+        return Injector.getGraph().singletonScopeCache.getCachedItems().size();
+    }
+    
     @Test
-    public void should_return_all_cached_instances_by___MvpGraphHelper() {
+    public void should_return_all_cached_instances_from_injector_graph() {
         Injector.configGraph(new MvpGraph.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return mock(ExecutorService.class);
             }
         });
-        Assert.assertEquals(0, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(0, getGraphSize());
 
         class View1 {
             @Inject
@@ -59,7 +63,7 @@ public class TestInjector {
 
         View1 v1 = new View1();
         Injector.getGraph().inject(v1);
-        Assert.assertEquals(1, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(1, getGraphSize());
 
         class View2 {
             @Inject
@@ -69,7 +73,7 @@ public class TestInjector {
 
         View2 v2 = new View2();
         Injector.getGraph().inject(v2);
-        Assert.assertEquals(1, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(1, getGraphSize());
 
         class View3 {
             @Inject
@@ -79,6 +83,6 @@ public class TestInjector {
 
         View3 v3 = new View3();
         Injector.getGraph().inject(v3);
-        Assert.assertEquals(2, __MvpGraphHelper.getAllCachedInstances(Injector.getGraph()).size());
+        Assert.assertEquals(2, getGraphSize());
     }
 }

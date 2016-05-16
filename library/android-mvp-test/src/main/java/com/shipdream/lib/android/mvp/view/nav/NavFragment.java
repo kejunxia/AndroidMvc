@@ -21,9 +21,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvpFragment;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.Forwarder;
+import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;

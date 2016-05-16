@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvp.view.nav.internal;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
 import com.shipdream.lib.android.mvp.view.nav.ControllerG;
 import com.shipdream.lib.android.mvp.view.nav.DisposeCheckerG;
 

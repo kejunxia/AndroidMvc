@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvp.view.nav;
 
-import com.shipdream.lib.android.mvp.presenter.BaseController;
-
 public interface ControllerG extends BaseController<ControllerG.Model> {
     class Model {
         public String value;

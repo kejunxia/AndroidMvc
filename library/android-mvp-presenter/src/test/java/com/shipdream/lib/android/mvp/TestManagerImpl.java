@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
-import com.shipdream.lib.android.mvp.manager.internal.BaseManagerImpl;
 
 import org.junit.After;
 import org.junit.Test;

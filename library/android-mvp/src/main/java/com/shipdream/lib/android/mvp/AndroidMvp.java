@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvp;
 
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvpGraph;
-import com.shipdream.lib.android.mvp.presenter.internal.AndroidPosterImpl;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

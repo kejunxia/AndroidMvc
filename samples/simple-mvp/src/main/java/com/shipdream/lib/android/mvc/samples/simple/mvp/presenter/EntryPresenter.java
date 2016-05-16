@@ -1,6 +1,6 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.presenter;
 
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
+import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.AbstractPresenter;
 
 import javax.inject.Inject;

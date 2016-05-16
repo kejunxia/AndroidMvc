@@ -16,10 +16,10 @@
 
 package com.shipdream.lib.android.mvp.view.injection;
 
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvpActivity;
-import com.shipdream.lib.android.mvp.view.MvpFragment;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.Forwarder;
+import com.shipdream.lib.android.mvp.MvpActivity;
+import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
 
 import javax.inject.Inject;

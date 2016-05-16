@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.presenter.internal;
+package com.shipdream.lib.android.mvp;
 
 import java.util.concurrent.Future;
 
@@ -25,7 +25,7 @@ import java.util.concurrent.Future;
  */
 public class Monitor {
     /**
-     * State of executing phases of {@link AsyncTask}
+     * State of executing phases of {@link Task}
      */
     public enum State {
         /**
@@ -80,7 +80,7 @@ public class Monitor {
     }
 
     /**
-     * Gets the state of this {@link AsyncTask}
+     * Gets the state of this {@link Task}
      * @return
      */
     public synchronized State getState() {

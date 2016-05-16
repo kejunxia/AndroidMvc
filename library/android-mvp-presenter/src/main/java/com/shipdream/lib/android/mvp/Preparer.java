@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.presenter.internal;
-
-import java.util.concurrent.ExecutorService;
+package com.shipdream.lib.android.mvp;
 
 /**
- * Interface to handle exceptions of {@link AsyncTask}
- *
- * @deprecated see {@link BaseControllerImpl#runTask(Object, ExecutorService, Task, Task.Callback)} and
- * {@link BaseControllerImpl#runTask(Object, Task)} and {@link BaseControllerImpl#runTask(Object, Task, Task.Callback)}
+ * Preparer in which the injected instance will be configured before a navigation.
  */
-public interface AsyncExceptionHandler {
+public interface Preparer<T> {
     /**
-     * Method to handle exception of {@link AsyncTask}
-     * @param exception Exception occurs during executing the {@link AsyncTask}
+     * Prepare the state for a navigation
+     * @param instance The instance(usually a controller) that will be configured
      */
-    void handleException(Exception exception);
+    void prepare(T instance);
 }

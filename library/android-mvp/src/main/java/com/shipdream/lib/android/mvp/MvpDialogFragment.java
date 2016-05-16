@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvp;
 
 import android.app.AlertDialog;
 import android.os.Bundle;

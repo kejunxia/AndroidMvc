@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvp.view.injection.controller;
 
-import com.shipdream.lib.android.mvp.presenter.BaseController;
-
 import java.util.List;
 
 public interface ControllerC extends BaseController<ControllerC.Model> {

@@ -29,10 +29,10 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 
 import com.shipdream.lib.android.mvc.MvcGraphBridge;
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.AndroidMvp;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.AndroidMvp;
 import com.shipdream.lib.android.mvp.view.LifeCycleMonitorFactory;
-import com.shipdream.lib.android.mvp.view.MvpActivity;
+import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.view.MvpApp;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;

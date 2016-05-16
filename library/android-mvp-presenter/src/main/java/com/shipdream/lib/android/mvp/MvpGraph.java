@@ -16,11 +16,6 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.presenter.internal.AsyncTask;
-import com.shipdream.lib.android.mvp.presenter.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvp.manager.internal.Navigator;
-import com.shipdream.lib.android.mvp.manager.internal.Preparer;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
@@ -85,6 +80,12 @@ import javax.inject.Singleton;
  * <p/>
  */
 public class MvpGraph {
+    public static class Exception extends RuntimeException {
+        public Exception(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
+
     private Logger logger = LoggerFactory.getLogger(getClass());
     ScopeCache singletonScopeCache;
     DefaultProviderFinder defaultProviderFinder;
@@ -216,7 +217,7 @@ public class MvpGraph {
         try {
             graph.use(type, Inject.class, consumer);
         } catch (PokeException e) {
-            throw new MvpGraphException(e.getMessage(), e);
+            throw new Exception(e.getMessage(), e);
         }
     }
 
@@ -329,13 +330,13 @@ public class MvpGraph {
      * @param type The type of the injectable instance
      * @param qualifier Qualifier for the injectable instance
      * @param consumer Consume to use the instance
-     * @throws MvpGraphException throw when there are exceptions during the consumption of the instance
+     * @throws Exception throw when there are exceptions during the consumption of the instance
      */
     public <T> void use(final Class<T> type, final Annotation qualifier, final Consumer<T> consumer) {
         try {
             graph.use(type, qualifier, Inject.class, consumer);
         } catch (PokeException e) {
-            throw new MvpGraphException(e.getMessage(), e);
+            throw new Exception(e.getMessage(), e);
         }
     }
 
@@ -349,7 +350,7 @@ public class MvpGraph {
         try {
             graph.inject(target, Inject.class);
         } catch (PokeException e) {
-            throw new MvpGraphException(e.getMessage(), e);
+            throw new Exception(e.getMessage(), e);
         }
     }
 
@@ -364,7 +365,7 @@ public class MvpGraph {
         try {
             graph.release(target, Inject.class);
         } catch (ProviderMissingException e) {
-            throw new MvpGraphException(e.getMessage(), e);
+            throw new Exception(e.getMessage(), e);
         }
     }
 
@@ -376,7 +377,7 @@ public class MvpGraph {
     public void register(Component component) {
         try {
             defaultProviderFinder.register(component);
-        } catch (Exception e) {
+        } catch (java.lang.Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
@@ -444,15 +445,15 @@ public class MvpGraph {
 
         /**
          * Create a new instance of ExecutorService to support
-         * {@link BaseControllerImpl#runAsyncTask(Object, AsyncTask)}. To run tasks really
-         * asynchronously by calling {@link BaseControllerImpl#runAsyncTask(Object, AsyncTask)}, an
+         * {@link AbstractPresenter#runTask(Object, Task)}. To run tasks really
+         * asynchronously by calling {@link AbstractPresenter#runTask(Object, Task)}, an
          * {@link ExecutorService} runs tasks on threads different from the caller of
-         * {@link BaseControllerImpl#runAsyncTask(Object, AsyncTask)} is needed. However, to provide
+         * {@link AbstractPresenter#runTask(Object, Task)} is needed. However, to provide
          * a {@link ExecutorService} runs tasks on the same thread would be handy for testing. For
          * example, network responses can be mocked to return immediately.
          *
          * @return The {@link ExecutorService} controls on which threads tasks sent to
-         * {@link BaseControllerImpl#runAsyncTask(Object, AsyncTask)} will be running on.
+         * {@link AbstractPresenter#runTask(Object, Task)} will be running on.
          */
         protected abstract ExecutorService createExecutorService();
     }

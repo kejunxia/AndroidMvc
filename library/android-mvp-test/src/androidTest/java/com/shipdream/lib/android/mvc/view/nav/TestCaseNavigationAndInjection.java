@@ -19,8 +19,8 @@ package com.shipdream.lib.android.mvc.view.nav;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvp.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.AndroidMvp;
+import com.shipdream.lib.android.mvp.Forwarder;
+import com.shipdream.lib.android.mvp.AndroidMvp;
 import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.android.mvp.view.nav.AnotherController;
 import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;

@@ -413,7 +413,7 @@ public class TestMvpGraph {
 
     interface UnimplementedInterface{}
 
-    @Test(expected = MvpGraphException.class)
+    @Test(expected = MvpGraph.Exception.class)
     public void should_raise_mvp_graph_exception_when_inject_on_poke_exception() {
         class View {
             @Inject
@@ -422,7 +422,7 @@ public class TestMvpGraph {
         mvpGraph.inject(new View());
     }
 
-    @Test(expected = MvpGraphException.class)
+    @Test(expected = MvpGraph.Exception.class)
     public void should_raise_mvp_graph_exception_when_release_on_poke_exception() {
         class View {
             @Inject
@@ -434,7 +434,7 @@ public class TestMvpGraph {
         mvpGraph.release(view);
     }
 
-    @Test(expected = MvpGraphException.class)
+    @Test(expected = MvpGraph.Exception.class)
     public void should_raise_mvp_graph_exception_when_use_on_poke_exception() {
         class View {
             @Inject

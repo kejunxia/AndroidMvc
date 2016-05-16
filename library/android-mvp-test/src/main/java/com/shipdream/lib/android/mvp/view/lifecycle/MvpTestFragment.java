@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.shipdream.lib.android.mvp.view.MvpApp;
-import com.shipdream.lib.android.mvp.view.MvpFragment;
+import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
 

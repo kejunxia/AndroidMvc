@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.manager.internal;
+package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvpGraphException;
-import com.shipdream.lib.android.mvp.NavLocation;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -52,7 +48,7 @@ public class Navigator {
 
     private final Object sender;
     private OnSettled onSettled;
-    private NavigationManagerImpl navigationManager;
+    private NavigationManager navigationManager;
     private BaseEventC navigateEvent;
     private List<PendingReleaseInstance> pendingReleaseInstances;
 
@@ -61,7 +57,7 @@ public class Navigator {
      * @param sender Who wants to navigate
      * @param navigationManager The navigation manager
      */
-    Navigator(Object sender, NavigationManagerImpl navigationManager) {
+    Navigator(Object sender, NavigationManager navigationManager) {
         this.sender = sender;
         this.navigationManager = navigationManager;
     }
@@ -81,9 +77,9 @@ public class Navigator {
      *
      * @param type The class type of the instance needs to be prepared
      * @return This navigator
-     * @throws MvpGraphException Raised when the required injectable object cannot be injected
+     * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type) throws MvpGraphException {
+    public <T> Navigator with(Class<T> type) throws MvpGraph.Exception {
         with(type, null, null);
         return this;
     }
@@ -123,9 +119,9 @@ public class Navigator {
      * @param type The class type of the instance needs to be prepared
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws MvpGraphException Raised when the required injectable object cannot be injected
+     * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws MvpGraphException {
+    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws MvpGraph.Exception {
         with(type, null, preparer);
         return this;
     }
@@ -165,9 +161,9 @@ public class Navigator {
      * @param qualifier The qualifier
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws MvpGraphException Raised when the required injectable object cannot be injected
+     * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvpGraphException {
+    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvpGraph.Exception {
         try {
             T instance = Injector.getGraph().reference(type, qualifier);
 
@@ -184,7 +180,7 @@ public class Navigator {
             pendingReleaseInstance.qualifier = qualifier;
             pendingReleaseInstances.add(pendingReleaseInstance);
         } catch (PokeException e) {
-            throw new MvpGraphException(e.getMessage(), e);
+            throw new MvpGraph.Exception(e.getMessage(), e);
         }
         return this;
     }
@@ -446,7 +442,7 @@ public class Navigator {
     /**
      * Internal use. Don't do it in your app.
      */
-    void __destroy() {
+    void destroy() {
         if (onSettled != null) {
             onSettled.run();
         }

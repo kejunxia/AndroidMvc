@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvp;
 
 import android.os.Bundle;
-
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvpBean;
 
 import java.lang.reflect.Field;
 

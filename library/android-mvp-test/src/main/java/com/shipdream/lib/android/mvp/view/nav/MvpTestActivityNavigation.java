@@ -19,9 +19,9 @@ package com.shipdream.lib.android.mvp.view.nav;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.MvpActivity;
-import com.shipdream.lib.android.mvp.view.MvpFragment;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.MvpActivity;
+import com.shipdream.lib.android.mvp.MvpFragment;
 
 import javax.inject.Inject;
 

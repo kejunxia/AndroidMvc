@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import com.shipdream.lib.android.mvp.presenter.BaseController;
-
 public interface TimerController extends BaseController<TimerModel> {
     void setInitialValue(long value);
     long getInitialValue();

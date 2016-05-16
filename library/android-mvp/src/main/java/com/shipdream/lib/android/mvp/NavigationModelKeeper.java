@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvp;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.shipdream.lib.android.mvp.NavLocation;
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
 
 /**
  * Navigation model state keeper implemented by Android parcelable.

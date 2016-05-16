@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvp.view.eventv2v;
 import android.content.Intent;
 import android.os.IBinder;
 
-import com.shipdream.lib.android.mvp.view.MvpService;
+import com.shipdream.lib.android.mvp.MvpService;
 
 public class EventBusV2VService extends MvpService {
     @Override

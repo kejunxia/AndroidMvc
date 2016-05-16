@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvp.view.help;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvpFragment;
+import com.shipdream.lib.android.mvp.MvpFragment;
 
 public interface LifeCycleMonitor {
     void onCreate(Bundle savedInstanceState);

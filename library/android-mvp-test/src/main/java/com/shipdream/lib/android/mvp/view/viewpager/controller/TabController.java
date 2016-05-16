@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.view.viewpager.controller;
 
-import com.shipdream.lib.android.mvp.presenter.BaseController;
 import com.shipdream.lib.android.mvp.view.viewpager.TabModel;
 
 public interface TabController extends BaseController<TabModel> {

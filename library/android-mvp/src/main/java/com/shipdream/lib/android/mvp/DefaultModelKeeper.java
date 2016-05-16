@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvp;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -22,8 +22,6 @@ import android.os.Parcelable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
-import com.shipdream.lib.android.mvp.ModelKeeper;
-import com.shipdream.lib.android.mvp.manager.NavigationManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

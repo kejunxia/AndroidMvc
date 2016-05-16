@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvp;
 
 import android.os.Handler;
 import android.os.Looper;
 
-import com.shipdream.lib.android.mvp.presenter.internal.AndroidPosterImpl;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;

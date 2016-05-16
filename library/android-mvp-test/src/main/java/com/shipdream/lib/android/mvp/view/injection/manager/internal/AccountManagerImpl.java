@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.view.injection.manager.internal;
 
-import com.shipdream.lib.android.mvp.manager.internal.BaseManagerImpl;
 import com.shipdream.lib.android.mvp.view.injection.manager.AccountManager;
 import com.shipdream.lib.android.mvp.view.injection.service.StorageService;
 

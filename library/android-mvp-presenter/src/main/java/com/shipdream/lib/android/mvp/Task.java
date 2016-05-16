@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.presenter.internal;
+package com.shipdream.lib.android.mvp;
 
 /**
  * Task to execute a block of code
