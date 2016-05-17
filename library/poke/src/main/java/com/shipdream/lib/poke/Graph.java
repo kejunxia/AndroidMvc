@@ -161,12 +161,13 @@ public abstract class Graph {
 
     /**
      * Same as {@link #use(Class, Annotation, Class, Consumer)} except using un-qualified injectable type.
-     * @param type The type of the injectable instance
+     *
+     * @param type             The type of the injectable instance
      * @param injectAnnotation injectAnnotation
-     * @param consumer Consume to use the instance
-     * @throws ProvideException ProvideException
+     * @param consumer         Consume to use the instance
+     * @throws ProvideException              ProvideException
      * @throws CircularDependenciesException CircularDependenciesException
-     * @throws ProviderMissingException ProviderMissingException
+     * @throws ProviderMissingException      ProviderMissingException
      */
     public <T> void use(Class<T> type, Class<? extends Annotation> injectAnnotation, Consumer<T> consumer)
             throws ProvideException, CircularDependenciesException, ProviderMissingException {
@@ -182,92 +183,93 @@ public abstract class Graph {
      * scope of {@link Consumer#consume(Object)} the instance will be held.
      * <p>For example,</p>
      * <pre>
-        private static class Device {
-            @MyInject
-            private Os os;
-        }
-
-        final SimpleGraph graph = new SimpleGraph();
-        ScopeCache scopeCache = new ScopeCache();
-
-        graph.register(Os.class, Android.class, scopeCache);
-
-        //OsReferenceCount = 0
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-              //First time to create the instance.
-              //OsReferenceCount = 1
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 0
-
-        Device device = new Device();
-        graph.inject(device, MyInject.class);  //OsReferenceCount = 1
-        //New instance created and cached
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-              //Since reference count is greater than 0, cached instance will be reused
-              //OsReferenceCount = 2
-              Assert.assertTrue(device.os == instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 1
-
-        graph.release(device, MyInject.class);  //OsReferenceCount = 0
-        //Last instance released, so next time a new instance will be created
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-              //OsReferenceCount = 1
-              //Since the cached instance is cleared, the new instance is a newly created one.
-              Assert.assertTrue(device.os != instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 0
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-                //OsReferenceCount = 1
-                //Since the cached instance is cleared, the new instance is a newly created one.
-                Assert.assertTrue(device.os != instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 0
-        //Cached instance cleared again
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-                //OsReferenceCount = 1
-                graph.inject(device, MyInject.class);  
-                //Injection will reuse the cached instance and increment the reference count
-                //OsReferenceCount = 2
-
-                //Since the cached instance is cleared, the new instance is a newly created one.
-                Assert.assertTrue(device.os == instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 1
-
-        graph.release(device, MyInject.class);  //OsReferenceCount = 0      
+     * private static class Device {
+     * @MyInject
+     * private Os os;
+     * }
+     *
+     * final SimpleGraph graph = new SimpleGraph();
+     * ScopeCache scopeCache = new ScopeCache();
+     *
+     * graph.register(Os.class, Android.class, scopeCache);
+     *
+     * //OsReferenceCount = 0
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //First time to create the instance.
+     * //OsReferenceCount = 1
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 0
+     *
+     * Device device = new Device();
+     * graph.inject(device, MyInject.class);  //OsReferenceCount = 1
+     * //New instance created and cached
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //Since reference count is greater than 0, cached instance will be reused
+     * //OsReferenceCount = 2
+     * Assert.assertTrue(device.os == instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 1
+     *
+     * graph.release(device, MyInject.class);  //OsReferenceCount = 0
+     * //Last instance released, so next time a new instance will be created
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //OsReferenceCount = 1
+     * //Since the cached instance is cleared, the new instance is a newly created one.
+     * Assert.assertTrue(device.os != instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 0
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //OsReferenceCount = 1
+     * //Since the cached instance is cleared, the new instance is a newly created one.
+     * Assert.assertTrue(device.os != instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 0
+     * //Cached instance cleared again
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //OsReferenceCount = 1
+     * graph.inject(device, MyInject.class);
+     * //Injection will reuse the cached instance and increment the reference count
+     * //OsReferenceCount = 2
+     *
+     * //Since the cached instance is cleared, the new instance is a newly created one.
+     * Assert.assertTrue(device.os == instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 1
+     *
+     * graph.release(device, MyInject.class);  //OsReferenceCount = 0
      * </pre>
-     * @param type The type of the injectable instance
-     * @param qualifier Qualifier for the injectable instance
+     *
+     * @param type             The type of the injectable instance
+     * @param qualifier        Qualifier for the injectable instance
      * @param injectAnnotation injectAnnotation
-     * @param consumer Consume to use the instance
-     * @throws ProvideException ProvideException
+     * @param consumer         Consume to use the instance
+     * @throws ProvideException              ProvideException
      * @throws CircularDependenciesException CircularDependenciesException
-     * @throws ProviderMissingException ProviderMissingException
+     * @throws ProviderMissingException      ProviderMissingException
      */
     public <T> void use(Class<T> type, Annotation qualifier,
                         Class<? extends Annotation> injectAnnotation, Consumer<T> consumer)
@@ -281,14 +283,15 @@ public abstract class Graph {
      * Reference an injectable object and retain it. Use
      * {@link #dereference(Object, Class, Annotation, Class)} to dereference it when it's not used
      * any more.
-     * @param type the type of the object
-     * @param qualifier the qualifier
+     *
+     * @param type             the type of the object
+     * @param qualifier        the qualifier
      * @param injectAnnotation the inject annotation
      * @return
      */
     public <T> T reference(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
             throws ProviderMissingException, ProvideException, CircularDependenciesException {
-         Provider<T> provider = getProvider(type, qualifier);
+        Provider<T> provider = getProvider(type, qualifier);
         T instance = provider.get();
         doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
@@ -306,8 +309,9 @@ public abstract class Graph {
     /**
      * Dereference an injectable object. When it's not referenced by anything else after this
      * dereferencing, release its cached instance if possible.
-     * @param type the type of the object
-     * @param qualifier the qualifier
+     *
+     * @param type             the type of the object
+     * @param qualifier        the qualifier
      * @param injectAnnotation the inject annotation
      */
     public <T> void dereference(T instance, Class<T> type, Annotation qualifier,
@@ -419,7 +423,7 @@ public abstract class Graph {
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(injectAnnotation)) {
                         Object fieldValue = ReflectUtils.getFieldValue(target, field);
-                        if(fieldValue != null) {
+                        if (fieldValue != null) {
                             final Class<?> fieldType = field.getType();
                             Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
                             Provider provider = getProvider(fieldType, fieldQualifier);
@@ -461,9 +465,10 @@ public abstract class Graph {
 
     /**
      * Records the field of a target object is visited
-     * @param object The field holder
+     *
+     * @param object      The field holder
      * @param objectField The field which holds the object in its parent
-     * @param field The field of the holder
+     * @param field       The field of the holder
      */
     private void recordVisitField(Object object, Field objectField, Field field) {
         Map<String, Set<String>> bag = visitedFields.get(object);
@@ -475,7 +480,7 @@ public abstract class Graph {
 
         String objectFiledKey = objectField == null ? "" : objectField.toGenericString();
 
-        if(fields == null) {
+        if (fields == null) {
             fields = new HashSet<>();
             bag.put(objectFiledKey, fields);
         }
@@ -484,9 +489,10 @@ public abstract class Graph {
 
     /**
      * Indicates whether the field of a target object is visited
-     * @param object The field holder
+     *
+     * @param object      The field holder
      * @param objectField The field which holds the object in its parent
-     * @param field The field of the holder
+     * @param field       The field of the holder
      */
     private boolean isFieldVisited(Object object, Field objectField, Field field) {
         Map<String, Set<String>> bag = visitedFields.get(object);
@@ -546,6 +552,7 @@ public abstract class Graph {
 
     /**
      * Print readable circular graph
+     *
      * @throws CircularDependenciesException
      */
     private void throwCircularDependenciesException()
@@ -571,12 +578,14 @@ public abstract class Graph {
     public interface Monitor {
         /**
          * Called when the graph is about to inject dependencies into the given object
+         *
          * @param target The object to inject into
          */
         void onInject(Object target);
 
         /**
          * Called when the graph is about to release dependencies from the given object
+         *
          * @param target The object to release
          */
         void onRelease(Object target);
