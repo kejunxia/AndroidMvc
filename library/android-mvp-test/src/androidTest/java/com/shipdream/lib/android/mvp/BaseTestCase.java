@@ -125,7 +125,7 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
     public void setUp() throws Exception {
         super.setUp();
         scopeCache = new testCache();
-        MvcGraphBridge.hijackCache(scopeCache);
+        AndroidMvp.graph().hijack(scopeCache);
 
         injectDependencies(scopeCache);
 
