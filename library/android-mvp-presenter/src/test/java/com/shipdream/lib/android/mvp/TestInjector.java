@@ -42,7 +42,7 @@ public class TestInjector {
     }
 
     private int getGraphSize() {
-        return Injector.getGraph().singletonScopeCache.getCachedItems().size();
+        return Injector.getGraph().appProviderFinder.appScopeCache.getCachedItems().size();
     }
     
     @Test

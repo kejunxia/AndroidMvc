@@ -33,7 +33,7 @@ public interface Task {
         /**
          * Called when the execution of the task completes successfully
          */
-        public abstract void onSuccess();
+        public void onSuccess(){}
 
         /**
          * Called when the execution of the task is cancelled

@@ -14,20 +14,27 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal;
+package com.shipdream.lib.android.mvp.presenter;
 
+import com.shipdream.lib.android.mvp.inject.BaseControllerDependencies;
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
-import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintModel;
 
-public class PrintControllerImpl extends BaseControllerImpl<PrintModel> implements PrintController {
-    @Override
-    public String print() {
-        return getModel().getContent();
+import org.junit.Test;
+
+import javax.inject.Inject;
+
+public class TestControllerInjectionByComponent {
+    public static class TestBadView {
+        @Inject
+        private PrintController controller;
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Class modelType() {
-        return PrintModel.class;
+    @Test
+    public void dependenciesOfBaseControllerImplShouldBeInjected() throws Exception{
+        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+
+        TestBadView testView = new TestBadView();
+        graph.inject(testView);
     }
 }

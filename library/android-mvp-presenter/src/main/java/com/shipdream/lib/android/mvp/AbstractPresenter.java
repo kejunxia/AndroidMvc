@@ -152,6 +152,8 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
                         monitor.setState(Monitor.State.ERRED);
                         if (callback != null) {
                             callback.onException(e);
+                        } else {
+                            logger.warn(e.getMessage(), e);
                         }
                     }
                 }

@@ -16,17 +16,18 @@
 
 package com.shipdream.lib.android.mvp.manager.internal;
 
-import com.shipdream.lib.android.mvp.controller.BaseTest;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.presenter.BaseTest;
 
 import org.junit.Before;
 
 public class BaseNavigationManagerTest extends BaseTest {
-    protected NavigationManagerImpl navigationManager;
+    protected NavigationManager navigationManager;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        navigationManager = new NavigationManagerImpl();
+        navigationManager = new NavigationManager();
         graph.inject(navigationManager);
         navigationManager.onConstruct();
     }

@@ -87,8 +87,7 @@ public class MvpGraph {
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    ScopeCache singletonScopeCache;
-    DefaultProviderFinder defaultProviderFinder;
+    AppProviderFinder appProviderFinder;
     List<Bean> mvpBeen = new ArrayList<>();
 
     //Composite graph to hide methods
@@ -96,11 +95,10 @@ public class MvpGraph {
 
     public MvpGraph(BaseDependencies baseDependencies)
             throws ProvideException, ProviderConflictException {
-        singletonScopeCache = new ScopeCache();
-        defaultProviderFinder = new DefaultProviderFinder(MvpGraph.this);
-        defaultProviderFinder.register(new __Component(singletonScopeCache, baseDependencies));
+        appProviderFinder = new AppProviderFinder(MvpGraph.this);
+        appProviderFinder.register(new __Component(appProviderFinder.appScopeCache, baseDependencies));
 
-        graph = new SimpleGraph(defaultProviderFinder);
+        graph = new SimpleGraph(appProviderFinder);
 
         graph.registerProviderFreedListener(new OnFreedListener() {
             @Override
@@ -128,7 +126,7 @@ public class MvpGraph {
      * @param singletonScopeCache the cache to hijack
      */
     void hijack(ScopeCache singletonScopeCache) {
-        this.singletonScopeCache = singletonScopeCache;
+        this.appProviderFinder.appScopeCache = singletonScopeCache;
     }
 
     /**
@@ -376,7 +374,7 @@ public class MvpGraph {
      */
     public void register(Component component) {
         try {
-            defaultProviderFinder.register(component);
+            appProviderFinder.register(component);
         } catch (java.lang.Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -388,7 +386,7 @@ public class MvpGraph {
      * @param component The component
      */
     public void unregister(Component component) {
-        defaultProviderFinder.unregister(component);
+        appProviderFinder.unregister(component);
     }
 
     /**
@@ -490,14 +488,16 @@ public class MvpGraph {
         }
     }
 
-    static class DefaultProviderFinder extends ProviderFinderByRegistry {
+    static class AppProviderFinder extends ProviderFinderByRegistry {
+        ScopeCache appScopeCache;
         private final MvpGraph mvpGraph;
         private final ImplClassLocator defaultImplClassLocator;
         private Map<Class, Provider> providers = new HashMap<>();
 
-        private DefaultProviderFinder(MvpGraph mvpGraph) {
+        private AppProviderFinder(MvpGraph mvpGraph) {
             this.mvpGraph = mvpGraph;
-            defaultImplClassLocator = new ImplClassLocatorByPattern(mvpGraph.singletonScopeCache);
+            appScopeCache = new ScopeCache();
+            defaultImplClassLocator = new ImplClassLocatorByPattern(appScopeCache);
         }
 
         @SuppressWarnings("unchecked")

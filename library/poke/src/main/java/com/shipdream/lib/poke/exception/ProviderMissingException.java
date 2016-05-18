@@ -34,7 +34,7 @@ public class ProviderMissingException extends PokeException{
 
     private static String makeMessage(Class instanceType, Annotation qualifier) {
         if (qualifier == null) {
-            return String.format("Provider for type: %s cannot be found. Please if it's defined properly.", instanceType.getName());
+            return String.format("Provider for type without qualifier: %s cannot be found. Please if it's defined properly.", instanceType.getName());
         } else {
             return String.format("Provider for type: %s, qualifier: %s cannot be found. Please if it's defined properly.",
                     instanceType.getName(), qualifier.toString());

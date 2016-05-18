@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.manager.internal;
+package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.android.mvp.Forwarder;
-import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvpGraph;
-import com.shipdream.lib.android.mvp.NavLocation;
-import com.shipdream.lib.android.mvp.Navigator;
-import com.shipdream.lib.android.mvp.Preparer;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.TimerController;
-import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.TimerControllerImpl;
-import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.manager.internal.BaseNavigationManagerTest;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Provides;
@@ -468,7 +461,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             @Singleton
             @Slower2
             TimerController timerSlowerX2() {
-                return new TimerControllerImpl() {
+                return new TimerController() {
                     {
                         onConstruct();
                     }
@@ -503,7 +496,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             @Singleton
             @Slower2
             TimerController timerSlowerX2() {
-                return new TimerControllerImpl() {
+                return new TimerController() {
                     {
                         try {
                             onConstruct();
@@ -523,7 +516,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             @Singleton
             @Slower3
             TimerController timerSlowerX3() {
-                return new TimerControllerImpl() {
+                return new TimerController() {
                     {
                         try {
                             onConstruct();
@@ -570,7 +563,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
 
         //destroy the navigator
-        navigator.__destroy();
+        navigator.destroy();
 
         Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
             @Override
@@ -606,7 +599,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
 
         //destroy the navigator
-        navigator.__destroy();
+        navigator.destroy();
 
         Injector.getGraph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
             @Override
@@ -645,7 +638,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
 
         //destroy the navigator
-        navigator.__destroy();
+        navigator.destroy();
 
         Injector.getGraph().use(TimerController.class, new Consumer<TimerController>() {
             @Override
@@ -689,7 +682,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         verify(onSettled, times(0)).run();
 
         //destroy the navigator
-        navigator.__destroy();
+        navigator.destroy();
 
         verify(onSettled, times(1)).run();
     }

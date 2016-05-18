@@ -16,6 +16,16 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-public interface PrintController extends BaseController<PrintModel> {
-    String print();
+import com.shipdream.lib.android.mvp.AbstractPresenter;
+
+public class PrintController extends AbstractPresenter<PrintModel> {
+    public String print() {
+        return getModel().getContent();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public Class modelType() {
+        return PrintModel.class;
+    }
 }

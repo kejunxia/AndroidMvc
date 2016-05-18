@@ -19,7 +19,6 @@ package com.shipdream.lib.android.mvp.inject;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintModel;
-import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.PrintControllerImpl;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
@@ -38,7 +37,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
         private PrintController printController;
     }
 
-    public static class MockPrinter extends BaseControllerImpl<PrintModel> implements PrintController {
+    public static class MockPrinter extends PrintController {
         private final String printContent = "Mock content";
 
         @Override
@@ -99,7 +98,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
         TestView testView1 = new TestView();
         graph.inject(testView1);
 
-        Assert.assertEquals(testView1.printController.getClass(), PrintControllerImpl.class);
+        Assert.assertEquals(testView1.printController.getClass(), PrintController.class);
         PrintModel printModel = new PrintModel();
         printModel.setContent("Hello Poke");
         testView1.printController.bindModel(this, printModel);

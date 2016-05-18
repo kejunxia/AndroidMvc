@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.controller;
+package com.shipdream.lib.android.mvp.presenter;
 
 import com.shipdream.lib.android.mvp.Injector;
 import com.shipdream.lib.android.mvp.MvpGraph;

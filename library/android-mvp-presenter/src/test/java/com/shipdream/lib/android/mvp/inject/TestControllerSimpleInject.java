@@ -17,18 +17,23 @@
 package com.shipdream.lib.android.mvp.inject;
 
 import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.LifeCycleTestController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.MissingImplController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 
@@ -61,6 +66,23 @@ public class TestControllerSimpleInject extends BaseTestCases {
         final PrintController mockPrintController = mock(PrintController.class);
 
         SimpleGraph graph = new SimpleGraph();
+        graph.register(new Component() {
+            @Override
+            public ScopeCache getScopeCache() {
+                return super.getScopeCache();
+            }
+
+            @Provides
+            @EventBusC
+            public EventBus provideEventBusC() {
+                return mock(EventBus.class);
+            }
+
+            @Provides
+            public ExecutorService provideExecutorService() {
+                return mock(ExecutorService.class);
+            }
+        });
         graph.register(new Provider<PrintController>(PrintController.class) {
             @Override
             protected PrintController createInstance() throws ProvideException {

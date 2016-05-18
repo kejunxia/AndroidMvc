@@ -16,10 +16,29 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.manager.InkManager;
 
-public interface PrinterController2 extends BaseController<PrintModel> {
-    String print() throws Exception;
+import javax.inject.Inject;
 
-    InkManager getInkManager();
+public class PrinterController2 extends AbstractPresenter<PrintModel> {
+    @Inject
+    private InkManager inkManager;
+
+    public String print() throws Exception {
+        if(inkManager.fetchInk()) {
+            return getModel().getContent();
+        } else {
+            throw new Exception("Out of ink");
+        }
+    }
+
+    public InkManager getInkManager() {
+        return inkManager;
+    }
+
+    @Override
+    public Class<PrintModel> modelType() {
+        return PrintModel.class;
+    }
 }

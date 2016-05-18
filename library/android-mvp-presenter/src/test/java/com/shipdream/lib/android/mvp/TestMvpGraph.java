@@ -48,7 +48,6 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -348,8 +347,8 @@ public class TestMvpGraph {
     public void should_throw_out_exceptions_when_registering_component()
             throws ProvideException, ProviderConflictException {
         // Arrange
-        MvpGraph.DefaultProviderFinder providerFinder = mock(MvpGraph.DefaultProviderFinder.class);
-        mvpGraph.defaultProviderFinder = providerFinder;
+        MvpGraph.AppProviderFinder providerFinder = mock(MvpGraph.AppProviderFinder.class);
+        mvpGraph.appProviderFinder = providerFinder;
 
         doAnswer(new Answer() {
             @Override
@@ -368,13 +367,13 @@ public class TestMvpGraph {
         ScopeCache scopeCache = mock(ScopeCache.class);
 
         // Pre-verify
-        Assert.assertNotEquals(scopeCache, mvpGraph.singletonScopeCache);
+        Assert.assertNotEquals(scopeCache, mvpGraph.appProviderFinder.appScopeCache);
 
         // Act
         mvpGraph.hijack(scopeCache);
 
         // Verify
-        Assert.assertEquals(scopeCache, mvpGraph.singletonScopeCache);
+        Assert.assertEquals(scopeCache, mvpGraph.appProviderFinder.appScopeCache);
     }
 
     @Test
@@ -392,15 +391,13 @@ public class TestMvpGraph {
         mvpGraph.saveAllModels(modelKeeperMock);
 
         // Verify
-        verify(beanMock, times(1)).getModel();
-        verify(beanMock, times(1)).modelType();
         verify(modelKeeperMock).saveModel(beanMock);
 
         // Arrange
         reset(modelKeeperMock);
 
         Object stateMock = mock(Object.class);
-        when(modelKeeperMock.retrieveModel(eq(Object.class))).thenReturn(stateMock);
+        when(modelKeeperMock.retrieveModel(any(Class.class))).thenReturn(stateMock);
 
         mvpGraph.restoreAllModels(modelKeeperMock);
 
