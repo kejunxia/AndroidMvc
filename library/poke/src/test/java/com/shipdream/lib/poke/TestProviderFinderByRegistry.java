@@ -49,7 +49,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         providerFinder = new ProviderFinderByRegistry();
         graph = new Graph() {
             {
-                addProviderFinders(providerFinder);
+                addProviderFinder(providerFinder);
             }
         };
     }

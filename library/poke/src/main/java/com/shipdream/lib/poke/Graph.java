@@ -131,7 +131,7 @@ public abstract class Graph {
      *
      * @param providerFinders The {@link ProviderFinder}s to add
      */
-    protected void addProviderFinders(ProviderFinder... providerFinders) {
+    public void addProviderFinder(ProviderFinder... providerFinders) {
         if (this.providerFinders == null) {
             this.providerFinders = new ArrayList<>();
         }

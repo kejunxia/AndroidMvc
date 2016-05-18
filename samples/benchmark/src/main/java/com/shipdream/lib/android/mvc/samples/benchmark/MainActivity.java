@@ -210,7 +210,7 @@ public class MainActivity extends Activity {
                 Graph graph = new Graph(){
                     {
                         final ImplClassLocator implClassLocatorByPattern = new ImplClassLocatorByPattern();
-                        addProviderFinders(new ProviderFinder() {
+                        addProviderFinder(new ProviderFinder() {
                             @SuppressWarnings("unchecked")
                             @Override
                             public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
@@ -245,7 +245,7 @@ public class MainActivity extends Activity {
                 Graph graph = new Graph(){
                     {
                         final ImplClassLocator implClassLocatorByPattern = new ImplClassLocatorByPattern();
-                        addProviderFinders(new ProviderFinder() {
+                        addProviderFinder(new ProviderFinder() {
                             @SuppressWarnings("unchecked")
                             @Override
                             public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {

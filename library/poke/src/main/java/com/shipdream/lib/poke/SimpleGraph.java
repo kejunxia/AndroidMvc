@@ -40,7 +40,7 @@ public class SimpleGraph extends Graph {
      */
     public SimpleGraph(ProviderFinderByRegistry providerFinder) {
         this.providerFinder = providerFinder;
-        addProviderFinders(providerFinder);
+        addProviderFinder(providerFinder);
     }
 
     /**
