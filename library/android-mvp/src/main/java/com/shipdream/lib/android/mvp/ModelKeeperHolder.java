@@ -22,10 +22,10 @@ import android.os.Bundle;
  * This class holds a stateKeeper as a singleton.
  */
 class ModelKeeperHolder {
-    static MvpModelKeeper stateKeeper;
+    static MvpBeanKeeper stateKeeper;
 
     static {
-        stateKeeper = new MvpModelKeeper();
+        stateKeeper = new MvpBeanKeeper();
     }
 
     /**
@@ -34,7 +34,8 @@ class ModelKeeperHolder {
      */
     static void saveAllModels(Bundle outState) {
         stateKeeper.bundle = outState;
-        Injector.getGraph().saveAllModels(stateKeeper);
+        //TODO: need to fix
+        Injector.getGraph().appProviderFinder.saveAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 
@@ -44,7 +45,8 @@ class ModelKeeperHolder {
      */
     static void restoreAllModels(Bundle savedState) {
         stateKeeper.bundle = savedState;
-        Injector.getGraph().restoreAllModels(stateKeeper);
+        //TODO: need to fix
+        Injector.getGraph().appProviderFinder.restoreAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 

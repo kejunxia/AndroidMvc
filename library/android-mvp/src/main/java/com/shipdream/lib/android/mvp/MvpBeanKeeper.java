@@ -26,14 +26,14 @@ import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class MvpModelKeeper implements ModelKeeper {
+class MvpBeanKeeper implements BeanKeeper {
     private static Gson gson;
     private Logger logger = LoggerFactory.getLogger(getClass());
     private AndroidModelKeeper navigationModelKeeper = new NavigationModelKeeperModelKeeper();
     AndroidModelKeeper customModelKeeper;
     Bundle bundle;
 
-    MvpModelKeeper() {
+    MvpBeanKeeper() {
         gson = new GsonBuilder().create();
     }
 
@@ -43,7 +43,7 @@ class MvpModelKeeper implements ModelKeeper {
 
     //TODO: first param should be Bean and bean's model should be saved recursively
     @Override
-    public void saveModel(Bean bean) {
+    public void saveBean(Bean bean) {
         Class type = bean.modelType();
         if (type != null) {
             Parcelable parcelable = null;
@@ -80,7 +80,7 @@ class MvpModelKeeper implements ModelKeeper {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T retrieveModel(Class<T> type) {
+    public <T> T retrieveBean(Class<T> type) {
         T model = null;
         if (type != null) {
             long ts = System.currentTimeMillis();

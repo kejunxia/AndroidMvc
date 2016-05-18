@@ -347,7 +347,7 @@ public class TestMvpGraph {
     public void should_throw_out_exceptions_when_registering_component()
             throws ProvideException, ProviderConflictException {
         // Arrange
-        MvpGraph.AppProviderFinder providerFinder = mock(MvpGraph.AppProviderFinder.class);
+        MvpProviderFinder providerFinder = mock(MvpProviderFinder.class);
         mvpGraph.appProviderFinder = providerFinder;
 
         doAnswer(new Answer() {
@@ -367,13 +367,13 @@ public class TestMvpGraph {
         ScopeCache scopeCache = mock(ScopeCache.class);
 
         // Pre-verify
-        Assert.assertNotEquals(scopeCache, mvpGraph.appProviderFinder.appScopeCache);
+        Assert.assertNotEquals(scopeCache, mvpGraph.appProviderFinder.scopeCache);
 
         // Act
         mvpGraph.hijack(scopeCache);
 
         // Verify
-        Assert.assertEquals(scopeCache, mvpGraph.appProviderFinder.appScopeCache);
+        Assert.assertEquals(scopeCache, mvpGraph.appProviderFinder.scopeCache);
     }
 
     @Test
@@ -381,25 +381,25 @@ public class TestMvpGraph {
             throws ProvideException, ProviderConflictException {
         Bean beanMock = mock(Bean.class);
 
-        List<Bean> mvpBeen = new ArrayList();
-        mvpBeen.add(beanMock);
-        mvpGraph.mvpBeen = mvpBeen;
+        List<Bean> beans = new ArrayList();
+        beans.add(beanMock);
+        mvpGraph.appProviderFinder.beans = beans;
 
-        final ModelKeeper modelKeeperMock = mock(ModelKeeper.class);
+        final BeanKeeper beanKeeperMock = mock(BeanKeeper.class);
 
         // Act
-        mvpGraph.saveAllModels(modelKeeperMock);
+        mvpGraph.appProviderFinder.saveAllBeans(beanKeeperMock);
 
         // Verify
-        verify(modelKeeperMock).saveModel(beanMock);
+        verify(beanKeeperMock).saveBean(beanMock);
 
         // Arrange
-        reset(modelKeeperMock);
+        reset(beanKeeperMock);
 
         Object stateMock = mock(Object.class);
-        when(modelKeeperMock.retrieveModel(any(Class.class))).thenReturn(stateMock);
+        when(beanKeeperMock.retrieveBean(any(Class.class))).thenReturn(stateMock);
 
-        mvpGraph.restoreAllModels(modelKeeperMock);
+        mvpGraph.appProviderFinder.restoreAllBeans(beanKeeperMock);
 
         // Verify
         verify(beanMock).restoreModel(eq(stateMock));

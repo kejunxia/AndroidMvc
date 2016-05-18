@@ -23,13 +23,8 @@ import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
-import com.shipdream.lib.poke.ImplClassLocator;
-import com.shipdream.lib.poke.ImplClassLocatorByPattern;
-import com.shipdream.lib.poke.ImplClassNotFoundException;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provider.OnFreedListener;
-import com.shipdream.lib.poke.ProviderByClassType;
-import com.shipdream.lib.poke.ProviderFinderByRegistry;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.SimpleGraph;
@@ -43,10 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
@@ -87,16 +78,16 @@ public class MvpGraph {
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    AppProviderFinder appProviderFinder;
-    List<Bean> mvpBeen = new ArrayList<>();
+    MvpProviderFinder appProviderFinder;
 
     //Composite graph to hide methods
     Graph graph;
 
     public MvpGraph(BaseDependencies baseDependencies)
             throws ProvideException, ProviderConflictException {
-        appProviderFinder = new AppProviderFinder(MvpGraph.this);
-        appProviderFinder.register(new __Component(appProviderFinder.appScopeCache, baseDependencies));
+
+        appProviderFinder = new MvpProviderFinder(new ScopeCache());
+        appProviderFinder.register(new __Component(baseDependencies));
 
         graph = new SimpleGraph(appProviderFinder);
 
@@ -110,7 +101,7 @@ public class MvpGraph {
                     if (obj instanceof Bean) {
                         Bean bean = (Bean) obj;
                         bean.onDisposed();
-                        mvpBeen.remove(obj);
+                        appProviderFinder.beans.remove(obj);
 
                         logger.trace("--MvpBean freed - '{}'.",
                                 obj.getClass().getSimpleName());
@@ -121,12 +112,13 @@ public class MvpGraph {
         });
     }
 
+    //TODO: improve this
     /**
      * For testing to hijack the cache
      * @param singletonScopeCache the cache to hijack
      */
     void hijack(ScopeCache singletonScopeCache) {
-        this.appProviderFinder.appScopeCache = singletonScopeCache;
+        appProviderFinder.scopeCache = singletonScopeCache;
     }
 
     /**
@@ -390,34 +382,6 @@ public class MvpGraph {
     }
 
     /**
-     * Save model of all injected objects
-     * @param modelKeeper The model keeper managing the model
-     */
-    public void saveAllModels(ModelKeeper modelKeeper) {
-        int size = mvpBeen.size();
-        for (int i = 0; i < size; i++) {
-            Bean bean = mvpBeen.get(i);
-            modelKeeper.saveModel(bean);
-        }
-    }
-
-    /**
-     * Restore model of all injected objects
-     * @param modelKeeper The model keeper managing the model
-     */
-    @SuppressWarnings("unchecked")
-    public void restoreAllModels(ModelKeeper modelKeeper) {
-        int size = mvpBeen.size();
-        for (int i = 0; i < size; i++) {
-            Bean bean = mvpBeen.get(i);
-            Object model = modelKeeper.retrieveModel(bean.modelType());
-            if(model != null) {
-                mvpBeen.get(i).restoreModel(model);
-            }
-        }
-    }
-
-    /**
      * Dependencies for all controllers
      */
     public abstract static class BaseDependencies {
@@ -459,11 +423,11 @@ public class MvpGraph {
     /**
      * Internal use. Do use this in your code.
      */
-    public static class __Component extends Component {
+    public class __Component extends Component {
         private final BaseDependencies baseDependencies;
 
-        public __Component(ScopeCache scopeCache, BaseDependencies baseDependencies) {
-            super(scopeCache);
+        public __Component(BaseDependencies baseDependencies) {
+            super(appProviderFinder.scopeCache);
             this.baseDependencies = baseDependencies;
         }
 
@@ -485,82 +449,6 @@ public class MvpGraph {
         @Singleton
         public ExecutorService providesExecutorService() {
             return baseDependencies.createExecutorService();
-        }
-    }
-
-    static class AppProviderFinder extends ProviderFinderByRegistry {
-        ScopeCache appScopeCache;
-        private final MvpGraph mvpGraph;
-        private final ImplClassLocator defaultImplClassLocator;
-        private Map<Class, Provider> providers = new HashMap<>();
-
-        private AppProviderFinder(MvpGraph mvpGraph) {
-            this.mvpGraph = mvpGraph;
-            appScopeCache = new ScopeCache();
-            defaultImplClassLocator = new ImplClassLocatorByPattern(appScopeCache);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
-            Provider<T> provider = super.findProvider(type, qualifier);
-            if (provider == null) {
-                provider = providers.get(type);
-                if (provider == null) {
-                    try {
-                        Class<? extends T> impClass;
-                        if (type.isInterface()) {
-                            impClass = defaultImplClassLocator.locateImpl(type);
-                        } else {
-                            //The type is a class then it's a construable by itself.
-                            impClass = type;
-                        }
-
-                        provider = new MvpProvider<>(mvpGraph.mvpBeen, type, impClass);
-                        provider.setScopeCache(defaultImplClassLocator.getScopeCache());
-                        providers.put(type, provider);
-                    } catch (ImplClassNotFoundException e) {
-                        throw new ProviderMissingException(type, qualifier, e);
-                    }
-                }
-            }
-            return provider;
-        }
-    }
-
-    private static class MvpProvider<T> extends ProviderByClassType<T> {
-        private final Logger logger = LoggerFactory.getLogger(MvpGraph.class);
-        private List<Bean> mvpBeen;
-
-        public MvpProvider(List<Bean> mvpBeen, Class<T> type, Class<? extends T> implementationClass) {
-            super(type, implementationClass);
-            this.mvpBeen = mvpBeen;
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public T createInstance() throws ProvideException {
-            final T newInstance = (T) super.createInstance();
-
-            registerOnInjectedListener(new OnInjectedListener() {
-                @Override
-                public void onInjected(Object object) {
-                    if (object instanceof Bean) {
-                        Bean bean = (Bean) object;
-                        bean.onConstruct();
-
-                        logger.trace("++MvpBean injected - '{}'.",
-                                object.getClass().getSimpleName());
-                    }
-                    unregisterOnInjectedListener(this);
-                }
-            });
-
-            if (newInstance instanceof Bean) {
-                mvpBeen.add((Bean) newInstance);
-            }
-
-            return newInstance;
         }
     }
 

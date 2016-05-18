@@ -90,7 +90,7 @@ public abstract class Bean<MODEL> {
      * Note that when {@link #modelType()} returns null, this method will have no effect.
      * </p>
      *
-     * @param restoredModel The restored model by {@link ModelKeeper} that will be rebound to the
+     * @param restoredModel The restored model by {@link BeanKeeper} that will be rebound to the
      *                      MvpBean.
      */
     public void restoreModel(MODEL restoredModel) {

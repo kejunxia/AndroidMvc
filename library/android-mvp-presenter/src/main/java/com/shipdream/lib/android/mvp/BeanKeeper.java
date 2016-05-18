@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.poke;
+package com.shipdream.lib.android.mvp;
 
 /**
- * Interface to locate implementation class of the given contract class.
+ * ModelKeeper can save model of objects implementing {@link Bean} into it. The model can
+ * be got back from the keeper later on.
  */
-public abstract class ImplClassLocator {
+public interface BeanKeeper {
     /**
-     * Locate implementation class of the given contract class.
-     * @param classType
-     * @param <T>
-     * @param <S>
-     * @return
+     * Save the bean into this {@link BeanKeeper}
+     * @param bean The bean to save
      */
-    public abstract <T, S extends T> Class<S> locateImpl(Class<T> classType) throws ImplClassNotFoundException;
+    void saveBean(Bean bean);
 
     /**
-     * Define the {@link ScopeCache} for the injectable contract located by this
-     * {@link ImplClassLocator}
-     * @return
+     * Retrieves the bean by bean type
+     * @param type The class type of the bean
+     * @return null if the bean with the given type has not been saved or a null bean was saved,
+     * otherwise returns the bean saved previously
      */
-    public abstract ScopeCache getScopeCache();
+    <T> T retrieveBean(Class<T> type);
 }
