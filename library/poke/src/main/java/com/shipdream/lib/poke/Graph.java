@@ -37,9 +37,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
 
 /**
- * Abstract graph manages how to inject dependencies to target objects.
+ * A graph manages how to inject dependencies to target objects.
  */
-public abstract class Graph {
+public class Graph {
     private List<ProviderFinder> providerFinders;
     private Map<Class, ProviderFinder> finderCache = new HashMap<>();
     private List<OnFreedListener> onProviderFreedListeners;
@@ -124,7 +124,7 @@ public abstract class Graph {
 
     /**
      * Add {@link ProviderFinder} to the graph directly. Eg. if manual provider registration
-     * is needed, a {@link com.shipdream.lib.poke.ProviderFinderByRegistry} can be added.
+     * is needed, a {@link Component} can be added.
      * <p/>
      * <p>Note that, when there are multiple {@link ProviderFinder}s able to inject an instance the
      * later merged graph wins.</p>

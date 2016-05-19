@@ -20,14 +20,12 @@ import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provider.OnFreedListener;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
-import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -47,11 +45,11 @@ import javax.inject.Singleton;
  * {@link MvpGraph} injects instances and all its nested dependencies to target object
  * recursively. By default, all injected instances and their dependencies that are located by
  * naming convention will be <b>SINGLETON</b>. It can also register custom injections by
- * {@link #register(Component)}.
+ * {@link #register(Module)}.
  * <p/>
  * Priority of finding implementation of contract is by<br>
  * <ol>
- * <li>Registered implementation by {@link #register(Component)}</li>
+ * <li>Registered implementation by {@link #register(Module)}</li>
  * <li>When the injecting type is an interface: Implementation for interface a.b.c.SomeContract
  * should be named as a.b.c.internal.SomeContractImpl. Interface: a.b.c.SomeContract -->
  * a.b.c.<b>internal</b>.SomeContract<b>Impl</b></li>
@@ -60,13 +58,13 @@ import javax.inject.Singleton;
  * <li>Otherwise, errors will occur</li>
  * </ol>
  * <p/>
- * As described above, explicit implementation can be registered by {@link #register(Component)}.
+ * As described above, explicit implementation can be registered by {@link #register(Module)}.
  * Once an implementation is registered, it will override the default auto implementation locating
  * described above. This would be handy in unit testing where if partial of real implementations
  * are wanted to be used and the other are mocks.<br>
  * <p/>
  * <p>Note that, <b>qualifier will be ignore for dependencies injected by naming convention
- * strategy</b>, though qualifier of provide methods of registered {@link Component} will still
+ * strategy</b>, though qualifier of provide methods of registered {@link Module} will still
  * be taken into account.
  * <p/>
  */
@@ -78,7 +76,7 @@ public class MvpGraph {
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
-    MvpProviderFinder appProviderFinder;
+    MvpComponent appProviderFinder;
 
     //Composite graph to hide methods
     Graph graph;
@@ -86,8 +84,8 @@ public class MvpGraph {
     public MvpGraph(BaseDependencies baseDependencies)
             throws ProvideException, ProviderConflictException {
 
-        appProviderFinder = new MvpProviderFinder(new ScopeCache());
-        appProviderFinder.register(new __Component(baseDependencies));
+        appProviderFinder = new MvpComponent(new ScopeCache());
+        appProviderFinder.register(new __Module(baseDependencies));
 
         graph = new SimpleGraph(appProviderFinder);
 
@@ -360,25 +358,25 @@ public class MvpGraph {
     }
 
     /**
-     * Register all providers listed by the {@link Component}
+     * Register all providers listed by the {@link Module}
      *
-     * @param component The component
+     * @param module The component
      */
-    public void register(Component component) {
+    public void register(Module module) {
         try {
-            appProviderFinder.register(component);
+            appProviderFinder.register(module);
         } catch (java.lang.Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     /**
-     * Unregister all providers listed by the {@link Component}
+     * Unregister all providers listed by the {@link Module}
      *
-     * @param component The component
+     * @param module The component
      */
-    public void unregister(Component component) {
-        appProviderFinder.unregister(component);
+    public void unregister(Module module) {
+        appProviderFinder.unregister(module);
     }
 
     /**
@@ -423,10 +421,10 @@ public class MvpGraph {
     /**
      * Internal use. Do use this in your code.
      */
-    public class __Component extends Component {
+    public class __Module {
         private final BaseDependencies baseDependencies;
 
-        public __Component(BaseDependencies baseDependencies) {
+        public __Module(BaseDependencies baseDependencies) {
             super(appProviderFinder.scopeCache);
             this.baseDependencies = baseDependencies;
         }

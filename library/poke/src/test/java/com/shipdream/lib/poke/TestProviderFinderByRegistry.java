@@ -42,11 +42,11 @@ import static org.mockito.Mockito.verify;
 
 public class TestProviderFinderByRegistry extends BaseTestCases {
     private Graph graph;
-    private ProviderFinderByRegistry providerFinder;
+    private Component providerFinder;
 
     @Before
     public void setUp() throws Exception {
-        providerFinder = new ProviderFinderByRegistry();
+        providerFinder = new Component();
         graph = new Graph() {
             {
                 addProviderFinder(providerFinder);
@@ -162,7 +162,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         Assert.assertTrue(container.windows == container2.windows);
     }
 
-    static class ContainerComponent extends Component {
+    static class ContainerModule {
         @Provides
         public Os providesOs() {
             return new iOs();
@@ -187,7 +187,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     public void componentProvidesQualifierShouldOverrideImplClassQualifier() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
 
-        providerFinder.register(new ContainerComponent());
+        providerFinder.register(new ContainerModule());
 
         Container container = new Container();
         graph.inject(container, MyInject.class);
@@ -412,7 +412,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         Assert.assertTrue(shouldCatchProviderMissingException);
     }
 
-    static class BadComponent extends Component{
+    static class BadModule {
         @Provides
         void provideNothing() {
             return;
@@ -422,7 +422,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     @Test
     public void should_throw_exception_when_there_is_void_function_in_component()
             throws ProvideException, ProviderConflictException {
-        BadComponent badComponent = new BadComponent();
+        BadModule badComponent = new BadModule();
 
         try {
             providerFinder.register(badComponent);
@@ -437,7 +437,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Qualifier @Retention(RUNTIME) @interface Qualifier2 {}
 
-    static class DuplicateComponent extends Component{
+    static class DuplicateModule {
         @Provides @Qualifier1 @Qualifier2
         String provideText() {
             return "123";
@@ -447,7 +447,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     @Test
     public void should_throw_exception_when_provider_has_more_than_one_qualifier()
             throws ProvideException, ProviderConflictException {
-        DuplicateComponent duplicateComponent = new DuplicateComponent();
+        DuplicateModule duplicateComponent = new DuplicateModule();
         try {
             providerFinder.register(duplicateComponent);
         } catch (ProvideException e) {
@@ -688,7 +688,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     static class Orange implements Food{}
     static class Banana implements Food{}
 
-    static class FoodCompA extends Component {
+    static class FoodModuleA {
         @Provides @Named
         public Food provideApple() {
             return new Apple();
@@ -700,7 +700,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
     }
 
-    static class FoodCompB extends Component {
+    static class FoodModuleB {
         @Provides
         public Food provideApple() {
             return new Apple();
@@ -712,7 +712,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
     }
 
-    static class FoodCompC extends Component {
+    static class FoodModuleC {
         @Provides @Named
         public Food provideApple() {
             return new Apple();
@@ -738,39 +738,39 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         Basket basket = new Basket();
 
-        FoodCompA foodCompA = new FoodCompA();
-        FoodCompB foodCompB = new FoodCompB();
-        FoodCompC foodCompC = new FoodCompC();
+        FoodModuleA foodModuleA = new FoodModuleA();
+        FoodModuleB foodModuleB = new FoodModuleB();
+        FoodModuleC foodModuleC = new FoodModuleC();
 
-        providerFinder.register(foodCompA);
+        providerFinder.register(foodModuleA);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Apple.class);
         Assert.assertEquals(basket.w.getClass(), Orange.class);
 
         boolean conflicted = false;
         try {
-            providerFinder.register(new FoodCompB());
+            providerFinder.register(new FoodModuleB());
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
         Assert.assertTrue(conflicted);
 
-        providerFinder.register(foodCompB, true);
+        providerFinder.register(foodModuleB, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Orange.class);
         Assert.assertEquals(basket.w.getClass(), Apple.class);
 
-        providerFinder.register(foodCompC, true);
+        providerFinder.register(foodModuleC, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Apple.class);
         Assert.assertEquals(basket.w.getClass(), Banana.class);
 
-        providerFinder.unregister(foodCompA);
+        providerFinder.unregister(foodModuleA);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Apple.class);
         Assert.assertEquals(basket.w.getClass(), Orange.class);
 
-        providerFinder.unregister(foodCompA);
+        providerFinder.unregister(foodModuleA);
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -934,7 +934,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     @Test
     public void should_be_able_to_register_implementation_into_simple_graph ()
             throws ClassNotFoundException, ProviderConflictException, ProvideException {
-        ProviderFinderByRegistry registry = mock(ProviderFinderByRegistry.class);
+        Component registry = mock(Component.class);
 
         SimpleGraph graph = new SimpleGraph(registry);
 
@@ -974,18 +974,18 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         verify(registry).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(false));
 
         //Register by component
-        Component component = mock(Component.class);
+        Object module = mock(Object.class);
         reset(registry);
-        graph.register(component);
-        verify(registry).register(eq(component));
+        graph.register(module);
+        verify(registry).register(eq(module));
 
         reset(registry);
-        graph.register(component, true);
-        verify(registry).register(eq(component), eq(true));
+        graph.register(module, true);
+        verify(registry).register(eq(module), eq(true));
 
         reset(registry);
-        graph.register(component, false);
-        verify(registry).register(eq(component), eq(false));
+        graph.register(module, false);
+        verify(registry).register(eq(module), eq(false));
 
         //Register by provider
         Provider provider = mock(Provider.class);
@@ -1005,7 +1005,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     @Test
     public void should_be_able_to_unregister_implementation_into_simple_graph ()
             throws ClassNotFoundException, ProviderConflictException, ProvideException {
-        ProviderFinderByRegistry registry = mock(ProviderFinderByRegistry.class);
+        Component registry = mock(Component.class);
 
         SimpleGraph graph = new SimpleGraph(registry);
 
@@ -1017,10 +1017,10 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         graph.unregister(Contract.class, Execution.class);
         verify(registry).unregister(eq(Contract.class), eq(Execution.class));
 
-        Component component = mock(Component.class);
+        Object module = mock(Object.class);
         reset(registry);
-        graph.unregister(component);
-        verify(registry).unregister(eq(component));
+        graph.unregister(module);
+        verify(registry).unregister(eq(module));
 
         Provider provider = mock(Provider.class);
         reset(registry);

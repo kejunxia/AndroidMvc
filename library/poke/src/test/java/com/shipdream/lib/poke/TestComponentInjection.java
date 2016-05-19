@@ -47,8 +47,8 @@ public class TestComponentInjection extends BaseTestCases {
     }
 
     @Test(expected = ProviderConflictException.class)
-    public void shouldDetectConflictProvides() throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        Component component = new Component() {
+    public void shouldDetectConflictProvides() throws ProvideException, ProviderConflictException {
+        Object module = new Object() {
             @Provides
             public Food providesFood1() {
                 return new Apple();
@@ -60,8 +60,8 @@ public class TestComponentInjection extends BaseTestCases {
             }
         };
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(component);
+        Graph graph = new Graph();
+        graph.addProviderFinder(new Component().register(module));
     }
 
     @Qualifier
@@ -80,7 +80,7 @@ public class TestComponentInjection extends BaseTestCases {
 
         }
 
-        Component component = new Component() {
+        Object module = new Object() {
             @Fruit
             @Provides
             public Food providesFood1() {
@@ -112,8 +112,8 @@ public class TestComponentInjection extends BaseTestCases {
             private Food drink;
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(component);
+        Graph graph = new Graph();
+        graph.addProviderFinder(new Component().register(module));
 
         Fridge fridge = new Fridge();
         graph.inject(fridge, MyInject.class);
@@ -125,7 +125,7 @@ public class TestComponentInjection extends BaseTestCases {
 
     @Test
     public void componentMethodInjectionShouldWork1() throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        Component component = new Component() {
+        Object module = new Object() {
             @Named("Fruit")
             @Provides
             public Food providesFood1() {
@@ -159,8 +159,8 @@ public class TestComponentInjection extends BaseTestCases {
             private Food drink;
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(component);
+        Graph graph = new Graph();
+        graph.addProviderFinder(new Component().register(module));
 
         Fridge fridge = new Fridge();
         graph.inject(fridge, MyInject.class);
@@ -170,11 +170,7 @@ public class TestComponentInjection extends BaseTestCases {
         Assert.assertEquals(fridge.drink2.getClass(), Milk.class);
     }
 
-    static class SingletonComponent extends Component{
-        SingletonComponent(ScopeCache scopeCache) {
-            super(scopeCache);
-        }
-
+    static class SingletonModule {
         @Singleton
         @Provides
         public Food providesFood() {
@@ -183,18 +179,18 @@ public class TestComponentInjection extends BaseTestCases {
     }
 
     @Test
-    public void singletonComponentShouldProvideSameInstanceStically()
+    public void singletonComponentShouldProvideSameInstance()
             throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
         ScopeCache singletonCache = new ScopeCache();
 
-        Component component1 = new SingletonComponent(singletonCache);
-        Component component2 = new SingletonComponent(singletonCache);
+        Object module1 = new SingletonModule();
+        Object module2 = new SingletonModule();
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(component1);
+        Graph graph = new Graph();
+        graph.addProviderFinder(new Component(singletonCache).register(module1));
 
-        SimpleGraph graph2 = new SimpleGraph();
-        graph2.register(component2);
+        Graph graph2 = new Graph();
+        graph.addProviderFinder(new Component(singletonCache).register(module2));
 
         class Fridge {
             @MyInject
@@ -211,7 +207,7 @@ public class TestComponentInjection extends BaseTestCases {
         Assert.assertTrue(fridge.fruit == fridge1.fruit);
     }
 
-    static class BadComponent extends Component{
+    static class BadModule {
         @Provides
         public Food providesFood() {
             return null;
@@ -221,8 +217,8 @@ public class TestComponentInjection extends BaseTestCases {
     @Test (expected = ProvideException.class)
     public void should_detect_ProvideException_with_providers_return_void ()
             throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(new BadComponent());
+        Graph graph = new Graph();
+        graph.addProviderFinder(new Component().register(new BadModule()));
 
         class Fridge {
             @MyInject

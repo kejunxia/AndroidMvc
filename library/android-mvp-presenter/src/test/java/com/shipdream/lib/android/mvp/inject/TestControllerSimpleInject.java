@@ -22,11 +22,9 @@ import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.LifeCycleTestController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.MissingImplController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
-import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -66,7 +64,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
         final PrintController mockPrintController = mock(PrintController.class);
 
         SimpleGraph graph = new SimpleGraph();
-        graph.register(new Component() {
+        graph.register(new Module() {
             @Override
             public ScopeCache getScopeCache() {
                 return super.getScopeCache();
@@ -141,7 +139,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
     public void testOnDisposeShouldBeCalledWhenControllerReleased() throws Exception {
         final LifeCycleTestController.Proxy lifeCycleProxy = mock(LifeCycleTestController.Proxy.class);
         MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
-        graph.register(new LifeCycleTestControllerComponent(lifeCycleProxy));
+        graph.register(new LifeCycleTestControllerModule(lifeCycleProxy));
 
         TestLifCycleView testView = new TestLifCycleView();
         verify(lifeCycleProxy, times(0)).onConstructCalled();
@@ -177,10 +175,10 @@ public class TestControllerSimpleInject extends BaseTestCases {
     }
 
 
-    public static class LifeCycleTestControllerComponent extends Component {
+    public static class LifeCycleTestControllerModule extends Module {
         private LifeCycleTestController.Proxy proxy;
 
-        public LifeCycleTestControllerComponent(LifeCycleTestController.Proxy proxy) {
+        public LifeCycleTestControllerModule(LifeCycleTestController.Proxy proxy) {
             this.proxy = proxy;
         }
 

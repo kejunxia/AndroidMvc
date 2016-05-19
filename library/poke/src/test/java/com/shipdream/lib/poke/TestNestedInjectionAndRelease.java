@@ -42,7 +42,7 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
         void onFreed() {}
     }
 
-    Component component;
+    Object module;
 
     class ControllerImpl implements Controller {
         @MyInject
@@ -76,7 +76,7 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
         controllerOnFreed = mock(OnFree.class);
         serviceMock = mock(Service.class);
         graph = new SimpleGraph();
-        component = new Component() {
+        module = new Object() {
             @Provides
             @Singleton
             public Controller provideController() {
@@ -89,8 +89,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
                 return serviceMock;
             }
         };
-        graph.register(component);
-        cache = component.getScopeCache();
+        graph.register(module);
+        cache = module.getScopeCache();
         graph.registerProviderFreedListener(new Provider.OnFreedListener() {
             @Override
             public void onFreed(Provider provider) {

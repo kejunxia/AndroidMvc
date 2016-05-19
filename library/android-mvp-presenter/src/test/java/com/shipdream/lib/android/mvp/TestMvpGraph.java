@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.Provider.OnFreedListener;
@@ -98,7 +97,7 @@ public class TestMvpGraph {
 
     }
 
-    static class DeviceComponent extends Component {
+    static class DeviceModule extends Module {
         @Provides
         @Singleton
         public Os provide() {
@@ -131,7 +130,7 @@ public class TestMvpGraph {
 
     @Test
     public void use_method_should_retain_and_release_instance_without_qualifier_correctly() {
-        mvpGraph.register(new DeviceComponent());
+        mvpGraph.register(new DeviceModule());
 
         //OsReferenceCount = 0
         mvpGraph.use(Os.class, new Consumer<Os>() {
@@ -210,7 +209,7 @@ public class TestMvpGraph {
 
     @Test
     public void use_method_should_retain_and_release_instance_correctly() {
-        mvpGraph.register(new DeviceComponent());
+        mvpGraph.register(new DeviceModule());
 
         @Apple
         class NeedIoS {
@@ -347,7 +346,7 @@ public class TestMvpGraph {
     public void should_throw_out_exceptions_when_registering_component()
             throws ProvideException, ProviderConflictException {
         // Arrange
-        MvpProviderFinder providerFinder = mock(MvpProviderFinder.class);
+        MvpComponent providerFinder = mock(MvpComponent.class);
         mvpGraph.appProviderFinder = providerFinder;
 
         doAnswer(new Answer() {
@@ -355,10 +354,10 @@ public class TestMvpGraph {
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 throw new RuntimeException();
             }
-        }).when(providerFinder).register(any(Component.class));
+        }).when(providerFinder).register(any(Module.class));
 
         // Act
-        mvpGraph.register(any(Component.class));
+        mvpGraph.register(any(Module.class));
     }
 
     @Test

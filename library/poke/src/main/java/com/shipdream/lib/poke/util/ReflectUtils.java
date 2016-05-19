@@ -17,7 +17,9 @@
 package com.shipdream.lib.poke.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Qualifier;
 
@@ -34,8 +36,17 @@ public class ReflectUtils {
             clazz = cls;
         }
 
-        public T newInstance() throws IllegalAccessException, InstantiationException {
-            return clazz.newInstance();
+        /**
+         * @return The new instance.
+         * @throws NoSuchMethodException The class doesn't have a default constructor
+         * @throws IllegalAccessException Unable to access the instance default constructor
+         * @throws InvocationTargetException if the underlying constructor throws an exception.
+         * @throws InstantiationException if the class that declares the underlying constructor represents an abstract class.
+         */
+        public T newInstance() throws NoSuchMethodException, IllegalAccessException,
+                InvocationTargetException, InstantiationException {
+            Constructor<T> constructor = clazz.getConstructor();
+            return constructor.newInstance();
         }
     }
 

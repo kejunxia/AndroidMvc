@@ -22,7 +22,6 @@ import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrinterCo
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.AndroidPartImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.manager.internal.InkManagerImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.service.Cartridge;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -72,7 +71,7 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
         private AndroidPart androidPart;
     }
 
-    public class AndroidComponent extends Component {
+    public class AndroidModule extends Module {
         @Provides
         @Singleton
         public AndroidPart provideAndroidPart() {
@@ -84,7 +83,7 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
     @Test
     public void should_be_able_to_reinject_new_instance_without_default_constructor()
             throws ProvideException, ProviderConflictException, ProviderMissingException, CircularDependenciesException {
-        AndroidComponent component = new AndroidComponent();
+        AndroidModule component = new AndroidModule();
 
         MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
         graph.register(component);

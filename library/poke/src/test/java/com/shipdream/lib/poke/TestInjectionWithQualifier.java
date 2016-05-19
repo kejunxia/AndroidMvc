@@ -446,7 +446,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         Assert.assertTrue(device.windows == device2.windows);
     }
 
-    static class ContainerComponent extends Component {
+    static class ContainerModule {
         @Provides
         public Os providesOs() {
             return new iOs();
@@ -471,7 +471,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     public void componentProvidesQualifierShouldOverrideImplClassQualifier() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
         SimpleGraph graph = new SimpleGraph();
-        graph.register(new ContainerComponent());
+        graph.register(new ContainerModule());
 
         Device device = new Device();
         graph.inject(device, MyInject.class);

@@ -1,7 +1,7 @@
 package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.poke.Provider;
-import com.shipdream.lib.poke.ProviderFinderByRegistry;
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -13,26 +13,9 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 //TODO: documents
-public class MvpProviderFinder extends ProviderFinderByRegistry {
-    //TODO: registered component can have provides level scope/scope cache to override this scope cache?
-    ScopeCache scopeCache;
+public class MvpComponent extends Component {
     Map<Class, Provider> providers = new HashMap<>();
     List<Bean> beans = new CopyOnWriteArrayList<>();
-
-    /**
-     * Construct the provider finder without scope. The providers will always create a new instance
-     * on each injection.
-     */
-    public MvpProviderFinder() {
-        this(null);
-    }
-
-    /**
-     * Construct the provider finder with given {@link ScopeCache}
-     * @param scopeCache The scope cache. Can be null if the instances created by the providers
-     *                   don't need to be scoped where every injection by the providers will be a new instance.
-     */
-    public MvpProviderFinder(ScopeCache scopeCache) {this.scopeCache = scopeCache;}
 
     /**
      * Save model of all injected objects

@@ -24,7 +24,6 @@ import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.AndroidMvp;
 import com.shipdream.lib.android.mvp.BaseTestCase;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.PokeException;
@@ -70,7 +69,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvpTestActivityNaviga
         waitTest(300);
     }
 
-    public static class Comp extends Component{
+    public static class Comp extends Module {
         TestCaseNavigationBasic testCaseNavigation;
 
         Comp(ScopeCache scopeCache) {

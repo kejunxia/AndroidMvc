@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.TimerController;
 import com.shipdream.lib.android.mvp.manager.internal.BaseNavigationManagerTest;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Provides;
 
@@ -456,7 +455,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
     @Test(expected = MvpGraph.Exception.class)
     public void should_catch_invocation_exception_when_NPE_detected_on_injection() throws Exception {
-        Component com = new Component() {
+        Module com = new Module() {
             @Provides
             @Singleton
             @Slower2
@@ -491,7 +490,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         // Arrange
         final long fiveMinutes = 60 * 5;
 
-        Component com = new Component() {
+        Module com = new Module() {
             @Provides
             @Singleton
             @Slower2

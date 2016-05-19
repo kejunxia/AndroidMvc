@@ -61,7 +61,6 @@ import com.shipdream.lib.android.mvc.samples.benchmark.service.internal.Service6
 import com.shipdream.lib.android.mvc.samples.benchmark.service.internal.Service7Impl;
 import com.shipdream.lib.android.mvc.samples.benchmark.service.internal.Service8Impl;
 import com.shipdream.lib.android.mvc.samples.benchmark.service.internal.Service9Impl;
-import com.shipdream.lib.poke.SimpleGraph;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ImplClassLocator;
 import com.shipdream.lib.poke.ImplClassLocatorByPattern;

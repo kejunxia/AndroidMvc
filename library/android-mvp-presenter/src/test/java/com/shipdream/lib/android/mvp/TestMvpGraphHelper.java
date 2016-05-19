@@ -19,7 +19,6 @@ package com.shipdream.lib.android.mvp;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 
 import org.junit.After;
@@ -42,7 +41,7 @@ public class TestMvpGraphHelper {
         Injector.getGraph();
     }
 
-    static class Comp extends Component {
+    static class Comp extends Module {
         @Provides
         @EventBusC
         @Singleton
@@ -53,7 +52,7 @@ public class TestMvpGraphHelper {
 
     @Test(expected = RuntimeException.class)
     public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvp_graph_dependencies() {
-        Injector.getGraph().register(new Component() {
+        Injector.getGraph().register(new Module() {
             @Provides
             @EventBusC
             @Singleton

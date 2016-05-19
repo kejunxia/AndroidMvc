@@ -58,8 +58,8 @@ public abstract class Provider<T> {
     }
 
     private final Class<T> type;
-    ScopeCache scopeCache;
     private Annotation qualifier;
+    ScopeCache scopeCache;
 
     Map<Object, Map<String, Integer>> owners = new HashMap<>();
     private int totalRefCount = 0;
