@@ -23,6 +23,7 @@ import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -39,6 +40,16 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     static class Dog implements Pet {
     }
 
+    private Graph graph;
+    private Component component;
+
+    @Before
+    public void setUp() throws Exception {
+        component = new Component();
+        graph = new Graph();
+        graph.addProviderFinder(component);
+    }
+
     @Test
     public void suppress_constructor_miss_coverage_of_pokerHelper() {
         new PokeHelper();
@@ -46,39 +57,34 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
 
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingClassRegistry() throws ProviderConflictException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Pet.class, Cat.class);
-        graph.register(Pet.class, Dog.class);
+        component.register(Pet.class, Cat.class);
+        component.register(Pet.class, Dog.class);
     }
 
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingNameRegistry() throws ProviderConflictException, ClassNotFoundException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Pet.class, Cat.class.getName());
-        graph.register(Pet.class, Dog.class.getName());
+        component.register(Pet.class, Cat.class.getName());
+        component.register(Pet.class, Dog.class.getName());
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingProviderRegistry() throws ProviderConflictException, ProvideException, ClassNotFoundException {
-        SimpleGraph graph = new SimpleGraph();
         Provider provider = new ProviderByClassType<>(Pet.class, Cat.class);
         Provider provider2 = new ProviderByClassName(Pet.class, Dog.class.getName());
-        graph.register(provider);
-        graph.register(provider2);
+        component.register(provider);
+        component.register(provider2);
     }
 
     @Test(expected = ClassNotFoundException.class)
     public void shouldDetectBadClassException() throws ProviderConflictException, ClassNotFoundException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Pet.class, "BadClass");
+        component.register(Pet.class, "BadClass");
     }
 
     @Test
     public void shouldBeGoodInjection()
             throws ProviderConflictException, CircularDependenciesException, ProviderMissingException, ProvideException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Pet.class, Dog.class);
+        component.register(Pet.class, Dog.class);
 
         class Family {
             @MyInject
@@ -99,8 +105,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test(expected = ProvideException.class)
     public void shouldDetectProvideExceptionWithClassDoesHaveDefaultConstructor()
             throws ProviderConflictException, CircularDependenciesException, ProviderMissingException, ProvideException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Pet.class, Rabbit.class);
+        component.register(Pet.class, Rabbit.class);
 
         class Family {
             @MyInject
@@ -117,9 +122,8 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test
     public void should_handle_InstantiationException_when_create_class_instance_in_ProviderByClassName()
             throws ProviderConflictException, ClassNotFoundException, ProvideException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
         Provider provider = new ProviderByClassName(AbstractBean.class, AbstractBean.class.getName());
-        graph.register(provider);
+        component.register(provider);
 
         class Consumer {
             @MyInject
@@ -145,9 +149,8 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test
     public void should_handle_InvocationTargetException_when_create_class_instance_in_ProviderByClassName()
             throws ProviderConflictException, ClassNotFoundException, ProvideException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
         Provider provider = new ProviderByClassName(BadInstantiatingBean.class, BadInstantiatingBean.class.getName());
-        graph.register(provider);
+        component.register(provider);
 
         class Consumer {
             @MyInject
@@ -171,9 +174,8 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
         class BadBean {
         }
 
-        SimpleGraph graph = new SimpleGraph();
         Provider provider = new ProviderByClassName(BadBean.class, BadBean.class.getName());
-        graph.register(provider);
+        component.register(provider);
 
         class Consumer {
             @MyInject

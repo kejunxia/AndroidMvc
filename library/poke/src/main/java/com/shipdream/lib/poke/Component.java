@@ -257,6 +257,12 @@ public class Component implements ProviderFinder {
         String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());
         ProviderHolder providerHolder = providers.get(key);
 
+        if (scopeCache != null && provider.scopeCache == null) {
+            //If the component has a scope cache and the provider doesn't have. The provider will
+            //inherit the component's scope cache.
+            provider.scopeCache = scopeCache;
+        }
+
         if (providerHolder == null) {
             //First time add
             providerHolder = new ProviderHolder();
@@ -360,7 +366,7 @@ public class Component implements ProviderFinder {
         Method[] methods = providerHolder.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
-                registerProvides(providerHolder.getClass(), method, allowOverride);
+                registerProvides(providerHolder, method, allowOverride);
             }
         }
         return this;
@@ -442,10 +448,6 @@ public class Component implements ProviderFinder {
             super(type, qualifier);
             this.providerHolder = providerHolder;
             this.method = method;
-        }
-
-        private String errorMsg(Class providersClass) {
-            return String.format("%s cannot be instantiated to supply providers.", providersClass);
         }
 
         @Override

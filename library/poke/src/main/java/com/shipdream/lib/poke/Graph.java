@@ -40,7 +40,7 @@ import javax.inject.Inject;
  * A graph manages how to inject dependencies to target objects.
  */
 public class Graph {
-    private List<ProviderFinder> providerFinders;
+    private List<ProviderFinder> providerFinders = new ArrayList<>();
     private Map<Class, ProviderFinder> finderCache = new HashMap<>();
     private List<OnFreedListener> onProviderFreedListeners;
     private List<Monitor> monitors;

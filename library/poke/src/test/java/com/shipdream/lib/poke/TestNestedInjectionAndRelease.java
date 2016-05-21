@@ -67,7 +67,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
     private OnFree serviceOnFreed;
     private OnFree controllerOnFreed;
     private Service serviceMock;
-    private SimpleGraph graph;
+    private Graph graph;
+    private Component component;
     private ScopeCache cache;
 
     @Before
@@ -75,7 +76,7 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
         serviceOnFreed = mock(OnFree.class);
         controllerOnFreed = mock(OnFree.class);
         serviceMock = mock(Service.class);
-        graph = new SimpleGraph();
+        graph = new Graph();
         module = new Object() {
             @Provides
             @Singleton
@@ -89,8 +90,10 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
                 return serviceMock;
             }
         };
-        graph.register(module);
-        cache = module.getScopeCache();
+
+        cache = new ScopeCache();
+        component = new Component(cache);
+        component.register(module);
         graph.registerProviderFreedListener(new Provider.OnFreedListener() {
             @Override
             public void onFreed(Provider provider) {
@@ -101,6 +104,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
                 }
             }
         });
+
+        graph.addProviderFinder(component);
     }
 
     @Test

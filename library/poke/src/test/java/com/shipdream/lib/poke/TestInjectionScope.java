@@ -23,9 +23,19 @@ import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestInjectionScope extends BaseTestCases {
+    private Graph graph;
+    private Component component;
+
+    @Before
+    public void setUp() throws Exception {
+        component = new Component();
+        graph = new Graph();
+        graph.addProviderFinder(component);
+    }
 
     @SuppressWarnings("unchecked")
     @Test
@@ -36,15 +46,16 @@ public class TestInjectionScope extends BaseTestCases {
         ScopeCache scopeManagerSingleton = new ScopeCache();
 
         //Provider is scoped as singleton so all instances are be the same shared one
-        SimpleGraph graph = new SimpleGraph();
         Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
         powerSupplyProvider.setScopeCache(scopeManagerSingleton);
-        graph.register(powerSupplyProvider);
+        component.register(powerSupplyProvider);
 
-        SimpleGraph graph2 = new SimpleGraph();
+        Graph graph2 = new Graph();
+        Component component2 = new Component(scopeManagerSingleton);
         Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class);
         powerSupplyProvider2.setScopeCache(scopeManagerSingleton);
-        graph2.register(powerSupplyProvider2);
+        component2.register(powerSupplyProvider2);
+        graph2.addProviderFinder(component2);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();
@@ -80,15 +91,17 @@ public class TestInjectionScope extends BaseTestCases {
 
         //Provider is scoped as singleton but with different scopes, so they should have different
         //injections
-        SimpleGraph graph = new SimpleGraph();
+        //Provider is scoped as singleton so all instances are be the same shared one
         Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
         powerSupplyProvider.setScopeCache(scopeManagerSingleton);
-        graph.register(powerSupplyProvider);
+        component.register(powerSupplyProvider);
 
-        SimpleGraph graph2 = new SimpleGraph();
+        Graph graph2 = new Graph();
+        Component component2 = new Component(scopeManagerSingleton);
         Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class);
         powerSupplyProvider2.setScopeCache(scopeManagerSingleton);
-        graph2.register(powerSupplyProvider2);
+        component2.register(powerSupplyProvider2);
+        graph2.addProviderFinder(component2);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();
@@ -121,9 +134,8 @@ public class TestInjectionScope extends BaseTestCases {
         System.out.println("Test injection scope - unscoped\n");
 
         //Provider is not scoped so all instances are separated
-        SimpleGraph graph = new SimpleGraph();
         Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        graph.register(powerSupplyProvider);
+        component.register(powerSupplyProvider);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();

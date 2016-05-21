@@ -20,18 +20,29 @@ import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestFieldInjection extends BaseTestCases {
+
+    private Graph graph;
+    private Component component;
+
+    @Before
+    public void setUp() throws Exception {
+        component = new Component();
+        graph = new Graph();
+        graph.addProviderFinder(component);
+    }
+
     @Test
     public void testInjectByClassType() throws Exception {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields of target object by class type");
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Bird.class, Crow.class);
-        graph.register(Animal.class, Horse.class);
-        graph.register(Fish.class, GoldFish.class);
+        component.register(Bird.class, Crow.class);
+        component.register(Animal.class, Horse.class);
+        component.register(Fish.class, GoldFish.class);
 
         Zoo zoo = new Zoo();
         graph.inject(zoo, MyInject.class);
@@ -43,10 +54,9 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields of target object by class name");
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Bird.class, Crow.class.getName());
-        graph.register(Animal.class, Horse.class.getName());
-        graph.register(Fish.class, GoldFish.class.getName());
+        component.register(Bird.class, Crow.class.getName());
+        component.register(Animal.class, Horse.class.getName());
+        component.register(Fish.class, GoldFish.class.getName());
 
         Zoo zoo = new Zoo();
         graph.inject(zoo, MyInject.class);
@@ -58,9 +68,8 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields but missing provider\n");
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Bird.class, Crow.class.getName());
-        graph.register(Animal.class, Horse.class.getName());
+        component.register(Bird.class, Crow.class.getName());
+        component.register(Animal.class, Horse.class.getName());
 
         BiggerZoo zoo = new BiggerZoo();
         graph.inject(zoo, MyInject.class);
@@ -72,10 +81,9 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields to base class by class type\n");
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Bird.class, Crow.class.getName());
-        graph.register(Animal.class, Horse.class.getName());
-        graph.register(Fish.class, GoldFish.class.getName());
+        component.register(Bird.class, Crow.class.getName());
+        component.register(Animal.class, Horse.class.getName());
+        component.register(Fish.class, GoldFish.class.getName());
 
         BiggerZoo zoo = new BiggerZoo();
         graph.inject(zoo, MyInject.class);

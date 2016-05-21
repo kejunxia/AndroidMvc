@@ -23,6 +23,7 @@ import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.annotation.Documented;
@@ -63,13 +64,24 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     static class Windows implements Os {
     }
 
+    private ScopeCache scopeCache;
+    private Component component;
+    private Graph graph;
+
+    @Before
+    public void setUp() throws Exception {
+        scopeCache = new ScopeCache();
+        component = new Component(scopeCache);
+        graph = new Graph();
+        graph.addProviderFinder(component);
+    }
+
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictProviderException() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Os.class, iOs.class);
-        graph.register(Os.class, Android.class);
-        graph.register(Os.class, Android.class);
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Android.class);
     }
 
     private static class Device {
@@ -87,11 +99,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void should_use_cached_instance_if_inject_instance_is_referenced_more_then_once() throws Exception {
-        final SimpleGraph graph = new SimpleGraph();
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, iOs.class, scopeCache);
-        graph.register(Os.class, Android.class, scopeCache);
-        graph.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class, scopeCache);
+        component.register(Os.class, Android.class, scopeCache);
+        component.register(Os.class, Windows.class, scopeCache);
 
         //Retain = 0
 
@@ -136,11 +147,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void should_retain_instance_in_use_method_until_exit() throws Exception {
-        final SimpleGraph graph = new SimpleGraph();
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, iOs.class, scopeCache);
-        graph.register(Os.class, Android.class, scopeCache);
-        graph.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class, scopeCache);
+        component.register(Os.class, Android.class, scopeCache);
+        component.register(Os.class, Windows.class, scopeCache);
 
         final Device device = new Device();
 
@@ -178,11 +188,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void should_retain_instance_in_use_method_until_exit_without_qualifier() throws Exception {
-        final SimpleGraph graph = new SimpleGraph();
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, iOs.class, scopeCache);
-        graph.register(Os.class, Android.class, scopeCache);
-        graph.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class, scopeCache);
+        component.register(Os.class, Android.class, scopeCache);
+        component.register(Os.class, Windows.class, scopeCache);
 
         final Device device = new Device();
 
@@ -220,11 +229,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void should_be_able_to_use_instance_injected_with_qualifier() throws Exception {
-        final SimpleGraph graph = new SimpleGraph();
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, iOs.class, scopeCache);
-        graph.register(Os.class, Android.class, scopeCache);
-        graph.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class, scopeCache);
+        component.register(Os.class, Android.class, scopeCache);
+        component.register(Os.class, Windows.class, scopeCache);
 
         final Device device = new Device();
 
@@ -248,7 +256,6 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Test
     public void use_method_should_notify_injection_and_freed() throws
             ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
-        final SimpleGraph graph = new SimpleGraph();
         final Provider<Os> provider = new Provider<Os>(Os.class) {
             @Override
             protected Os createInstance() throws ProvideException {
@@ -256,7 +263,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             }
         };
         provider.setScopeCache(new ScopeCache());
-        graph.register(provider);
+        component.register(provider);
 
         class Phone {
             @MyInject
@@ -310,10 +317,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Test
     public void use_method_should_inject_fields_recursively() throws
             ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
-        final SimpleGraph graph = new SimpleGraph();
+
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, SamSungOs.class, scopeCache);
-        graph.register(Connector.class, TypeC.class, scopeCache);
+        component.register(Os.class, SamSungOs.class, scopeCache);
+        component.register(Connector.class, TypeC.class, scopeCache);
 
         graph.use(Os.class, MyInject.class, new Consumer<Os>() {
             @Override
@@ -327,10 +334,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     public void use_method_should_release_fields_recursively() throws
             ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
 
-        final SimpleGraph graph = new SimpleGraph();
+
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, SamSungOs.class, scopeCache);
-        graph.register(Connector.class, TypeC.class, scopeCache);
+        component.register(Os.class, SamSungOs.class, scopeCache);
+        component.register(Connector.class, TypeC.class, scopeCache);
 
         class Phone {
             @MyInject
@@ -363,10 +370,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     public void inject_in_use_method_should_retain_instances() throws
             ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
 
-        final SimpleGraph graph = new SimpleGraph();
+
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, SamSungOs.class, scopeCache);
-        graph.register(Connector.class, TypeC.class, scopeCache);
+        component.register(Os.class, SamSungOs.class, scopeCache);
+        component.register(Connector.class, TypeC.class, scopeCache);
 
         class Phone {
             @MyInject
@@ -402,16 +409,20 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Test
     public void shouldInjectQualifiedWithDifferentInstances() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Os.class, iOs.class);
-        graph.register(Os.class, Android.class);
-        graph.register(Os.class, Windows.class);
+        Graph g = new Graph();
+        Component c;
+        c = new Component();
+        g.addProviderFinder(c);
+
+        c.register(Os.class, iOs.class);
+        c.register(Os.class, Android.class);
+        c.register(Os.class, Windows.class);
 
         Device device = new Device();
-        graph.inject(device, MyInject.class);
+        g.inject(device, MyInject.class);
 
         Device device2 = new Device();
-        graph.inject(device2, MyInject.class);
+        g.inject(device2, MyInject.class);
 
         Assert.assertEquals(device.ios.getClass(), iOs.class);
         Assert.assertEquals(device.android.getClass(), Android.class);
@@ -425,11 +436,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Test
     public void shouldInjectQualifiedSingletonInstance() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
         ScopeCache scopeCache = new ScopeCache();
-        graph.register(Os.class, iOs.class, scopeCache);
-        graph.register(Os.class, Android.class, scopeCache);
-        graph.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class, scopeCache);
+        component.register(Os.class, Android.class, scopeCache);
+        component.register(Os.class, Windows.class, scopeCache);
 
         Device device = new Device();
         graph.inject(device, MyInject.class);
@@ -468,10 +478,11 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void componentProvidesQualifierShouldOverrideImplClassQualifier() throws ProviderConflictException,
+    public void unscoped_commponent_should_always_create_new_instances() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(new ContainerModule());
+        Component unscopedComponenent = new Component();
+        unscopedComponenent.register(new ContainerModule());
+        graph.addProviderFinder(unscopedComponenent);
 
         Device device = new Device();
         graph.inject(device, MyInject.class);
@@ -512,9 +523,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b2;
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Book.class, BookA.class);
-        graph.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -532,9 +542,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b1;
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Book.class, BookA.class);
-        graph.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -551,9 +560,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b1;
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Book.class, BookA.class);
-        graph.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -572,9 +580,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b1;
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Book.class, BookA.class);
-        graph.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -604,9 +611,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Food w;
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Food.class, Rice.class);
-        graph.register(Food.class, Wheat.class);
+        component.register(Food.class, Rice.class);
+        component.register(Food.class, Wheat.class);
 
         Basket basket = new Basket();
         graph.inject(basket, MyInject.class);

@@ -934,98 +934,94 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     @Test
     public void should_be_able_to_register_implementation_into_simple_graph ()
             throws ClassNotFoundException, ProviderConflictException, ProvideException {
-        Component registry = mock(Component.class);
-
-        SimpleGraph graph = new SimpleGraph(registry);
+        Component component = mock(Component.class);
 
         //Register by name
-        reset(registry);
-        graph.register(String.class, "Impl1");
-        verify(registry).register(eq(String.class), eq("Impl1"));
+        reset(component);
+        component.register(String.class, "Impl1");
+        verify(component).register(eq(String.class), eq("Impl1"));
 
-        reset(registry);
+        reset(component);
         ScopeCache cache = mock(ScopeCache.class);
-        graph.register(String.class, "Impl2", cache);
-        verify(registry).register(eq(String.class), eq("Impl2"), eq(cache));
+        component.register(String.class, "Impl2", cache);
+        verify(component).register(eq(String.class), eq("Impl2"), eq(cache));
 
-        reset(registry);
-        graph.register(String.class, "Impl3", cache, true);
-        verify(registry).register(eq(String.class), eq("Impl3"), eq(cache), eq(true));
+        reset(component);
+        component.register(String.class, "Impl3", cache, true);
+        verify(component).register(eq(String.class), eq("Impl3"), eq(cache), eq(true));
 
-        reset(registry);
-        graph.register(String.class, "Impl4", cache, false);
-        verify(registry).register(eq(String.class), eq("Impl4"), eq(cache), eq(false));
+        reset(component);
+        component.register(String.class, "Impl4", cache, false);
+        verify(component).register(eq(String.class), eq("Impl4"), eq(cache), eq(false));
 
         //Register by class
-        reset(registry);
-        graph.register(Contract.class, Execution.class);
-        verify(registry).register(eq(Contract.class), eq(Execution.class));
+        reset(component);
+        component.register(Contract.class, Execution.class);
+        verify(component).register(eq(Contract.class), eq(Execution.class));
 
-        reset(registry);
-        graph.register(Contract.class, Execution.class, cache);
-        verify(registry).register(eq(Contract.class), eq(Execution.class), eq(cache));
+        reset(component);
+        component.register(Contract.class, Execution.class, cache);
+        verify(component).register(eq(Contract.class), eq(Execution.class), eq(cache));
 
-        reset(registry);
-        graph.register(Contract.class, Execution.class, cache, true);
-        verify(registry).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(true));
+        reset(component);
+        component.register(Contract.class, Execution.class, cache, true);
+        verify(component).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(true));
 
-        reset(registry);
-        graph.register(Contract.class, Execution.class, cache, false);
-        verify(registry).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(false));
+        reset(component);
+        component.register(Contract.class, Execution.class, cache, false);
+        verify(component).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(false));
 
         //Register by component
         Object module = mock(Object.class);
-        reset(registry);
-        graph.register(module);
-        verify(registry).register(eq(module));
+        reset(component);
+        component.register(module);
+        verify(component).register(eq(module));
 
-        reset(registry);
-        graph.register(module, true);
-        verify(registry).register(eq(module), eq(true));
+        reset(component);
+        component.register(module, true);
+        verify(component).register(eq(module), eq(true));
 
-        reset(registry);
-        graph.register(module, false);
-        verify(registry).register(eq(module), eq(false));
+        reset(component);
+        component.register(module, false);
+        verify(component).register(eq(module), eq(false));
 
         //Register by provider
         Provider provider = mock(Provider.class);
-        reset(registry);
-        graph.register(provider);
-        verify(registry).register(eq(provider));
+        reset(component);
+        component.register(provider);
+        verify(component).register(eq(provider));
 
-        reset(registry);
-        graph.register(provider, true);
-        verify(registry).register(eq(provider), eq(true));
+        reset(component);
+        component.register(provider, true);
+        verify(component).register(eq(provider), eq(true));
 
-        reset(registry);
-        graph.register(provider, false);
-        verify(registry).register(eq(provider), eq(false));
+        reset(component);
+        component.register(provider, false);
+        verify(component).register(eq(provider), eq(false));
     }
 
     @Test
     public void should_be_able_to_unregister_implementation_into_simple_graph ()
             throws ClassNotFoundException, ProviderConflictException, ProvideException {
-        Component registry = mock(Component.class);
+        Component component = mock(Component.class);
 
-        SimpleGraph graph = new SimpleGraph(registry);
+        reset(component);
+        component.unregister(String.class, "Impl1");
+        verify(component).unregister(eq(String.class), eq("Impl1"));
 
-        reset(registry);
-        graph.unregister(String.class, "Impl1");
-        verify(registry).unregister(eq(String.class), eq("Impl1"));
-
-        reset(registry);
-        graph.unregister(Contract.class, Execution.class);
-        verify(registry).unregister(eq(Contract.class), eq(Execution.class));
+        reset(component);
+        component.unregister(Contract.class, Execution.class);
+        verify(component).unregister(eq(Contract.class), eq(Execution.class));
 
         Object module = mock(Object.class);
-        reset(registry);
-        graph.unregister(module);
-        verify(registry).unregister(eq(module));
+        reset(component);
+        component.unregister(module);
+        verify(component).unregister(eq(module));
 
         Provider provider = mock(Provider.class);
-        reset(registry);
-        graph.unregister(provider);
-        verify(registry).unregister(eq(provider));
+        reset(component);
+        component.unregister(provider);
+        verify(component).unregister(eq(provider));
     }
 
 }

@@ -22,6 +22,7 @@ import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.mockito.Matchers.any;
@@ -31,12 +32,21 @@ import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("unchecked")
 public class TestCircularDependencies extends BaseTestCases {
+    private ScopeCache scopeCache;
+    private Component component;
+    private Graph graph;
+
+    @Before
+    public void setUp() throws Exception {
+        scopeCache = new ScopeCache();
+        component = new Component(scopeCache);
+        graph = new Graph();
+        graph.addProviderFinder(component);
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void shouldNotDetectCircularDependencies() throws ProvideException, CircularDependenciesException, ProviderMissingException, ProviderConflictException {
-        SimpleGraph graph = new SimpleGraph();
-        ScopeCache scopeCache = new ScopeCache();
-
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
         ProviderByClassType powerProvider = new ProviderByClassType<>(Power.class, PowerImpl.class);
         powerProvider.setScopeCache(scopeCache);
@@ -52,9 +62,9 @@ public class TestCircularDependencies extends BaseTestCases {
         robotProvider.setScopeCache(scopeCache);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
-        graph.register(powerProvider);
-        graph.register(robotProvider);
-        graph.register(driverProvider);
+        component.register(powerProvider);
+        component.register(robotProvider);
+        component.register(driverProvider);
 
         Factory factory = new Factory();
         graph.inject(factory, MyInject.class);
@@ -73,10 +83,12 @@ public class TestCircularDependencies extends BaseTestCases {
 
     @Test(expected = CircularDependenciesException.class)
     public void shouldDetectCircularDependencies() throws ProvideException, CircularDependenciesException, ProviderMissingException, ProviderConflictException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(Power.class, PowerImpl.class);
-        graph.register(Driver.class, DriverImpl.class);
-        graph.register(Robot.class, RobotImpl.class);
+        //Create a new unscoped component
+        Component c = new Component();
+        graph.addProviderFinder(c);
+        c.register(Power.class, PowerImpl.class);
+        c.register(Driver.class, DriverImpl.class);
+        c.register(Robot.class, RobotImpl.class);
 
         Factory factory = new Factory();
         graph.inject(factory, MyInject.class);
@@ -86,9 +98,6 @@ public class TestCircularDependencies extends BaseTestCases {
     public void shouldNotifyInjectedCallbackWhenObjectFullyInjectedWithCircularDependencies() throws ProvideException,
             CircularDependenciesException, ProviderMissingException, ProviderConflictException {
         final Factory factory = new Factory();
-
-        final SimpleGraph graph = new SimpleGraph();
-        final ScopeCache scopeCache = new ScopeCache();
 
         ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
         powerProvider.setScopeCache(scopeCache);
@@ -117,9 +126,9 @@ public class TestCircularDependencies extends BaseTestCases {
             }
         });
 
-        graph.register(powerProvider);
-        graph.register(robotProvider);
-        graph.register(driverProvider);
+        component.register(powerProvider);
+        component.register(robotProvider);
+        component.register(driverProvider);
 
         graph.inject(factory, MyInject.class);
     }
@@ -128,9 +137,6 @@ public class TestCircularDependencies extends BaseTestCases {
     public void shouldInjectObjectOnlyOnceWithCircularDependencies() throws ProvideException,
             CircularDependenciesException, ProviderMissingException, ProviderConflictException, NoSuchFieldException {
         final Factory factory = new Factory();
-
-        final SimpleGraph graph = new SimpleGraph();
-        final ScopeCache scopeCache = new ScopeCache();
 
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
         ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
@@ -147,9 +153,9 @@ public class TestCircularDependencies extends BaseTestCases {
         robotProvider.setScopeCache(scopeCache);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
-        graph.register(powerProvider);
-        graph.register(robotProvider);
-        graph.register(driverProvider);
+        component.register(powerProvider);
+        component.register(robotProvider);
+        component.register(driverProvider);
 
         graph.inject(factory, MyInject.class);
 
@@ -161,9 +167,7 @@ public class TestCircularDependencies extends BaseTestCases {
     @Test
     public void test_should_inject_and_release_correctly_on_single_object() throws ProvideException,
             CircularDependenciesException, ProviderMissingException, ProviderConflictException {
-        final SimpleGraph graph = new SimpleGraph();
-        final ScopeCache scopeCache = new ScopeCache();
-        prepareInjection(scopeCache, graph);
+        prepareInjection(scopeCache);
 
         final Factory factory = new Factory();
 
@@ -176,9 +180,8 @@ public class TestCircularDependencies extends BaseTestCases {
     @Test
     public void test_should_inject_and_release_correctly_on_multiple_objects() throws ProvideException,
             CircularDependenciesException, ProviderMissingException, ProviderConflictException {
-        final SimpleGraph graph = new SimpleGraph();
         final ScopeCache scopeCache = new ScopeCache();
-        prepareInjection(scopeCache, graph);
+        prepareInjection(scopeCache);
 
         final Factory factory1 = new Factory();
         final Factory factory2 = new Factory();
@@ -213,9 +216,8 @@ public class TestCircularDependencies extends BaseTestCases {
     @Test
     public void test_should_inject_and_release_correctly_even_with_same_cached_objects_multiple_times() throws ProvideException,
             CircularDependenciesException, ProviderMissingException, ProviderConflictException {
-        final SimpleGraph graph = new SimpleGraph();
         final ScopeCache scopeCache = new ScopeCache();
-        prepareInjection(scopeCache, graph);
+        prepareInjection(scopeCache);
 
         final Factory factory = new Factory();
         graph.inject(factory, MyInject.class);
@@ -248,9 +250,8 @@ public class TestCircularDependencies extends BaseTestCases {
     @Test
     public void test_should_inject_and_release_correctly_on_multiple_objects_even_with_same_cached_objects_multiple_times() throws ProvideException,
             CircularDependenciesException, ProviderMissingException, ProviderConflictException {
-        final SimpleGraph graph = new SimpleGraph();
         final ScopeCache scopeCache = new ScopeCache();
-        prepareInjection(scopeCache, graph);
+        prepareInjection(scopeCache);
 
         final Factory factory1 = new Factory();
         graph.inject(factory1, MyInject.class);
@@ -358,7 +359,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertEquals(0, robotProvider.getReferenceCount());
     }
 
-    private void prepareInjection(ScopeCache scopeCache, SimpleGraph graph) throws ProviderConflictException {
+    private void prepareInjection(ScopeCache scopeCache) throws ProviderConflictException {
         ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
         powerProvider.setScopeCache(scopeCache);
 
@@ -368,9 +369,9 @@ public class TestCircularDependencies extends BaseTestCases {
         ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.setScopeCache(scopeCache);
 
-        graph.register(powerProvider);
-        graph.register(robotProvider);
-        graph.register(driverProvider);
+        component.register(powerProvider);
+        component.register(robotProvider);
+        component.register(driverProvider);
     }
 
     static class Factory {

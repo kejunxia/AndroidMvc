@@ -190,7 +190,7 @@ public class TestComponentInjection extends BaseTestCases {
         graph.addProviderFinder(new Component(singletonCache).register(module1));
 
         Graph graph2 = new Graph();
-        graph.addProviderFinder(new Component(singletonCache).register(module2));
+        graph2.addProviderFinder(new Component(singletonCache).register(module2));
 
         class Fridge {
             @MyInject

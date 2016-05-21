@@ -241,6 +241,8 @@ public abstract class Provider<T> {
      * @throws ProviderMissingException Exception thrown if nested injection misses dependencies
      */
     final T get() throws ProvideException {
+        //TODO: check singleton here
+
         if(scopeCache == null) {
             T impl = createInstance();
             if(impl == null) {
