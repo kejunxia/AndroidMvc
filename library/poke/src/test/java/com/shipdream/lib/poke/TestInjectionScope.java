@@ -16,44 +16,39 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.CircularDependenciesException;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
+import com.shipdream.lib.poke.exception.PokeException;
 
 import org.junit.Assert;
-
 import org.junit.Before;
 import org.junit.Test;
 
 public class TestInjectionScope extends BaseTestCases {
     private Graph graph;
     private Component component;
+    private ScopeCache scopeCache;
 
     @Before
     public void setUp() throws Exception {
-        component = new Component();
+        scopeCache = new ScopeCache();
+        component = new Component(scopeCache);
         graph = new Graph();
         graph.addProviderFinder(component);
     }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInjectSingleton() throws ProvideException, ProviderMissingException, CircularDependenciesException, ProviderConflictException {
+    public void testInjectSingleton() throws PokeException {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection scope - singleton\n");
 
-        ScopeCache scopeManagerSingleton = new ScopeCache();
-
         //Provider is scoped as singleton so all instances are be the same shared one
-        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider.setScopeCache(scopeManagerSingleton);
+        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
+
         component.register(powerSupplyProvider);
 
         Graph graph2 = new Graph();
-        Component component2 = new Component(scopeManagerSingleton);
-        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider2.setScopeCache(scopeManagerSingleton);
+        Component component2 = new Component(scopeCache);
+        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
         component2.register(powerSupplyProvider2);
         graph2.addProviderFinder(component2);
 
@@ -83,23 +78,19 @@ public class TestInjectionScope extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInjectSingletonWitchDifferentScopes() throws ProvideException, ProviderMissingException, CircularDependenciesException, ProviderConflictException {
+    public void testInjectSingletonWitchDifferentScopes() throws PokeException {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection scope - singleton\n");
-
-        ScopeCache scopeManagerSingleton = new ScopeCache();
 
         //Provider is scoped as singleton but with different scopes, so they should have different
         //injections
         //Provider is scoped as singleton so all instances are be the same shared one
-        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider.setScopeCache(scopeManagerSingleton);
+        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
         component.register(powerSupplyProvider);
 
         Graph graph2 = new Graph();
-        Component component2 = new Component(scopeManagerSingleton);
-        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider2.setScopeCache(scopeManagerSingleton);
+        Component component2 = new Component(scopeCache);
+        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
         component2.register(powerSupplyProvider2);
         graph2.addProviderFinder(component2);
 
@@ -129,13 +120,15 @@ public class TestInjectionScope extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInjectUnScoped() throws ProvideException, ProviderMissingException, CircularDependenciesException, ProviderConflictException {
+    public void testInjectUnScoped() throws PokeException {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection scope - unscoped\n");
 
         //Provider is not scoped so all instances are separated
-        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        component.register(powerSupplyProvider);
+        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class, null);
+        Component c = new Component();
+        c.register(powerSupplyProvider);
+        graph.addProviderFinder(c);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();

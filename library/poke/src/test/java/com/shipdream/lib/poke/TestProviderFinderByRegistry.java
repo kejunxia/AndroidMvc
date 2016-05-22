@@ -17,6 +17,7 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -42,16 +43,15 @@ import static org.mockito.Mockito.verify;
 
 public class TestProviderFinderByRegistry extends BaseTestCases {
     private Graph graph;
-    private Component providerFinder;
+    private Component component;
+    private ScopeCache scopeCache;
 
     @Before
     public void setUp() throws Exception {
-        providerFinder = new Component();
-        graph = new Graph() {
-            {
-                addProviderFinder(providerFinder);
-            }
-        };
+        scopeCache = new ScopeCache();
+        component = new Component(scopeCache);
+        graph = new Graph();
+        graph.addProviderFinder(component);
     }
 
     @Qualifier
@@ -81,25 +81,24 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test(expected = ProviderConflictException.class)
-    public void shouldDetectConflictProviderException() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
-        providerFinder.register(Os.class, iOs.class);
-        providerFinder.register(Os.class, Android.class);
-        providerFinder.register(Os.class, Android.class);
+    public void shouldDetectConflictProviderException() throws PokeException {
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Android.class);
     }
 
     @Test(expected = NullPointerException.class)
     public void should_detect_unregister_null_implementationClassName_error() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException, ClassNotFoundException {
         String impl = null;
-        providerFinder.unregister(Os.class, impl);
+        component.unregister(Os.class, impl);
     }
 
     @Test(expected = NullPointerException.class)
     public void should_detect_unregister_null_implementationClass_error() throws ProviderConflictException,
             ProvideException, CircularDependenciesException, ProviderMissingException, ClassNotFoundException {
         Class impl = null;
-        providerFinder.unregister(Os.class, impl);
+        component.unregister(Os.class, impl);
     }
 
     private static class Container {
@@ -116,12 +115,12 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void shouldInjectQualifiedWithDifferentInstances() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
-
-        providerFinder.register(Os.class, iOs.class);
-        providerFinder.register(Os.class, Android.class);
-        providerFinder.register(Os.class, Windows.class);
+    public void shouldInjectQualifiedWithDifferentInstances() throws PokeException {
+        Component c = new Component();
+        c.register(Os.class, iOs.class);
+        c.register(Os.class, Android.class);
+        c.register(Os.class, Windows.class);
+        graph.addProviderFinder(c);
 
         Container container = new Container();
         graph.inject(container, MyInject.class);
@@ -139,13 +138,10 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void shouldInjectQualifiedSingletonInstance() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
-
-        ScopeCache scopeCache = new ScopeCache();
-        providerFinder.register(Os.class, iOs.class, scopeCache);
-        providerFinder.register(Os.class, Android.class, scopeCache);
-        providerFinder.register(Os.class, Windows.class, scopeCache);
+    public void shouldInjectQualifiedSingletonInstance() throws PokeException {
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Windows.class);
 
         Container container = new Container();
         graph.inject(container, MyInject.class);
@@ -184,10 +180,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void componentProvidesQualifierShouldOverrideImplClassQualifier() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
-
-        providerFinder.register(new ContainerModule());
+    public void componentProvidesQualifierShouldOverrideImplClassQualifier() throws PokeException {
+        graph.addProviderFinder(new Component().register(new ContainerModule()));
 
         Container container = new Container();
         graph.inject(container, MyInject.class);
@@ -216,8 +210,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void namedQualifierShouldBeRecognized() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void namedQualifierShouldBeRecognized() throws PokeException {
         class Library {
             @MyInject
             @Named("A")
@@ -229,8 +222,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
 
 
-        providerFinder.register(Book.class, BookA.class);
-        providerFinder.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -240,8 +233,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void incorrectNamedQualifierShouldBeRecognized() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void incorrectNamedQualifierShouldBeRecognized() throws PokeException {
         class Library {
             @MyInject
             @Named("B")
@@ -249,8 +241,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
 
 
-        providerFinder.register(Book.class, BookA.class);
-        providerFinder.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -259,17 +251,18 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test(expected = ProviderMissingException.class)
-    public void badNamedQualifierShouldBeTreatedAsMissing() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void badNamedQualifierShouldBeTreatedAsMissing() throws
+            ProviderConflictException, ProvideException,
+            CircularDependenciesException, ProviderMissingException {
+
         class Library {
             @MyInject
             @Named("C")
             private Book b1;
         }
 
-
-        providerFinder.register(Book.class, BookA.class);
-        providerFinder.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -278,8 +271,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test(expected = ProviderMissingException.class)
-    public void badEmptyNamedQualifierShouldBeTreatedAsMissing() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void badEmptyNamedQualifierShouldBeTreatedAsMissing() throws PokeException {
         class Library {
             //Empty named qualifier is allowed but will be different with any non empty string
             //Named qualifier
@@ -289,8 +281,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
 
 
-        providerFinder.register(Book.class, BookA.class);
-        providerFinder.register(Book.class, BookB.class);
+        component.register(Book.class, BookA.class);
+        component.register(Book.class, BookB.class);
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -309,8 +301,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void emptyNamedQualifierShouldBeTreatedAsNormalQualifier() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void emptyNamedQualifierShouldBeTreatedAsNormalQualifier() throws PokeException {
         class Basket {
             @MyInject
             @Named
@@ -320,8 +311,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             private Food w;
         }
 
-        providerFinder.register(Food.class, Rice.class);
-        providerFinder.register(Food.class, Wheat.class);
+        component.register(Food.class, Rice.class);
+        component.register(Food.class, Wheat.class);
 
         Basket basket = new Basket();
         graph.inject(basket, MyInject.class);
@@ -345,8 +336,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void overridingClassNameRegisteringShouldWorkAsExpected() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException, ClassNotFoundException {
+    public void overridingClassNameRegisteringShouldWorkAsExpected() throws PokeException, ClassNotFoundException {
         class Basket {
             @MyInject
             @Named
@@ -358,17 +348,15 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         Basket basket = new Basket();
 
-        ScopeCache scopeCache = new ScopeCache();
-
-        providerFinder.register(Food.class, Rice.class.getName(), scopeCache);
-        providerFinder.register(Food.class, Wheat.class.getName());
+        component.register(Food.class, Rice.class.getName());
+        component.register(Food.class, Wheat.class.getName());
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Rice.class);
         Assert.assertEquals(basket.w.getClass(), Wheat.class);
 
         boolean conflicted = false;
         try {
-            providerFinder.register(Food.class, Noodle.class.getName());
+            component.register(Food.class, Noodle.class.getName());
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
@@ -376,32 +364,32 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         conflicted = false;
         try {
-            providerFinder.register(Food.class, Bread.class.getName());
+            component.register(Food.class, Bread.class.getName());
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
         Assert.assertTrue(conflicted);
 
-        providerFinder.register(Food.class, Noodle.class.getName(), null, true);
-        providerFinder.register(Food.class, Bread.class.getName(), null, true);
+        component.register(Food.class, Noodle.class.getName(), true);
+        component.register(Food.class, Bread.class.getName(), true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Noodle.class);
         Assert.assertEquals(basket.w.getClass(), Bread.class);
 
-        providerFinder.register(Food.class, Chicken.class.getName(), null, true);
-        providerFinder.register(Food.class, Beef.class.getName(), null, true);
+        component.register(Food.class, Chicken.class.getName(), true);
+        component.register(Food.class, Beef.class.getName(), true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Chicken.class);
         Assert.assertEquals(basket.w.getClass(), Beef.class);
 
-        providerFinder.unregister(Food.class, Chicken.class.getName());
-        providerFinder.unregister(Food.class, Bread.class.getName());
+        component.unregister(Food.class, Chicken.class.getName());
+        component.unregister(Food.class, Bread.class.getName());
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Rice.class);
         Assert.assertEquals(basket.w.getClass(), Wheat.class);
 
-        providerFinder.unregister(Food.class, Chicken.class.getName());
-        providerFinder.unregister(Food.class, Bread.class.getName());
+        component.unregister(Food.class, Chicken.class.getName());
+        component.unregister(Food.class, Bread.class.getName());
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -421,11 +409,11 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Test
     public void should_throw_exception_when_there_is_void_function_in_component()
-            throws ProvideException, ProviderConflictException {
+            throws PokeException {
         BadModule badComponent = new BadModule();
 
         try {
-            providerFinder.register(badComponent);
+            component.register(badComponent);
         } catch (ProvideException e) {
             Assert.assertTrue(e.getMessage().contains("must not return void"));
             return;
@@ -446,10 +434,10 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Test
     public void should_throw_exception_when_provider_has_more_than_one_qualifier()
-            throws ProvideException, ProviderConflictException {
+            throws PokeException {
         DuplicateModule duplicateComponent = new DuplicateModule();
         try {
-            providerFinder.register(duplicateComponent);
+            component.register(duplicateComponent);
         } catch (ProvideException e) {
             Assert.assertTrue(e.getMessage().contains("Only one Qualifier"));
             return;
@@ -459,15 +447,14 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Test
     public void should_throw_exception_if_provider_returns_null()
-            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+            throws PokeException {
         Provider<String> provider = new Provider(String.class) {
             @Override
             protected String createInstance() throws ProvideException {
                 return null;
             }
         };
-        provider.setScopeCache(new ScopeCache());
-        providerFinder.register(provider);
+        component.register(provider);
 
         class Container {
             @MyInject
@@ -487,8 +474,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void overridingClassRegisteringShouldWorkAsExpected() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void overridingClassRegisteringShouldWorkAsExpected() throws PokeException {
         class Basket {
             @MyInject
             @Named
@@ -500,15 +486,15 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         Basket basket = new Basket();
 
-        providerFinder.register(Food.class, Rice.class);
-        providerFinder.register(Food.class, Wheat.class);
+        component.register(Food.class, Rice.class);
+        component.register(Food.class, Wheat.class);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Rice.class);
         Assert.assertEquals(basket.w.getClass(), Wheat.class);
 
         boolean conflicted = false;
         try {
-            providerFinder.register(Food.class, Noodle.class);
+            component.register(Food.class, Noodle.class);
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
@@ -516,32 +502,32 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         conflicted = false;
         try {
-            providerFinder.register(Food.class, Bread.class);
+            component.register(Food.class, Bread.class);
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
         Assert.assertTrue(conflicted);
 
-        providerFinder.register(Food.class, Noodle.class, null, true);
-        providerFinder.register(Food.class, Bread.class, null, true);
+        component.register(Food.class, Noodle.class, true);
+        component.register(Food.class, Bread.class, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Noodle.class);
         Assert.assertEquals(basket.w.getClass(), Bread.class);
 
-        providerFinder.register(Food.class, Chicken.class, null, true);
-        providerFinder.register(Food.class, Beef.class, null, true);
+        component.register(Food.class, Chicken.class, true);
+        component.register(Food.class, Beef.class, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Chicken.class);
         Assert.assertEquals(basket.w.getClass(), Beef.class);
 
-        providerFinder.unregister(Food.class, Noodle.class);
-        providerFinder.unregister(Food.class, Bread.class);
+        component.unregister(Food.class, Noodle.class);
+        component.unregister(Food.class, Bread.class);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Rice.class);
         Assert.assertEquals(basket.w.getClass(), Wheat.class);
 
-        providerFinder.unregister(Food.class, Chicken.class);
-        providerFinder.unregister(Food.class, Bread.class);
+        component.unregister(Food.class, Chicken.class);
+        component.unregister(Food.class, Bread.class);
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -632,15 +618,15 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         Basket basket = new Basket();
 
-        providerFinder.register(providerRice);
-        providerFinder.register(providerWheat);
+        component.register(providerRice);
+        component.register(providerWheat);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Rice.class);
         Assert.assertEquals(basket.w.getClass(), Wheat.class);
 
         boolean conflicted = false;
         try {
-            providerFinder.register(providerNoodle);
+            component.register(providerNoodle);
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
@@ -648,32 +634,32 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         conflicted = false;
         try {
-            providerFinder.register(providerBread);
+            component.register(providerBread);
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
         Assert.assertTrue(conflicted);
 
-        providerFinder.register(providerNoodle, true);
-        providerFinder.register(providerBread, true);
+        component.register(providerNoodle, true);
+        component.register(providerBread, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Noodle.class);
         Assert.assertEquals(basket.w.getClass(), Bread.class);
 
-        providerFinder.register(providerChicken, true);
-        providerFinder.register(providerBeef, true);
+        component.register(providerChicken, true);
+        component.register(providerBeef, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Chicken.class);
         Assert.assertEquals(basket.w.getClass(), Beef.class);
 
-        providerFinder.unregister(providerChicken);
-        providerFinder.unregister(providerBeef);
+        component.unregister(providerChicken);
+        component.unregister(providerBeef);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Rice.class);
         Assert.assertEquals(basket.w.getClass(), Wheat.class);
 
-        providerFinder.unregister(providerNoodle);
-        providerFinder.unregister(providerWheat);
+        component.unregister(providerNoodle);
+        component.unregister(providerWheat);
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -725,8 +711,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
     }
 
     @Test
-    public void overridingComponentRegisteringShouldWorkAsExpected() throws
-            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void overridingComponentRegisteringShouldWorkAsExpected() throws PokeException {
         class Basket {
             @MyInject
             @Named
@@ -742,35 +727,35 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         FoodModuleB foodModuleB = new FoodModuleB();
         FoodModuleC foodModuleC = new FoodModuleC();
 
-        providerFinder.register(foodModuleA);
+        component.register(foodModuleA);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Apple.class);
         Assert.assertEquals(basket.w.getClass(), Orange.class);
 
         boolean conflicted = false;
         try {
-            providerFinder.register(new FoodModuleB());
+            component.register(new FoodModuleB());
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
         Assert.assertTrue(conflicted);
 
-        providerFinder.register(foodModuleB, true);
+        component.register(foodModuleB, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Orange.class);
         Assert.assertEquals(basket.w.getClass(), Apple.class);
 
-        providerFinder.register(foodModuleC, true);
+        component.register(foodModuleC, true);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Apple.class);
         Assert.assertEquals(basket.w.getClass(), Banana.class);
 
-        providerFinder.unregister(foodModuleA);
+        component.unregister(foodModuleA);
         graph.inject(basket, MyInject.class);
         Assert.assertEquals(basket.r.getClass(), Apple.class);
         Assert.assertEquals(basket.w.getClass(), Orange.class);
 
-        providerFinder.unregister(foodModuleA);
+        component.unregister(foodModuleA);
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -795,7 +780,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         final Banana banana = new Banana();
         final Orange orange = new Orange();
-        ScopeCache scopeCache = new ScopeCache();
         ScopeCache scopeCacheOverridden = new ScopeCache();
 
         Provider<Food> namedProviderBanana = new Provider<Food>(Food.class) {
@@ -809,7 +793,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
                 return ReflectUtils.findFirstQualifierInAnnotations(Noodle.class);
             }
         };
-        namedProviderBanana.setScopeCache(scopeCache);
 
         Provider<Food> unnammedProviderOrange = new Provider<Food>(Food.class) {
             @Override
@@ -822,7 +805,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
                 return null;
             }
         };
-        unnammedProviderOrange.setScopeCache(scopeCache);
 
         Provider<Food> namedProviderOrangeOverridden = new Provider<Food>(Food.class) {
             @Override
@@ -835,7 +817,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
                 return ReflectUtils.findFirstQualifierInAnnotations(Chicken.class);
             }
         };
-        namedProviderOrangeOverridden.setScopeCache(scopeCacheOverridden);
+        namedProviderOrangeOverridden.scopeCache = scopeCacheOverridden;
 
         Provider<Food> unnamedProviderBananaOverridden = new Provider<Food>(Food.class) {
             @Override
@@ -848,12 +830,12 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
                 return null;
             }
         };
-        unnamedProviderBananaOverridden.setScopeCache(scopeCacheOverridden);
+        unnamedProviderBananaOverridden.scopeCache = scopeCacheOverridden;
 
         Basket basket = new Basket();
 
-        providerFinder.register(namedProviderBanana);
-        providerFinder.register(unnammedProviderOrange);
+        component.register(namedProviderBanana);
+        component.register(unnammedProviderOrange);
         graph.inject(basket, MyInject.class);
         Assert.assertTrue(basket.r == banana);
         Assert.assertTrue(basket.w == orange);
@@ -864,7 +846,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         boolean conflicted = false;
         try {
-            providerFinder.register(namedProviderOrangeOverridden);
+            component.register(namedProviderOrangeOverridden);
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
@@ -872,14 +854,14 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         conflicted = false;
         try {
-            providerFinder.register(unnamedProviderBananaOverridden);
+            component.register(unnamedProviderBananaOverridden);
         } catch (ProviderConflictException e) {
             conflicted = true;
         }
         Assert.assertTrue(conflicted);
 
-        providerFinder.register(namedProviderOrangeOverridden, true);
-        providerFinder.register(unnamedProviderBananaOverridden, true);
+        component.register(namedProviderOrangeOverridden, true);
+        component.register(unnamedProviderBananaOverridden, true);
         graph.inject(basket, MyInject.class);
         Assert.assertTrue(basket.r == orange);
         Assert.assertTrue(basket.w == banana);
@@ -888,8 +870,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == orange);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == banana);
 
-        providerFinder.unregister(namedProviderBanana);
-        providerFinder.unregister(unnammedProviderOrange);
+        component.unregister(namedProviderBanana);
+        component.unregister(unnammedProviderOrange);
         graph.inject(basket, MyInject.class);
         Assert.assertTrue(basket.r == banana);
         Assert.assertTrue(basket.w == orange);
@@ -898,8 +880,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == null);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == null);
 
-        providerFinder.unregister(namedProviderOrangeOverridden);
-        providerFinder.unregister(unnammedProviderOrange);
+        component.unregister(namedProviderOrangeOverridden);
+        component.unregister(unnammedProviderOrange);
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -933,7 +915,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Test
     public void should_be_able_to_register_implementation_into_simple_graph ()
-            throws ClassNotFoundException, ProviderConflictException, ProvideException {
+            throws PokeException, ClassNotFoundException {
         Component component = mock(Component.class);
 
         //Register by name
@@ -943,16 +925,16 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         reset(component);
         ScopeCache cache = mock(ScopeCache.class);
-        component.register(String.class, "Impl2", cache);
-        verify(component).register(eq(String.class), eq("Impl2"), eq(cache));
+        component.register(String.class, "Impl2");
+        verify(component).register(eq(String.class), eq("Impl2"));
 
         reset(component);
-        component.register(String.class, "Impl3", cache, true);
-        verify(component).register(eq(String.class), eq("Impl3"), eq(cache), eq(true));
+        component.register(String.class, "Impl3", true);
+        verify(component).register(eq(String.class), eq("Impl3"), eq(true));
 
         reset(component);
-        component.register(String.class, "Impl4", cache, false);
-        verify(component).register(eq(String.class), eq("Impl4"), eq(cache), eq(false));
+        component.register(String.class, "Impl4", false);
+        verify(component).register(eq(String.class), eq("Impl4"), eq(false));
 
         //Register by class
         reset(component);
@@ -960,16 +942,16 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         verify(component).register(eq(Contract.class), eq(Execution.class));
 
         reset(component);
-        component.register(Contract.class, Execution.class, cache);
-        verify(component).register(eq(Contract.class), eq(Execution.class), eq(cache));
+        component.register(Contract.class, Execution.class);
+        verify(component).register(eq(Contract.class), eq(Execution.class));
 
         reset(component);
-        component.register(Contract.class, Execution.class, cache, true);
-        verify(component).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(true));
+        component.register(Contract.class, Execution.class, true);
+        verify(component).register(eq(Contract.class), eq(Execution.class), eq(true));
 
         reset(component);
-        component.register(Contract.class, Execution.class, cache, false);
-        verify(component).register(eq(Contract.class), eq(Execution.class), eq(cache), eq(false));
+        component.register(Contract.class, Execution.class, false);
+        verify(component).register(eq(Contract.class), eq(Execution.class), eq(false));
 
         //Register by component
         Object module = mock(Object.class);

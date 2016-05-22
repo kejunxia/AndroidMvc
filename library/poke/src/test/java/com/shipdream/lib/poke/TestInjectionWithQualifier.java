@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
@@ -77,8 +76,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test(expected = ProviderConflictException.class)
-    public void shouldDetectConflictProviderException() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void shouldDetectConflictProviderException() throws PokeException {
         component.register(Os.class, iOs.class);
         component.register(Os.class, Android.class);
         component.register(Os.class, Android.class);
@@ -99,10 +97,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void should_use_cached_instance_if_inject_instance_is_referenced_more_then_once() throws Exception {
-        ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class, scopeCache);
-        component.register(Os.class, Android.class, scopeCache);
-        component.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Windows.class);
 
         //Retain = 0
 
@@ -146,11 +143,11 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void should_retain_instance_in_use_method_until_exit() throws Exception {
+    public void should_retain_instance_in_use_method_until_exit() throws PokeException {
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class, scopeCache);
-        component.register(Os.class, Android.class, scopeCache);
-        component.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Windows.class);
 
         final Device device = new Device();
 
@@ -187,11 +184,11 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void should_retain_instance_in_use_method_until_exit_without_qualifier() throws Exception {
+    public void should_retain_instance_in_use_method_until_exit_without_qualifier() throws PokeException {
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class, scopeCache);
-        component.register(Os.class, Android.class, scopeCache);
-        component.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Windows.class);
 
         final Device device = new Device();
 
@@ -228,11 +225,11 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void should_be_able_to_use_instance_injected_with_qualifier() throws Exception {
+    public void should_be_able_to_use_instance_injected_with_qualifier() throws PokeException {
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class, scopeCache);
-        component.register(Os.class, Android.class, scopeCache);
-        component.register(Os.class, Windows.class, scopeCache);
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Windows.class);
 
         final Device device = new Device();
 
@@ -254,15 +251,13 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void use_method_should_notify_injection_and_freed() throws
-            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void use_method_should_notify_injection_and_freed() throws PokeException {
         final Provider<Os> provider = new Provider<Os>(Os.class) {
             @Override
             protected Os createInstance() throws ProvideException {
                 return new Android();
             }
         };
-        provider.setScopeCache(new ScopeCache());
         component.register(provider);
 
         class Phone {
@@ -315,12 +310,11 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void use_method_should_inject_fields_recursively() throws
-            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void use_method_should_inject_fields_recursively() throws PokeException {
 
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, SamSungOs.class, scopeCache);
-        component.register(Connector.class, TypeC.class, scopeCache);
+        component.register(Os.class, SamSungOs.class);
+        component.register(Connector.class, TypeC.class);
 
         graph.use(Os.class, MyInject.class, new Consumer<Os>() {
             @Override
@@ -331,13 +325,12 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void use_method_should_release_fields_recursively() throws
-            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void use_method_should_release_fields_recursively() throws PokeException {
 
 
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, SamSungOs.class, scopeCache);
-        component.register(Connector.class, TypeC.class, scopeCache);
+        component.register(Os.class, SamSungOs.class);
+        component.register(Connector.class, TypeC.class);
 
         class Phone {
             @MyInject
@@ -367,13 +360,12 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void inject_in_use_method_should_retain_instances() throws
-            ProviderConflictException, ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void inject_in_use_method_should_retain_instances() throws PokeException {
 
 
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, SamSungOs.class, scopeCache);
-        component.register(Connector.class, TypeC.class, scopeCache);
+        component.register(Os.class, SamSungOs.class);
+        component.register(Connector.class, TypeC.class);
 
         class Phone {
             @MyInject
@@ -407,8 +399,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void shouldInjectQualifiedWithDifferentInstances() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void shouldInjectQualifiedWithDifferentInstances() throws PokeException {
         Graph g = new Graph();
         Component c;
         c = new Component();
@@ -434,12 +425,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void shouldInjectQualifiedSingletonInstance() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
-        ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class, scopeCache);
-        component.register(Os.class, Android.class, scopeCache);
-        component.register(Os.class, Windows.class, scopeCache);
+    public void shouldInjectQualifiedSingletonInstance() throws PokeException {
+        component.register(Os.class, iOs.class);
+        component.register(Os.class, Android.class);
+        component.register(Os.class, Windows.class);
 
         Device device = new Device();
         graph.inject(device, MyInject.class);
@@ -478,8 +467,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void unscoped_commponent_should_always_create_new_instances() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void unscoped_commponent_should_always_create_new_instances() throws PokeException {
         Component unscopedComponenent = new Component();
         unscopedComponenent.register(new ContainerModule());
         graph.addProviderFinder(unscopedComponenent);
@@ -511,8 +499,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void namedQualifierShouldBeRecognized() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void namedQualifierShouldBeRecognized() throws PokeException {
         class Library {
             @MyInject
             @Named("A")
@@ -534,8 +521,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void incorrectNamedQualifierShouldBeRecognized() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void incorrectNamedQualifierShouldBeRecognized() throws PokeException {
         class Library {
             @MyInject
             @Named("B")
@@ -552,8 +538,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test(expected = ProviderMissingException.class)
-    public void badNamedQualifierShouldBeTreatedAsMissing() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void badNamedQualifierShouldBeTreatedAsMissing() throws PokeException {
         class Library {
             @MyInject
             @Named("C")
@@ -570,8 +555,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test(expected = ProviderMissingException.class)
-    public void badEmptyNamedQualifierShouldBeTreatedAsMissing() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void badEmptyNamedQualifierShouldBeTreatedAsMissing() throws PokeException {
         class Library {
             //Empty named qualifier is allowed but will be different with any non empty string
             //Named qualifier
@@ -600,8 +584,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     }
 
     @Test
-    public void emptyNamedQualifierShouldBeTreatedAsNormalQualifier() throws ProviderConflictException,
-            ProvideException, CircularDependenciesException, ProviderMissingException {
+    public void emptyNamedQualifierShouldBeTreatedAsNormalQualifier() throws PokeException {
         class Basket {
             @MyInject
             @Named

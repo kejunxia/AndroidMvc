@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.IllegalScopeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 
 import java.lang.annotation.Annotation;
@@ -25,8 +24,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.inject.Singleton;
 
 /**
  * Provider controls the injection type mapping as well as the scope by associated
@@ -60,7 +57,6 @@ public abstract class Provider<T> {
 
     private final Class<T> type;
     private final Annotation qualifier;
-    private final String scope;
     ScopeCache scopeCache;
 
     Map<Object, Map<String, Integer>> owners = new HashMap<>();
@@ -71,7 +67,7 @@ public abstract class Provider<T> {
      * @param type The type of the instance the provider is providing
      */
     public Provider(Class<T> type) {
-        this(type, null);
+        this(type, null, null);
     }
 
     /**
@@ -82,50 +78,28 @@ public abstract class Provider<T> {
     public Provider(Class<T> type, Annotation qualifier) {
         this.type = type;
         this.qualifier = qualifier;
-        this.scope = null;
         this.scopeCache = null;
     }
 
     /**
      * Construct a scoped and unqualified provider
      * @param type The type of the instance the provider is providing
-     * @param scope The name of the scope
      * @param scopeCache the cache for the scope
-     * @throws IllegalScopeException given scope and scopeCache are not matched
      */
-    public Provider(Class<T> type, String scope, ScopeCache scopeCache) throws IllegalScopeException {
-        this(type, null, scope, scopeCache);
+    public Provider(Class<T> type, ScopeCache scopeCache) {
+        this(type, null, scopeCache);
     }
 
     /**
      * Construct a scoped and qualified provider
      * @param type The type of the instance the provider is providing
      * @param qualifier Qualifier
-     * @param scope The name of the scope
-     * @throws IllegalScopeException given scope and scopeCache are not matched
+     * @param scopeCache ScopeCache
      */
-    public Provider(Class<T> type, Annotation qualifier, String scope, ScopeCache scopeCache) throws IllegalScopeException {
+    public Provider(Class<T> type, Annotation qualifier, ScopeCache scopeCache) {
         this.type = type;
         this.qualifier = qualifier;
-        this.scope = scope;
         this.scopeCache = scopeCache;
-
-        checkScope(scope, scopeCache);
-    }
-
-    private void checkScope(String scope, ScopeCache scopeCache) throws IllegalScopeException {
-        if (scope != null && scope.equals(Singleton.class.getName())) {
-            if (scopeCache == null) {
-                throw new IllegalScopeException("Singleton scope is specified by no non-null scope cache is given");
-            }
-        }
-    }
-
-    /**
-     * @return The scope of this provider.
-     */
-    public String getScope() {
-        return scope;
     }
 
     int getReferenceCount(Object owner, Field field) {
@@ -276,8 +250,6 @@ public abstract class Provider<T> {
      * @throws ProvideException Exception thrown during constructing the object
      */
     final T get() throws ProvideException {
-        //TODO: check singleton here
-
         if(scopeCache == null) {
             T impl = createInstance();
             if(impl == null) {

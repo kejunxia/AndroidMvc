@@ -17,6 +17,7 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -70,8 +71,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
     }
 
     @Test
-    public void unscopedProvidesShouldHaveDifferentInstances() throws ProvideException, ProviderConflictException,
-            CircularDependenciesException, ProviderMissingException {
+    public void unscopedProvidesShouldHaveDifferentInstances() throws PokeException {
 
         class Module1 {
             @Provides

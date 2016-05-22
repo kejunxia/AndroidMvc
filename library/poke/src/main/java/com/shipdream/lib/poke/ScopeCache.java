@@ -42,6 +42,21 @@ public class ScopeCache {
 
     protected Map<String, CachedItem> cache = new HashMap<>();
 
+    private String name;
+
+    public ScopeCache() {
+        this(null);
+    }
+
+    public ScopeCache(String name) {
+        this.name = name;
+    }
+
+    //TODO: document
+    public String getName() {
+        return name;
+    }
+
     @SuppressWarnings("unchecked")
     <T> T get(Provider<T> provider) throws ProvideException {
         String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());

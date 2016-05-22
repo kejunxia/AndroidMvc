@@ -16,14 +16,11 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.IllegalScopeException;
 import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.util.ReflectUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Qualifier;
 import javax.inject.Scope;
@@ -36,59 +33,20 @@ public class ProviderByClassType<T> extends Provider<T> {
     private final Class<? extends T> clazz;
     private final String implClassName;
 
-    private static class ClassInfo {
-        Annotation qualifier;
-        String scope;
-    }
-
-    private static Map<Class, ClassInfo> classInfoCache = new HashMap<>();
-
-    private static ClassInfo getClassInfo(Class implClass) {
-        ClassInfo classInfo = classInfoCache.get(implClass);
-        if (classInfo == null) {
-            classInfo = new ClassInfo();
-            classInfoCache.put(implClass, classInfo);
-            Annotation[] annotations = implClass.getAnnotations();
-            if (annotations != null) {
-                for (Annotation a : annotations) {
-                    Class<? extends Annotation> annotationType = a.annotationType();
-                    if (annotationType.isAnnotationPresent(Qualifier.class)) {
-                        if (classInfo.qualifier != null) {
-                            classInfo.qualifier = a;
-                        }
-                    } else if (annotationType.isAnnotationPresent(Scope.class)) {
-                        if (classInfo.scope != null) {
-                            classInfo.scope = annotationType.getName();
-                        }
-                    }
-                }
-            }
-        }
-        return classInfo;
-    }
-
     /**
      * Construct a provider binding the type and the implementation class type. The found
-     * implementation class may be annotated by {@link Qualifier} and {@link Scope}
+     * implementation class may be annotated by {@link Qualifier}
      * @param type The contract of the implementation
      * @param implementationClass The class type of the implementation. It must have a default
      *                            public constructor
      * @param scopeCache The scope cache to be used when the implementation class is annotated with a
      *                   {@link Scope}
-     * @throws IllegalScopeException Thrown when the scope marked by the implementationClass and
-     *                              scopeCache are not matched
      */
     public ProviderByClassType(Class<T> type, Class<? extends T> implementationClass,
-                               ScopeCache scopeCache) throws IllegalScopeException {
-        super(type,
-                getClassInfo(implementationClass).qualifier,
-                getClassInfo(implementationClass).scope,
-                scopeCache);
+                               ScopeCache scopeCache) {
+        super(type, ReflectUtils.findFirstQualifierInAnnotations(implementationClass), scopeCache);
         this.implClassName = implementationClass.getName();
         this.clazz = implementationClass;
-
-        //Clean helping cache
-        classInfoCache.remove(implementationClass);
     }
 
     @Override

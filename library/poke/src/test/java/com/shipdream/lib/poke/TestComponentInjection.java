@@ -16,13 +16,11 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
-
 import org.junit.Test;
 
 import java.lang.annotation.Retention;
@@ -47,7 +45,7 @@ public class TestComponentInjection extends BaseTestCases {
     }
 
     @Test(expected = ProviderConflictException.class)
-    public void shouldDetectConflictProvides() throws ProvideException, ProviderConflictException {
+    public void shouldDetectConflictProvides() throws PokeException {
         Object module = new Object() {
             @Provides
             public Food providesFood1() {
@@ -75,7 +73,7 @@ public class TestComponentInjection extends BaseTestCases {
     }
 
     @Test
-    public void componentMethodInjectionShouldWork() throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+    public void componentMethodInjectionShouldWork() throws PokeException {
         class Bread implements Food{
 
         }
@@ -124,7 +122,7 @@ public class TestComponentInjection extends BaseTestCases {
     }
 
     @Test
-    public void componentMethodInjectionShouldWork1() throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+    public void componentMethodInjectionShouldWork1() throws PokeException {
         Object module = new Object() {
             @Named("Fruit")
             @Provides
@@ -180,7 +178,7 @@ public class TestComponentInjection extends BaseTestCases {
 
     @Test
     public void singletonComponentShouldProvideSameInstance()
-            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+            throws PokeException {
         ScopeCache singletonCache = new ScopeCache();
 
         Object module1 = new SingletonModule();
@@ -216,7 +214,7 @@ public class TestComponentInjection extends BaseTestCases {
 
     @Test (expected = ProvideException.class)
     public void should_detect_ProvideException_with_providers_return_void ()
-            throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
+            throws PokeException {
         Graph graph = new Graph();
         graph.addProviderFinder(new Component().register(new BadModule()));
 

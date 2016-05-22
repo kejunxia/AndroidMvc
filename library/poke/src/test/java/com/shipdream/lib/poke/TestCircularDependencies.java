@@ -17,6 +17,7 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -24,6 +25,8 @@ import com.shipdream.lib.poke.exception.ProviderMissingException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.inject.Singleton;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -46,20 +49,17 @@ public class TestCircularDependencies extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldNotDetectCircularDependencies() throws ProvideException, CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void should_not_throw_circular_dependency_exception_on_finite_circular_dependency() throws PokeException {
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType powerProvider = new ProviderByClassType<>(Power.class, PowerImpl.class);
-        powerProvider.setScopeCache(scopeCache);
+        ProviderByClassType powerProvider = new ProviderByClassType<>(Power.class, PowerImpl.class, scopeCache);
         powerProvider.registerOnInjectedListener(powerOnInject);
 
         Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
-        driverProvider.setScopeCache(scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
         driverProvider.registerOnInjectedListener(driverOnInject);
 
         Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
-        robotProvider.setScopeCache(scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
         component.register(powerProvider);
@@ -81,26 +81,53 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(driver);
     }
 
+    static class RobotImpl2 implements Robot {
+        @MyInject
+        private Driver driver;
+
+        @MyInject
+        private Power power;
+    }
+
+    static class DriverImpl2 implements Driver {
+        @MyInject
+        private Power power;
+
+        @MyInject
+        private Robot robot;
+    }
+
+    static class PowerImpl2 implements Power {
+
+        @MyInject
+        private Robot robot;
+
+        @MyInject
+        private Driver driver;
+
+        public Robot getConnectedRobot() {
+            return robot;
+        }
+    }
+
     @Test(expected = CircularDependenciesException.class)
-    public void shouldDetectCircularDependencies() throws ProvideException, CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void should_detect_infinite_circular_dependencies() throws ProvideException, CircularDependenciesException, ProviderMissingException, ProviderConflictException {
         //Create a new unscoped component
         Component c = new Component();
         graph.addProviderFinder(c);
-        c.register(Power.class, PowerImpl.class);
-        c.register(Driver.class, DriverImpl.class);
-        c.register(Robot.class, RobotImpl.class);
+        c.register(Power.class, PowerImpl2.class);
+        c.register(Driver.class, DriverImpl2.class);
+        c.register(Robot.class, RobotImpl2.class);
 
         Factory factory = new Factory();
         graph.inject(factory, MyInject.class);
     }
 
     @Test
-    public void shouldNotifyInjectedCallbackWhenObjectFullyInjectedWithCircularDependencies() throws ProvideException,
-            CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void shouldNotifyInjectedCallbackWhenObjectFullyInjectedWithCircularDependencies() throws PokeException {
         final Factory factory = new Factory();
 
-        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
-        powerProvider.setScopeCache(scopeCache);
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class, scopeCache);
         powerProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Power>() {
             @Override
             public void onInjected(Power object) {
@@ -108,8 +135,7 @@ public class TestCircularDependencies extends BaseTestCases {
             }
         });
 
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
-        driverProvider.setScopeCache(scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
         driverProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Driver>() {
             @Override
             public void onInjected(Driver object) {
@@ -117,8 +143,7 @@ public class TestCircularDependencies extends BaseTestCases {
             }
         });
 
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
-        robotProvider.setScopeCache(scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
         robotProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Robot>() {
             @Override
             public void onInjected(Robot object) {
@@ -134,23 +159,19 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     @Test
-    public void shouldInjectObjectOnlyOnceWithCircularDependencies() throws ProvideException,
-            CircularDependenciesException, ProviderMissingException, ProviderConflictException, NoSuchFieldException {
+    public void shouldInjectObjectOnlyOnceWithCircularDependencies() throws PokeException, NoSuchFieldException {
         final Factory factory = new Factory();
 
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
-        powerProvider.setScopeCache(scopeCache);
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class, scopeCache);
         powerProvider.registerOnInjectedListener(powerOnInject);
 
         Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
-        driverProvider.setScopeCache(scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
         driverProvider.registerOnInjectedListener(driverOnInject);
 
         Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
-        robotProvider.setScopeCache(scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
         component.register(powerProvider);
@@ -165,8 +186,7 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     @Test
-    public void test_should_inject_and_release_correctly_on_single_object() throws ProvideException,
-            CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void test_should_inject_and_release_correctly_on_single_object() throws PokeException {
         prepareInjection(scopeCache);
 
         final Factory factory = new Factory();
@@ -178,8 +198,7 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     @Test
-    public void test_should_inject_and_release_correctly_on_multiple_objects() throws ProvideException,
-            CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void test_should_inject_and_release_correctly_on_multiple_objects() throws PokeException {
         final ScopeCache scopeCache = new ScopeCache();
         prepareInjection(scopeCache);
 
@@ -214,8 +233,8 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     @Test
-    public void test_should_inject_and_release_correctly_even_with_same_cached_objects_multiple_times() throws ProvideException,
-            CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void test_should_inject_and_release_correctly_even_with_same_cached_objects_multiple_times()
+            throws PokeException {
         final ScopeCache scopeCache = new ScopeCache();
         prepareInjection(scopeCache);
 
@@ -248,8 +267,8 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     @Test
-    public void test_should_inject_and_release_correctly_on_multiple_objects_even_with_same_cached_objects_multiple_times() throws ProvideException,
-            CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void test_should_inject_and_release_correctly_on_multiple_objects_even_with_same_cached_objects_multiple_times()
+            throws PokeException {
         final ScopeCache scopeCache = new ScopeCache();
         prepareInjection(scopeCache);
 
@@ -359,21 +378,19 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertEquals(0, robotProvider.getReferenceCount());
     }
 
-    private void prepareInjection(ScopeCache scopeCache) throws ProviderConflictException {
-        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
-        powerProvider.setScopeCache(scopeCache);
+    private void prepareInjection(ScopeCache scopeCache) throws PokeException {
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class, scopeCache);
 
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
-        driverProvider.setScopeCache(scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
 
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
-        robotProvider.setScopeCache(scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
 
         component.register(powerProvider);
         component.register(robotProvider);
         component.register(driverProvider);
     }
 
+    @Singleton
     static class Factory {
         @MyInject
         private Power power;
@@ -382,6 +399,7 @@ public class TestCircularDependencies extends BaseTestCases {
         private Driver driver;
     }
 
+    @Singleton
     static class RobotImpl implements Robot {
         @MyInject
         private Driver driver;
@@ -390,6 +408,7 @@ public class TestCircularDependencies extends BaseTestCases {
         private Power power;
     }
 
+    @Singleton
     static class DriverImpl implements Driver {
         @MyInject
         private Power power;
@@ -398,6 +417,7 @@ public class TestCircularDependencies extends BaseTestCases {
         private Robot robot;
     }
 
+    @Singleton
     static class PowerImpl implements Power {
 
         @MyInject
