@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.poke;
 
+import com.shipdream.lib.poke.exception.IllegalScopeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -28,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Qualifier;
-import javax.inject.Singleton;
+import javax.inject.Scope;
 
 /**
  * //TODO: document, component has a default scope cache
@@ -85,10 +86,13 @@ public class Component implements ProviderFinder {
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
      * @throws ClassNotFoundException    Thrown when the class the class name pointing to is not found.
+     * @throws IllegalScopeException Thrown when the scope marked by the class with name
+     *                                  implementationClassName and the scopeCache of this component
+     *                                  are not matched
      */
     public <T> Component register(Class<T> type, String implementationClassName)
-            throws ProviderConflictException, ClassNotFoundException {
-        return register(type, implementationClassName, null, false);
+            throws ProviderConflictException, ClassNotFoundException, IllegalScopeException {
+        return register(type, implementationClassName, scopeCache, false);
     }
 
     /**
@@ -103,9 +107,11 @@ public class Component implements ProviderFinder {
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
      * @throws ClassNotFoundException    Thrown when the class the class name pointing to is not found.
+     * @throws IllegalScopeException Thrown when the scope marked by the class with name
+     *                                  implementationClassName and the given scopeCache are not matched
      */
     public <T> Component register(Class<T> type, String implementationClassName, ScopeCache scopeCache)
-            throws ProviderConflictException, ClassNotFoundException {
+            throws ProviderConflictException, ClassNotFoundException, IllegalScopeException {
         return register(type, implementationClassName, scopeCache, false);
     }
 
@@ -123,12 +129,15 @@ public class Component implements ProviderFinder {
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
      * @throws ClassNotFoundException    Thrown when the class the class name pointing to is not found.
+     * @throws IllegalScopeException Thrown when the scope marked by the class with name
+     *                                  implementationClassName and the scopeCache of this component
+     *                                  are not matched
      */
     @SuppressWarnings("unchecked")
     public <T> Component register(Class<T> type, String implementationClassName, ScopeCache scopeCache,
-                             boolean allowOverride) throws ProviderConflictException, ClassNotFoundException {
-        Provider<T> provider = new ProviderByClassName<>(type, implementationClassName);
-        provider.setScopeCache(scopeCache);
+                             boolean allowOverride)
+            throws ProviderConflictException, ClassNotFoundException, IllegalScopeException {
+        Provider<T> provider = new ProviderByClassName<>(type, implementationClassName, scopeCache);
         return register(provider, allowOverride);
     }
 
@@ -151,7 +160,7 @@ public class Component implements ProviderFinder {
                     " type %s", type));
         }
         Class<T> clazz = (Class<T>) Class.forName(implementationClassName);
-        return unregister(type, ReflectUtils.findFirstQualifier(clazz));
+        return unregister(type, ReflectUtils.findFirstQualifierInAnnotations(clazz));
     }
 
     /**
@@ -164,10 +173,12 @@ public class Component implements ProviderFinder {
      * @return this instance
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
+     * @throws IllegalScopeException Thrown when the scope marked by the implementationClass and
+     *                              the scopeCache of this component are not matched
      */
     public <T, S extends T> Component register(Class<T> type, Class<S> implementationClass)
-            throws ProviderConflictException {
-        return register(type, implementationClass, null, false);
+            throws ProviderConflictException, IllegalScopeException {
+        return register(type, implementationClass, scopeCache, false);
     }
 
     /**
@@ -181,9 +192,11 @@ public class Component implements ProviderFinder {
      * @return this instance
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
+     * @throws IllegalScopeException Thrown when the scope marked by the implementationClass and
+     *                              scopeCache are not matched
      */
     public <T, S extends T> Component register(Class<T> type, Class<S> implementationClass, ScopeCache scopeCache)
-            throws ProviderConflictException {
+            throws ProviderConflictException, IllegalScopeException {
         return register(type, implementationClass, scopeCache, false);
     }
 
@@ -200,13 +213,14 @@ public class Component implements ProviderFinder {
      * @return this instance
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
+     * @throws IllegalScopeException Thrown when the scope marked by the implementationClass and
+     *                              scopeCache are not matched
      */
     @SuppressWarnings("unchecked")
     public <T, S extends T> Component register(Class<T> type, Class<S> implementationClass,
                                           ScopeCache scopeCache, boolean allowOverride)
-            throws ProviderConflictException {
-        Provider<T> provider = new ProviderByClassType<>(type, implementationClass);
-        provider.setScopeCache(scopeCache);
+            throws ProviderConflictException, IllegalScopeException {
+        Provider<T> provider = new ProviderByClassType<>(type, implementationClass, scopeCache);
         return register(provider, allowOverride);
     }
 
@@ -225,7 +239,7 @@ public class Component implements ProviderFinder {
             throw new NullPointerException(String.format("Can't unregister against null class" +
                     " type %s", type));
         }
-        return unregister(type, ReflectUtils.findFirstQualifier(implementationClass));
+        return unregister(type, ReflectUtils.findFirstQualifierInAnnotations(implementationClass));
     }
 
     /**
@@ -341,9 +355,10 @@ public class Component implements ProviderFinder {
      * @throws ProvideException          Thrown when exception occurs during providers creating instances
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
+     * @throws IllegalScopeException given scope and scopeCache are not matched
      */
     public Component register(Object providerHolder) throws ProvideException,
-            ProviderConflictException {
+            ProviderConflictException, IllegalScopeException {
         return register(providerHolder, false);
     }
 
@@ -360,9 +375,10 @@ public class Component implements ProviderFinder {
      * @throws ProvideException          Thrown when exception occurs during providers creating instances
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
+     * @throws IllegalScopeException given scope and scopeCache are not matched
      */
     public Component register(Object providerHolder, boolean allowOverride) throws ProvideException,
-            ProviderConflictException {
+            ProviderConflictException, IllegalScopeException {
         Method[] methods = providerHolder.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
@@ -403,21 +419,20 @@ public class Component implements ProviderFinder {
     }
 
     private void registerProvides(final Object providerHolder, final Method method, boolean allowOverride)
-            throws ProvideException, ProviderConflictException {
+            throws ProvideException, ProviderConflictException, IllegalScopeException {
         Class<?> returnType = method.getReturnType();
         if (returnType == void.class) {
             throw new ProvideException(String.format("Provides method %s must not return void.",
                     method.getName()));
         } else {
             Annotation[] annotations = method.getAnnotations();
-            boolean singleton = false;
             Annotation qualifier = null;
+            String scope = null;
             for (Annotation a : annotations) {
-                if (a.annotationType() == Singleton.class) {
-                    singleton = true;
-                }
-
-                if (a.annotationType().isAnnotationPresent(Qualifier.class)) {
+                Class<? extends Annotation> annotationType = a.annotationType();
+                if (annotationType.isAnnotationPresent(Scope.class)) {
+                    scope = annotationType.getName();
+                } else if (annotationType.isAnnotationPresent(Qualifier.class)) {
                     if (qualifier != null) {
                         throw new ProvideException("Only one Qualifier is supported for Provide method. " +
                                 String.format("Found multiple qualifier %s and %s for method %s",
@@ -428,12 +443,7 @@ public class Component implements ProviderFinder {
                 }
             }
 
-            Provider provider = new MethodProvider(returnType, qualifier, providerHolder, method);
-            if (singleton) {
-                provider.setScopeCache(scopeCache);
-            } else {
-                //TODO: should consider this as an exception
-            }
+            Provider provider = new MethodProvider(returnType, qualifier, scope, scopeCache, providerHolder, method);
 
             register(provider, allowOverride);
         }
@@ -444,8 +454,9 @@ public class Component implements ProviderFinder {
         private final Method method;
 
         @SuppressWarnings("unchecked")
-        MethodProvider(Class type, Annotation qualifier, Object providerHolder, Method method) {
-            super(type, qualifier);
+        MethodProvider(Class type, Annotation qualifier, String scope, ScopeCache scopeCache,
+                       Object providerHolder, Method method) throws IllegalScopeException {
+            super(type, qualifier, scope, scopeCache);
             this.providerHolder = providerHolder;
             this.method = method;
         }

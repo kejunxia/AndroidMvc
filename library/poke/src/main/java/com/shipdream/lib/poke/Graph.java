@@ -329,17 +329,14 @@ public class Graph {
             throws ProvideException, ProviderMissingException, CircularDependenciesException {
         boolean circularDetected = false;
         Provider targetProvider;
-        ScopeCache.CachedItem cachedTargetItem = null;
         if (targetType != null) {
             //Nested injection
             circularDetected = recordVisit(targetType, targetQualifier);
             targetProvider = getProvider(targetType, targetQualifier);
-            if (targetProvider.scopeCache != null) {
-                cachedTargetItem = targetProvider.scopeCache.findCacheItem(targetType, targetQualifier);
-            }
+            Object cachedInstance = targetProvider.findCachedInstance();
             boolean infiniteCircularInjection = true;
             if (circularDetected) {
-                if (cachedTargetItem != null) {
+                if (cachedInstance != null) {
                     infiniteCircularInjection = false;
                 }
 
@@ -356,7 +353,7 @@ public class Graph {
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(injectAnnotation)) {
                         Class fieldType = field.getType();
-                        Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
+                        Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
                         Provider provider = getProvider(fieldType, fieldQualifier);
 
                         Object impl = provider.get();
@@ -425,7 +422,7 @@ public class Graph {
                         Object fieldValue = ReflectUtils.getFieldValue(target, field);
                         if (fieldValue != null) {
                             final Class<?> fieldType = field.getType();
-                            Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
+                            Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
                             Provider provider = getProvider(fieldType, fieldQualifier);
 
                             boolean stillReferenced = provider.getReferenceCount(target, field) > 0;

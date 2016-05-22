@@ -16,19 +16,30 @@
 
 package com.shipdream.lib.poke;
 
+import com.shipdream.lib.poke.exception.IllegalScopeException;
+
+import javax.inject.Qualifier;
+import javax.inject.Scope;
+
 /**
  * This provider uses default/empty constructor by provided class name to get dependencies. So
  * make sure the implementation has default public constructor
  */
 public class ProviderByClassName<T> extends ProviderByClassType<T> {
     /**
-     * Construct a {@link ProviderByClassName} with {@link javax.inject.Qualifier}
-     *
-     * @param type
-     * @param implementationClassName
-     * @throws ClassNotFoundException
+     * Construct a provider binding the type and the implementation class type. The found
+     * implementation class may be annotated by {@link Qualifier} and {@link Scope}.
+     * @param type The contract of the implementation
+     * @param implementationClassName The name of the implementation class. It must have a default
+     *                            public constructor
+     * @param scopeCache The scope cache to be used when the implementation class is annotated with a
+     *                   {@link Scope}
+     * @throws ClassNotFoundException Thrown if the class with the given name cannot be found
+     * @throws IllegalScopeException Thrown when the scope marked by the class with
+     *                                  implementationClassName and scopeCache are not matched
      */
-    public ProviderByClassName(Class type, String implementationClassName) throws ClassNotFoundException {
-        super(type, implementationClassName);
+    public ProviderByClassName(Class type, String implementationClassName, ScopeCache scopeCache)
+            throws ClassNotFoundException, IllegalScopeException {
+        super(type, (Class<? extends T>) Class.forName(implementationClassName), scopeCache);
     }
 }

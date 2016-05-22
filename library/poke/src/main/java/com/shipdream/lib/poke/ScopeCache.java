@@ -27,23 +27,12 @@ import java.util.Map;
  * The cache controls how the provider associated should generate new instances.
  */
 public class ScopeCache {
-
     public static class CachedItem<T> {
-        Class<T> type;
-        T instance;
-        Annotation qualifier;
         Provider<T> provider;
-
-        public Class<T> getType() {
-            return type;
-        }
+        T instance;
 
         public T getInstance() {
             return instance;
-        }
-
-        public Annotation getQualifier() {
-            return qualifier;
         }
 
         public Provider<T> getProvider() {
@@ -59,7 +48,6 @@ public class ScopeCache {
         CachedItem<T> item = cache.get(key);
         if (item == null) {
             item = new CachedItem<>();
-            item.type = provider.type();
             item.instance = provider.createInstance();
             item.provider = provider;
             if(item.instance == null) {
@@ -68,7 +56,6 @@ public class ScopeCache {
                                 "%s) should not provide NULL as instance",
                         provider.type().getName(), qualifierName));
             }
-            item.qualifier = provider.getQualifier();
             cache.put(key, item);
         }
 

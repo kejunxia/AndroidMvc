@@ -16,9 +16,8 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.IllegalScopeException;
 import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -26,6 +25,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.inject.Singleton;
 
 /**
  * Provider controls the injection type mapping as well as the scope by associated
@@ -58,11 +59,74 @@ public abstract class Provider<T> {
     }
 
     private final Class<T> type;
-    private Annotation qualifier;
+    private final Annotation qualifier;
+    private final String scope;
     ScopeCache scopeCache;
 
     Map<Object, Map<String, Integer>> owners = new HashMap<>();
     private int totalRefCount = 0;
+
+    /**
+     * Construct an unscoped and unqualified provider
+     * @param type The type of the instance the provider is providing
+     */
+    public Provider(Class<T> type) {
+        this(type, null);
+    }
+
+    /**
+     * Construct an unscoped and qualified provider
+     * @param type The type of the instance the provider is providing
+     * @param qualifier Qualifier
+     */
+    public Provider(Class<T> type, Annotation qualifier) {
+        this.type = type;
+        this.qualifier = qualifier;
+        this.scope = null;
+        this.scopeCache = null;
+    }
+
+    /**
+     * Construct a scoped and unqualified provider
+     * @param type The type of the instance the provider is providing
+     * @param scope The name of the scope
+     * @param scopeCache the cache for the scope
+     * @throws IllegalScopeException given scope and scopeCache are not matched
+     */
+    public Provider(Class<T> type, String scope, ScopeCache scopeCache) throws IllegalScopeException {
+        this(type, null, scope, scopeCache);
+    }
+
+    /**
+     * Construct a scoped and qualified provider
+     * @param type The type of the instance the provider is providing
+     * @param qualifier Qualifier
+     * @param scope The name of the scope
+     * @throws IllegalScopeException given scope and scopeCache are not matched
+     */
+    public Provider(Class<T> type, Annotation qualifier, String scope, ScopeCache scopeCache) throws IllegalScopeException {
+        this.type = type;
+        this.qualifier = qualifier;
+        this.scope = scope;
+        this.scopeCache = scopeCache;
+
+        checkScope(scope, scopeCache);
+    }
+
+    private void checkScope(String scope, ScopeCache scopeCache) throws IllegalScopeException {
+        if (scope != null && scope.equals(Singleton.class.getName())) {
+            if (scopeCache == null) {
+                throw new IllegalScopeException("Singleton scope is specified by no non-null scope cache is given");
+            }
+        }
+    }
+
+    /**
+     * @return The scope of this provider.
+     */
+    public String getScope() {
+        return scope;
+    }
 
     int getReferenceCount(Object owner, Field field) {
         Map<String, Integer> fields = owners.get(owner);
@@ -139,7 +203,7 @@ public abstract class Provider<T> {
         if (scopeCache != null) {
             ScopeCache.CachedItem cachedItem = scopeCache.findCacheItem(type, qualifier);
             if (cachedItem != null) {
-                scopeCache.removeCache(cachedItem.type, cachedItem.qualifier);
+                scopeCache.removeCache(cachedItem.provider.type, cachedItem.provider.qualifier);
             }
         }
     }
@@ -159,38 +223,11 @@ public abstract class Provider<T> {
     private List<OnInjectedListener<T>> removingOnInjectedListeners;
 
     /**
-     * Construct non-overriding provider without qualifier
-     * @param type The type of the instance the provider is providing
-     */
-    public Provider(Class<T> type) {
-        this(type, null);
-    }
-
-    /**
-     * Construct provider with given qualifier and indicates if it's a overriding provider.
-     * Overriding provider always overrides the existing one and last one wins.
-     * @param type The type of the instance the provider is providing
-     * @param qualifier Qualifier
-     */
-    public Provider(Class<T> type, Annotation qualifier) {
-        this.type = type;
-        this.qualifier = qualifier;
-    }
-
-    /**
      * Get qualifier of the provider
      * @return The qualifier
      */
     public Annotation getQualifier() {
         return this.qualifier;
-    }
-
-    /**
-     * Sets {@link ScopeCache}.
-     * @param scopeCache Null when provider is not scoped otherwise the {@link ScopeCache}.
-     */
-    public void setScopeCache(ScopeCache scopeCache) {
-        this.scopeCache = scopeCache;
     }
 
     /**
@@ -237,8 +274,6 @@ public abstract class Provider<T> {
      * always generates a new instance.
      * @return The instance being created or cached
      * @throws ProvideException Exception thrown during constructing the object
-     * @throws CircularDependenciesException Exception thrown if nested injection has circular dependencies
-     * @throws ProviderMissingException Exception thrown if nested injection misses dependencies
      */
     final T get() throws ProvideException {
         //TODO: check singleton here

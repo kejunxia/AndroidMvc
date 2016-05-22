@@ -562,7 +562,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Rice.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Rice.class);
             }
         };
 
@@ -573,7 +573,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Wheat.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Wheat.class);
             }
         };
 
@@ -584,7 +584,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Noodle.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Noodle.class);
             }
         };
 
@@ -595,7 +595,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Bread.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Bread.class);
             }
         };
 
@@ -606,7 +606,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Chicken.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Chicken.class);
             }
         };
 
@@ -617,7 +617,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Beef.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Beef.class);
             }
         };
 
@@ -806,7 +806,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Noodle.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Noodle.class);
             }
         };
         namedProviderBanana.setScopeCache(scopeCache);
@@ -832,7 +832,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
             @Override
             public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifier(Chicken.class);
+                return ReflectUtils.findFirstQualifierInAnnotations(Chicken.class);
             }
         };
         namedProviderOrangeOverridden.setScopeCache(scopeCacheOverridden);
