@@ -270,6 +270,14 @@ public class Graph {
         dereference(instance, type, qualifier, injectAnnotation);
     }
 
+    private <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
+        Provider<T> provider = rootComponent.findProvider(type, qualifier);
+        if (provider == null) {
+            throw new ProviderMissingException(type, qualifier);
+        }
+        return provider;
+    }
+
     /**
      * Reference an injectable object and retain it. Use
      * {@link #dereference(Object, Class, Annotation, Class)} to dereference it when it's not used
@@ -282,7 +290,7 @@ public class Graph {
      */
     public <T> T reference(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
             throws ProviderMissingException, ProvideException, CircularDependenciesException {
-        Provider<T> provider = rootComponent.findProvider(type, qualifier);
+        Provider<T> provider = findProvider(type, qualifier);
         T instance = provider.get();
         doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
@@ -309,7 +317,7 @@ public class Graph {
                                 Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
         doRelease(instance, null, type, qualifier, injectAnnotation);
 
-        Provider<T> provider = rootComponent.findProvider(type, qualifier);
+        Provider<T> provider = findProvider(type, qualifier);
         provider.release();
         checkToFreeProvider(provider);
     }
@@ -323,7 +331,7 @@ public class Graph {
         if (targetType != null) {
             //Nested injection
             circularDetected = recordVisit(targetType, targetQualifier);
-            targetProvider = rootComponent.findProvider(targetType, targetQualifier);
+            targetProvider = findProvider(targetType, targetQualifier);
             Object cachedInstance = targetProvider.findCachedInstance();
             boolean infiniteCircularInjection = true;
             if (circularDetected) {
@@ -345,7 +353,7 @@ public class Graph {
                     if (field.isAnnotationPresent(injectAnnotation)) {
                         Class fieldType = field.getType();
                         Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
-                        Provider provider = rootComponent.findProvider(fieldType, fieldQualifier);
+                        Provider provider = findProvider(fieldType, fieldQualifier);
 
                         Object impl = provider.get();
                         provider.retain(target, field);
@@ -414,7 +422,7 @@ public class Graph {
                         if (fieldValue != null) {
                             final Class<?> fieldType = field.getType();
                             Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
-                            Provider provider = rootComponent.findProvider(fieldType, fieldQualifier);
+                            Provider provider = findProvider(fieldType, fieldQualifier);
 
                             boolean stillReferenced = provider.getReferenceCount(target, field) > 0;
                             boolean fieldVisited = isFieldVisited(target, targetField, field);

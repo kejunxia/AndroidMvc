@@ -18,7 +18,6 @@ package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +25,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Qualifier;
@@ -39,6 +39,7 @@ public class Component {
     final ScopeCache scopeCache;
 
     final Map<String, Provider> providers = new HashMap<>();
+    private List<Component> subComponents;
 
     public Component() {
         this(null);
@@ -52,13 +53,16 @@ public class Component {
         }
     }
 
-    <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
-        Provider provider = providers.get(PokeHelper.makeProviderKey(type, qualifier));
-        if (provider != null) {
-            return provider;
-        } else {
-            throw new ProviderMissingException(type, qualifier);
-        }
+    <T> void putProvider(Provider<T> provider) {
+        providers.put(PokeHelper.makeProviderKey(provider.type(), provider.getQualifier()), provider);
+    }
+
+    <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
+        return providers.get(PokeHelper.makeProviderKey(type, qualifier));
+    }
+
+    <T> Provider<T> removeProvider(Class<T> type, Annotation qualifier) {
+        return providers.remove(PokeHelper.makeProviderKey(type, qualifier));
     }
 
     /**
@@ -74,17 +78,17 @@ public class Component {
      */
     public Component register(@NotNull Provider provider) throws ProviderConflictException {
         Class type = provider.type();
-        String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());
-        Provider existingProvider = providers.get(key);
+        Annotation qualifier = provider.getQualifier();
+        Provider existingProvider = findProvider(type, qualifier);
         if (existingProvider != null) {
             String msg;
-            if (provider.getQualifier() == null) {
+            if (qualifier == null) {
                 msg = String.format("Type %s has already been registered " +
                         "in this graph.", type);
             } else {
                 msg = String.format("Type %s with Qualifier %s has already " +
                                 "been registered in this graph.",
-                        type, provider.getQualifier().annotationType().getName());
+                        type, qualifier.annotationType().getName());
             }
             throw new ProviderConflictException(msg);
         }
@@ -94,7 +98,7 @@ public class Component {
             //inherit the component's scope cache.
             provider.scopeCache = scopeCache;
         }
-        providers.put(key, provider);
+        putProvider(provider);
         return this;
     }
 
@@ -119,11 +123,10 @@ public class Component {
      * @return this instance
      */
     private Component unregister(Class<?> type, Annotation qualifier) {
-        String key = PokeHelper.makeProviderKey(type, qualifier);
-        Provider targetProvider = providers.get(key);
+        Provider targetProvider = findProvider(type, qualifier);
 
         if (targetProvider != null) {
-            providers.remove(key);
+            removeProvider(type, qualifier);
             if (scopeCache != null) {
                 scopeCache.removeCache(type, qualifier);
             }
