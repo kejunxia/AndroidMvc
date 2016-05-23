@@ -50,6 +50,8 @@ sourceSets {
 }
 
 dependencies {
+    compile rootProject.lib.intelljAnnoatations
+
     compile 'javax.inject:javax.inject:1'
 
     testCompile rootProject.ext.lib.junit

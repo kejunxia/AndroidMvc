@@ -368,24 +368,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
         Assert.assertTrue(conflicted);
 
-        component.register(Food.class, Noodle.class.getName(), true);
-        component.register(Food.class, Bread.class.getName(), true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Noodle.class);
-        Assert.assertEquals(basket.w.getClass(), Bread.class);
-
-        component.register(Food.class, Chicken.class.getName(), true);
-        component.register(Food.class, Beef.class.getName(), true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Chicken.class);
-        Assert.assertEquals(basket.w.getClass(), Beef.class);
-
-        component.unregister(Food.class, Chicken.class.getName());
-        component.unregister(Food.class, Bread.class.getName());
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Rice.class);
-        Assert.assertEquals(basket.w.getClass(), Wheat.class);
-
         component.unregister(Food.class, Chicken.class.getName());
         component.unregister(Food.class, Bread.class.getName());
         basket = new Basket();
@@ -506,26 +488,9 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
         Assert.assertTrue(conflicted);
 
-        component.register(Food.class, Noodle.class, true);
-        component.register(Food.class, Bread.class, true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Noodle.class);
-        Assert.assertEquals(basket.w.getClass(), Bread.class);
-
-        component.register(Food.class, Chicken.class, true);
-        component.register(Food.class, Beef.class, true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Chicken.class);
-        Assert.assertEquals(basket.w.getClass(), Beef.class);
-
         component.unregister(Food.class, Noodle.class);
         component.unregister(Food.class, Bread.class);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Rice.class);
-        Assert.assertEquals(basket.w.getClass(), Wheat.class);
-
         component.unregister(Food.class, Chicken.class);
-        component.unregister(Food.class, Bread.class);
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -638,24 +603,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
         Assert.assertTrue(conflicted);
 
-        component.register(providerNoodle, true);
-        component.register(providerBread, true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Noodle.class);
-        Assert.assertEquals(basket.w.getClass(), Bread.class);
-
-        component.register(providerChicken, true);
-        component.register(providerBeef, true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Chicken.class);
-        Assert.assertEquals(basket.w.getClass(), Beef.class);
-
         component.unregister(providerChicken);
         component.unregister(providerBeef);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Rice.class);
-        Assert.assertEquals(basket.w.getClass(), Wheat.class);
-
         component.unregister(providerNoodle);
         component.unregister(providerWheat);
         basket = new Basket();
@@ -738,22 +687,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
         Assert.assertTrue(conflicted);
 
-        component.register(foodModuleB, true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Orange.class);
-        Assert.assertEquals(basket.w.getClass(), Apple.class);
-
-        component.register(foodModuleC, true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Apple.class);
-        Assert.assertEquals(basket.w.getClass(), Banana.class);
-
         component.unregister(foodModuleA);
-        graph.inject(basket, MyInject.class);
-        Assert.assertEquals(basket.r.getClass(), Apple.class);
-        Assert.assertEquals(basket.w.getClass(), Orange.class);
 
-        component.unregister(foodModuleA);
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -857,41 +792,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             conflicted = true;
         }
         Assert.assertTrue(conflicted);
-
-        component.register(namedProviderOrangeOverridden, true);
-        component.register(unnamedProviderBananaOverridden, true);
-        graph.inject(basket, MyInject.class);
-        Assert.assertTrue(basket.r == orange);
-        Assert.assertTrue(basket.w == banana);
-        Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == banana);
-        Assert.assertTrue(findCacheInstance(component.scopeCache, unnammedProviderOrange) == orange);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == orange);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == banana);
-
-        component.unregister(namedProviderBanana);
-        component.unregister(unnammedProviderOrange);
-        graph.inject(basket, MyInject.class);
-        Assert.assertTrue(basket.r == banana);
-        Assert.assertTrue(basket.w == orange);
-        Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == banana);
-        Assert.assertTrue(findCacheInstance(component.scopeCache, unnamedProviderBananaOverridden) == orange);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == null);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == null);
-
-        component.unregister(namedProviderOrangeOverridden);
-        component.unregister(unnammedProviderOrange);
-        basket = new Basket();
-        boolean shouldCatchProviderMissingException = false;
-        try {
-            graph.inject(basket, MyInject.class);
-        } catch (ProviderMissingException e) {
-            shouldCatchProviderMissingException = true;
-        }
-        Assert.assertTrue(shouldCatchProviderMissingException);
-        Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == null);
-        Assert.assertTrue(findCacheInstance(component.scopeCache, unnamedProviderBananaOverridden) == null);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == null);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == null);
     }
 
     @SuppressWarnings("unchecked")
@@ -926,14 +826,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         component.register(String.class, "Impl2");
         verify(component).register(eq(String.class), eq("Impl2"));
 
-        reset(component);
-        component.register(String.class, "Impl3", true);
-        verify(component).register(eq(String.class), eq("Impl3"), eq(true));
-
-        reset(component);
-        component.register(String.class, "Impl4", false);
-        verify(component).register(eq(String.class), eq("Impl4"), eq(false));
-
         //Register by class
         reset(component);
         component.register(Contract.class, Execution.class);
@@ -943,41 +835,17 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         component.register(Contract.class, Execution.class);
         verify(component).register(eq(Contract.class), eq(Execution.class));
 
-        reset(component);
-        component.register(Contract.class, Execution.class, true);
-        verify(component).register(eq(Contract.class), eq(Execution.class), eq(true));
-
-        reset(component);
-        component.register(Contract.class, Execution.class, false);
-        verify(component).register(eq(Contract.class), eq(Execution.class), eq(false));
-
         //Register by component
         Object module = mock(Object.class);
         reset(component);
         component.register(module);
         verify(component).register(eq(module));
 
-        reset(component);
-        component.register(module, true);
-        verify(component).register(eq(module), eq(true));
-
-        reset(component);
-        component.register(module, false);
-        verify(component).register(eq(module), eq(false));
-
         //Register by provider
         Provider provider = mock(Provider.class);
         reset(component);
         component.register(provider);
         verify(component).register(eq(provider));
-
-        reset(component);
-        component.register(provider, true);
-        verify(component).register(eq(provider), eq(true));
-
-        reset(component);
-        component.register(provider, false);
-        verify(component).register(eq(provider), eq(false));
     }
 
     @Test
