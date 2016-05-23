@@ -23,7 +23,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Qualifier;
-import javax.inject.Scope;
 
 /**
  * This provider uses default/empty constructor by provided class type to get dependencies. So
@@ -39,12 +38,9 @@ public class ProviderByClassType<T> extends Provider<T> {
      * @param type The contract of the implementation
      * @param implementationClass The class type of the implementation. It must have a default
      *                            public constructor
-     * @param scopeCache The scope cache to be used when the implementation class is annotated with a
-     *                   {@link Scope}
      */
-    public ProviderByClassType(Class<T> type, Class<? extends T> implementationClass,
-                               ScopeCache scopeCache) {
-        super(type, ReflectUtils.findFirstQualifierInAnnotations(implementationClass), scopeCache);
+    public ProviderByClassType(Class<T> type, Class<? extends T> implementationClass) {
+        super(type, ReflectUtils.findFirstQualifierInAnnotations(implementationClass));
         this.implClassName = implementationClass.getName();
         this.clazz = implementationClass;
     }

@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * The cache controls how the provider associated should generate new instances.
  */
-public class ScopeCache {
+class ScopeCache {
     public static class CachedItem<T> {
         Provider<T> provider;
         T instance;

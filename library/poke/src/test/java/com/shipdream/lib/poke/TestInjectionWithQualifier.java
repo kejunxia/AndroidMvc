@@ -70,9 +70,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Before
     public void setUp() throws Exception {
         scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Test(expected = ProviderConflictException.class)
@@ -326,9 +326,6 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void use_method_should_release_fields_recursively() throws PokeException {
-
-
-        ScopeCache scopeCache = new ScopeCache();
         component.register(Os.class, SamSungOs.class);
         component.register(Connector.class, TypeC.class);
 
@@ -403,7 +400,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         Graph g = new Graph();
         Component c;
         c = new Component();
-        g.addProviderFinder(c);
+        g.setRootComponent(c);
 
         c.register(Os.class, iOs.class);
         c.register(Os.class, Android.class);
@@ -470,7 +467,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     public void unscoped_commponent_should_always_create_new_instances() throws PokeException {
         Component unscopedComponenent = new Component();
         unscopedComponenent.register(new ContainerModule());
-        graph.addProviderFinder(unscopedComponenent);
+        graph.setRootComponent(unscopedComponenent);
 
         Device device = new Device();
         graph.inject(device, MyInject.class);

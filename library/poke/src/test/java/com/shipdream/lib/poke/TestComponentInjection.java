@@ -59,7 +59,7 @@ public class TestComponentInjection extends BaseTestCases {
         };
 
         Graph graph = new Graph();
-        graph.addProviderFinder(new Component().register(module));
+        graph.setRootComponent(new Component().register(module));
     }
 
     @Qualifier
@@ -111,7 +111,7 @@ public class TestComponentInjection extends BaseTestCases {
         }
 
         Graph graph = new Graph();
-        graph.addProviderFinder(new Component().register(module));
+        graph.setRootComponent(new Component().register(module));
 
         Fridge fridge = new Fridge();
         graph.inject(fridge, MyInject.class);
@@ -158,7 +158,7 @@ public class TestComponentInjection extends BaseTestCases {
         }
 
         Graph graph = new Graph();
-        graph.addProviderFinder(new Component().register(module));
+        graph.setRootComponent(new Component().register(module));
 
         Fridge fridge = new Fridge();
         graph.inject(fridge, MyInject.class);
@@ -179,16 +179,14 @@ public class TestComponentInjection extends BaseTestCases {
     @Test
     public void singletonComponentShouldProvideSameInstance()
             throws PokeException {
-        ScopeCache singletonCache = new ScopeCache();
-
-        Object module1 = new SingletonModule();
-        Object module2 = new SingletonModule();
+        Object module = new SingletonModule();
+        Component component = new Component("AppSingleton");
 
         Graph graph = new Graph();
-        graph.addProviderFinder(new Component(singletonCache).register(module1));
+        graph.setRootComponent(component.register(module));
 
         Graph graph2 = new Graph();
-        graph2.addProviderFinder(new Component(singletonCache).register(module2));
+        graph2.setRootComponent(component);
 
         class Fridge {
             @MyInject
@@ -216,7 +214,7 @@ public class TestComponentInjection extends BaseTestCases {
     public void should_detect_ProvideException_with_providers_return_void ()
             throws PokeException {
         Graph graph = new Graph();
-        graph.addProviderFinder(new Component().register(new BadModule()));
+        graph.setRootComponent(new Component().register(new BadModule()));
 
         class Fridge {
             @MyInject

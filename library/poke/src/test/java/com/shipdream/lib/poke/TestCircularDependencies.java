@@ -35,31 +35,29 @@ import static org.mockito.Mockito.verify;
 
 @SuppressWarnings("unchecked")
 public class TestCircularDependencies extends BaseTestCases {
-    private ScopeCache scopeCache;
     private Component component;
     private Graph graph;
 
     @Before
     public void setUp() throws Exception {
-        scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void should_not_throw_circular_dependency_exception_on_finite_circular_dependency() throws PokeException {
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType powerProvider = new ProviderByClassType<>(Power.class, PowerImpl.class, scopeCache);
+        ProviderByClassType powerProvider = new ProviderByClassType<>(Power.class, PowerImpl.class);
         powerProvider.registerOnInjectedListener(powerOnInject);
 
         Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.registerOnInjectedListener(driverOnInject);
 
         Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
         component.register(powerProvider);
@@ -114,7 +112,7 @@ public class TestCircularDependencies extends BaseTestCases {
     public void should_detect_infinite_circular_dependencies() throws ProvideException, CircularDependenciesException, ProviderMissingException, ProviderConflictException {
         //Create a new unscoped component
         Component c = new Component();
-        graph.addProviderFinder(c);
+        graph.setRootComponent(c);
         c.register(Power.class, PowerImpl2.class);
         c.register(Driver.class, DriverImpl2.class);
         c.register(Robot.class, RobotImpl2.class);
@@ -127,7 +125,7 @@ public class TestCircularDependencies extends BaseTestCases {
     public void shouldNotifyInjectedCallbackWhenObjectFullyInjectedWithCircularDependencies() throws PokeException {
         final Factory factory = new Factory();
 
-        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class, scopeCache);
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
         powerProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Power>() {
             @Override
             public void onInjected(Power object) {
@@ -135,7 +133,7 @@ public class TestCircularDependencies extends BaseTestCases {
             }
         });
 
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Driver>() {
             @Override
             public void onInjected(Driver object) {
@@ -143,7 +141,7 @@ public class TestCircularDependencies extends BaseTestCases {
             }
         });
 
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Robot>() {
             @Override
             public void onInjected(Robot object) {
@@ -163,15 +161,15 @@ public class TestCircularDependencies extends BaseTestCases {
         final Factory factory = new Factory();
 
         Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class, scopeCache);
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
         powerProvider.registerOnInjectedListener(powerOnInject);
 
         Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.registerOnInjectedListener(driverOnInject);
 
         Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
         robotProvider.registerOnInjectedListener(robotOnInject);
 
         component.register(powerProvider);
@@ -187,40 +185,40 @@ public class TestCircularDependencies extends BaseTestCases {
 
     @Test
     public void test_should_inject_and_release_correctly_on_single_object() throws PokeException {
-        prepareInjection(scopeCache);
+        prepareInjection();
 
         final Factory factory = new Factory();
 
         graph.inject(factory, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
         graph.release(factory, MyInject.class);
-        Assert.assertTrue(scopeCache.cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
     }
 
     @Test
     public void test_should_inject_and_release_correctly_on_multiple_objects() throws PokeException {
         final ScopeCache scopeCache = new ScopeCache();
-        prepareInjection(scopeCache);
+        prepareInjection();
 
         final Factory factory1 = new Factory();
         final Factory factory2 = new Factory();
 
         graph.inject(factory1, MyInject.class);
 
-        Provider<Power> powerProvider = graph.getProvider(Power.class, null);
-        Provider<Driver> driverProvider = graph.getProvider(Driver.class, null);
-        Provider<Robot> robotProvider = graph.getProvider(Robot.class, null);
+        Provider<Power> powerProvider = component.findProvider(Power.class, null);
+        Provider<Driver> driverProvider = component.findProvider(Driver.class, null);
+        Provider<Robot> robotProvider = component.findProvider(Robot.class, null);
 
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         graph.inject(factory2, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         graph.release(factory2, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         graph.release(factory1, MyInject.class);
-        Assert.assertTrue(scopeCache.cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
 
         Assert.assertTrue(powerProvider.owners.isEmpty());
         Assert.assertEquals(0, powerProvider.getReferenceCount());
@@ -235,26 +233,25 @@ public class TestCircularDependencies extends BaseTestCases {
     @Test
     public void test_should_inject_and_release_correctly_even_with_same_cached_objects_multiple_times()
             throws PokeException {
-        final ScopeCache scopeCache = new ScopeCache();
-        prepareInjection(scopeCache);
+        prepareInjection();
 
         final Factory factory = new Factory();
         graph.inject(factory, MyInject.class);
 
-        Provider<Power> powerProvider = graph.getProvider(Power.class, null);
-        Provider<Driver> driverProvider = graph.getProvider(Driver.class, null);
-        Provider<Robot> robotProvider = graph.getProvider(Robot.class, null);
+        Provider<Power> powerProvider = component.findProvider(Power.class, null);
+        Provider<Driver> driverProvider = component.findProvider(Driver.class, null);
+        Provider<Robot> robotProvider = component.findProvider(Robot.class, null);
 
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         graph.inject(factory, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         graph.release(factory, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         graph.release(factory, MyInject.class);
-        Assert.assertTrue(scopeCache.cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
 
         Assert.assertTrue(powerProvider.owners.isEmpty());
         Assert.assertEquals(0, powerProvider.getReferenceCount());
@@ -269,24 +266,23 @@ public class TestCircularDependencies extends BaseTestCases {
     @Test
     public void test_should_inject_and_release_correctly_on_multiple_objects_even_with_same_cached_objects_multiple_times()
             throws PokeException {
-        final ScopeCache scopeCache = new ScopeCache();
-        prepareInjection(scopeCache);
+        prepareInjection();
 
         final Factory factory1 = new Factory();
         graph.inject(factory1, MyInject.class);
 
-        Provider<Power> powerProvider = graph.getProvider(Power.class, null);
-        Provider<Driver> driverProvider = graph.getProvider(Driver.class, null);
-        Provider<Robot> robotProvider = graph.getProvider(Robot.class, null);
+        Provider<Power> powerProvider = component.findProvider(Power.class, null);
+        Provider<Driver> driverProvider = component.findProvider(Driver.class, null);
+        Provider<Robot> robotProvider = component.findProvider(Robot.class, null);
 
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         final Factory factory2 = new Factory();
         graph.inject(factory2, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         graph.inject(factory1, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -309,7 +305,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -332,7 +328,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -349,7 +345,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        Assert.assertFalse(scopeCache.cache.isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -366,7 +362,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory2, MyInject.class);
-        Assert.assertTrue(scopeCache.cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
 
         Assert.assertTrue(powerProvider.owners.isEmpty());
         Assert.assertEquals(0, powerProvider.getReferenceCount());
@@ -378,12 +374,12 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertEquals(0, robotProvider.getReferenceCount());
     }
 
-    private void prepareInjection(ScopeCache scopeCache) throws PokeException {
-        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class, scopeCache);
+    private void prepareInjection() throws PokeException {
+        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
 
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class, scopeCache);
+        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
 
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class, scopeCache);
+        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
 
         component.register(powerProvider);
         component.register(robotProvider);

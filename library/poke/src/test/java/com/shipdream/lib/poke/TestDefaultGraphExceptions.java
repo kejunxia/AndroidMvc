@@ -40,14 +40,12 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
 
     private Graph graph;
     private Component component;
-    private ScopeCache scopeCache;
 
     @Before
     public void setUp() throws Exception {
-        scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Test
@@ -70,8 +68,8 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @SuppressWarnings("unchecked")
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingProviderRegistry() throws PokeException, ClassNotFoundException {
-        Provider provider = new ProviderByClassType<>(Pet.class, Cat.class, scopeCache);
-        Provider provider2 = new ProviderByClassName(Pet.class, Dog.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassType<>(Pet.class, Cat.class);
+        Provider provider2 = new ProviderByClassName(Pet.class, Dog.class.getName());
         component.register(provider);
         component.register(provider2);
     }
@@ -122,7 +120,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test
     public void should_handle_InstantiationException_when_create_class_instance_in_ProviderByClassName()
             throws PokeException, ClassNotFoundException {
-        Provider provider = new ProviderByClassName(AbstractBean.class, AbstractBean.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassName(AbstractBean.class, AbstractBean.class.getName());
         component.register(provider);
 
         class Consumer {
@@ -149,7 +147,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test
     public void should_handle_InvocationTargetException_when_create_class_instance_in_ProviderByClassName()
             throws PokeException, ClassNotFoundException {
-        Provider provider = new ProviderByClassName(BadInstantiatingBean.class, BadInstantiatingBean.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassName(BadInstantiatingBean.class, BadInstantiatingBean.class.getName());
         component.register(provider);
 
         class Consumer {
@@ -174,7 +172,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
         class BadBean {
         }
 
-        Provider provider = new ProviderByClassName(BadBean.class, BadBean.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassName(BadBean.class, BadBean.class.getName());
         component.register(provider);
 
         class Consumer {

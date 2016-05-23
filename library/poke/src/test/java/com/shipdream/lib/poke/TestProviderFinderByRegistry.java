@@ -44,14 +44,12 @@ import static org.mockito.Mockito.verify;
 public class TestProviderFinderByRegistry extends BaseTestCases {
     private Graph graph;
     private Component component;
-    private ScopeCache scopeCache;
 
     @Before
     public void setUp() throws Exception {
-        scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Qualifier
@@ -120,7 +118,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         c.register(Os.class, iOs.class);
         c.register(Os.class, Android.class);
         c.register(Os.class, Windows.class);
-        graph.addProviderFinder(c);
+        graph.setRootComponent(c);
 
         Container container = new Container();
         graph.inject(container, MyInject.class);
@@ -181,7 +179,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Test
     public void componentProvidesQualifierShouldOverrideImplClassQualifier() throws PokeException {
-        graph.addProviderFinder(new Component().register(new ContainerModule()));
+        graph.setRootComponent(new Component().register(new ContainerModule()));
 
         Container container = new Container();
         graph.inject(container, MyInject.class);
@@ -839,8 +837,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         graph.inject(basket, MyInject.class);
         Assert.assertTrue(basket.r == banana);
         Assert.assertTrue(basket.w == orange);
-        Assert.assertTrue(findCacheInstance(scopeCache, namedProviderBanana) == banana);
-        Assert.assertTrue(findCacheInstance(scopeCache, unnammedProviderOrange) == orange);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == banana);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, unnammedProviderOrange) == orange);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == null);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == null);
 
@@ -865,8 +863,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         graph.inject(basket, MyInject.class);
         Assert.assertTrue(basket.r == orange);
         Assert.assertTrue(basket.w == banana);
-        Assert.assertTrue(findCacheInstance(scopeCache, namedProviderBanana) == banana);
-        Assert.assertTrue(findCacheInstance(scopeCache, unnammedProviderOrange) == orange);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == banana);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, unnammedProviderOrange) == orange);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == orange);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == banana);
 
@@ -875,8 +873,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         graph.inject(basket, MyInject.class);
         Assert.assertTrue(basket.r == banana);
         Assert.assertTrue(basket.w == orange);
-        Assert.assertTrue(findCacheInstance(scopeCache, namedProviderBanana) == banana);
-        Assert.assertTrue(findCacheInstance(scopeCache, unnamedProviderBananaOverridden) == orange);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == banana);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, unnamedProviderBananaOverridden) == orange);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == null);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == null);
 
@@ -890,8 +888,8 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             shouldCatchProviderMissingException = true;
         }
         Assert.assertTrue(shouldCatchProviderMissingException);
-        Assert.assertTrue(findCacheInstance(scopeCache, namedProviderBanana) == null);
-        Assert.assertTrue(findCacheInstance(scopeCache, unnamedProviderBananaOverridden) == null);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == null);
+        Assert.assertTrue(findCacheInstance(component.scopeCache, unnamedProviderBananaOverridden) == null);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == null);
         Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == null);
     }

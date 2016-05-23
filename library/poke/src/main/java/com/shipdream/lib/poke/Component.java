@@ -31,45 +31,46 @@ import javax.inject.Qualifier;
 
 /**
  * //TODO: document, component has a default scope cache
- * {@link ProviderFinder} that registers providers manually.
+ * {@link Component} that registers providers manually.
  */
-public class Component implements ProviderFinder {
+public class Component {
     //TODO: document, use the scopeCache
     final ScopeCache scopeCache;
 
-    private static class ProviderHolder<T> {
+    private static class ProviderBag<T> {
         private Provider<T> original;
         private Provider<T> overrider;
     }
 
-    final Map<String, ProviderHolder> providers = new HashMap<>();
+    final Map<String, ProviderBag> providers = new HashMap<>();
 
     public Component() {
         this(null);
     }
 
-    public Component(ScopeCache scopeCache) {
-        this.scopeCache = scopeCache;
+    public Component(String scope) {
+        if (scope != null) {
+            this.scopeCache = new ScopeCache(scope);
+        } else {
+            this.scopeCache = null;
+        }
     }
 
-    //TODO: should hide this method from publicly accessible
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
-        ProviderHolder providerHolder = providers.get(PokeHelper.makeProviderKey(type, qualifier));
+    <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
+        ProviderBag providerBag = providers.get(PokeHelper.makeProviderKey(type, qualifier));
 
-        if (providerHolder != null) {
-            if (providerHolder.overrider == null) {
-                if (providerHolder.original == null) {
+        if (providerBag != null) {
+            if (providerBag.overrider == null) {
+                if (providerBag.original == null) {
                     throw new ProviderMissingException(type, qualifier);
                 } else {
-                    return providerHolder.original;
+                    return providerBag.original;
                 }
             } else {
-                return providerHolder.overrider;
+                return providerBag.overrider;
             }
         } else {
-            return null;
+            throw new ProviderMissingException(type, qualifier);
         }
     }
 
@@ -107,7 +108,7 @@ public class Component implements ProviderFinder {
     @SuppressWarnings("unchecked")
     public <T> Component register(Class<T> type, String implementationClassName, boolean allowOverride)
             throws ProviderConflictException, ClassNotFoundException {
-        Provider<T> provider = new ProviderByClassName<>(type, implementationClassName, scopeCache);
+        Provider<T> provider = new ProviderByClassName<>(type, implementationClassName);
         return register(provider, allowOverride);
     }
 
@@ -165,7 +166,7 @@ public class Component implements ProviderFinder {
     @SuppressWarnings("unchecked")
     public <T, S extends T> Component register(Class<T> type, Class<S> implementationClass, boolean allowOverride)
             throws ProviderConflictException {
-        Provider<T> provider = new ProviderByClassType<>(type, implementationClass, scopeCache);
+        Provider<T> provider = new ProviderByClassType<>(type, implementationClass);
         return register(provider, allowOverride);
     }
 
@@ -215,7 +216,7 @@ public class Component implements ProviderFinder {
     public Component register(Provider provider, boolean allowOverride) throws ProviderConflictException {
         Class type = provider.type();
         String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());
-        ProviderHolder providerHolder = providers.get(key);
+        ProviderBag providerBag = providers.get(key);
 
         if (scopeCache != null && provider.scopeCache == null) {
             //If the component has a scope cache and the provider doesn't have. The provider will
@@ -223,11 +224,11 @@ public class Component implements ProviderFinder {
             provider.scopeCache = scopeCache;
         }
 
-        if (providerHolder == null) {
+        if (providerBag == null) {
             //First time add
-            providerHolder = new ProviderHolder();
-            providerHolder.original = provider;
-            providers.put(key, providerHolder);
+            providerBag = new ProviderBag();
+            providerBag.original = provider;
+            providers.put(key, providerBag);
         } else {
             //existing provider, check conflicts
             if (!allowOverride) {
@@ -244,8 +245,8 @@ public class Component implements ProviderFinder {
                 throw new ProviderConflictException(msg);
             } else {
                 //Otherwise, overrides the provider
-                providerHolder.overrider = provider;
-                providerHolder.original.scopeCache.removeCache(provider.type(), provider.getQualifier());
+                providerBag.overrider = provider;
+                providerBag.original.scopeCache.removeCache(provider.type(), provider.getQualifier());
             }
         }
         return this;
@@ -273,7 +274,7 @@ public class Component implements ProviderFinder {
      */
     private Component unregister(Class<?> type, Annotation qualifier) {
         String key = PokeHelper.makeProviderKey(type, qualifier);
-        ProviderHolder targetProvider = providers.get(key);
+        ProviderBag targetProvider = providers.get(key);
 
         if (targetProvider != null) {
             Provider providerToRemove;

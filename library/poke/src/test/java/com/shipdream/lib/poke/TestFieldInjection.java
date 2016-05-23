@@ -32,7 +32,7 @@ public class TestFieldInjection extends BaseTestCases {
     public void setUp() throws Exception {
         component = new Component();
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Test
