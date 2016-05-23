@@ -55,14 +55,14 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
 
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingClassRegistry() throws PokeException {
-        component.register(Pet.class, Cat.class);
-        component.register(Pet.class, Dog.class);
+        component.register(new ProviderByClassType(Pet.class, Cat.class));
+        component.register(new ProviderByClassType(Pet.class, Dog.class));
     }
 
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingNameRegistry() throws PokeException, ClassNotFoundException {
-        component.register(Pet.class, Cat.class.getName());
-        component.register(Pet.class, Dog.class.getName());
+        component.register(new ProviderByClassName(Pet.class, Cat.class.getName()));
+        component.register(new ProviderByClassName(Pet.class, Dog.class.getName()));
     }
 
     @SuppressWarnings("unchecked")
@@ -76,13 +76,13 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
 
     @Test(expected = ClassNotFoundException.class)
     public void shouldDetectBadClassException() throws PokeException, ClassNotFoundException {
-        component.register(Pet.class, "BadClass");
+        component.register(new ProviderByClassName(Pet.class, "BadClass"));
     }
 
     @Test
     public void shouldBeGoodInjection()
             throws PokeException, ProvideException {
-        component.register(Pet.class, Dog.class);
+        component.register(new ProviderByClassType(Pet.class, Dog.class));
 
         class Family {
             @MyInject
@@ -103,7 +103,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test(expected = ProvideException.class)
     public void shouldDetectProvideExceptionWithClassDoesHaveDefaultConstructor()
             throws PokeException {
-        component.register(Pet.class, Rabbit.class);
+        component.register(new ProviderByClassType(Pet.class, Rabbit.class));
 
         class Family {
             @MyInject

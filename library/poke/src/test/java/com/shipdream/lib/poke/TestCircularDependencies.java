@@ -113,9 +113,9 @@ public class TestCircularDependencies extends BaseTestCases {
         //Create a new unscoped component
         Component c = new Component();
         graph.setRootComponent(c);
-        c.register(Power.class, PowerImpl2.class);
-        c.register(Driver.class, DriverImpl2.class);
-        c.register(Robot.class, RobotImpl2.class);
+        c.register(new ProviderByClassType(Power.class, PowerImpl2.class));
+        c.register(new ProviderByClassType(Driver.class, DriverImpl2.class));
+        c.register(new ProviderByClassType(Robot.class, RobotImpl2.class));
 
         Factory factory = new Factory();
         graph.inject(factory, MyInject.class);

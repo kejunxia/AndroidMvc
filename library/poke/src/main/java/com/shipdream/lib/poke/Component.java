@@ -19,7 +19,6 @@ package com.shipdream.lib.poke;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
-import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -60,85 +59,6 @@ public class Component {
         } else {
             throw new ProviderMissingException(type, qualifier);
         }
-    }
-
-    /**
-     * Register binding for type by full class name  without scope cache.
-     * {@link Qualifier} of the class will be taken into account. When allowOverride = false, it
-     * allows to register overriding binding against the same type and {@link Qualifier} and
-     * <b>last wins</b>, otherwise {@link ProviderConflictException} will be thrown.
-     *
-     * @param type                    The type
-     * @param implementationClassName The full name of the implementation class
-     * @return this instance
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     * @throws ClassNotFoundException    Thrown when the class the class name pointing to is not found.
-     */
-    @SuppressWarnings("unchecked")
-    public <T> Component register(Class<T> type, String implementationClassName)
-            throws ProviderConflictException, ClassNotFoundException {
-        Provider<T> provider = new ProviderByClassName<>(type, implementationClassName);
-        return register(provider);
-    }
-
-    /**
-     * Unregister binding to the given type and the qualifier annotated to the given
-     * implementation class. If there is an overridden type registered already, only unregister the
-     * overridden binding. The original one will be unregistered if the this method is called
-     * again against to the type and qualifier associated with the provider.
-     *
-     * @param type                    The type of the implementation to unregister
-     * @param implementationClassName The name of the class annotated with the qualifier
-     * @return this instance
-     * @throws ClassNotFoundException Thrown when the class of the given class name is not found
-     */
-    @SuppressWarnings("unchecked")
-    public <T> Component unregister(Class<T> type, String implementationClassName)
-            throws ClassNotFoundException {
-        if (implementationClassName == null) {
-            throw new NullPointerException(String.format("Can't unregister against null class" +
-                    " type %s", type));
-        }
-        Class<T> clazz = (Class<T>) Class.forName(implementationClassName);
-        return unregister(type, ReflectUtils.findFirstQualifierInAnnotations(clazz));
-    }
-
-    /**
-     * Register binding for type by class type. {@link Qualifier} of the class will be
-     * taken into account. When allowOverride = false, it allows to register overriding
-     * binding against the same type and {@link Qualifier} and <b>last wins</b>, otherwise
-     * {@link ProviderConflictException} will be thrown.
-     *
-     * @param type                The type
-     * @param implementationClass The class type of the implementation
-     * @return this instance
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     */
-    @SuppressWarnings("unchecked")
-    public <T, S extends T> Component register(Class<T> type, Class<S> implementationClass)
-            throws ProviderConflictException {
-        Provider<T> provider = new ProviderByClassType<>(type, implementationClass);
-        return register(provider);
-    }
-
-    /**
-     * Unregister binding to the given type and the qualifier annotated to the given
-     * implementation class. If there is an overridden type registered already, only unregister the
-     * overridden binding. The original one will be unregistered if the this method is called
-     * again against to the type and qualifier associated with the provider.
-     *
-     * @param type                The type of the implementation to unregister
-     * @param implementationClass The class annotated with the qualifier
-     * @return this instance
-     */
-    public <T, S extends T> Component unregister(Class<T> type, Class<S> implementationClass) {
-        if (implementationClass == null) {
-            throw new NullPointerException(String.format("Can't unregister against null class" +
-                    " type %s", type));
-        }
-        return unregister(type, ReflectUtils.findFirstQualifierInAnnotations(implementationClass));
     }
 
     /**
