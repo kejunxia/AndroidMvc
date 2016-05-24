@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,11 +36,20 @@ import javax.inject.Qualifier;
  * {@link Component} that registers providers manually.
  */
 public class Component {
+    //TODO: document
+    public static class MismatchDetachException extends Exception {
+        public MismatchDetachException(String message) {
+            super(message);
+        }
+    }
+
     //TODO: document, use the scopeCache
     final ScopeCache scopeCache;
 
+    final Map<String, Component> componentLocator = new HashMap<>();
     final Map<String, Provider> providers = new HashMap<>();
-    private List<Component> subComponents;
+    private Component parentComponent;
+    private List<Component> childComponents;
 
     public Component() {
         this(null);
@@ -53,52 +63,19 @@ public class Component {
         }
     }
 
-    <T> void putProvider(Provider<T> provider) {
-        providers.put(PokeHelper.makeProviderKey(provider.type(), provider.getQualifier()), provider);
-    }
-
-    <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
-        return providers.get(PokeHelper.makeProviderKey(type, qualifier));
-    }
-
-    <T> Provider<T> removeProvider(Class<T> type, Annotation qualifier) {
-        return providers.remove(PokeHelper.makeProviderKey(type, qualifier));
-    }
-
     /**
      * //TODO: document how component scope cache will override provider's
      * Register a {@link Provider}. When allowOverride = false, it allows to register overriding
      * binding against the same type and {@link Qualifier} and <b>last wins</b>, otherwise
      * {@link ProviderConflictException} will be thrown.
      *
-     * @param provider      The provider
+     * @param provider The provider
      * @return this instance
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
      */
     public Component register(@NotNull Provider provider) throws ProviderConflictException {
-        Class type = provider.type();
-        Annotation qualifier = provider.getQualifier();
-        Provider existingProvider = findProvider(type, qualifier);
-        if (existingProvider != null) {
-            String msg;
-            if (qualifier == null) {
-                msg = String.format("Type %s has already been registered " +
-                        "in this graph.", type);
-            } else {
-                msg = String.format("Type %s with Qualifier %s has already " +
-                                "been registered in this graph.",
-                        type, qualifier.annotationType().getName());
-            }
-            throw new ProviderConflictException(msg);
-        }
-
-        if (scopeCache != null && provider.scopeCache == null) {
-            //If the component has a scope cache and the provider doesn't have. The provider will
-            //inherit the component's scope cache.
-            provider.scopeCache = scopeCache;
-        }
-        putProvider(provider);
+        addProvider(provider);
         return this;
     }
 
@@ -111,26 +88,7 @@ public class Component {
      * @return this instance
      */
     public Component unregister(Provider provider) {
-        return unregister(provider.type(), provider.getQualifier());
-    }
-
-    /**
-     * Unregister provider registered with given type and qualifier
-     *
-     * @param type      The type of the provider is providing
-     * @param qualifier The annotation of the qualifier. When null is given, this method will
-     *                  specifically look for provider without qualifier
-     * @return this instance
-     */
-    private Component unregister(Class<?> type, Annotation qualifier) {
-        Provider targetProvider = findProvider(type, qualifier);
-
-        if (targetProvider != null) {
-            removeProvider(type, qualifier);
-            if (scopeCache != null) {
-                scopeCache.removeCache(type, qualifier);
-            }
-        }
+        removeProvider(provider.type(), provider.getQualifier());
         return this;
     }
 
@@ -141,7 +99,7 @@ public class Component {
      * {@link ProviderConflictException} will be thrown.
      *
      * @param providerHolder The object with methods marked by {@link Provides} to provide injectable
-     *                      instances
+     *                       instances
      * @return this instance
      * @throws ProvideException          Thrown when exception occurs during providers creating instances
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
@@ -163,7 +121,7 @@ public class Component {
      * injection providers.
      *
      * @param providerHolder The object with methods marked by {@link Provides} to provide injectable
-     *                      instances
+     *                       instances
      * @return this instance
      */
     public Component unregister(Object providerHolder) {
@@ -181,11 +139,143 @@ public class Component {
                         }
                     }
 
-                    unregister(returnType, qualifier);
+                    removeProvider(returnType, qualifier);
                 }
             }
         }
         return this;
+    }
+
+
+    public void attach(@NotNull Component childComponent) {
+        if (childComponents == null) {
+            childComponents = new ArrayList<>();
+        }
+
+        //Update tree nodes
+        childComponent.parentComponent = this;
+        childComponents.add(childComponent);
+
+
+        mergeComponentLocator(childComponent);
+    }
+
+    /**
+     * Extract and merge all descents' componentLocators to this component
+     * @param child The child component
+     */
+    private void mergeComponentLocator(@NotNull Component child) {
+        for (Map.Entry<String, Component> entry : child.componentLocator.entrySet()) {
+            componentLocator.put(entry.getKey(), entry.getValue());
+        }
+        if (child.childComponents != null) {
+            for (Component grandChild : child.childComponents) {
+                mergeComponentLocator(grandChild);
+            }
+        }
+    }
+
+    public void detach(@NotNull Component childComponent) throws MismatchDetachException {
+        if (childComponent.parentComponent != this
+                || childComponents == null) {
+            throw new MismatchDetachException("The child component doesn't belong to the parent");
+        }
+
+        childComponents.remove(childComponent);
+        //Update tree nodes
+        childComponent.parentComponent = null;
+
+        disbandComponentLocator(childComponent);
+    }
+
+    private void disbandComponentLocator(@NotNull Component child) {
+        for (String key : child.componentLocator.keySet()) {
+            componentLocator.remove(key);
+        }
+        if (child.childComponents != null) {
+            for (Component grandChild : child.childComponents) {
+                disbandComponentLocator(grandChild);
+            }
+        }
+    }
+
+    <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
+        String key = PokeHelper.makeProviderKey(type, qualifier);
+        Component targetComponent = findTargetComponent(key);
+        if (targetComponent == null) {
+            return null;
+        } else {
+            return targetComponent.providers.get(key);
+        }
+    }
+
+    private <T> void addProvider(@NotNull Provider<T> provider)
+            throws ProviderConflictException {
+        Class<T> type = provider.type();
+        Annotation qualifier = provider.getQualifier();
+        String key = PokeHelper.makeProviderKey(type, qualifier);
+
+        addNewKeyToComponent(key, this);
+
+        if (provider.scopeCache == null && scopeCache != null) {
+            //If the component has a scope cache and the provider doesn't have. The provider will
+            //inherit the component's scope cache.
+            provider.scopeCache = scopeCache;
+        }
+        providers.put(key, provider);
+    }
+
+    private void addNewKeyToComponent(String key, Component component) throws ProviderConflictException {
+        if (componentLocator.keySet().contains(key)) {
+            String msg = String.format("Type %s has already been registered " +
+                    "in this component or its ancestor component.", key);
+            throw new ProviderConflictException(msg);
+        }
+
+        componentLocator.put(key, component);
+
+        if (component.parentComponent != null) {
+            addNewKeyToComponent(key, component.parentComponent);
+        }
+    }
+
+    private <T> void removeProvider(Class<T> type, Annotation qualifier) {
+        String key = PokeHelper.makeProviderKey(type, qualifier);
+        Component targetComponent = findTargetComponent(key);
+
+        targetComponent.providers.remove(key);
+        if (targetComponent.scopeCache != null) {
+            targetComponent.scopeCache.removeCache(type, qualifier);
+        }
+
+        removeNewKeyToComponent(key, targetComponent);
+    }
+
+    private void removeNewKeyToComponent(String key, Component component) {
+        component.componentLocator.remove(key);
+
+        if (component.parentComponent != null) {
+            removeNewKeyToComponent(key, component.parentComponent);
+        }
+    }
+
+    private Component findTargetComponent(String key) {
+        Component component = componentLocator.get(key);
+        if (component == null) {
+            if (componentLocator == null || componentLocator.isEmpty()) {
+                return null;
+            } else {
+                for (Component child : componentLocator.values()) {
+                    Component found = child.findTargetComponent(key);
+                    if (found != null) {
+                        return found;
+                    }
+                }
+                return null;
+            }
+        } else {
+            return component;
+        }
     }
 
     private void registerProvides(final Object providerHolder, final Method method)
