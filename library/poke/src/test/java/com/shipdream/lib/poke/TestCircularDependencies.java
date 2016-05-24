@@ -109,7 +109,7 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     @Test(expected = CircularDependenciesException.class)
-    public void should_detect_infinite_circular_dependencies() throws ProvideException, CircularDependenciesException, ProviderMissingException, ProviderConflictException {
+    public void should_detect_infinite_circular_dependencies() throws PokeException {
         //Create a new unscoped component
         Component c = new Component();
         graph.setRootComponent(c);

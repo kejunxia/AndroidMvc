@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.poke;
 
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
@@ -24,9 +25,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Qualifier;
@@ -37,7 +36,7 @@ import javax.inject.Qualifier;
  */
 public class Component {
     //TODO: document
-    public static class MismatchDetachException extends Exception {
+    public static class MismatchDetachException extends PokeException {
         public MismatchDetachException(String message) {
             super(message);
         }
@@ -49,7 +48,6 @@ public class Component {
     final Map<String, Component> componentLocator = new HashMap<>();
     final Map<String, Provider> providers = new HashMap<>();
     private Component parentComponent;
-    private List<Component> childComponents;
 
     public Component() {
         this(null);
@@ -61,6 +59,10 @@ public class Component {
         } else {
             this.scopeCache = null;
         }
+    }
+
+    public Component getParent() {
+        return parentComponent;
     }
 
     /**
@@ -148,60 +150,42 @@ public class Component {
 
 
     public void attach(@NotNull Component childComponent) {
-        if (childComponents == null) {
-            childComponents = new ArrayList<>();
-        }
-
         //Update tree nodes
         childComponent.parentComponent = this;
-        childComponents.add(childComponent);
 
-
-        mergeComponentLocator(childComponent);
-    }
-
-    /**
-     * Extract and merge all descents' componentLocators to this component
-     * @param child The child component
-     */
-    private void mergeComponentLocator(@NotNull Component child) {
-        for (Map.Entry<String, Component> entry : child.componentLocator.entrySet()) {
-            componentLocator.put(entry.getKey(), entry.getValue());
-        }
-        if (child.childComponents != null) {
-            for (Component grandChild : child.childComponents) {
-                mergeComponentLocator(grandChild);
-            }
+        //Merge the child component locator to the root component
+        Component root = getRootComponent();
+        for (Map.Entry<String, Component> entry : childComponent.componentLocator.entrySet()) {
+            root.componentLocator.put(entry.getKey(), entry.getValue());
         }
     }
 
     public void detach(@NotNull Component childComponent) throws MismatchDetachException {
-        if (childComponent.parentComponent != this
-                || childComponents == null) {
+        if (childComponent.parentComponent != this) {
             throw new MismatchDetachException("The child component doesn't belong to the parent");
         }
 
-        childComponents.remove(childComponent);
         //Update tree nodes
         childComponent.parentComponent = null;
 
-        disbandComponentLocator(childComponent);
+        //Disband the child component locator from the root component
+        Component root = getRootComponent();
+        for (Map.Entry<String, Component> entry : childComponent.componentLocator.entrySet()) {
+            root.componentLocator.remove(entry.getKey());
+        }
     }
 
-    private void disbandComponentLocator(@NotNull Component child) {
-        for (String key : child.componentLocator.keySet()) {
-            componentLocator.remove(key);
+    private Component getRootComponent() {
+        Component root = this;
+        while (root.parentComponent != null) {
+            root = root.parentComponent;
         }
-        if (child.childComponents != null) {
-            for (Component grandChild : child.childComponents) {
-                disbandComponentLocator(grandChild);
-            }
-        }
+        return root;
     }
 
     <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
         String key = PokeHelper.makeProviderKey(type, qualifier);
-        Component targetComponent = findTargetComponent(key);
+        Component targetComponent = getRootComponent().componentLocator.get(key);
         if (targetComponent == null) {
             return null;
         } else {
@@ -226,56 +210,36 @@ public class Component {
     }
 
     private void addNewKeyToComponent(String key, Component component) throws ProviderConflictException {
+        Component root = getRootComponent();
+
         if (componentLocator.keySet().contains(key)) {
             String msg = String.format("Type %s has already been registered " +
-                    "in this component or its ancestor component.", key);
+                    "in this component.", key);
             throw new ProviderConflictException(msg);
         }
 
-        componentLocator.put(key, component);
-
-        if (component.parentComponent != null) {
-            addNewKeyToComponent(key, component.parentComponent);
+        if (root != this && root.componentLocator.keySet().contains(key)) {
+            String msg = String.format("Type %s has already been registered " +
+                    "in root component.", key);
+            throw new ProviderConflictException(msg);
         }
+
+        //Only put it to root component's locator
+        root.componentLocator.put(key, component);
     }
 
     private <T> void removeProvider(Class<T> type, Annotation qualifier) {
         String key = PokeHelper.makeProviderKey(type, qualifier);
-        Component targetComponent = findTargetComponent(key);
+        Component targetComponent = getRootComponent().componentLocator.get(key);
 
         targetComponent.providers.remove(key);
         if (targetComponent.scopeCache != null) {
             targetComponent.scopeCache.removeCache(type, qualifier);
         }
 
-        removeNewKeyToComponent(key, targetComponent);
-    }
-
-    private void removeNewKeyToComponent(String key, Component component) {
-        component.componentLocator.remove(key);
-
-        if (component.parentComponent != null) {
-            removeNewKeyToComponent(key, component.parentComponent);
-        }
-    }
-
-    private Component findTargetComponent(String key) {
-        Component component = componentLocator.get(key);
-        if (component == null) {
-            if (componentLocator == null || componentLocator.isEmpty()) {
-                return null;
-            } else {
-                for (Component child : componentLocator.values()) {
-                    Component found = child.findTargetComponent(key);
-                    if (found != null) {
-                        return found;
-                    }
-                }
-                return null;
-            }
-        } else {
-            return component;
-        }
+        Component root = getRootComponent();
+        //Only remove it to root component's locator
+        root.componentLocator.put(key, this);
     }
 
     private void registerProvides(final Object providerHolder, final Method method)

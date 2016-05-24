@@ -18,6 +18,7 @@ package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.Provider.OnFreedListener;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 import com.shipdream.lib.poke.util.ReflectUtils;
@@ -38,6 +39,12 @@ import javax.inject.Inject;
  * A graph manages how to inject dependencies to target objects.
  */
 public class Graph {
+    public static class IllegalGraphComponentException extends PokeException {
+        public IllegalGraphComponentException(String message) {
+            super(message);
+        }
+    }
+
     private List<OnFreedListener> onProviderFreedListeners;
     private List<Monitor> monitors;
     private String revisitedNode = null;
@@ -125,7 +132,10 @@ public class Graph {
      *
      * @param component The root {@link Component} of this graph.
      */
-    public void setRootComponent(Component component) {
+    public void setRootComponent(Component component) throws IllegalGraphComponentException {
+        if (component.getParent() != null) {
+            throw new IllegalGraphComponentException("A component with parent cannot be set as a graph's root component. Make sure the component doesn't parent.");
+        }
         this.rootComponent = component;
     }
 
