@@ -42,6 +42,13 @@ public class Component {
         }
     }
 
+    //TODO document
+    public static class AlreadyAttachedException extends PokeException {
+        public AlreadyAttachedException(String message) {
+            super(message);
+        }
+    }
+
     //TODO: document, use the scopeCache
     final ScopeCache scopeCache;
 
@@ -90,7 +97,22 @@ public class Component {
      * @return this instance
      */
     public Component unregister(Provider provider) {
-        removeProvider(provider.type(), provider.getQualifier());
+        return unregister(provider.type(), provider.getQualifier());
+    }
+
+    public <T> Component unregister(Class<T> type, Annotation qualifier) {
+        String key = PokeHelper.makeProviderKey(type, qualifier);
+        Component targetComponent = getRootComponent().componentLocator.get(key);
+
+        targetComponent.providers.remove(key);
+        if (targetComponent.scopeCache != null) {
+            targetComponent.scopeCache.removeCache(type, qualifier);
+        }
+
+        Component root = getRootComponent();
+        //Only remove it to root component's locator
+        root.componentLocator.put(key, this);
+
         return this;
     }
 
@@ -141,7 +163,7 @@ public class Component {
                         }
                     }
 
-                    removeProvider(returnType, qualifier);
+                    unregister(returnType, qualifier);
                 }
             }
         }
@@ -149,14 +171,21 @@ public class Component {
     }
 
 
-    public void attach(@NotNull Component childComponent) {
+    public void attach(@NotNull Component childComponent) throws AlreadyAttachedException {
+        if (childComponent.parentComponent != null) {
+            throw new AlreadyAttachedException("The component being added has a parent already. Remove " +
+                    "it from its parent before attaching it to another component");
+        }
+
         //Update tree nodes
         childComponent.parentComponent = this;
 
         //Merge the child component locator to the root component
         Component root = getRootComponent();
         for (Map.Entry<String, Component> entry : childComponent.componentLocator.entrySet()) {
-            root.componentLocator.put(entry.getKey(), entry.getValue());
+            String key = entry.getKey();
+            root.componentLocator.put(key, entry.getValue());
+            childComponent.componentLocator.remove(key);
         }
     }
 
@@ -168,10 +197,12 @@ public class Component {
         //Update tree nodes
         childComponent.parentComponent = null;
 
-        //Disband the child component locator from the root component
+        //Disband the child component locator from the root component and return the keys to child
+        //component itself
         Component root = getRootComponent();
-        for (Map.Entry<String, Component> entry : childComponent.componentLocator.entrySet()) {
-            root.componentLocator.remove(entry.getKey());
+        for (String key : childComponent.providers.keySet()) {
+            root.componentLocator.remove(key);
+            childComponent.componentLocator.put(key, childComponent);
         }
     }
 
@@ -226,20 +257,6 @@ public class Component {
 
         //Only put it to root component's locator
         root.componentLocator.put(key, component);
-    }
-
-    private <T> void removeProvider(Class<T> type, Annotation qualifier) {
-        String key = PokeHelper.makeProviderKey(type, qualifier);
-        Component targetComponent = getRootComponent().componentLocator.get(key);
-
-        targetComponent.providers.remove(key);
-        if (targetComponent.scopeCache != null) {
-            targetComponent.scopeCache.removeCache(type, qualifier);
-        }
-
-        Component root = getRootComponent();
-        //Only remove it to root component's locator
-        root.componentLocator.put(key, this);
     }
 
     private void registerProvides(final Object providerHolder, final Method method)

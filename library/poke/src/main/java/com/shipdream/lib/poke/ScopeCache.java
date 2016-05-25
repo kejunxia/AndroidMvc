@@ -30,14 +30,6 @@ class ScopeCache {
     public static class CachedItem<T> {
         Provider<T> provider;
         T instance;
-
-        public T getInstance() {
-            return instance;
-        }
-
-        public Provider<T> getProvider() {
-            return provider;
-        }
     }
 
     protected Map<String, CachedItem> cache = new HashMap<>();
