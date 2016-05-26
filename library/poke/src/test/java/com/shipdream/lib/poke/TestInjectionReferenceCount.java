@@ -85,7 +85,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
 
         Graph g = new Graph();
         Component c;
-        c = new Component();
+        c = new Component(false);
         c.register(new Module1());
         g.setRootComponent(c);
 

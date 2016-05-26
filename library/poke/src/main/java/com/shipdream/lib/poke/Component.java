@@ -49,7 +49,7 @@ public class Component {
         }
     }
 
-    //TODO: document, use the scopeCache
+    private final String name;
     final ScopeCache scopeCache;
 
     final Map<String, Component> componentLocator = new HashMap<>();
@@ -57,15 +57,32 @@ public class Component {
     private Component parentComponent;
 
     public Component() {
-        this(null);
+        this(null, true);
     }
 
-    public Component(String scope) {
-        if (scope != null) {
-            this.scopeCache = new ScopeCache();
+    public Component(String name) {
+        this(name, true);
+    }
+
+    public Component(boolean enableCache) {
+        this(null, enableCache);
+    }
+
+    public Component(String name, boolean enableCache) {
+        if (enableCache) {
+            scopeCache = new ScopeCache();
         } else {
-            this.scopeCache = null;
+            scopeCache = null;
         }
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public boolean hasCache() {
+        return scopeCache != null;
     }
 
     public Component getParent() {
@@ -173,8 +190,9 @@ public class Component {
 
     public void attach(@NotNull Component childComponent) throws AlreadyAttachedException {
         if (childComponent.parentComponent != null) {
-            throw new AlreadyAttachedException("The component being added has a parent already. Remove " +
-                    "it from its parent before attaching it to another component");
+            String msg = String.format("The attaching component(%s) has a parent already. Remove its parent before attaching it",
+                    childComponent.name == null ? "unnamed" : childComponent.name);
+            throw new AlreadyAttachedException(msg);
         }
 
         //Update tree nodes
@@ -191,7 +209,10 @@ public class Component {
 
     public void detach(@NotNull Component childComponent) throws MismatchDetachException {
         if (childComponent.parentComponent != this) {
-            throw new MismatchDetachException("The child component doesn't belong to the parent");
+            String msg = String.format("The child component(%s) doesn't belong to component(%s)",
+                    childComponent.name == null ? "unnamed" : childComponent.name,
+                    name == null ? "unnamed" : name);
+            throw new MismatchDetachException(msg);
         }
 
         //Update tree nodes
@@ -245,13 +266,13 @@ public class Component {
 
         if (componentLocator.keySet().contains(key)) {
             String msg = String.format("Type %s has already been registered " +
-                    "in this component.", key);
+                    "in this component(%s).", key, name == null ? "unnamed" : name);
             throw new ProviderConflictException(msg);
         }
 
         if (root != this && root.componentLocator.keySet().contains(key)) {
             String msg = String.format("Type %s has already been registered " +
-                    "in root component.", key);
+                    "in root component(%s).", key, name == null ? "unnamed" : name);
             throw new ProviderConflictException(msg);
         }
 

@@ -104,7 +104,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Test
     public void shouldInjectQualifiedWithDifferentInstances() throws PokeException {
-        Component c = new Component();
+        Component c = new Component(false);
         c.register(new ProviderByClassType(Os.class, iOs.class));
         c.register(new ProviderByClassType(Os.class, Android.class));
         c.register(new ProviderByClassType(Os.class, Windows.class));
@@ -169,7 +169,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @Test
     public void componentProvidesQualifierShouldOverrideImplClassQualifier() throws PokeException {
-        graph.setRootComponent(new Component().register(new ContainerModule()));
+        graph.setRootComponent(new Component(false).register(new ContainerModule()));
 
         Container container = new Container();
         graph.inject(container, MyInject.class);

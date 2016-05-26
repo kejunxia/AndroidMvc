@@ -18,9 +18,6 @@ package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -111,7 +108,7 @@ public class TestCircularDependencies extends BaseTestCases {
     @Test(expected = CircularDependenciesException.class)
     public void should_detect_infinite_circular_dependencies() throws PokeException {
         //Create a new unscoped component
-        Component c = new Component();
+        Component c = new Component(null, false);
         graph.setRootComponent(c);
         c.register(new ProviderByClassType(Power.class, PowerImpl2.class));
         c.register(new ProviderByClassType(Driver.class, DriverImpl2.class));

@@ -114,7 +114,7 @@ public class TestInjectionScope extends BaseTestCases {
 
         //Provider is not scoped so all instances are separated
         Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        Component c = new Component();
+        Component c = new Component(false);
         c.register(powerSupplyProvider);
         graph.setRootComponent(c);
 

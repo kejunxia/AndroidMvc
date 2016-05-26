@@ -49,7 +49,7 @@ public class TestComponentManagement extends BaseTestCases {
 
     @Test
     public void graph_should_use_corresponding_sub_components_scope_to_inject_unscoped() throws PokeException {
-        Component childCom = new Component();
+        Component childCom = new Component(false);
         childCom.register(new ProviderByClassType(Wheel.class, Wheel17Inch.class));
         rootComponent.attach(childCom);
 
@@ -64,7 +64,7 @@ public class TestComponentManagement extends BaseTestCases {
 
     @Test
     public void graph_should_use_corresponding_sub_components_scope_to_inject_scoped() throws PokeException {
-        Component childCom = new Component("SubScope");
+        Component childCom = new Component("SubScope", true);
         childCom.register(new ProviderByClassType(Wheel.class, Wheel17Inch.class));
         rootComponent.attach(childCom);
 
@@ -301,6 +301,5 @@ public class TestComponentManagement extends BaseTestCases {
         g.inject(car3, MyInject.class);
         Assert.assertTrue(car1.wheel == car3.wheel);
         Assert.assertNotNull(car3.wheel);
-
     }
 }

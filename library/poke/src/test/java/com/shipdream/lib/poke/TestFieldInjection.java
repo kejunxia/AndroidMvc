@@ -81,9 +81,11 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields to base class by class type\n");
 
-        component.register(new ProviderByClassName(Bird.class, Crow.class.getName()));
-        component.register(new ProviderByClassName(Animal.class, Horse.class.getName()));
-        component.register(new ProviderByClassName(Fish.class, GoldFish.class.getName()));
+        Component c = new Component(false);
+        graph.setRootComponent(c);
+        c.register(new ProviderByClassName(Bird.class, Crow.class.getName()));
+        c.register(new ProviderByClassName(Animal.class, Horse.class.getName()));
+        c.register(new ProviderByClassName(Fish.class, GoldFish.class.getName()));
 
         BiggerZoo zoo = new BiggerZoo();
         graph.inject(zoo, MyInject.class);

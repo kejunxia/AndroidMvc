@@ -396,7 +396,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     public void shouldInjectQualifiedWithDifferentInstances() throws PokeException {
         Graph g = new Graph();
         Component c;
-        c = new Component();
+        c = new Component(false);
         g.setRootComponent(c);
 
         c.register(new ProviderByClassType(Os.class, iOs.class));
@@ -462,7 +462,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void unscoped_commponent_should_always_create_new_instances() throws PokeException {
-        Component unscopedComponenent = new Component();
+        Component unscopedComponenent = new Component(false);
         unscopedComponenent.register(new ContainerModule());
         graph.setRootComponent(unscopedComponenent);
 
