@@ -39,8 +39,8 @@ import javax.inject.Inject;
  * A graph manages how to inject dependencies to target objects.
  */
 public class Graph {
-    public static class IllegalGraphComponentException extends PokeException {
-        public IllegalGraphComponentException(String message) {
+    public static class IllegalRootComponentException extends PokeException {
+        public IllegalRootComponentException(String message) {
             super(message);
         }
     }
@@ -132,9 +132,9 @@ public class Graph {
      *
      * @param component The root {@link Component} of this graph.
      */
-    public void setRootComponent(Component component) throws IllegalGraphComponentException {
+    public void setRootComponent(Component component) throws IllegalRootComponentException {
         if (component.getParent() != null) {
-            throw new IllegalGraphComponentException("A component with parent cannot be set as a graph's root component. Make sure the component doesn't parent.");
+            throw new IllegalRootComponentException("A component with parent cannot be set as a graph's root component. Make sure the component doesn't parent.");
         }
         this.rootComponent = component;
     }

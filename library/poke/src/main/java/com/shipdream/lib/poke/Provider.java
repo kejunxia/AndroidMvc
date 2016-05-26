@@ -252,7 +252,7 @@ public abstract class Provider<T> {
     final T get() throws ProvideException {
         if(scopeCache == null) {
             T impl = createInstance();
-            if(impl == null) {
+            if (impl == null) {
                 String qualifierName = (qualifier == null) ? "null" : qualifier.getClass().getName();
                 throw new ProvideException(String.format("Provider (type: %s, qualifier: " +
                         "%s) should not provide NULL as instance", type.getName(), qualifierName));

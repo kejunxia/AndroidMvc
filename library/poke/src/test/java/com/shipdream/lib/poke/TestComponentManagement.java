@@ -17,6 +17,7 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
@@ -235,7 +236,7 @@ public class TestComponentManagement extends BaseTestCases {
 
         try {
             g.setRootComponent(component);
-        } catch (Graph.IllegalGraphComponentException e) {
+        } catch (Graph.IllegalRootComponentException e) {
             exp = true;
         }
 
@@ -301,5 +302,45 @@ public class TestComponentManagement extends BaseTestCases {
         g.inject(car3, MyInject.class);
         Assert.assertTrue(car1.wheel == car3.wheel);
         Assert.assertNotNull(car3.wheel);
+    }
+
+    @Test
+    public void should_throw_conflict_exception_when_add_conflicting_provider_to_child_component() throws PokeException {
+        Graph g = new Graph();
+        Component root = new Component();
+        g.setRootComponent(root);
+
+        root.register(new ProviderByClassType(Wheel.class, Wheel17Inch.class));
+
+        Component c2 = new Component("c2");
+        root.attach(c2);
+
+        boolean exp = false;
+        try {
+            c2.register(new ProviderByClassType(Wheel.class, Wheel17Inch.class));
+        } catch (ProviderConflictException e) {
+            exp = true;
+        }
+
+        Assert.assertTrue(exp);
+    }
+
+    @Test
+    public void test_component_constructor() {
+        Component c1 = new Component("A");
+        Assert.assertTrue(c1.hasCache());
+        Assert.assertEquals("A", c1.getName());
+
+        Component c2 = new Component("B", false);
+        Assert.assertFalse(c2.hasCache());
+        Assert.assertEquals("B", c2.getName());
+
+        Component c3 = new Component(false);
+        Assert.assertFalse(c3.hasCache());
+        Assert.assertEquals(null, c3.getName());
+
+        Component c4 = new Component();
+        Assert.assertTrue(c4.hasCache());
+        Assert.assertEquals(null, c4.getName());
     }
 }
