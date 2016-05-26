@@ -62,7 +62,7 @@ public class Component {
 
     public Component(String scope) {
         if (scope != null) {
-            this.scopeCache = new ScopeCache(scope);
+            this.scopeCache = new ScopeCache();
         } else {
             this.scopeCache = null;
         }

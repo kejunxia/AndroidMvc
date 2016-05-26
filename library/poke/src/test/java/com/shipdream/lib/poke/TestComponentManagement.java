@@ -266,4 +266,41 @@ public class TestComponentManagement extends BaseTestCases {
 
         rootComponent.attach(parent);
     }
+
+    @Test
+    public void should_inject_from_sub_component_with_multi_level_depth() throws PokeException {
+        Graph g = new Graph();
+        Component root = new Component();
+        g.setRootComponent(root);
+
+        Component c1 = new Component();
+
+        Component c2 = new Component("c2");
+        c2.register(new ProviderByClassType(Wheel.class, Wheel17Inch.class));
+
+        root.attach(c1);
+        c1.attach(c2);
+
+        Car car1 = new Car();
+        g.inject(car1, MyInject.class);
+        Assert.assertNotNull(car1.wheel);
+
+        c1.detach(c2);
+        Car car2 = new Car();
+        boolean car2Exp = false;
+        try {
+            g.inject(car2, MyInject.class);
+        } catch (ProviderMissingException e) {
+            car2Exp = true;
+        }
+        Assert.assertTrue(car2Exp);
+        Assert.assertNull(car2.wheel);
+
+        root.attach(c2);
+        Car car3 = new Car();
+        g.inject(car3, MyInject.class);
+        Assert.assertTrue(car1.wheel == car3.wheel);
+        Assert.assertNotNull(car3.wheel);
+
+    }
 }
