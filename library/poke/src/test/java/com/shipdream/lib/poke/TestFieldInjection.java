@@ -32,7 +32,7 @@ public class TestFieldInjection extends BaseTestCases {
     public void setUp() throws Exception {
         component = new Component();
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Test
@@ -40,9 +40,9 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields of target object by class type");
 
-        component.register(Bird.class, Crow.class);
-        component.register(Animal.class, Horse.class);
-        component.register(Fish.class, GoldFish.class);
+        component.register(new ProviderByClassType(Bird.class, Crow.class));
+        component.register(new ProviderByClassType(Animal.class, Horse.class));
+        component.register(new ProviderByClassType(Fish.class, GoldFish.class));
 
         Zoo zoo = new Zoo();
         graph.inject(zoo, MyInject.class);
@@ -54,9 +54,9 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields of target object by class name");
 
-        component.register(Bird.class, Crow.class.getName());
-        component.register(Animal.class, Horse.class.getName());
-        component.register(Fish.class, GoldFish.class.getName());
+        component.register(new ProviderByClassName(Bird.class, Crow.class.getName()));
+        component.register(new ProviderByClassName(Animal.class, Horse.class.getName()));
+        component.register(new ProviderByClassName(Fish.class, GoldFish.class.getName()));
 
         Zoo zoo = new Zoo();
         graph.inject(zoo, MyInject.class);
@@ -68,8 +68,8 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields but missing provider\n");
 
-        component.register(Bird.class, Crow.class.getName());
-        component.register(Animal.class, Horse.class.getName());
+        component.register(new ProviderByClassName(Bird.class, Crow.class.getName()));
+        component.register(new ProviderByClassName(Animal.class, Horse.class.getName()));
 
         BiggerZoo zoo = new BiggerZoo();
         graph.inject(zoo, MyInject.class);
@@ -81,9 +81,11 @@ public class TestFieldInjection extends BaseTestCases {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection to fields to base class by class type\n");
 
-        component.register(Bird.class, Crow.class.getName());
-        component.register(Animal.class, Horse.class.getName());
-        component.register(Fish.class, GoldFish.class.getName());
+        Component c = new Component(false);
+        graph.setRootComponent(c);
+        c.register(new ProviderByClassName(Bird.class, Crow.class.getName()));
+        c.register(new ProviderByClassName(Animal.class, Horse.class.getName()));
+        c.register(new ProviderByClassName(Fish.class, GoldFish.class.getName()));
 
         BiggerZoo zoo = new BiggerZoo();
         graph.inject(zoo, MyInject.class);

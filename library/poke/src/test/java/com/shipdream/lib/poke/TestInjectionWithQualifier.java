@@ -70,16 +70,16 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Before
     public void setUp() throws Exception {
         scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictProviderException() throws PokeException {
-        component.register(Os.class, iOs.class);
-        component.register(Os.class, Android.class);
-        component.register(Os.class, Android.class);
+        component.register(new ProviderByClassType(Os.class, iOs.class));
+        component.register(new ProviderByClassType(Os.class, Android.class));
+        component.register(new ProviderByClassType(Os.class, Android.class));
     }
 
     private static class Device {
@@ -97,9 +97,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void should_use_cached_instance_if_inject_instance_is_referenced_more_then_once() throws Exception {
-        component.register(Os.class, iOs.class);
-        component.register(Os.class, Android.class);
-        component.register(Os.class, Windows.class);
+        component.register(new ProviderByClassType(Os.class, iOs.class));
+        component.register(new ProviderByClassType(Os.class, Android.class));
+        component.register(new ProviderByClassType(Os.class, Windows.class));
 
         //Retain = 0
 
@@ -145,9 +145,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Test
     public void should_retain_instance_in_use_method_until_exit() throws PokeException {
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class);
-        component.register(Os.class, Android.class);
-        component.register(Os.class, Windows.class);
+        component.register(new ProviderByClassType(Os.class, iOs.class));
+        component.register(new ProviderByClassType(Os.class, Android.class));
+        component.register(new ProviderByClassType(Os.class, Windows.class));
 
         final Device device = new Device();
 
@@ -186,9 +186,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Test
     public void should_retain_instance_in_use_method_until_exit_without_qualifier() throws PokeException {
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class);
-        component.register(Os.class, Android.class);
-        component.register(Os.class, Windows.class);
+        component.register(new ProviderByClassType(Os.class, iOs.class));
+        component.register(new ProviderByClassType(Os.class, Android.class));
+        component.register(new ProviderByClassType(Os.class, Windows.class));
 
         final Device device = new Device();
 
@@ -227,9 +227,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     @Test
     public void should_be_able_to_use_instance_injected_with_qualifier() throws PokeException {
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, iOs.class);
-        component.register(Os.class, Android.class);
-        component.register(Os.class, Windows.class);
+        component.register(new ProviderByClassType(Os.class, iOs.class));
+        component.register(new ProviderByClassType(Os.class, Android.class));
+        component.register(new ProviderByClassType(Os.class, Windows.class));
 
         final Device device = new Device();
 
@@ -313,8 +313,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     public void use_method_should_inject_fields_recursively() throws PokeException {
 
         ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, SamSungOs.class);
-        component.register(Connector.class, TypeC.class);
+        component.register(new ProviderByClassType(Os.class, SamSungOs.class));
+        component.register(new ProviderByClassType(Connector.class, TypeC.class));
 
         graph.use(Os.class, MyInject.class, new Consumer<Os>() {
             @Override
@@ -326,11 +326,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void use_method_should_release_fields_recursively() throws PokeException {
-
-
-        ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, SamSungOs.class);
-        component.register(Connector.class, TypeC.class);
+        component.register(new ProviderByClassType(Os.class, SamSungOs.class));
+        component.register(new ProviderByClassType(Connector.class, TypeC.class));
 
         class Phone {
             @MyInject
@@ -361,11 +358,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void inject_in_use_method_should_retain_instances() throws PokeException {
-
-
-        ScopeCache scopeCache = new ScopeCache();
-        component.register(Os.class, SamSungOs.class);
-        component.register(Connector.class, TypeC.class);
+        component.register(new ProviderByClassType(Os.class, SamSungOs.class));
+        component.register(new ProviderByClassType(Connector.class, TypeC.class));
 
         class Phone {
             @MyInject
@@ -402,12 +396,12 @@ public class TestInjectionWithQualifier extends BaseTestCases {
     public void shouldInjectQualifiedWithDifferentInstances() throws PokeException {
         Graph g = new Graph();
         Component c;
-        c = new Component();
-        g.addProviderFinder(c);
+        c = new Component(false);
+        g.setRootComponent(c);
 
-        c.register(Os.class, iOs.class);
-        c.register(Os.class, Android.class);
-        c.register(Os.class, Windows.class);
+        c.register(new ProviderByClassType(Os.class, iOs.class));
+        c.register(new ProviderByClassType(Os.class, Android.class));
+        c.register(new ProviderByClassType(Os.class, Windows.class));
 
         Device device = new Device();
         g.inject(device, MyInject.class);
@@ -426,9 +420,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void shouldInjectQualifiedSingletonInstance() throws PokeException {
-        component.register(Os.class, iOs.class);
-        component.register(Os.class, Android.class);
-        component.register(Os.class, Windows.class);
+        component.register(new ProviderByClassType(Os.class, iOs.class));
+        component.register(new ProviderByClassType(Os.class, Android.class));
+        component.register(new ProviderByClassType(Os.class, Windows.class));
 
         Device device = new Device();
         graph.inject(device, MyInject.class);
@@ -468,9 +462,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void unscoped_commponent_should_always_create_new_instances() throws PokeException {
-        Component unscopedComponenent = new Component();
+        Component unscopedComponenent = new Component(false);
         unscopedComponenent.register(new ContainerModule());
-        graph.addProviderFinder(unscopedComponenent);
+        graph.setRootComponent(unscopedComponenent);
 
         Device device = new Device();
         graph.inject(device, MyInject.class);
@@ -510,8 +504,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b2;
         }
 
-        component.register(Book.class, BookA.class);
-        component.register(Book.class, BookB.class);
+        component.register(new ProviderByClassType(Book.class, BookA.class));
+        component.register(new ProviderByClassType(Book.class, BookB.class));
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -528,8 +522,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b1;
         }
 
-        component.register(Book.class, BookA.class);
-        component.register(Book.class, BookB.class);
+        component.register(new ProviderByClassType(Book.class, BookA.class));
+        component.register(new ProviderByClassType(Book.class, BookB.class));
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -545,8 +539,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b1;
         }
 
-        component.register(Book.class, BookA.class);
-        component.register(Book.class, BookB.class);
+        component.register(new ProviderByClassType(Book.class, BookA.class));
+        component.register(new ProviderByClassType(Book.class, BookB.class));
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -564,8 +558,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Book b1;
         }
 
-        component.register(Book.class, BookA.class);
-        component.register(Book.class, BookB.class);
+        component.register(new ProviderByClassType(Book.class, BookA.class));
+        component.register(new ProviderByClassType(Book.class, BookB.class));
 
         Library library = new Library();
         graph.inject(library, MyInject.class);
@@ -594,8 +588,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Food w;
         }
 
-        component.register(Food.class, Rice.class);
-        component.register(Food.class, Wheat.class);
+        component.register(new ProviderByClassType(Food.class, Rice.class));
+        component.register(new ProviderByClassType(Food.class, Wheat.class));
 
         Basket basket = new Basket();
         graph.inject(basket, MyInject.class);

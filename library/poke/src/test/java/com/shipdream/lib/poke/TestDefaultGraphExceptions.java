@@ -40,14 +40,12 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
 
     private Graph graph;
     private Component component;
-    private ScopeCache scopeCache;
 
     @Before
     public void setUp() throws Exception {
-        scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Test
@@ -57,34 +55,34 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
 
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingClassRegistry() throws PokeException {
-        component.register(Pet.class, Cat.class);
-        component.register(Pet.class, Dog.class);
+        component.register(new ProviderByClassType(Pet.class, Cat.class));
+        component.register(new ProviderByClassType(Pet.class, Dog.class));
     }
 
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingNameRegistry() throws PokeException, ClassNotFoundException {
-        component.register(Pet.class, Cat.class.getName());
-        component.register(Pet.class, Dog.class.getName());
+        component.register(new ProviderByClassName(Pet.class, Cat.class.getName()));
+        component.register(new ProviderByClassName(Pet.class, Dog.class.getName()));
     }
 
     @SuppressWarnings("unchecked")
     @Test(expected = ProviderConflictException.class)
     public void shouldDetectConflictingProviderRegistry() throws PokeException, ClassNotFoundException {
-        Provider provider = new ProviderByClassType<>(Pet.class, Cat.class, scopeCache);
-        Provider provider2 = new ProviderByClassName(Pet.class, Dog.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassType<>(Pet.class, Cat.class);
+        Provider provider2 = new ProviderByClassName(Pet.class, Dog.class.getName());
         component.register(provider);
         component.register(provider2);
     }
 
     @Test(expected = ClassNotFoundException.class)
     public void shouldDetectBadClassException() throws PokeException, ClassNotFoundException {
-        component.register(Pet.class, "BadClass");
+        component.register(new ProviderByClassName(Pet.class, "BadClass"));
     }
 
     @Test
     public void shouldBeGoodInjection()
             throws PokeException, ProvideException {
-        component.register(Pet.class, Dog.class);
+        component.register(new ProviderByClassType(Pet.class, Dog.class));
 
         class Family {
             @MyInject
@@ -105,7 +103,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test(expected = ProvideException.class)
     public void shouldDetectProvideExceptionWithClassDoesHaveDefaultConstructor()
             throws PokeException {
-        component.register(Pet.class, Rabbit.class);
+        component.register(new ProviderByClassType(Pet.class, Rabbit.class));
 
         class Family {
             @MyInject
@@ -122,7 +120,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test
     public void should_handle_InstantiationException_when_create_class_instance_in_ProviderByClassName()
             throws PokeException, ClassNotFoundException {
-        Provider provider = new ProviderByClassName(AbstractBean.class, AbstractBean.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassName(AbstractBean.class, AbstractBean.class.getName());
         component.register(provider);
 
         class Consumer {
@@ -149,7 +147,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
     @Test
     public void should_handle_InvocationTargetException_when_create_class_instance_in_ProviderByClassName()
             throws PokeException, ClassNotFoundException {
-        Provider provider = new ProviderByClassName(BadInstantiatingBean.class, BadInstantiatingBean.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassName(BadInstantiatingBean.class, BadInstantiatingBean.class.getName());
         component.register(provider);
 
         class Consumer {
@@ -174,7 +172,7 @@ public class TestDefaultGraphExceptions extends BaseTestCases {
         class BadBean {
         }
 
-        Provider provider = new ProviderByClassName(BadBean.class, BadBean.class.getName(), scopeCache);
+        Provider provider = new ProviderByClassName(BadBean.class, BadBean.class.getName());
         component.register(provider);
 
         class Consumer {

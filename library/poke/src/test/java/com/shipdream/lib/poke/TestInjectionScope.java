@@ -25,14 +25,11 @@ import org.junit.Test;
 public class TestInjectionScope extends BaseTestCases {
     private Graph graph;
     private Component component;
-    private ScopeCache scopeCache;
-
     @Before
     public void setUp() throws Exception {
-        scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         graph = new Graph();
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @SuppressWarnings("unchecked")
@@ -42,15 +39,12 @@ public class TestInjectionScope extends BaseTestCases {
         System.out.println("Test injection scope - singleton\n");
 
         //Provider is scoped as singleton so all instances are be the same shared one
-        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
+        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
 
         component.register(powerSupplyProvider);
 
         Graph graph2 = new Graph();
-        Component component2 = new Component(scopeCache);
-        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
-        component2.register(powerSupplyProvider2);
-        graph2.addProviderFinder(component2);
+        graph2.setRootComponent(component);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();
@@ -78,21 +72,15 @@ public class TestInjectionScope extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInjectSingletonWitchDifferentScopes() throws PokeException {
+    public void testInjectSingletonWithDifferentScopes() throws PokeException {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection scope - singleton\n");
 
-        //Provider is scoped as singleton but with different scopes, so they should have different
-        //injections
-        //Provider is scoped as singleton so all instances are be the same shared one
-        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
+        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
         component.register(powerSupplyProvider);
 
         Graph graph2 = new Graph();
-        Component component2 = new Component(scopeCache);
-        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class, scopeCache);
-        component2.register(powerSupplyProvider2);
-        graph2.addProviderFinder(component2);
+        graph2.setRootComponent(component);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();
@@ -125,10 +113,10 @@ public class TestInjectionScope extends BaseTestCases {
         System.out.println("Test injection scope - unscoped\n");
 
         //Provider is not scoped so all instances are separated
-        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class, null);
-        Component c = new Component();
+        Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
+        Component c = new Component(false);
         c.register(powerSupplyProvider);
-        graph.addProviderFinder(c);
+        graph.setRootComponent(c);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();

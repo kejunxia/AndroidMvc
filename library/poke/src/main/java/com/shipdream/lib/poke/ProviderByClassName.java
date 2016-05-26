@@ -17,7 +17,6 @@
 package com.shipdream.lib.poke;
 
 import javax.inject.Qualifier;
-import javax.inject.Scope;
 
 /**
  * This provider uses default/empty constructor by provided class name to get dependencies. So
@@ -30,12 +29,10 @@ public class ProviderByClassName<T> extends ProviderByClassType<T> {
      * @param type The contract of the implementation
      * @param implementationClassName The name of the implementation class. It must have a default
      *                            public constructor
-     * @param scopeCache The scope cache to be used when the implementation class is annotated with a
-     *                   {@link Scope}
      * @throws ClassNotFoundException Thrown if the class with the given name cannot be found
      */
-    public ProviderByClassName(Class type, String implementationClassName, ScopeCache scopeCache)
+    public ProviderByClassName(Class type, String implementationClassName)
             throws ClassNotFoundException {
-        super(type, (Class<? extends T>) Class.forName(implementationClassName), scopeCache);
+        super(type, (Class<? extends T>) Class.forName(implementationClassName));
     }
 }

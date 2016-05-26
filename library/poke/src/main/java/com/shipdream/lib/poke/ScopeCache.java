@@ -26,36 +26,13 @@ import java.util.Map;
 /**
  * The cache controls how the provider associated should generate new instances.
  */
-public class ScopeCache {
-    public static class CachedItem<T> {
+class ScopeCache {
+    static class CachedItem<T> {
         Provider<T> provider;
         T instance;
-
-        public T getInstance() {
-            return instance;
-        }
-
-        public Provider<T> getProvider() {
-            return provider;
-        }
     }
 
     protected Map<String, CachedItem> cache = new HashMap<>();
-
-    private String name;
-
-    public ScopeCache() {
-        this(null);
-    }
-
-    public ScopeCache(String name) {
-        this.name = name;
-    }
-
-    //TODO: document
-    public String getName() {
-        return name;
-    }
 
     @SuppressWarnings("unchecked")
     <T> T get(Provider<T> provider) throws ProvideException {

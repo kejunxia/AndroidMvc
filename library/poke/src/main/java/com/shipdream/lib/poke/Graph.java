@@ -18,14 +18,13 @@ package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.Provider.OnFreedListener;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -40,13 +39,19 @@ import javax.inject.Inject;
  * A graph manages how to inject dependencies to target objects.
  */
 public class Graph {
-    private List<ProviderFinder> providerFinders = new ArrayList<>();
-    private Map<Class, ProviderFinder> finderCache = new HashMap<>();
+    public static class IllegalRootComponentException extends PokeException {
+        public IllegalRootComponentException(String message) {
+            super(message);
+        }
+    }
+
     private List<OnFreedListener> onProviderFreedListeners;
     private List<Monitor> monitors;
     private String revisitedNode = null;
     private Set<String> visitedInjectNodes = new LinkedHashSet<>();
     private Map<Object, Map<String, Set<String>>> visitedFields = new HashMap<>();
+
+    private Component rootComponent;
 
     /**
      * Register {@link OnFreedListener} which will be called when the provider
@@ -123,19 +128,15 @@ public class Graph {
     }
 
     /**
-     * Add {@link ProviderFinder} to the graph directly. Eg. if manual provider registration
-     * is needed, a {@link Component} can be added.
-     * <p/>
-     * <p>Note that, when there are multiple {@link ProviderFinder}s able to inject an instance the
-     * later merged graph wins.</p>
+     * Add {@link Component} to the graph.
      *
-     * @param providerFinders The {@link ProviderFinder}s to add
+     * @param component The root {@link Component} of this graph.
      */
-    public void addProviderFinder(ProviderFinder... providerFinders) {
-        if (this.providerFinders == null) {
-            this.providerFinders = new ArrayList<>();
+    public void setRootComponent(Component component) throws IllegalRootComponentException {
+        if (component.getParent() != null) {
+            throw new IllegalRootComponentException("A component with parent cannot be set as a graph's root component. Make sure the component doesn't parent.");
         }
-        this.providerFinders.addAll(Arrays.asList(providerFinders));
+        this.rootComponent = component;
     }
 
     /**
@@ -279,6 +280,14 @@ public class Graph {
         dereference(instance, type, qualifier, injectAnnotation);
     }
 
+    private <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
+        Provider<T> provider = rootComponent.findProvider(type, qualifier);
+        if (provider == null) {
+            throw new ProviderMissingException(type, qualifier);
+        }
+        return provider;
+    }
+
     /**
      * Reference an injectable object and retain it. Use
      * {@link #dereference(Object, Class, Annotation, Class)} to dereference it when it's not used
@@ -291,7 +300,7 @@ public class Graph {
      */
     public <T> T reference(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
             throws ProviderMissingException, ProvideException, CircularDependenciesException {
-        Provider<T> provider = getProvider(type, qualifier);
+        Provider<T> provider = findProvider(type, qualifier);
         T instance = provider.get();
         doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
@@ -318,7 +327,7 @@ public class Graph {
                                 Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
         doRelease(instance, null, type, qualifier, injectAnnotation);
 
-        Provider<T> provider = getProvider(type, qualifier);
+        Provider<T> provider = findProvider(type, qualifier);
         provider.release();
         checkToFreeProvider(provider);
     }
@@ -332,7 +341,7 @@ public class Graph {
         if (targetType != null) {
             //Nested injection
             circularDetected = recordVisit(targetType, targetQualifier);
-            targetProvider = getProvider(targetType, targetQualifier);
+            targetProvider = findProvider(targetType, targetQualifier);
             Object cachedInstance = targetProvider.findCachedInstance();
             boolean infiniteCircularInjection = true;
             if (circularDetected) {
@@ -354,7 +363,7 @@ public class Graph {
                     if (field.isAnnotationPresent(injectAnnotation)) {
                         Class fieldType = field.getType();
                         Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
-                        Provider provider = getProvider(fieldType, fieldQualifier);
+                        Provider provider = findProvider(fieldType, fieldQualifier);
 
                         Object impl = provider.get();
                         provider.retain(target, field);
@@ -423,7 +432,7 @@ public class Graph {
                         if (fieldValue != null) {
                             final Class<?> fieldType = field.getType();
                             Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
-                            Provider provider = getProvider(fieldType, fieldQualifier);
+                            Provider provider = findProvider(fieldType, fieldQualifier);
 
                             boolean stillReferenced = provider.getReferenceCount(target, field) > 0;
                             boolean fieldVisited = isFieldVisited(target, targetField, field);
@@ -520,31 +529,6 @@ public class Graph {
 
     private String makeCircularRecordKey(Class classType, Annotation qualifier) {
         return classType.getName() + "@" + ((qualifier == null) ? "NoQualifier" : qualifier.toString());
-    }
-
-    Provider getProvider(Class type, Annotation qualifier) throws ProviderMissingException {
-        //Try finder cache first. If not found try to cache it.
-        Provider provider = null;
-        ProviderFinder providerFinder = finderCache.get(type);
-        if (providerFinder == null) {
-            int count = providerFinders.size();
-            for (int i = 0; i < count; i++) {
-                providerFinder = providerFinders.get(i);
-                provider = providerFinder.findProvider(type, qualifier);
-                if (provider != null) {
-                    finderCache.put(type, providerFinder);
-                    return provider;
-                }
-            }
-        } else {
-            provider = providerFinder.findProvider(type, qualifier);
-        }
-
-        if (provider == null) {
-            throw new ProviderMissingException(type, qualifier);
-        }
-
-        return provider;
     }
 
     /**

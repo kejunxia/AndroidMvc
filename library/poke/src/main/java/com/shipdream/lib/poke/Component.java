@@ -16,10 +16,11 @@
 
 package com.shipdream.lib.poke;
 
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
-import com.shipdream.lib.poke.util.ReflectUtils;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -31,173 +32,61 @@ import javax.inject.Qualifier;
 
 /**
  * //TODO: document, component has a default scope cache
- * {@link ProviderFinder} that registers providers manually.
+ * {@link Component} that registers providers manually.
  */
-public class Component implements ProviderFinder {
-    //TODO: document, use the scopeCache
+public class Component {
+    //TODO: document
+    public static class MismatchDetachException extends PokeException {
+        public MismatchDetachException(String message) {
+            super(message);
+        }
+    }
+
+    //TODO document
+    public static class AlreadyAttachedException extends PokeException {
+        public AlreadyAttachedException(String message) {
+            super(message);
+        }
+    }
+
+    private final String name;
     final ScopeCache scopeCache;
 
-    private static class ProviderHolder<T> {
-        private Provider<T> original;
-        private Provider<T> overrider;
-    }
-
-    final Map<String, ProviderHolder> providers = new HashMap<>();
+    final Map<String, Component> componentLocator = new HashMap<>();
+    final Map<String, Provider> providers = new HashMap<>();
+    private Component parentComponent;
 
     public Component() {
-        this(null);
+        this(null, true);
     }
 
-    public Component(ScopeCache scopeCache) {
-        this.scopeCache = scopeCache;
+    public Component(String name) {
+        this(name, true);
     }
 
-    //TODO: should hide this method from publicly accessible
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
-        ProviderHolder providerHolder = providers.get(PokeHelper.makeProviderKey(type, qualifier));
+    public Component(boolean enableCache) {
+        this(null, enableCache);
+    }
 
-        if (providerHolder != null) {
-            if (providerHolder.overrider == null) {
-                if (providerHolder.original == null) {
-                    throw new ProviderMissingException(type, qualifier);
-                } else {
-                    return providerHolder.original;
-                }
-            } else {
-                return providerHolder.overrider;
-            }
+    public Component(String name, boolean enableCache) {
+        if (enableCache) {
+            scopeCache = new ScopeCache();
         } else {
-            return null;
+            scopeCache = null;
         }
+        this.name = name;
     }
 
-    /**
-     * Register binding for type by full class name without scope cache. {@link Qualifier}
-     * of the class will be taken into account. Registering multiple bindings against the
-     * same type and qualifier will throw {@link ProviderConflictException}.
-     *
-     * @param type                    The type
-     * @param implementationClassName The full name of the implementation class
-     * @return this instance
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     * @throws ClassNotFoundException    Thrown when the class the class name pointing to is not found.
-     */
-    public <T> Component register(Class<T> type, String implementationClassName)
-            throws ProviderConflictException, ClassNotFoundException {
-        return register(type, implementationClassName, false);
+    public String getName() {
+        return name;
     }
 
-    /**
-     * Register binding for type by full class name  without scope cache.
-     * {@link Qualifier} of the class will be taken into account. When allowOverride = false, it
-     * allows to register overriding binding against the same type and {@link Qualifier} and
-     * <b>last wins</b>, otherwise {@link ProviderConflictException} will be thrown.
-     *
-     * @param type                    The type
-     * @param implementationClassName The full name of the implementation class
-     * @param allowOverride           Indicates whether allowing overriding registration
-     * @return this instance
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     * @throws ClassNotFoundException    Thrown when the class the class name pointing to is not found.
-     */
-    @SuppressWarnings("unchecked")
-    public <T> Component register(Class<T> type, String implementationClassName, boolean allowOverride)
-            throws ProviderConflictException, ClassNotFoundException {
-        Provider<T> provider = new ProviderByClassName<>(type, implementationClassName, scopeCache);
-        return register(provider, allowOverride);
+    public boolean hasCache() {
+        return scopeCache != null;
     }
 
-    /**
-     * Unregister binding to the given type and the qualifier annotated to the given
-     * implementation class. If there is an overridden type registered already, only unregister the
-     * overridden binding. The original one will be unregistered if the this method is called
-     * again against to the type and qualifier associated with the provider.
-     *
-     * @param type                    The type of the implementation to unregister
-     * @param implementationClassName The name of the class annotated with the qualifier
-     * @return this instance
-     * @throws ClassNotFoundException Thrown when the class of the given class name is not found
-     */
-    @SuppressWarnings("unchecked")
-    public <T> Component unregister(Class<T> type, String implementationClassName)
-            throws ClassNotFoundException {
-        if (implementationClassName == null) {
-            throw new NullPointerException(String.format("Can't unregister against null class" +
-                    " type %s", type));
-        }
-        Class<T> clazz = (Class<T>) Class.forName(implementationClassName);
-        return unregister(type, ReflectUtils.findFirstQualifierInAnnotations(clazz));
-    }
-
-    /**
-     * Register binding for type by class type with given scope cache. {@link Qualifier} of
-     * the class will be taken into account. Registering multiple bindings against the same
-     * type and qualifier will throw {@link ProviderConflictException}.
-     *
-     * @param type                The type
-     * @param implementationClass The class type of the implementation
-     * @return this instance
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     */
-    public <T, S extends T> Component register(Class<T> type, Class<S> implementationClass)
-            throws ProviderConflictException {
-        return register(type, implementationClass, false);
-    }
-
-    /**
-     * Register binding for type by class type. {@link Qualifier} of the class will be
-     * taken into account. When allowOverride = false, it allows to register overriding
-     * binding against the same type and {@link Qualifier} and <b>last wins</b>, otherwise
-     * {@link ProviderConflictException} will be thrown.
-     *
-     * @param type                The type
-     * @param implementationClass The class type of the implementation
-     * @param allowOverride       Indicates whether allowing overriding registration
-     * @return this instance
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     */
-    @SuppressWarnings("unchecked")
-    public <T, S extends T> Component register(Class<T> type, Class<S> implementationClass, boolean allowOverride)
-            throws ProviderConflictException {
-        Provider<T> provider = new ProviderByClassType<>(type, implementationClass, scopeCache);
-        return register(provider, allowOverride);
-    }
-
-    /**
-     * Unregister binding to the given type and the qualifier annotated to the given
-     * implementation class. If there is an overridden type registered already, only unregister the
-     * overridden binding. The original one will be unregistered if the this method is called
-     * again against to the type and qualifier associated with the provider.
-     *
-     * @param type                The type of the implementation to unregister
-     * @param implementationClass The class annotated with the qualifier
-     * @return this instance
-     */
-    public <T, S extends T> Component unregister(Class<T> type, Class<S> implementationClass) {
-        if (implementationClass == null) {
-            throw new NullPointerException(String.format("Can't unregister against null class" +
-                    " type %s", type));
-        }
-        return unregister(type, ReflectUtils.findFirstQualifierInAnnotations(implementationClass));
-    }
-
-    /**
-     * Register a {@link Provider}. Registering multiple bindings against the same type and
-     * qualifier will throw {@link ProviderConflictException}.
-     *
-     * @param provider The provider
-     * @return this instance
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     */
-    public Component register(Provider provider) throws ProviderConflictException {
-        return register(provider, false);
+    public Component getParent() {
+        return parentComponent;
     }
 
     /**
@@ -206,48 +95,13 @@ public class Component implements ProviderFinder {
      * binding against the same type and {@link Qualifier} and <b>last wins</b>, otherwise
      * {@link ProviderConflictException} will be thrown.
      *
-     * @param provider      The provider
-     * @param allowOverride Indicates whether allowing overriding registration
+     * @param provider The provider
      * @return this instance
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
      */
-    public Component register(Provider provider, boolean allowOverride) throws ProviderConflictException {
-        Class type = provider.type();
-        String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());
-        ProviderHolder providerHolder = providers.get(key);
-
-        if (scopeCache != null && provider.scopeCache == null) {
-            //If the component has a scope cache and the provider doesn't have. The provider will
-            //inherit the component's scope cache.
-            provider.scopeCache = scopeCache;
-        }
-
-        if (providerHolder == null) {
-            //First time add
-            providerHolder = new ProviderHolder();
-            providerHolder.original = provider;
-            providers.put(key, providerHolder);
-        } else {
-            //existing provider, check conflicts
-            if (!allowOverride) {
-                //Not overriding, throw conflict exception
-                String msg;
-                if (provider.getQualifier() == null) {
-                    msg = String.format("Type %s has already been registered " +
-                            "in this graph.", type);
-                } else {
-                    msg = String.format("Type %s with Qualifier %s has already " +
-                                    "been registered in this graph.",
-                            type, provider.getQualifier().annotationType().getName());
-                }
-                throw new ProviderConflictException(msg);
-            } else {
-                //Otherwise, overrides the provider
-                providerHolder.overrider = provider;
-                providerHolder.original.scopeCache.removeCache(provider.type(), provider.getQualifier());
-            }
-        }
+    public Component register(@NotNull Provider provider) throws ProviderConflictException {
+        addProvider(provider);
         return this;
     }
 
@@ -263,49 +117,20 @@ public class Component implements ProviderFinder {
         return unregister(provider.type(), provider.getQualifier());
     }
 
-    /**
-     * Unregister provider registered with given type and qualifier
-     *
-     * @param type      The type of the provider is providing
-     * @param qualifier The annotation of the qualifier. When null is given, this method will
-     *                  specifically look for provider without qualifier
-     * @return this instance
-     */
-    private Component unregister(Class<?> type, Annotation qualifier) {
+    public <T> Component unregister(Class<T> type, Annotation qualifier) {
         String key = PokeHelper.makeProviderKey(type, qualifier);
-        ProviderHolder targetProvider = providers.get(key);
+        Component targetComponent = getRootComponent().componentLocator.get(key);
 
-        if (targetProvider != null) {
-            Provider providerToRemove;
-            if (targetProvider.overrider != null) {
-                providerToRemove = targetProvider.overrider;
-                targetProvider.overrider = null;
-            } else {
-                providerToRemove = targetProvider.original;
-                providers.remove(key);
-            }
-            if (providerToRemove.scopeCache != null) {
-                providerToRemove.scopeCache.removeCache(type, qualifier);
-            }
+        targetComponent.providers.remove(key);
+        if (targetComponent.scopeCache != null) {
+            targetComponent.scopeCache.removeCache(type, qualifier);
         }
-        return this;
-    }
 
-    /**
-     * Register component where methods annotated by {@link Provides} will be registered as
-     * injection providers. Registering multiple bindings against the same type and qualifier
-     * will throw {@link ProviderConflictException}.
-     *
-     * @param providerHolder The object with methods marked by {@link Provides} to provide injectable
-     *                      instances
-     * @return this instance
-     * @throws ProvideException          Thrown when exception occurs during providers creating instances
-     * @throws ProviderConflictException Thrown when duplicate registries detected against the same
-     *                                   type and qualifier.
-     */
-    public Component register(Object providerHolder) throws ProvideException,
-            ProviderConflictException {
-        return register(providerHolder, false);
+        Component root = getRootComponent();
+        //Only remove it to root component's locator
+        root.componentLocator.put(key, this);
+
+        return this;
     }
 
     /**
@@ -315,19 +140,18 @@ public class Component implements ProviderFinder {
      * {@link ProviderConflictException} will be thrown.
      *
      * @param providerHolder The object with methods marked by {@link Provides} to provide injectable
-     *                      instances
-     * @param allowOverride Indicates whether allowing overriding registration
+     *                       instances
      * @return this instance
      * @throws ProvideException          Thrown when exception occurs during providers creating instances
      * @throws ProviderConflictException Thrown when duplicate registries detected against the same
      *                                   type and qualifier.
      */
-    public Component register(Object providerHolder, boolean allowOverride) throws ProvideException,
+    public Component register(Object providerHolder) throws ProvideException,
             ProviderConflictException {
         Method[] methods = providerHolder.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
-                registerProvides(providerHolder, method, allowOverride);
+                registerProvides(providerHolder, method);
             }
         }
         return this;
@@ -338,7 +162,7 @@ public class Component implements ProviderFinder {
      * injection providers.
      *
      * @param providerHolder The object with methods marked by {@link Provides} to provide injectable
-     *                      instances
+     *                       instances
      * @return this instance
      */
     public Component unregister(Object providerHolder) {
@@ -363,7 +187,100 @@ public class Component implements ProviderFinder {
         return this;
     }
 
-    private void registerProvides(final Object providerHolder, final Method method, boolean allowOverride)
+
+    public void attach(@NotNull Component childComponent) throws AlreadyAttachedException {
+        if (childComponent.parentComponent != null) {
+            String msg = String.format("The attaching component(%s) has a parent already. Remove its parent before attaching it",
+                    childComponent.name == null ? "unnamed" : childComponent.name);
+            throw new AlreadyAttachedException(msg);
+        }
+
+        //Update tree nodes
+        childComponent.parentComponent = this;
+
+        //Merge the child component locator to the root component
+        Component root = getRootComponent();
+        for (Map.Entry<String, Component> entry : childComponent.componentLocator.entrySet()) {
+            String key = entry.getKey();
+            root.componentLocator.put(key, entry.getValue());
+            childComponent.componentLocator.remove(key);
+        }
+    }
+
+    public void detach(@NotNull Component childComponent) throws MismatchDetachException {
+        if (childComponent.parentComponent != this) {
+            String msg = String.format("The child component(%s) doesn't belong to component(%s)",
+                    childComponent.name == null ? "unnamed" : childComponent.name,
+                    name == null ? "unnamed" : name);
+            throw new MismatchDetachException(msg);
+        }
+
+        //Update tree nodes
+        childComponent.parentComponent = null;
+
+        //Disband the child component locator from the root component and return the keys to child
+        //component itself
+        Component root = getRootComponent();
+        for (String key : childComponent.providers.keySet()) {
+            root.componentLocator.remove(key);
+            childComponent.componentLocator.put(key, childComponent);
+        }
+    }
+
+    private Component getRootComponent() {
+        Component root = this;
+        while (root.parentComponent != null) {
+            root = root.parentComponent;
+        }
+        return root;
+    }
+
+    <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
+        String key = PokeHelper.makeProviderKey(type, qualifier);
+        Component targetComponent = getRootComponent().componentLocator.get(key);
+        if (targetComponent == null) {
+            return null;
+        } else {
+            return targetComponent.providers.get(key);
+        }
+    }
+
+    private <T> void addProvider(@NotNull Provider<T> provider)
+            throws ProviderConflictException {
+        Class<T> type = provider.type();
+        Annotation qualifier = provider.getQualifier();
+        String key = PokeHelper.makeProviderKey(type, qualifier);
+
+        addNewKeyToComponent(key, this);
+
+        if (provider.scopeCache == null && scopeCache != null) {
+            //If the component has a scope cache and the provider doesn't have. The provider will
+            //inherit the component's scope cache.
+            provider.scopeCache = scopeCache;
+        }
+        providers.put(key, provider);
+    }
+
+    private void addNewKeyToComponent(String key, Component component) throws ProviderConflictException {
+        Component root = getRootComponent();
+
+        if (componentLocator.keySet().contains(key)) {
+            String msg = String.format("Type %s has already been registered " +
+                    "in this component(%s).", key, name == null ? "unnamed" : name);
+            throw new ProviderConflictException(msg);
+        }
+
+        if (root != this && root.componentLocator.keySet().contains(key)) {
+            String msg = String.format("Type %s has already been registered " +
+                    "in root component(%s).", key, name == null ? "unnamed" : name);
+            throw new ProviderConflictException(msg);
+        }
+
+        //Only put it to root component's locator
+        root.componentLocator.put(key, component);
+    }
+
+    private void registerProvides(final Object providerHolder, final Method method)
             throws ProvideException, ProviderConflictException {
         Class<?> returnType = method.getReturnType();
         if (returnType == void.class) {
@@ -386,7 +303,7 @@ public class Component implements ProviderFinder {
             }
 
             Provider provider = new MethodProvider(returnType, qualifier, scopeCache, providerHolder, method);
-            register(provider, allowOverride);
+            register(provider);
         }
     }
 

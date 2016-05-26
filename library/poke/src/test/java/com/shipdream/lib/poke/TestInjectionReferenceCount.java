@@ -59,15 +59,13 @@ public class TestInjectionReferenceCount extends BaseTestCases {
 
     private Graph graph;
     private Component component;
-    private ScopeCache scopeCache;
 
     @Before
     public void setUp() throws Exception {
         graph = new Graph();
-        scopeCache = new ScopeCache();
-        component = new Component(scopeCache);
+        component = new Component("AppSingleton");
         component.register(new TestModule());
-        graph.addProviderFinder(component);
+        graph.setRootComponent(component);
     }
 
     @Test
@@ -87,9 +85,9 @@ public class TestInjectionReferenceCount extends BaseTestCases {
 
         Graph g = new Graph();
         Component c;
-        c = new Component();
+        c = new Component(false);
         c.register(new Module1());
-        g.addProviderFinder(c);
+        g.setRootComponent(c);
 
         House house = new House();
         g.inject(house, MyInject.class);
@@ -125,14 +123,14 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertNotNull(((Fridge) house.container).b);
         Assert.assertTrue(((Fridge) house.container).a == ((Fridge) house.container).b);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         Assert.assertTrue(containerProvider.getReferenceCount() == 1);
         Assert.assertTrue(fruitProvider.getReferenceCount() == 2);
 
         graph.release(house, MyInject.class);
-        Assert.assertTrue(scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
     }
 
     static class Mansion extends House {
@@ -151,15 +149,15 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertNotNull(((Fridge) mansion.container).b);
         Assert.assertTrue(((Fridge) mansion.container).a == ((Fridge) mansion.container).b);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         //container has been referenced twice by the fields Mansion.container and Mansion.House.container
         Assert.assertEquals(2, containerProvider.getReferenceCount());
         Assert.assertEquals(4, fruitProvider.getReferenceCount());
 
         graph.release(mansion, MyInject.class);
-        Assert.assertTrue(scopeCache.cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
     }
 
     static class Kitchen {
@@ -187,8 +185,8 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertTrue((fridge).a == fridge.b);
         Assert.assertTrue(kitchen.aOnFloor == kitchen.bOnFloor);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         Assert.assertEquals(1, containerProvider.getReferenceCount());
         Assert.assertEquals(4, fruitProvider.getReferenceCount());
@@ -216,8 +214,8 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Kitchen kitchen = new Kitchen();
         graph.inject(kitchen, MyInject.class);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         graph.release(kitchen.container, MyInject.class);
         Assert.assertEquals(1, containerProvider.getReferenceCount());
@@ -233,7 +231,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
 
         graph.release(kitchen, MyInject.class);
 
-        Assert.assertTrue(scopeCache.cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
     }
 
     @Test

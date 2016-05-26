@@ -62,12 +62,8 @@ import com.shipdream.lib.android.mvc.samples.benchmark.service.internal.Service7
 import com.shipdream.lib.android.mvc.samples.benchmark.service.internal.Service8Impl;
 import com.shipdream.lib.android.mvc.samples.benchmark.service.internal.Service9Impl;
 import com.shipdream.lib.poke.Graph;
-import com.shipdream.lib.poke.ImplClassLocator;
-import com.shipdream.lib.poke.ImplClassLocatorByPattern;
-import com.shipdream.lib.poke.ImplClassNotFoundException;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ProviderByClassType;
-import com.shipdream.lib.poke.ProviderFinder;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import java.lang.annotation.Annotation;
@@ -209,7 +205,7 @@ public class MainActivity extends Activity {
                 Graph graph = new Graph(){
                     {
                         final ImplClassLocator implClassLocatorByPattern = new ImplClassLocatorByPattern();
-                        addProviderFinder(new ProviderFinder() {
+                        setRootComponent(new ProviderFinder() {
                             @SuppressWarnings("unchecked")
                             @Override
                             public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
@@ -244,7 +240,7 @@ public class MainActivity extends Activity {
                 Graph graph = new Graph(){
                     {
                         final ImplClassLocator implClassLocatorByPattern = new ImplClassLocatorByPattern();
-                        addProviderFinder(new ProviderFinder() {
+                        setRootComponent(new ProviderFinder() {
                             @SuppressWarnings("unchecked")
                             @Override
                             public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
