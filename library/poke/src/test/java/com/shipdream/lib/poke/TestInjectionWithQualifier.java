@@ -265,7 +265,17 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Os os;
         }
 
-        final Provider.OnInjectedListener<Os> injectListener = mock(Provider.OnInjectedListener.class);
+        final int[] onInjectedCalled = {0};
+        final Object[] injected = new Object[1];
+        final Provider.OnInjectedListener<Os> injectListener = new Provider.OnInjectedListener() {
+            @Override
+            public void onInjected(Object object) {
+                onInjectedCalled[0]++;
+                injected[0] = object;
+
+                provider.unregisterOnInjectedListener(this);
+            }
+        };
         provider.registerOnInjectedListener(injectListener);
 
         final Provider.OnFreedListener osOnFreedListener = mock(Provider.OnFreedListener.class);
@@ -278,7 +288,8 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         graph.use(Os.class, MyInject.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
-                verify(injectListener, times(1)).onInjected(phone.os);
+                Assert.assertTrue(injected[0] == phone.os);
+                Assert.assertEquals(1, onInjectedCalled[0]);
 
                 Assert.assertTrue(phone.os == instance);
                 verify(osOnFreedListener, times(0)).onFreed(provider);
@@ -293,9 +304,14 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             }
         });
 
-        verify(injectListener, times(1)).onInjected(phone.os);
+        Assert.assertTrue(injected[0] == phone.os);
+        Assert.assertEquals(1, onInjectedCalled[0]);
 
         verify(osOnFreedListener, times(1)).onFreed(provider);
+
+        //OnInject listener has been unregistered so the count should not increment
+        graph.inject(phone, MyInject.class);
+        Assert.assertEquals(1, onInjectedCalled[0]);
     }
 
     interface Connector{

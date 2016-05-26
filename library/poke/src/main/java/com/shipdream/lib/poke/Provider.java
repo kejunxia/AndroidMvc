@@ -190,11 +190,6 @@ public abstract class Provider<T> {
      * The listeners when the instance is injected.
      */
     private List<OnInjectedListener<T>> onInjectedListeners;
-    /**
-     * Hold the removing listeners as removal logic may be called in an iteration of
-     * {@link #onInjectedListeners} which would cause a {@link java.util.ConcurrentModificationException}.
-     */
-    private List<OnInjectedListener<T>> removingOnInjectedListeners;
 
     /**
      * Get qualifier of the provider
@@ -236,10 +231,7 @@ public abstract class Provider<T> {
      * Unregister listener which will be called back when the instance is injected.
      */
     public void unregisterOnInjectedListener(OnInjectedListener<T> listener) {
-        if(removingOnInjectedListeners == null) {
-            removingOnInjectedListeners = new ArrayList<>();
-        }
-        removingOnInjectedListeners.add(listener);
+        onInjectedListeners.remove(listener);
     }
 
     /**
@@ -277,22 +269,6 @@ public abstract class Provider<T> {
             int len = onInjectedListeners.size();
             for(int i = 0; i < len; i++) {
                 onInjectedListeners.get(i).onInjected(object);
-            }
-        }
-
-        //Check the held listeners need to be removed. If exist remove them.
-        if(removingOnInjectedListeners != null && onInjectedListeners != null) {
-            int len = removingOnInjectedListeners.size();
-            for(int i = 0; i < len; i++) {
-                onInjectedListeners.remove(removingOnInjectedListeners.get(i));
-            }
-
-            if(removingOnInjectedListeners.isEmpty()) {
-                removingOnInjectedListeners = null;
-            }
-
-            if(onInjectedListeners.isEmpty()) {
-                onInjectedListeners = null;
             }
         }
     }
