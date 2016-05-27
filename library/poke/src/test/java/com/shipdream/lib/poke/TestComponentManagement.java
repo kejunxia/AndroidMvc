@@ -160,11 +160,18 @@ public class TestComponentManagement extends BaseTestCases {
         Car car1 = new Car();
         rootComponent.attach(childCom);
 
-        childCom.register(new ProviderByClassType(Wheel.class, Wheel17Inch.class));
+        Provider<Wheel> provider = new ProviderByClassType(Wheel.class, Wheel17Inch.class);
+        Assert.assertNull(provider.getComponent());
+
+        childCom.register(provider);
+        Assert.assertNotNull(provider.getComponent());
+
         graph.inject(car1, MyInject.class);
         Assert.assertNotNull(car1.wheel);
 
         childCom.unregister(Wheel.class, null);
+
+        Assert.assertNull(provider.getComponent());
 
         Car car2 = new Car();
         boolean hasProviderMissingException = false;

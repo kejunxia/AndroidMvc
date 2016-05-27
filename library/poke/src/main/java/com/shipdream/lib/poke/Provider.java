@@ -57,7 +57,9 @@ public abstract class Provider<T> {
 
     private final Class<T> type;
     private final Annotation qualifier;
-    ScopeCache scopeCache;
+    //The component the provider is attached to
+    private Component component;
+    private ScopeCache scopeCache;
 
     Map<Object, Map<String, Integer>> owners = new HashMap<>();
     private int totalRefCount = 0;
@@ -100,6 +102,27 @@ public abstract class Provider<T> {
         this.type = type;
         this.qualifier = qualifier;
         this.scopeCache = scopeCache;
+    }
+
+    Component getComponent() {
+        return component;
+    }
+
+    void setComponent(Component component) {
+        this.component = component;
+    }
+
+    /**
+     * Get the scope cache. If this provider is not attached to any component. It returns this
+     * provider's own scope cache otherwise the component's scope cache.
+     * @return
+     */
+    ScopeCache getScopeCache() {
+        if (component == null) {
+            return scopeCache;
+        } else {
+            return component.scopeCache;
+        }
     }
 
     int getReferenceCount(Object owner, Field field) {
@@ -174,10 +197,11 @@ public abstract class Provider<T> {
     }
 
     void freeCache() {
-        if (scopeCache != null) {
-            ScopeCache.CachedItem cachedItem = scopeCache.findCacheItem(type, qualifier);
+        ScopeCache cache = getScopeCache();
+        if (cache != null) {
+            ScopeCache.CachedItem cachedItem = cache.findCacheItem(type, qualifier);
             if (cachedItem != null) {
-                scopeCache.removeCache(cachedItem.provider.type, cachedItem.provider.qualifier);
+                cache.removeCache(cachedItem.provider.type, cachedItem.provider.qualifier);
             }
         }
     }
@@ -207,8 +231,9 @@ public abstract class Provider<T> {
      * and the instance is cached already, otherwise null will be returned
      */
     public T findCachedInstance() {
-        if (scopeCache != null) {
-            ScopeCache.CachedItem<T> cachedItem = scopeCache.findCacheItem(type, qualifier);
+        ScopeCache cache = getScopeCache();
+        if (cache != null) {
+            ScopeCache.CachedItem<T> cachedItem = cache.findCacheItem(type, qualifier);
             if(cachedItem != null) {
                 return cachedItem.instance;
             }
@@ -242,7 +267,8 @@ public abstract class Provider<T> {
      * @throws ProvideException Exception thrown during constructing the object
      */
     final T get() throws ProvideException {
-        if(scopeCache == null) {
+        ScopeCache cache = getScopeCache();
+        if(cache == null) {
             T impl = createInstance();
             if (impl == null) {
                 String qualifierName = (qualifier == null) ? "null" : qualifier.getClass().getName();
@@ -252,7 +278,7 @@ public abstract class Provider<T> {
 
             return impl;
         } else {
-            return scopeCache.get(this);
+            return cache.get(this);
         }
     }
 

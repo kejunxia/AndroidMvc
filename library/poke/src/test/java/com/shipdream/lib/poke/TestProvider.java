@@ -25,7 +25,7 @@ public class TestProvider {
             }
         };
 
-        Assert.assertTrue(p.scopeCache == scopeCache);
+        Assert.assertTrue(p.getScopeCache() == scopeCache);
         Assert.assertTrue(p.getQualifier() == null);
     }
 

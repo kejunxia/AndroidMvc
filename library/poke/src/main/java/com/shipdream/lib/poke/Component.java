@@ -117,7 +117,21 @@ public class Component {
         return unregister(provider.type(), provider.getQualifier());
     }
 
+    /**
+     * Find the provider in this {@link Component} and its descents. If the provider is found,
+     * detach it from its associated {@link Component}. After this point, the provider will use its
+     * own scope cache.
+     * @param type The type of the provider
+     * @param qualifier The qualifier of the provider
+     * @return this instance
+     */
     public <T> Component unregister(Class<T> type, Annotation qualifier) {
+        //Detach corresponding provider from  it's component
+        Provider<T> provider = findProvider(type, qualifier);
+        if (provider != null) {
+            provider.setComponent(null);
+        }
+
         String key = PokeHelper.makeProviderKey(type, qualifier);
         Component targetComponent = getRootComponent().componentLocator.get(key);
 
@@ -253,11 +267,7 @@ public class Component {
 
         addNewKeyToComponent(key, this);
 
-        if (provider.scopeCache == null && scopeCache != null) {
-            //If the component has a scope cache and the provider doesn't have. The provider will
-            //inherit the component's scope cache.
-            provider.scopeCache = scopeCache;
-        }
+        provider.setComponent(this);
         providers.put(key, provider);
     }
 

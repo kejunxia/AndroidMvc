@@ -702,7 +702,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         final Banana banana = new Banana();
         final Orange orange = new Orange();
-        ScopeCache scopeCacheOverridden = new ScopeCache();
 
         Provider<Food> namedProviderBanana = new Provider<Food>(Food.class) {
             @Override
@@ -728,32 +727,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
         };
 
-        Provider<Food> namedProviderOrangeOverridden = new Provider<Food>(Food.class) {
-            @Override
-            protected Food createInstance() throws ProvideException {
-                return orange;
-            }
-
-            @Override
-            public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifierInAnnotations(Chicken.class);
-            }
-        };
-        namedProviderOrangeOverridden.scopeCache = scopeCacheOverridden;
-
-        Provider<Food> unnamedProviderBananaOverridden = new Provider<Food>(Food.class) {
-            @Override
-            protected Food createInstance() throws ProvideException {
-                return banana;
-            }
-
-            @Override
-            public Annotation getQualifier() {
-                return null;
-            }
-        };
-        unnamedProviderBananaOverridden.scopeCache = scopeCacheOverridden;
-
         Basket basket = new Basket();
 
         component.register(namedProviderBanana);
@@ -763,24 +736,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         Assert.assertTrue(basket.w == orange);
         Assert.assertTrue(findCacheInstance(component.scopeCache, namedProviderBanana) == banana);
         Assert.assertTrue(findCacheInstance(component.scopeCache, unnammedProviderOrange) == orange);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, namedProviderBanana) == null);
-        Assert.assertTrue(findCacheInstance(scopeCacheOverridden, unnammedProviderOrange) == null);
-
-        boolean conflicted = false;
-        try {
-            component.register(namedProviderOrangeOverridden);
-        } catch (ProviderConflictException e) {
-            conflicted = true;
-        }
-        Assert.assertTrue(conflicted);
-
-        conflicted = false;
-        try {
-            component.register(unnamedProviderBananaOverridden);
-        } catch (ProviderConflictException e) {
-            conflicted = true;
-        }
-        Assert.assertTrue(conflicted);
     }
 
     @SuppressWarnings("unchecked")
