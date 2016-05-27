@@ -16,12 +16,12 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.Mvp;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class BaseControllerDependencies extends MvpGraph.BaseDependencies {
+public class BaseControllerDependencies extends Mvp.BaseDependencies {
     @Override
     protected ExecutorService createExecutorService() {
         return Executors.newCachedThreadPool();

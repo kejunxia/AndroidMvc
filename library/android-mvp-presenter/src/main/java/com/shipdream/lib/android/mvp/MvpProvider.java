@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 class MvpProvider<T> extends ProviderByClassType<T> {
-    private final Logger logger = LoggerFactory.getLogger(MvpGraph.class);
+    private final Logger logger = LoggerFactory.getLogger(Mvp.class);
     private List<Bean> beans;
 
     public MvpProvider(List<Bean> beans, Class<T> type, Class<? extends T> implementationClass) {

@@ -51,7 +51,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class TestMvpGraph {
-    private MvpGraph mvpGraph;
+    private Mvp mvp;
     private ExecutorService executorService;
 
     @Before
@@ -66,7 +66,7 @@ public class TestMvpGraph {
             }
         }).when(executorService).submit(any(Runnable.class));
 
-        mvpGraph = new MvpGraph(new MvpGraph.BaseDependencies() {
+        mvp = new Mvp(new Mvp.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return executorService;
@@ -130,10 +130,10 @@ public class TestMvpGraph {
 
     @Test
     public void use_method_should_retain_and_release_instance_without_qualifier_correctly() {
-        mvpGraph.register(new DeviceModule());
+        mvp.register(new DeviceModule());
 
         //OsReferenceCount = 0
-        mvpGraph.use(Os.class, new Consumer<Os>() {
+        mvp.use(Os.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //First time to create the instance.
@@ -145,10 +145,10 @@ public class TestMvpGraph {
         //OsReferenceCount = 0
 
         final Device device = new Device();
-        mvpGraph.inject(device);  //OsReferenceCount = 1
+        mvp.inject(device);  //OsReferenceCount = 1
         //New instance created and cached
 
-        mvpGraph.use(Os.class, new Consumer<Os>() {
+        mvp.use(Os.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //Since reference count is greater than 0, cached instance will be reused
@@ -160,10 +160,10 @@ public class TestMvpGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 1
 
-        mvpGraph.release(device);  //OsReferenceCount = 0
+        mvp.release(device);  //OsReferenceCount = 0
         //Last instance released, so next time a new instance will be created
 
-        mvpGraph.use(Os.class, new Consumer<Os>() {
+        mvp.use(Os.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
@@ -175,7 +175,7 @@ public class TestMvpGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 0
 
-        mvpGraph.use(Os.class, new Consumer<Os>() {
+        mvp.use(Os.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
@@ -188,11 +188,11 @@ public class TestMvpGraph {
         //OsReferenceCount = 0
         //Cached instance cleared again
 
-        mvpGraph.use(Os.class, new Consumer<Os>() {
+        mvp.use(Os.class, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
-                mvpGraph.inject(device);
+                mvp.inject(device);
                 //Injection will reuse the cached instance and increment the reference count
                 //OsReferenceCount = 2
 
@@ -204,12 +204,12 @@ public class TestMvpGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 1
 
-        mvpGraph.release(device);  //OsReferenceCount = 0
+        mvp.release(device);  //OsReferenceCount = 0
     }
 
     @Test
     public void use_method_should_retain_and_release_instance_correctly() {
-        mvpGraph.register(new DeviceModule());
+        mvp.register(new DeviceModule());
 
         @Apple
         class NeedIoS {
@@ -219,7 +219,7 @@ public class TestMvpGraph {
         Annotation iosQualifier = NeedIoS.class.getAnnotation(Apple.class);
 
         //OsReferenceCount = 0
-        mvpGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+        mvp.use(Os.class, iosQualifier, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //First time to create the instance.
@@ -231,10 +231,10 @@ public class TestMvpGraph {
         //OsReferenceCount = 0
 
         final Device device = new Device();
-        mvpGraph.inject(device);  //OsReferenceCount = 1
+        mvp.inject(device);  //OsReferenceCount = 1
         //New instance created and cached
 
-        mvpGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+        mvp.use(Os.class, iosQualifier, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //Since reference count is greater than 0, cached instance will be reused
@@ -246,10 +246,10 @@ public class TestMvpGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 1
 
-        mvpGraph.release(device);  //OsReferenceCount = 0
+        mvp.release(device);  //OsReferenceCount = 0
         //Last instance released, so next time a new instance will be created
 
-        mvpGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+        mvp.use(Os.class, iosQualifier, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
@@ -261,7 +261,7 @@ public class TestMvpGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 0
 
-        mvpGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+        mvp.use(Os.class, iosQualifier, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
@@ -274,11 +274,11 @@ public class TestMvpGraph {
         //OsReferenceCount = 0
         //Cached instance cleared again
 
-        mvpGraph.use(Os.class, iosQualifier, new Consumer<Os>() {
+        mvp.use(Os.class, iosQualifier, new Consumer<Os>() {
             @Override
             public void consume(Os instance) {
                 //OsReferenceCount = 1
-                mvpGraph.inject(device);
+                mvp.inject(device);
                 //Injection will reuse the cached instance and increment the reference count
                 //OsReferenceCount = 2
 
@@ -290,32 +290,32 @@ public class TestMvpGraph {
         //Reference count decremented by use method automatically
         //OsReferenceCount = 1
 
-        mvpGraph.release(device);  //OsReferenceCount = 0
+        mvp.release(device);  //OsReferenceCount = 0
     }
 
     @Test
     public void should_delegate_mvp_graph_properly() throws ProvideException, ProviderConflictException {
         // Arrange
         Graph graphMock = mock(Graph.class);
-        mvpGraph.graph = graphMock;
+        mvp.graph = graphMock;
 
         // Act
         Graph.Monitor monitor = mock(Graph.Monitor.class);
-        mvpGraph.registerMonitor(monitor);
+        mvp.registerMonitor(monitor);
         // Verify
         verify(graphMock).registerMonitor(eq(monitor));
 
         // Arrange
         reset(graphMock);
         // Act
-        mvpGraph.unregisterMonitor(monitor);
+        mvp.unregisterMonitor(monitor);
         // Verify
         verify(graphMock).unregisterMonitor(eq(monitor));
 
         // Arrange
         reset(graphMock);
         // Act
-        mvpGraph.clearMonitors();
+        mvp.clearMonitors();
         // Verify
         verify(graphMock).clearMonitors();
 
@@ -323,21 +323,21 @@ public class TestMvpGraph {
         reset(graphMock);
         OnFreedListener providerFreedListener = mock(OnFreedListener.class);
         // Act
-        mvpGraph.registerProviderFreedListener(providerFreedListener);
+        mvp.registerProviderFreedListener(providerFreedListener);
         // Verify
         verify(graphMock).registerProviderFreedListener(eq(providerFreedListener));
 
         // Arrange
         reset(graphMock);
         // Act
-        mvpGraph.unregisterProviderFreedListener(providerFreedListener);
+        mvp.unregisterProviderFreedListener(providerFreedListener);
         // Verify
         verify(graphMock).unregisterProviderFreedListener(eq(providerFreedListener));
 
         // Arrange
         reset(graphMock);
         // Act
-        mvpGraph.clearOnProviderFreedListeners();
+        mvp.clearOnProviderFreedListeners();
         // Verify
         verify(graphMock).clearOnProviderFreedListeners();
     }
@@ -347,7 +347,7 @@ public class TestMvpGraph {
             throws ProvideException, ProviderConflictException {
         // Arrange
         MvpComponent providerFinder = mock(MvpComponent.class);
-        mvpGraph.appProviderFinder = providerFinder;
+        mvp.appProviderFinder = providerFinder;
 
         doAnswer(new Answer() {
             @Override
@@ -357,7 +357,7 @@ public class TestMvpGraph {
         }).when(providerFinder).register(any(Module.class));
 
         // Act
-        mvpGraph.register(any(Module.class));
+        mvp.register(any(Module.class));
     }
 
     @Test
@@ -366,13 +366,13 @@ public class TestMvpGraph {
         ScopeCache scopeCache = mock(ScopeCache.class);
 
         // Pre-verify
-        Assert.assertNotEquals(scopeCache, mvpGraph.appProviderFinder.scopeCache);
+        Assert.assertNotEquals(scopeCache, mvp.appProviderFinder.scopeCache);
 
         // Act
-        mvpGraph.hijack(scopeCache);
+        mvp.hijack(scopeCache);
 
         // Verify
-        Assert.assertEquals(scopeCache, mvpGraph.appProviderFinder.scopeCache);
+        Assert.assertEquals(scopeCache, mvp.appProviderFinder.scopeCache);
     }
 
     @Test
@@ -382,12 +382,12 @@ public class TestMvpGraph {
 
         List<Bean> beans = new ArrayList();
         beans.add(beanMock);
-        mvpGraph.appProviderFinder.beans = beans;
+        mvp.appProviderFinder.beans = beans;
 
         final BeanKeeper beanKeeperMock = mock(BeanKeeper.class);
 
         // Act
-        mvpGraph.appProviderFinder.saveAllBeans(beanKeeperMock);
+        mvp.appProviderFinder.saveAllBeans(beanKeeperMock);
 
         // Verify
         verify(beanKeeperMock).saveBean(beanMock);
@@ -398,7 +398,7 @@ public class TestMvpGraph {
         Object stateMock = mock(Object.class);
         when(beanKeeperMock.retrieveBean(any(Class.class))).thenReturn(stateMock);
 
-        mvpGraph.appProviderFinder.restoreAllBeans(beanKeeperMock);
+        mvp.appProviderFinder.restoreAllBeans(beanKeeperMock);
 
         // Verify
         verify(beanMock).restoreModel(eq(stateMock));
@@ -406,16 +406,16 @@ public class TestMvpGraph {
 
     interface UnimplementedInterface{}
 
-    @Test(expected = MvpGraph.Exception.class)
+    @Test(expected = Mvp.Exception.class)
     public void should_raise_mvp_graph_exception_when_inject_on_poke_exception() {
         class View {
             @Inject
             UnimplementedInterface unimplementedInterface;
         }
-        mvpGraph.inject(new View());
+        mvp.inject(new View());
     }
 
-    @Test(expected = MvpGraph.Exception.class)
+    @Test(expected = Mvp.Exception.class)
     public void should_raise_mvp_graph_exception_when_release_on_poke_exception() {
         class View {
             @Inject
@@ -424,16 +424,16 @@ public class TestMvpGraph {
         View view = new View();
         view.unimplementedInterface = new UnimplementedInterface() {
         };
-        mvpGraph.release(view);
+        mvp.release(view);
     }
 
-    @Test(expected = MvpGraph.Exception.class)
+    @Test(expected = Mvp.Exception.class)
     public void should_raise_mvp_graph_exception_when_use_on_poke_exception() {
         class View {
             @Inject
             UnimplementedInterface unimplementedInterface;
         }
-        mvpGraph.use(UnimplementedInterface.class, new Consumer<UnimplementedInterface>() {
+        mvp.use(UnimplementedInterface.class, new Consumer<UnimplementedInterface>() {
             @Override
             public void consume(UnimplementedInterface instance) {
             }

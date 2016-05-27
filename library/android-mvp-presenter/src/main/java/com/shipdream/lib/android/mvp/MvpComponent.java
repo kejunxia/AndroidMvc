@@ -46,7 +46,7 @@ public class MvpComponent extends Component {
     }
 
     @Override
-    public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
+    public <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
         Provider<T> provider = super.findProvider(type, qualifier);
         if (provider == null) {
             provider = providers.get(type);
@@ -55,7 +55,7 @@ public class MvpComponent extends Component {
                 if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
                     //Non concrete class needs to find its implementation class
                     try {
-                        impClass = findImplClass(type);
+                        impClass = (Class<T>) Class.forName(getClassName(type));
                     } catch (ClassNotFoundException e) {
                         String msg = String.format("Can't find implementation class for %s. Make sure class %s exists",
                                 type.getName(), getClassName(type));
@@ -80,7 +80,4 @@ public class MvpComponent extends Component {
         return implClassName;
     }
 
-    private static <T> Class<T> findImplClass(Class<T> type) throws ClassNotFoundException {
-        return (Class<T>) Class.forName(getClassName(type));
-    }
 }

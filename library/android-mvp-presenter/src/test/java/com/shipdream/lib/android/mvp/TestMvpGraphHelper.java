@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 public class TestMvpGraphHelper {
     @After
     public void tearDown() throws Exception {
-        Injector.mvpGraph = null;
+        Injector.mvp = null;
     }
 
     @Test(expected = RuntimeException.class)
@@ -64,7 +64,7 @@ public class TestMvpGraphHelper {
         //Register an event bus that will raise a duplicate registering exception when register the
         //BaseDependencies
 
-        MvpGraph.BaseDependencies baseDependencies = new MvpGraph.BaseDependencies() {
+        Mvp.BaseDependencies baseDependencies = new Mvp.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return mock(ExecutorService.class);
@@ -76,7 +76,7 @@ public class TestMvpGraphHelper {
 
     @Test(expected = RuntimeException.class)
     public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvp_graph_by_injector() {
-        MvpGraph.BaseDependencies baseDependencies = new MvpGraph.BaseDependencies() {
+        Mvp.BaseDependencies baseDependencies = new Mvp.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return mock(ExecutorService.class);

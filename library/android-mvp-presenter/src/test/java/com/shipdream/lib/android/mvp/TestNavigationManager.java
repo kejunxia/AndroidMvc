@@ -453,7 +453,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
     }
 
-    @Test(expected = MvpGraph.Exception.class)
+    @Test(expected = Mvp.Exception.class)
     public void should_catch_invocation_exception_when_NPE_detected_on_injection() throws Exception {
         Module com = new Module() {
             @Provides

@@ -42,7 +42,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 /**
- * {@link MvpGraph} injects instances and all its nested dependencies to target object
+ * {@link Mvp} injects instances and all its nested dependencies to target object
  * recursively. By default, all injected instances and their dependencies that are located by
  * naming convention will be <b>SINGLETON</b>. It can also register custom injections by
  * {@link #register(Module)}.
@@ -68,7 +68,7 @@ import javax.inject.Singleton;
  * be taken into account.
  * <p/>
  */
-public class MvpGraph {
+public class Mvp {
     public static class Exception extends RuntimeException {
         public Exception(String message, Throwable cause) {
             super(message, cause);
@@ -81,7 +81,7 @@ public class MvpGraph {
     //Composite graph to hide methods
     Graph graph;
 
-    public MvpGraph(BaseDependencies baseDependencies)
+    public Mvp(BaseDependencies baseDependencies)
             throws ProvideException, ProviderConflictException {
 
         appProviderFinder = new MvpComponent(new ScopeCache());

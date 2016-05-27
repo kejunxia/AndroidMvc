@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 public class TestInjector {
     @After
     public void tearDown() throws Exception {
-        Injector.mvpGraph = null;
+        Injector.mvp = null;
     }
 
     @Test(expected = RuntimeException.class)
@@ -47,7 +47,7 @@ public class TestInjector {
     
     @Test
     public void should_return_all_cached_instances_from_injector_graph() {
-        Injector.configGraph(new MvpGraph.BaseDependencies() {
+        Injector.configGraph(new Mvp.BaseDependencies() {
             @Override
             protected ExecutorService createExecutorService() {
                 return mock(ExecutorService.class);

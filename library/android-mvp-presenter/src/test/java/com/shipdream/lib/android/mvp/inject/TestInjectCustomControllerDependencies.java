@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrinterController2;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.AndroidPartImpl;
@@ -46,7 +46,7 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
 
     @Test
     public void testInjectionOfRealController() throws Exception {
-        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+        Mvp graph = new Mvp(new BaseControllerDependencies());
 
         PaperView testView = new PaperView();
         graph.inject(testView);
@@ -85,7 +85,7 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
             throws ProvideException, ProviderConflictException, ProviderMissingException, CircularDependenciesException {
         AndroidModule component = new AndroidModule();
 
-        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+        Mvp graph = new Mvp(new BaseControllerDependencies());
         graph.register(component);
 
         AndroidView androidView = new AndroidView();

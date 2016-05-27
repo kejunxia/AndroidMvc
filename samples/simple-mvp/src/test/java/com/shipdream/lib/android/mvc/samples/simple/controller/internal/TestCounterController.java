@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
@@ -54,7 +54,7 @@ public class TestCounterController {
     }
 
     //The graph used to inject
-    private MvpGraph mvpGraph;
+    private Mvp mvp;
 
     private CounterControllerImpl counterController;
 
@@ -67,7 +67,7 @@ public class TestCounterController {
         eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
 
-        Injector.configGraph(new MvpGraph.BaseDependencies() {
+        Injector.configGraph(new Mvp.BaseDependencies() {
             @Override
             public EventBus createEventBusC() {
                 return eventBusC;
@@ -88,13 +88,13 @@ public class TestCounterController {
     @Before
     public void setUp() throws Exception {
         prepareGraph();
-        mvpGraph = Injector.getGraph();
+        mvp = Injector.getGraph();
 
         //create instance of CounterController
         counterController = new CounterControllerImpl();
 
         //inject dependencies into controller
-        mvpGraph.inject(counterController);
+        mvp.inject(counterController);
 
         //init controller
         counterController.onConstruct();

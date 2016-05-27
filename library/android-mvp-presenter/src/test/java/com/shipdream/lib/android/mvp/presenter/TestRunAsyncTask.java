@@ -16,8 +16,8 @@
 
 package com.shipdream.lib.android.mvp.presenter;
 
-import com.shipdream.lib.android.mvp.Monitor;
-import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.Mvp;
+import com.shipdream.lib.android.mvp.Task;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -54,24 +54,24 @@ public class TestRunAsyncTask extends BaseTest {
 
     @Test
     public void should_be_able_to_run_async_task_without_error_handler_with_default_executorService() throws Exception {
-        Monitor asyncTask = controller.loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(this);
+        Task.Monitor asyncTask = controller.loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(this);
 
         Thread.sleep(WAIT_DURATION);
 
         verify(view, times(1)).onResourceLoaded();
 
-        Assert.assertEquals(asyncTask.getState(), Monitor.State.DONE);
+        Assert.assertEquals(asyncTask.getState(), Task.Monitor.State.DONE);
     }
 
     @Test
     public void should_be_able_to_run_async_task_without_error_handler() throws Exception {
-        Monitor asyncTask = controller.loadHeavyResourceSuccessfullyWithoutErrorHandler(this);
+        Task.Monitor asyncTask = controller.loadHeavyResourceSuccessfullyWithoutErrorHandler(this);
 
         Thread.sleep(WAIT_DURATION);
 
         verify(view, times(1)).onResourceLoaded();
 
-        Assert.assertEquals(asyncTask.getState(), Monitor.State.DONE);
+        Assert.assertEquals(asyncTask.getState(), Task.Monitor.State.DONE);
     }
 
     @Test
@@ -87,47 +87,47 @@ public class TestRunAsyncTask extends BaseTest {
 
     @Test
     public void shouldBeAbleToRunAsyncTaskSuccessfully() throws Exception {
-        Monitor asyncTask = controller.loadHeavyResourceSuccessfullyWithErrorHandler(this);
+        Task.Monitor asyncTask = controller.loadHeavyResourceSuccessfullyWithErrorHandler(this);
 
         Thread.sleep(WAIT_DURATION);
 
         verify(view, times(1)).onResourceLoaded();
 
-        verify(view, times(0)).onResourceFailed(any(MvpGraph.Exception.class));
+        verify(view, times(0)).onResourceFailed(any(Mvp.Exception.class));
 
         verify(view, times(0)).onResourceCancelled();
 
-        Assert.assertEquals(asyncTask.getState(), Monitor.State.DONE);
+        Assert.assertEquals(asyncTask.getState(), Task.Monitor.State.DONE);
     }
 
     @Test
     public void shouldHandleAsyncTaskExceptionAndDetectFailEvent() throws Exception {
-        Monitor asyncTask = controller.loadHeavyResourceWithException(this);
+        Task.Monitor asyncTask = controller.loadHeavyResourceWithException(this);
 
         Thread.sleep(WAIT_DURATION);
 
         verify(view, times(0)).onResourceLoaded();
 
-        verify(view, times(1)).onResourceFailed(any(MvpGraph.Exception.class));
+        verify(view, times(1)).onResourceFailed(any(Mvp.Exception.class));
 
         verify(view, times(0)).onResourceCancelled();
 
-        Assert.assertEquals(asyncTask.getState(), Monitor.State.ERRED);
+        Assert.assertEquals(asyncTask.getState(), Task.Monitor.State.ERRED);
     }
 
     @Test
     public void shouldBeAbleToCancelAsyncActionAndDetectCancelEvent() throws Exception {
-        Monitor monitor = controller.loadHeavyResourceAndCancel(this);
+        Task.Monitor monitor = controller.loadHeavyResourceAndCancel(this);
         monitor.cancel(true);
 
         Thread.sleep(WAIT_DURATION);
 
         verify(view, times(0)).onResourceLoaded();
 
-        verify(view, times(0)).onResourceFailed(any(MvpGraph.Exception.class));
+        verify(view, times(0)).onResourceFailed(any(Mvp.Exception.class));
 
         verify(view, times(1)).onResourceCancelled();
 
-        Assert.assertEquals(monitor.getState(), Monitor.State.CANCELED);
+        Assert.assertEquals(monitor.getState(), Task.Monitor.State.CANCELED);
     }
 }

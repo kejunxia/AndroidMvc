@@ -19,6 +19,7 @@ package com.shipdream.lib.poke;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -112,8 +113,11 @@ public class Component {
      *
      * @param provider The provider that has the type and qualifier to unregister against
      * @return this instance
+     *
+     * @throws ProviderMissingException Thrown when the provider with the given type and qualifier
+     *                                  cannot be found under this component
      */
-    public Component unregister(Provider provider) {
+    public Component unregister(Provider provider) throws ProviderMissingException {
         return unregister(provider.type(), provider.getQualifier());
     }
 
@@ -124,13 +128,14 @@ public class Component {
      * @param type The type of the provider
      * @param qualifier The qualifier of the provider
      * @return this instance
+     *
+     * @throws ProviderMissingException Thrown when the provider with the given type and qualifier
+     *                                  cannot be found under this component
      */
-    public <T> Component unregister(Class<T> type, Annotation qualifier) {
+    public <T> Component unregister(Class<T> type, Annotation qualifier) throws ProviderMissingException {
         //Detach corresponding provider from  it's component
         Provider<T> provider = findProvider(type, qualifier);
-        if (provider != null) {
-            provider.setComponent(null);
-        }
+        provider.setComponent(null);
 
         String key = PokeHelper.makeProviderKey(type, qualifier);
         Component targetComponent = getRootComponent().componentLocator.get(key);
@@ -178,8 +183,11 @@ public class Component {
      * @param providerHolder The object with methods marked by {@link Provides} to provide injectable
      *                       instances
      * @return this instance
+     *
+     * @throws ProviderMissingException Thrown when the provider with the given type and qualifier
+     *                                  cannot be found under this component
      */
-    public Component unregister(Object providerHolder) {
+    public Component unregister(Object providerHolder) throws ProviderMissingException {
         Method[] methods = providerHolder.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(Provides.class)) {
@@ -249,13 +257,18 @@ public class Component {
         return root;
     }
 
-    <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) {
+    protected <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
         String key = PokeHelper.makeProviderKey(type, qualifier);
         Component targetComponent = getRootComponent().componentLocator.get(key);
-        if (targetComponent == null) {
-            return null;
+
+        Provider<T> provider = null;
+        if (targetComponent != null) {
+            provider = targetComponent.providers.get(key);
+        }
+        if (provider == null) {
+            throw new ProviderMissingException(type, qualifier);
         } else {
-            return targetComponent.providers.get(key);
+            return provider;
         }
     }
 

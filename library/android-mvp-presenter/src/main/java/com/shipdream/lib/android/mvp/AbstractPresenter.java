@@ -78,9 +78,8 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
      * @return The monitor to track the state of the execution of the task. It also can cancel the
      * task.
      *
-     * @since 2.2.0
      */
-    protected Monitor runTask(Object sender, final Task task) {
+    protected Task.Monitor runTask(Object sender, final Task task) {
         return runTask(sender, executorService, task, null);
     }
 
@@ -94,10 +93,8 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
      * @param callback        The callback
      * @return The monitor to track the state of the execution of the task. It also can cancel the
      * task.
-     *
-     * @since 2.2.0
      */
-    protected Monitor runTask(Object sender, final Task task, final Task.Callback callback) {
+    protected Task.Monitor runTask(Object sender, final Task task, final Task.Callback callback) {
         return runTask(sender, executorService, task, callback);
     }
 
@@ -112,20 +109,19 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
      * @return The monitor to track the state of the execution of the task. It also can cancel the
      * task.
      *
-     * @since 2.2.0
      */
-    protected Monitor runTask(Object sender, ExecutorService executorService,
-                              final Task task, final Task.Callback callback) {
-        final Monitor monitor = new Monitor(task, callback);
+    protected Task.Monitor runTask(Object sender, ExecutorService executorService,
+                                   final Task task, final Task.Callback callback) {
+        final Task.Monitor monitor = new Task.Monitor(task, callback);
 
         monitor.setFuture(executorService.submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                if (monitor.getState() == Monitor.State.CANCELED) {
+                if (monitor.getState() == Task.Monitor.State.CANCELED) {
                     return null;
                 }
 
-                monitor.setState(Monitor.State.STARTED);
+                monitor.setState(Task.Monitor.State.STARTED);
                 if (callback != null) {
                     callback.onStarted();
                 }
@@ -133,8 +129,8 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
                 try {
                     task.execute(monitor);
 
-                    if (monitor.getState() != Monitor.State.CANCELED) {
-                        monitor.setState(Monitor.State.DONE);
+                    if (monitor.getState() != Task.Monitor.State.CANCELED) {
+                        monitor.setState(Task.Monitor.State.DONE);
 
                         if (callback != null) {
                             callback.onSuccess();
@@ -143,13 +139,13 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
                 } catch (Exception e) {
                     boolean interruptedByCancel = false;
                     if (e instanceof InterruptedException) {
-                        if (monitor.getState() == Monitor.State.INTERRUPTED) {
+                        if (monitor.getState() == Task.Monitor.State.INTERRUPTED) {
                             interruptedByCancel = true;
                         }
                     }
                     //If the exception is an interruption caused by cancelling, then ignore it
                     if (!interruptedByCancel) {
-                        monitor.setState(Monitor.State.ERRED);
+                        monitor.setState(Task.Monitor.State.ERRED);
                         if (callback != null) {
                             callback.onException(e);
                         } else {

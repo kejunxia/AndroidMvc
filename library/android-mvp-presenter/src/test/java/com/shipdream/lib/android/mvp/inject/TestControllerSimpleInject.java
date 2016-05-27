@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.LifeCycleTestController;
@@ -51,7 +51,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void testInjectionOfRealController() throws Exception {
-        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+        Mvp graph = new Mvp(new BaseControllerDependencies());
 
         TestView testView = new TestView();
         graph.inject(testView);
@@ -101,7 +101,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void shouldThrowProviderMissingWhenControllerImplIsNotFound() throws Exception {
-        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+        Mvp graph = new Mvp(new BaseControllerDependencies());
 
         TestBadView testView = new TestBadView();
 
@@ -118,7 +118,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void injectedControllerShouldBeSingleton() throws Exception {
-        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+        Mvp graph = new Mvp(new BaseControllerDependencies());
 
         TestView testView = new TestView();
         graph.inject(testView);
@@ -138,7 +138,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
     @Test
     public void testOnDisposeShouldBeCalledWhenControllerReleased() throws Exception {
         final LifeCycleTestController.Proxy lifeCycleProxy = mock(LifeCycleTestController.Proxy.class);
-        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+        Mvp graph = new Mvp(new BaseControllerDependencies());
         graph.register(new LifeCycleTestControllerModule(lifeCycleProxy));
 
         TestLifCycleView testView = new TestLifCycleView();
@@ -163,7 +163,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void should_be_able_to_inject_concrete_class() throws Exception {
-        MvpGraph graph = new MvpGraph(new BaseControllerDependencies());
+        Mvp graph = new Mvp(new BaseControllerDependencies());
 
         Road road = new Road();
 

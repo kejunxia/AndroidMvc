@@ -26,13 +26,13 @@ import java.util.concurrent.ThreadFactory;
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
 /**
- * {@link AndroidMvp} will generate a default {@link MvpGraph} for injection. To replace
- * {@link MvpGraph.BaseDependencies} use {@link Injector#configGraph(MvpGraph.BaseDependencies)}.
+ * {@link AndroidMvp} will generate a default {@link Mvp} for injection. To replace
+ * {@link Mvp.BaseDependencies} use {@link Injector#configGraph(Mvp.BaseDependencies)}.
  * By default, the graph uses naming convention to locate the implementations of dependencies. See
- * {@link MvpGraph} how it works.
+ * {@link Mvp} how it works.
  */
 public class AndroidMvp {
-    private static class DefaultPresenterDependencies extends MvpGraph.BaseDependencies {
+    private static class DefaultPresenterDependencies extends Mvp.BaseDependencies {
         private static ExecutorService sNetworkExecutorService;
         private final static String BACKGROUND_THREAD_NAME = "AndroidMvpDefaultBackgroundThread";
 
@@ -67,9 +67,9 @@ public class AndroidMvp {
 
     /**
      * The graph to inject dependencies for mvp components.
-     * @return The {@link MvpGraph}
+     * @return The {@link Mvp}
      */
-    public static MvpGraph graph() {
+    public static Mvp graph() {
         return Injector.getGraph();
     }
 

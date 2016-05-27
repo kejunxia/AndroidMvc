@@ -28,6 +28,18 @@ public class ProviderMissingException extends PokeException{
         super(makeMessage(instanceType, qualifier));
     }
 
+    public ProviderMissingException(Class instanceType, Annotation qualifier, Throwable cause) {
+        super(makeMessage(instanceType, qualifier), cause);
+    }
+
+    public ProviderMissingException(String message) {
+        super(message);
+    }
+
+    public ProviderMissingException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     private static String makeMessage(Class instanceType, Annotation qualifier) {
         if (qualifier == null) {
             return String.format("Provider for type without qualifier: %s cannot be found.", instanceType.getName());

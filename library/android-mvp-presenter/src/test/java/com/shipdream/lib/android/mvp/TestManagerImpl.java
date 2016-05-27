@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 public class TestManagerImpl {
     @After
     public void tearDown() throws Exception {
-        Injector.mvpGraph = null;
+        Injector.mvp = null;
     }
 
     @Test
@@ -76,7 +76,7 @@ public class TestManagerImpl {
 
         final EventBus bus = mock(EventBus.class);
 
-        Injector.configGraph(new MvpGraph.BaseDependencies() {
+        Injector.configGraph(new Mvp.BaseDependencies() {
             @Override
             protected EventBus createEventBusC() {
                 return bus;

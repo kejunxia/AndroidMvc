@@ -282,9 +282,6 @@ public class Graph {
 
     private <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
         Provider<T> provider = rootComponent.findProvider(type, qualifier);
-        if (provider == null) {
-            throw new ProviderMissingException(type, qualifier);
-        }
         return provider;
     }
 

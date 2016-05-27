@@ -17,7 +17,6 @@
 package com.shipdream.lib.android.mvp.presenter;
 
 import com.shipdream.lib.android.mvp.AbstractPresenter;
-import com.shipdream.lib.android.mvp.Monitor;
 import com.shipdream.lib.android.mvp.Task;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 
@@ -58,7 +57,7 @@ public class MyPresenter extends AbstractPresenter {
         return null;
     }
 
-    public Monitor loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(final Object sender) {
+    public Task.Monitor loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(final Object sender) {
         return runTask(this, new Task() {
             @Override
             public void execute(Monitor monitor) throws Exception {
@@ -68,7 +67,7 @@ public class MyPresenter extends AbstractPresenter {
         });
     }
 
-    public Monitor loadHeavyResourceSuccessfullyWithoutErrorHandler(final Object sender) {
+    public Task.Monitor loadHeavyResourceSuccessfullyWithoutErrorHandler(final Object sender) {
         ExecutorService executorService = mock(ExecutorService.class);
         doAnswer(new Answer() {
             @Override
@@ -88,7 +87,7 @@ public class MyPresenter extends AbstractPresenter {
         }, null);
     }
 
-    public Monitor loadHeavyResourceSuccessfullyWithErrorHandler(final Object sender) {
+    public Task.Monitor loadHeavyResourceSuccessfullyWithErrorHandler(final Object sender) {
         return runTask(this, new Task() {
             @Override
             public void execute(Monitor monitor) throws Exception {
@@ -103,7 +102,7 @@ public class MyPresenter extends AbstractPresenter {
         });
     }
 
-    public Monitor loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(final Object sender) {
+    public Task.Monitor loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(final Object sender) {
         return runTask(this, new Task() {
             @Override
             public void execute(Monitor monitor) throws Exception {
@@ -113,7 +112,7 @@ public class MyPresenter extends AbstractPresenter {
         });
     }
 
-    public Monitor loadHeavyResourceWithException(final Object sender) {
+    public Task.Monitor loadHeavyResourceWithException(final Object sender) {
         return runTask(this, new Task() {
             @Override
             public void execute(Monitor monitor) throws Exception {
@@ -129,7 +128,7 @@ public class MyPresenter extends AbstractPresenter {
     }
 
 
-    public Monitor loadHeavyResourceAndCancel(final Object sender) {
+    public Task.Monitor loadHeavyResourceAndCancel(final Object sender) {
         Task asyncTask = new Task() {
             @Override
             public void execute(Monitor monitor) throws Exception {
