@@ -27,7 +27,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Qualifier;
 
@@ -184,8 +186,8 @@ public class Component {
      *                       instances
      * @return this instance
      *
-     * @throws ProviderMissingException Thrown when the provider with the given type and qualifier
-     *                                  cannot be found under this component
+     * @throws ProviderMissingException Thrown when the any provider in the provider holder with
+     *  the given type and qualifier cannot be found under this component
      */
     public Component unregister(Object providerHolder) throws ProviderMissingException {
         Method[] methods = providerHolder.getClass().getDeclaredMethods();
@@ -209,23 +211,64 @@ public class Component {
         return this;
     }
 
-
-    public void attach(@NotNull Component childComponent) throws AlreadyAttachedException {
+    public void attach(@NotNull Component childComponent) throws AlreadyAttachedException, ProviderConflictException {
         if (childComponent.parentComponent != null) {
             String msg = String.format("The attaching component(%s) has a parent already. Remove its parent before attaching it",
                     childComponent.name == null ? "unnamed" : childComponent.name);
             throw new AlreadyAttachedException(msg);
         }
 
-        //Update tree nodes
-        childComponent.parentComponent = this;
-
         //Merge the child component locator to the root component
         Component root = getRootComponent();
+
+        Set<String> addedKeys = new HashSet<>();
         for (Map.Entry<String, Component> entry : childComponent.componentLocator.entrySet()) {
             String key = entry.getKey();
+
+            if (root.componentLocator.containsKey(key)) {
+                for (String k : addedKeys) {
+                    root.componentLocator.remove(k);
+                }
+
+                throw new ProviderConflictException(
+                        String.format("Type(%s) in the adding child component(%s) has been added " +
+                                "to rootComponent(%s) or its attached child components.",
+                                key, childComponent.getComponentId(), root.getComponentId()));
+            }
+
             root.componentLocator.put(key, entry.getValue());
-            childComponent.componentLocator.remove(key);
+            addedKeys.add(key);
+        }
+
+        //Update tree nodes
+        childComponent.parentComponent = this;
+    }
+
+    private String getComponentId() {
+        if (name != null) {
+            return name;
+        } else {
+            if (providers.size() == 0) {
+                return "Unnamed empty Component";
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("Unnamed Component containing type(s):");
+            int max = 5;
+            int count = 0;
+            for (Provider provider : providers.values()) {
+                if (count > 0) {
+                    sb.append(", ");
+                }
+                sb.append(provider.type().getSimpleName());
+                count ++;
+
+                if (count > max) {
+                    break;
+                }
+            }
+
+            return sb.toString();
         }
     }
 

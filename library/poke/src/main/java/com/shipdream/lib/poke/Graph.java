@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.Provider.OnFreedListener;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -45,51 +44,13 @@ public class Graph {
         }
     }
 
-    private List<OnFreedListener> onProviderFreedListeners;
     private List<Monitor> monitors;
     private String revisitedNode = null;
     private Set<String> visitedInjectNodes = new LinkedHashSet<>();
     private Map<Object, Map<String, Set<String>>> visitedFields = new HashMap<>();
+    private List<Provider.DereferenceListener> dereferenceListeners;
 
     private Component rootComponent;
-
-    /**
-     * Register {@link OnFreedListener} which will be called when the provider
-     *
-     * @param onProviderFreedListener The listener
-     */
-    public void registerProviderFreedListener(OnFreedListener onProviderFreedListener) {
-        if (onProviderFreedListeners == null) {
-            onProviderFreedListeners = new CopyOnWriteArrayList<>();
-        }
-        onProviderFreedListeners.add(onProviderFreedListener);
-    }
-
-    /**
-     * Unregister {@link OnFreedListener} which will be called when the last cached
-     * instance of an injected contract is freed.
-     *
-     * @param onProviderFreedListener The listener
-     */
-    public void unregisterProviderFreedListener(OnFreedListener onProviderFreedListener) {
-        if (onProviderFreedListeners != null) {
-            onProviderFreedListeners.remove(onProviderFreedListener);
-            if (onProviderFreedListeners.isEmpty()) {
-                onProviderFreedListeners = null;
-            }
-        }
-    }
-
-    /**
-     * Clear {@link OnFreedListener}s which will be called when the last cached
-     * instance of an injected contract is freed.
-     */
-    public void clearOnProviderFreedListeners() {
-        if (onProviderFreedListeners != null) {
-            onProviderFreedListeners.clear();
-            onProviderFreedListeners = null;
-        }
-    }
 
     /**
      * Register {@link Monitor} which will be called the graph is about to inject or release an object
@@ -138,6 +99,45 @@ public class Graph {
         }
         this.rootComponent = component;
     }
+
+    public Component getRootComponent() {
+        return rootComponent;
+    }
+
+    /**
+     * Register {@link Provider.DereferenceListener} which will be called when the provider
+     *
+     * @param onProviderFreedListener The listener
+     */
+    public void registerDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
+        if (dereferenceListeners == null) {
+            dereferenceListeners = new CopyOnWriteArrayList<>();
+        }
+        dereferenceListeners.add(onProviderFreedListener);
+    }
+
+    /**
+     * Unregister {@link Provider.DereferenceListener} which will be called when the last cached
+     * instance of an injected contract is freed.
+     *
+     * @param onProviderFreedListener The listener
+     */
+    public void unregisterDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
+        if (dereferenceListeners != null) {
+            dereferenceListeners.remove(onProviderFreedListener);
+        }
+    }
+
+    /**
+     * Clear {@link Provider.DereferenceListener}s which will be called when the last cached
+     * instance of an injected contract is freed.
+     */
+    public void clearDereferencedListeners() {
+        if (dereferenceListeners != null) {
+            dereferenceListeners.clear();
+        }
+    }
+
 
     /**
      * Inject all fields annotated by the given injectAnnotation
@@ -301,9 +301,7 @@ public class Graph {
         T instance = provider.get();
         doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
-        if (provider.getReferenceCount() == 1) {
-            provider.notifyInjected(instance);
-        }
+        provider.notifyReferenced(provider, instance);
 
         //Clear visiting records
         visitedFields.clear();
@@ -339,7 +337,7 @@ public class Graph {
             //Nested injection
             circularDetected = recordVisit(targetType, targetQualifier);
             targetProvider = findProvider(targetType, targetQualifier);
-            Object cachedInstance = targetProvider.findCachedInstance();
+            Object cachedInstance = targetProvider.getCachedInstance();
             boolean infiniteCircularInjection = true;
             if (circularDetected) {
                 if (cachedInstance != null) {
@@ -363,19 +361,15 @@ public class Graph {
                         Provider provider = findProvider(fieldType, fieldQualifier);
 
                         Object impl = provider.get();
-                        provider.retain(target, field);
-
                         ReflectUtils.setField(target, field, impl);
 
-                        boolean firstTimeInject = provider.getReferenceCount() == 1;
                         boolean visited = isFieldVisited(target, targetField, field);
                         if (!visited) {
                             doInject(impl, field, fieldType, fieldQualifier, injectAnnotation);
                         }
 
-                        if (firstTimeInject) {
-                            provider.notifyInjected(impl);
-                        }
+                        provider.retain(target, field);
+                        provider.notifyReferenced(provider, impl);
 
                         recordVisitField(target, targetField, field);
                     }
@@ -392,7 +386,7 @@ public class Graph {
     /**
      * Release cached instances held by fields of target object. References of cache of the
      * instances will be decremented. Once the reference count of a controller reaches 0, it will
-     * be removed from the cache and raise {@link OnFreedListener}.
+     * be removed from the cache and raise {@link Provider.DereferenceListener}.
      *
      * @param target           Whose fields will be injected
      * @param injectAnnotation Annotated which a field will be recognize
@@ -454,15 +448,11 @@ public class Graph {
     }
 
     private void checkToFreeProvider(Provider provider) {
-        if (provider.getReferenceCount() == 0) {
-            if (onProviderFreedListeners != null) {
-                int listenerSize = onProviderFreedListeners.size();
-                for (int k = 0; k < listenerSize; k++) {
-                    onProviderFreedListeners.get(k).onFreed(provider);
-                }
+        if (dereferenceListeners != null) {
+            int listenerSize = dereferenceListeners.size();
+            for (int k = 0; k < listenerSize; k++) {
+                dereferenceListeners.get(k).onDereferenced(provider);
             }
-
-            provider.freeCache();
         }
     }
 

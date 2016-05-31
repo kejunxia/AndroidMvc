@@ -16,13 +16,17 @@
 
 package com.shipdream.lib.poke;
 
+import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import javax.inject.Inject;
 
 public class TestComponentManagement extends BaseTestCases {
     private Graph graph;
@@ -349,5 +353,72 @@ public class TestComponentManagement extends BaseTestCases {
         Component c4 = new Component();
         Assert.assertTrue(c4.hasCache());
         Assert.assertEquals(null, c4.getName());
+    }
+
+    @Test
+    public void should_detect_provider_conflict_when_attaching_child_component() throws ProviderConflictException {
+        Component c1 = new Component("A");
+        c1.register(new ProviderByClassType(String.class, String.class));
+
+        Component c2 = new Component();
+        c2.register(new ProviderByClassType(String.class, String.class));
+
+        boolean exp = false;
+        try {
+            c1.attach(c2);
+        } catch (ProviderConflictException e) {
+            exp = true;
+        } catch (Component.AlreadyAttachedException e) {
+
+        }
+
+        Assert.assertTrue(exp);
+
+        exp = false;
+        try {
+            c2.attach(c1);
+        } catch (ProviderConflictException e) {
+            exp = true;
+        } catch (Component.AlreadyAttachedException e) {
+
+        }
+
+        Assert.assertTrue(exp);
+    }
+
+    @Test
+    public void should_roll_back_root_component_keys_when_attaching_child_component_with_conflicts()
+            throws ProviderConflictException, ProviderMissingException, Graph.IllegalRootComponentException {
+        Component c1 = new Component("A");
+        c1.register(new ProviderByClassType(Integer.class, Integer.class));
+
+        Component c2 = new Component();
+        c2.register(new ProviderByClassType(Integer.class, Integer.class));
+        c2.register(new ProviderByClassType(String.class, String.class));
+
+        boolean exp = false;
+        try {
+            c1.attach(c2);
+        } catch (ProviderConflictException e) {
+            exp = true;
+        } catch (Component.AlreadyAttachedException e) {
+
+        }
+        Assert.assertTrue(exp);
+
+        Graph graph = new Graph();
+        graph.setRootComponent(c1);
+
+        boolean missingExp = false;
+        try {
+            graph.reference(String.class, null, Inject.class);
+        } catch (ProviderMissingException e) {
+            missingExp = true;
+        } catch (ProvideException e) {
+            e.printStackTrace();
+        } catch (CircularDependenciesException e) {
+            e.printStackTrace();
+        }
+        Assert.assertTrue(missingExp);
     }
 }

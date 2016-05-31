@@ -26,6 +26,7 @@ import org.junit.Test;
 import javax.inject.Singleton;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -45,17 +46,17 @@ public class TestCircularDependencies extends BaseTestCases {
     @SuppressWarnings("unchecked")
     @Test
     public void should_not_throw_circular_dependency_exception_on_finite_circular_dependency() throws PokeException {
-        Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
+        Provider.ReferencedListener<Power> powerOnInject = mock(Provider.ReferencedListener.class);
         ProviderByClassType powerProvider = new ProviderByClassType<>(Power.class, PowerImpl.class);
-        powerProvider.registerOnInjectedListener(powerOnInject);
+        powerProvider.registerOnReferencedListener(powerOnInject);
 
-        Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
+        Provider.ReferencedListener<Driver> driverOnInject = mock(Provider.ReferencedListener.class);
         ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
-        driverProvider.registerOnInjectedListener(driverOnInject);
+        driverProvider.registerOnReferencedListener(driverOnInject);
 
-        Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
+        Provider.ReferencedListener<Robot> robotOnInject = mock(Provider.ReferencedListener.class);
         ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
-        robotProvider.registerOnInjectedListener(robotOnInject);
+        robotProvider.registerOnReferencedListener(robotOnInject);
 
         component.register(powerProvider);
         component.register(robotProvider);
@@ -123,26 +124,26 @@ public class TestCircularDependencies extends BaseTestCases {
         final Factory factory = new Factory();
 
         ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
-        powerProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Power>() {
+        powerProvider.registerOnReferencedListener(new Provider.ReferencedListener<Power>() {
             @Override
-            public void onInjected(Power object) {
-                Assert.assertNotNull(((PowerImpl) object).robot);
+            public void onReferenced(Provider<Power> provider, Power instance) {
+                Assert.assertNotNull(((PowerImpl) instance).robot);
             }
         });
 
         ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
-        driverProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Driver>() {
+        driverProvider.registerOnReferencedListener(new Provider.ReferencedListener<Driver>() {
             @Override
-            public void onInjected(Driver object) {
-                Assert.assertNotNull(((DriverImpl) object).power);
+            public void onReferenced(Provider<Driver> provider, Driver instance) {
+                Assert.assertNotNull(((DriverImpl) instance).power);
             }
         });
 
         ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
-        robotProvider.registerOnInjectedListener(new Provider.OnInjectedListener<Robot>() {
+        robotProvider.registerOnReferencedListener(new Provider.ReferencedListener<Robot>() {
             @Override
-            public void onInjected(Robot object) {
-                Assert.assertNotNull(((RobotImpl) object).driver);
+            public void onReferenced(Provider<Robot> provider, Robot instance) {
+                Assert.assertNotNull(((RobotImpl) instance).driver);
             }
         });
 
@@ -157,17 +158,38 @@ public class TestCircularDependencies extends BaseTestCases {
     public void shouldInjectObjectOnlyOnceWithCircularDependencies() throws PokeException, NoSuchFieldException {
         final Factory factory = new Factory();
 
-        Provider.OnInjectedListener<Power> powerOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
-        powerProvider.registerOnInjectedListener(powerOnInject);
+        final Provider.ReferencedListener<Power> powerOnInject = mock(Provider.ReferencedListener.class);
+        final ProviderByClassType<Power> powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
+        powerProvider.registerOnReferencedListener(new Provider.ReferencedListener<Power>() {
+            @Override
+            public void onReferenced(Provider<Power> provider, Power instance) {
+                if (provider.getReferenceCount() == 1) {
+                    powerOnInject.onReferenced(provider, instance);
+                }
+            }
+        });
 
-        Provider.OnInjectedListener<Driver> driverOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
-        driverProvider.registerOnInjectedListener(driverOnInject);
+        final Provider.ReferencedListener<Driver> driverOnInject = mock(Provider.ReferencedListener.class);
+        ProviderByClassType<Driver> driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
+        driverProvider.registerOnReferencedListener(new Provider.ReferencedListener<Driver>() {
+            @Override
+            public void onReferenced(Provider<Driver> provider, Driver instance) {
+                if (provider.getReferenceCount() == 1) {
+                    driverOnInject.onReferenced(provider, instance);
+                }
+            }
+        });
 
-        Provider.OnInjectedListener<Robot> robotOnInject = mock(Provider.OnInjectedListener.class);
-        ProviderByClassType robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
-        robotProvider.registerOnInjectedListener(robotOnInject);
+        final Provider.ReferencedListener<Robot> robotOnInject = mock(Provider.ReferencedListener.class);
+        ProviderByClassType<Robot> robotProvider = new ProviderByClassType(Robot.class, RobotImpl.class);
+        robotProvider.registerOnReferencedListener(new Provider.ReferencedListener<Robot>() {
+            @Override
+            public void onReferenced(Provider<Robot> provider, Robot instance) {
+                if (provider.getReferenceCount() == 1) {
+                    robotOnInject.onReferenced(provider, instance);
+                }
+            }
+        });
 
         component.register(powerProvider);
         component.register(robotProvider);
@@ -175,9 +197,9 @@ public class TestCircularDependencies extends BaseTestCases {
 
         graph.inject(factory, MyInject.class);
 
-        verify(powerOnInject, times(1)).onInjected(any(Power.class));
-        verify(driverOnInject, times(1)).onInjected(any(Driver.class));
-        verify(robotOnInject, times(1)).onInjected(any(Robot.class));
+        verify(powerOnInject, times(1)).onReferenced(eq(powerProvider), any(Power.class));
+        verify(driverOnInject, times(1)).onReferenced(eq(driverProvider), any(Driver.class));
+        verify(robotOnInject, times(1)).onReferenced(eq(robotProvider), any(Robot.class));
     }
 
     @Test

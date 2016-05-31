@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 public class TestInjector {
     @After
     public void tearDown() throws Exception {
-        Injector.mvp = null;
+        Injector.graph = null;
     }
 
     @Test(expected = RuntimeException.class)
@@ -42,7 +42,7 @@ public class TestInjector {
     }
 
     private int getGraphSize() {
-        return Injector.getGraph().appProviderFinder.scopeCache.getCachedItems().size();
+        return Injector.getGraph().rootComponent.scopeCache.getCachedItems().size();
     }
     
     @Test

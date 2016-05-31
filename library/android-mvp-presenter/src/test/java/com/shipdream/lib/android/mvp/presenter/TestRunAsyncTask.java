@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.presenter;
 
-import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.Task;
 
 import org.junit.Assert;

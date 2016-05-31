@@ -33,26 +33,28 @@ public abstract class Provider<T> {
     /**
      * Listener monitoring when the provider is referenced for the first time
      */
-    public interface OnInjectedListener<T> {
+    public interface ReferencedListener<T> {
         /**
          * Called provider is first time used to inject its content. The call is guaranteed to be
          * invoked after all injectable fields of its content is fully injected.
-         * @param object Who is fully injected
+         *
+         * @param provider The provider used to provide the injecting instance
+         * @param instance The instance. Its own injectable members should have been injected recursively as well.
          */
-        void onInjected(T object);
+        void onReferenced(Provider<T> provider, T instance);
     }
 
     /**
      * Listener will be called when the given provider is not referenced by any objects. The
      * listener will be called before its cached instance is freed if there is a cache associated.
      */
-    public interface OnFreedListener {
+    public interface DereferenceListener {
         /**
          * listener to be invoked when when the given provider is not referenced by any objects.
          *
          * @param provider  The provider whose content is not referenced by any objects.
          */
-        void onFreed(Provider provider);
+        void onDereferenced(Provider provider);
     }
 
     private final Class<T> type;
@@ -171,6 +173,20 @@ public abstract class Provider<T> {
      */
     public void release() {
         totalRefCount--;
+
+        if (totalRefCount == 0) {
+            freeCache();
+        }
+    }
+
+    private void freeCache() {
+        ScopeCache cache = getScopeCache();
+        if (cache != null) {
+            ScopeCache.CachedItem cachedItem = cache.findCacheItem(type, qualifier);
+            if (cachedItem != null) {
+                cache.removeCache(cachedItem.provider.type, cachedItem.provider.qualifier);
+            }
+        }
     }
 
     /**
@@ -196,16 +212,6 @@ public abstract class Provider<T> {
         }
     }
 
-    void freeCache() {
-        ScopeCache cache = getScopeCache();
-        if (cache != null) {
-            ScopeCache.CachedItem cachedItem = cache.findCacheItem(type, qualifier);
-            if (cachedItem != null) {
-                cache.removeCache(cachedItem.provider.type, cachedItem.provider.qualifier);
-            }
-        }
-    }
-
     public int getReferenceCount() {
         return totalRefCount;
     }
@@ -213,7 +219,7 @@ public abstract class Provider<T> {
     /**
      * The listeners when the instance is injected.
      */
-    private List<OnInjectedListener<T>> onInjectedListeners;
+    private List<ReferencedListener<T>> referencedListeners;
 
     /**
      * Get qualifier of the provider
@@ -224,13 +230,13 @@ public abstract class Provider<T> {
     }
 
     /**
-     * Get the cached instance of this provider if there is a cache associated with this provider
+     * Get the cached instance of this provider when there is a cache associated with this provider
      * and the instance is cached already. Note that, the method will NOT increase reference count of
      * this provider
      * @return The cached instance of this provider if there is a cache associated with this provider
      * and the instance is cached already, otherwise null will be returned
      */
-    public T findCachedInstance() {
+    public T getCachedInstance() {
         ScopeCache cache = getScopeCache();
         if (cache != null) {
             ScopeCache.CachedItem<T> cachedItem = cache.findCacheItem(type, qualifier);
@@ -241,22 +247,23 @@ public abstract class Provider<T> {
         return null;
     }
 
-    /**
-     * Register listener which will be called back when the instance is injected. It will called
-     * until all injectable fields of the object are fully and recursively if needed injected.
-     */
-    public void registerOnInjectedListener(OnInjectedListener<T> listener) {
-        if(onInjectedListeners == null) {
-            onInjectedListeners = new ArrayList<>();
+    public void registerOnReferencedListener(ReferencedListener<T> listener) {
+        if(referencedListeners == null) {
+            referencedListeners = new ArrayList<>();
         }
-        onInjectedListeners.add(listener);
+        referencedListeners.add(listener);
     }
 
-    /**
-     * Unregister listener which will be called back when the instance is injected.
-     */
-    public void unregisterOnInjectedListener(OnInjectedListener<T> listener) {
-        onInjectedListeners.remove(listener);
+    public void unregisterOnReferencedListener(ReferencedListener<T> listener) {
+        if (referencedListeners != null) {
+            referencedListeners.remove(listener);
+        }
+    }
+
+    public void clearOnReferencedListener() {
+        if (referencedListeners != null) {
+            referencedListeners.clear();
+        }
     }
 
     /**
@@ -288,13 +295,13 @@ public abstract class Provider<T> {
      * <p>This method should get called every time the instance is injected, no matter if it's a
      * newly created instance or it's a reused cached instance.</p>
      *
-     * @param object Who just get fully injected
+     * @param instance The instance. Its own injectable members should have been injected recursively as well.
      */
-    void notifyInjected(T object) {
-        if (onInjectedListeners != null) {
-            int len = onInjectedListeners.size();
+    void notifyReferenced(Provider provider, T instance) {
+        if (referencedListeners != null) {
+            int len = referencedListeners.size();
             for(int i = 0; i < len; i++) {
-                onInjectedListeners.get(i).onInjected(object);
+                referencedListeners.get(i).onReferenced(provider, instance);
             }
         }
     }

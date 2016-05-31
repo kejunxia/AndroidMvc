@@ -92,13 +92,17 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         component = new Component("AppSignleton");
         component.register(module);
-        graph.registerProviderFreedListener(new Provider.OnFreedListener() {
+        graph.registerDereferencedListener(new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
+            public void onDereferenced(Provider provider) {
                 if (provider.type() == Service.class) {
-                    serviceOnFreed.onFreed();
+                    if (provider.getReferenceCount() == 0) {
+                        serviceOnFreed.onFreed();
+                    }
                 } else if (provider.type() == Controller.class) {
-                    controllerOnFreed.onFreed();
+                    if (provider.getReferenceCount() == 0) {
+                        controllerOnFreed.onFreed();
+                    }
                 }
             }
         });

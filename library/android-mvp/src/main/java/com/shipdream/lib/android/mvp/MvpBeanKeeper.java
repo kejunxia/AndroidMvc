@@ -38,7 +38,7 @@ class MvpBeanKeeper implements BeanKeeper {
     }
 
     private static String getModelKey(String modelTypeName) {
-        return AndroidMvp.MVP_SATE_PREFIX + modelTypeName.replace("com.shipdream.lib.android.mvp", "mvp");
+        return AndroidMvp.MVP_SATE_PREFIX + modelTypeName.replace("com.shipdream.lib.android.graph", "graph");
     }
 
     //TODO: first param should be Bean and bean's model should be saved recursively

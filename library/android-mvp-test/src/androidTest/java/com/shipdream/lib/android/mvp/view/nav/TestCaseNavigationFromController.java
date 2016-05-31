@@ -142,7 +142,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
             }
         }).to(MvpTestActivityNavigation.Loc.E);
 
-        //The value set to controller e in Injector.getGraph().use should be retained during the
+        //The value set to controller e in Injector.graph().use should be retained during the
         //navigation
         onView(withText(val)).check(matches(isDisplayed()));
 
@@ -204,7 +204,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();
-        //The value set to controller e in Injector.getGraph().use should be retained during the
+        //The value set to controller e in Injector.graph().use should be retained during the
         //navigation
         navigationManager.navigate(this).back();
         waitTest();

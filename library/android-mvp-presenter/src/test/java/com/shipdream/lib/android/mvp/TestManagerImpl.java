@@ -32,7 +32,7 @@ import static org.mockito.Mockito.verify;
 public class TestManagerImpl {
     @After
     public void tearDown() throws Exception {
-        Injector.mvp = null;
+        Injector.graph = null;
     }
 
     @Test

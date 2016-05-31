@@ -16,12 +16,12 @@
 
 package com.shipdream.lib.poke.exception;
 
-import com.shipdream.lib.poke.Graph;
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provider;
 
 /**
- * Occurs when there are multiple {@link Provider} linked to the same inject type in {@link Graph}
- * that are with the same type and qualifier
+ * Occurs when there are multiple {@link Provider} with the same type and qualifier are found under
+ * the same {@link Component}
  */
 public class ProviderConflictException extends PokeException {
     public ProviderConflictException(String message) {

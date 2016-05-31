@@ -17,7 +17,6 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 
 import com.shipdream.lib.android.mvp.Injector;
-import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;

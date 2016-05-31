@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
-import com.shipdream.lib.poke.Provider.OnFreedListener;
+import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -321,7 +321,7 @@ public class TestMvpGraph {
 
         // Arrange
         reset(graphMock);
-        OnFreedListener providerFreedListener = mock(OnFreedListener.class);
+        Provider.DereferenceListener providerFreedListener = mock(Provider.DereferenceListener.class);
         // Act
         mvp.registerProviderFreedListener(providerFreedListener);
         // Verify
@@ -347,7 +347,7 @@ public class TestMvpGraph {
             throws ProvideException, ProviderConflictException {
         // Arrange
         MvpComponent providerFinder = mock(MvpComponent.class);
-        mvp.appProviderFinder = providerFinder;
+        mvp.rootComponent = providerFinder;
 
         doAnswer(new Answer() {
             @Override
@@ -366,13 +366,13 @@ public class TestMvpGraph {
         ScopeCache scopeCache = mock(ScopeCache.class);
 
         // Pre-verify
-        Assert.assertNotEquals(scopeCache, mvp.appProviderFinder.scopeCache);
+        Assert.assertNotEquals(scopeCache, mvp.rootComponent.scopeCache);
 
         // Act
         mvp.hijack(scopeCache);
 
         // Verify
-        Assert.assertEquals(scopeCache, mvp.appProviderFinder.scopeCache);
+        Assert.assertEquals(scopeCache, mvp.rootComponent.scopeCache);
     }
 
     @Test
@@ -382,12 +382,12 @@ public class TestMvpGraph {
 
         List<Bean> beans = new ArrayList();
         beans.add(beanMock);
-        mvp.appProviderFinder.beans = beans;
+        mvp.rootComponent.beans = beans;
 
         final BeanKeeper beanKeeperMock = mock(BeanKeeper.class);
 
         // Act
-        mvp.appProviderFinder.saveAllBeans(beanKeeperMock);
+        mvp.rootComponent.saveAllBeans(beanKeeperMock);
 
         // Verify
         verify(beanKeeperMock).saveBean(beanMock);
@@ -398,7 +398,7 @@ public class TestMvpGraph {
         Object stateMock = mock(Object.class);
         when(beanKeeperMock.retrieveBean(any(Class.class))).thenReturn(stateMock);
 
-        mvp.appProviderFinder.restoreAllBeans(beanKeeperMock);
+        mvp.rootComponent.restoreAllBeans(beanKeeperMock);
 
         // Verify
         verify(beanMock).restoreModel(eq(stateMock));

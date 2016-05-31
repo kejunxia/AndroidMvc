@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrinterController2;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.AndroidPartImpl;

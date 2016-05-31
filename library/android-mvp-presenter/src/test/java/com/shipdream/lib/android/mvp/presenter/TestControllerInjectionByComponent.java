@@ -17,7 +17,6 @@
 package com.shipdream.lib.android.mvp.presenter;
 
 import com.shipdream.lib.android.mvp.inject.BaseControllerDependencies;
-import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 
 import org.junit.Test;

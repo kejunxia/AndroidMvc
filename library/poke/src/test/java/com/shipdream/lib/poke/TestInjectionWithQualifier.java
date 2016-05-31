@@ -267,19 +267,26 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
         final int[] onInjectedCalled = {0};
         final Object[] injected = new Object[1];
-        final Provider.OnInjectedListener<Os> injectListener = new Provider.OnInjectedListener() {
+        final Provider.ReferencedListener<Os> injectListener = new Provider.ReferencedListener() {
             @Override
-            public void onInjected(Object object) {
+            public void onReferenced(Provider provider, Object instance) {
                 onInjectedCalled[0]++;
-                injected[0] = object;
+                injected[0] = instance;
 
-                provider.unregisterOnInjectedListener(this);
+                provider.unregisterOnReferencedListener(this);
             }
         };
-        provider.registerOnInjectedListener(injectListener);
+        provider.registerOnReferencedListener(injectListener);
 
-        final Provider.OnFreedListener osOnFreedListener = mock(Provider.OnFreedListener.class);
-        graph.registerProviderFreedListener(osOnFreedListener);
+        final Provider.DereferenceListener osDereferenceListener = mock(Provider.DereferenceListener.class);
+        graph.registerDereferencedListener(new Provider.DereferenceListener() {
+            @Override
+            public void onDereferenced(Provider provider) {
+                if (provider.type() == Os.class && provider.getReferenceCount() == 0) {
+                    osDereferenceListener.onDereferenced(provider);
+                }
+            }
+        });
 
         final Phone phone = new Phone();
 
@@ -292,7 +299,7 @@ public class TestInjectionWithQualifier extends BaseTestCases {
                 Assert.assertEquals(1, onInjectedCalled[0]);
 
                 Assert.assertTrue(phone.os == instance);
-                verify(osOnFreedListener, times(0)).onFreed(provider);
+                verify(osDereferenceListener, times(0)).onDereferenced(provider);
 
                 try {
                     graph.release(phone, MyInject.class);
@@ -300,14 +307,14 @@ public class TestInjectionWithQualifier extends BaseTestCases {
                     throw new RuntimeException(e);
                 }
 
-                verify(osOnFreedListener, times(0)).onFreed(provider);
+                verify(osDereferenceListener, times(0)).onDereferenced(provider);
             }
         });
 
         Assert.assertTrue(injected[0] == phone.os);
         Assert.assertEquals(1, onInjectedCalled[0]);
 
-        verify(osOnFreedListener, times(1)).onFreed(provider);
+        verify(osDereferenceListener, times(1)).onDereferenced(provider);
 
         //OnInject listener has been unregistered so the count should not increment
         graph.inject(phone, MyInject.class);

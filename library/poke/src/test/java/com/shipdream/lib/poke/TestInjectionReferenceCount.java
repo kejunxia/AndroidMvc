@@ -21,7 +21,7 @@ import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
-import com.shipdream.lib.poke.Provider.OnFreedListener;
+import com.shipdream.lib.poke.Provider.DereferenceListener;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -246,13 +246,15 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        Provider.DereferenceListener onFreed = new DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
-                proxy.onFreed(provider.type());
+            public void onDereferenced(Provider provider) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
         //Assert
 
@@ -284,13 +286,15 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
-                proxy.onFreed(provider.type());
+            public void onDereferenced(Provider provider) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
         //Assert
         //Releasing root should free providers and invoke callbacks
@@ -311,15 +315,15 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
+            public void onDereferenced(Provider provider) {
                 proxy.onFreed(provider.type());
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
-        graph.unregisterProviderFreedListener(onFreed);
+        graph.unregisterDereferencedListener(onFreed);
 
         //Assert
         graph.release(kitchen, MyInject.class);
@@ -339,15 +343,15 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
+            public void onDereferenced(Provider provider) {
                 proxy.onFreed(provider.type());
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
-        graph.clearOnProviderFreedListeners();
+        graph.clearDereferencedListeners();
 
         //Assert
         graph.release(kitchen, MyInject.class);

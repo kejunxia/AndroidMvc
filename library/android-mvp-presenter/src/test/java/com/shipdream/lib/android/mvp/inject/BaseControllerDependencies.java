@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.Mvp;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 

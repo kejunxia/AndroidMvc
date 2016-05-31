@@ -2,6 +2,7 @@ package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,6 +28,13 @@ public class TestProvider {
 
         Assert.assertTrue(p.getScopeCache() == scopeCache);
         Assert.assertTrue(p.getQualifier() == null);
+    }
+
+    @Test
+    public void test_provider_missing_exception_constructor() {
+        ProviderMissingException e1 = new ProviderMissingException(String.class, null, new Throwable());
+        ProviderMissingException e2 = new ProviderMissingException("msg");
+        ProviderMissingException e3 = new ProviderMissingException("msg", new Throwable());
     }
 
     @Test

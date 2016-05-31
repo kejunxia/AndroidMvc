@@ -479,7 +479,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
         component.unregister(new ProviderByClassType(Food.class, Noodle.class));
         component.unregister(new ProviderByClassType(Food.class, Bread.class));
-        component.unregister(new ProviderByClassType(Food.class, Chicken.class));
         basket = new Basket();
         boolean shouldCatchProviderMissingException = false;
         try {
@@ -537,28 +536,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
             }
         };
 
-        Provider<Food> providerChicken = new Provider<Food>(Food.class) {
-            @Override
-            protected Food createInstance() throws ProvideException {
-                return new Chicken();
-            }
-            @Override
-            public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifierInAnnotations(Chicken.class);
-            }
-        };
-
-        Provider<Food> providerBeef = new Provider<Food>(Food.class) {
-            @Override
-            protected Food createInstance() throws ProvideException {
-                return new Beef();
-            }
-            @Override
-            public Annotation getQualifier() {
-                return ReflectUtils.findFirstQualifierInAnnotations(Beef.class);
-            }
-        };
-
         class Basket {
             @MyInject
             @Named
@@ -592,8 +569,6 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
         }
         Assert.assertTrue(conflicted);
 
-        component.unregister(providerChicken);
-        component.unregister(providerBeef);
         component.unregister(providerNoodle);
         component.unregister(providerWheat);
         basket = new Basket();

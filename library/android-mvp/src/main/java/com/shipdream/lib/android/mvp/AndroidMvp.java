@@ -19,9 +19,20 @@ package com.shipdream.lib.android.mvp;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
+import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
+import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
+import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+
+import javax.inject.Singleton;
 
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
@@ -34,39 +45,63 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 public class AndroidMvp {
     private static class DefaultPresenterDependencies extends Mvp.BaseDependencies {
         private static ExecutorService sNetworkExecutorService;
-        private final static String BACKGROUND_THREAD_NAME = "AndroidMvpDefaultBackgroundThread";
+
 
         @Override
         public ExecutorService createExecutorService() {
             if (sNetworkExecutorService == null) {
-                sNetworkExecutorService = Executors.newFixedThreadPool(10, new ThreadFactory() {
-                    @Override
-                    public Thread newThread(final @NonNull Runnable r) {
-                        return new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                android.os.Process.setThreadPriority(THREAD_PRIORITY_BACKGROUND);
-                                r.run();
-                            }
-                        }, BACKGROUND_THREAD_NAME);
-                    }
-                });
+
             }
             return sNetworkExecutorService;
         }
     }
 
-    static final String MVP_SATE_PREFIX = "__android.mvp.state:";
+    static final String MVP_SATE_PREFIX = "__android.graph.state:";
 
     static {
-        Injector.configGraph(new DefaultPresenterDependencies());
+        Injector.configGraph();
+        try {
+            Injector.getGraph().graph().getRootComponent().register(new Object() {
+                private final static String BACKGROUND_THREAD_NAME = "MvpBackgroundThread";
+
+                @Provides
+                @EventBusC
+                public EventBus providesEventBusC() {
+                    return new EventBusImpl();
+                }
+
+                @Provides
+                @EventBusV
+                public EventBus providesEventBusV() {
+                    return new EventBusImpl();
+                }
+
+                @Provides
+                public ExecutorService providesExecutorService() {
+                    return Executors.newFixedThreadPool(10, new ThreadFactory() {
+                        @Override
+                        public Thread newThread(final @NonNull Runnable r) {
+                            return new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    android.os.Process.setThreadPriority(THREAD_PRIORITY_BACKGROUND);
+                                    r.run();
+                                }
+                            }, BACKGROUND_THREAD_NAME);
+                        }
+                    });
+                }
+            });
+        } catch (PokeException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private AndroidMvp() {
     }
 
     /**
-     * The graph to inject dependencies for mvp components.
+     * The graph to inject dependencies for graph components.
      * @return The {@link Mvp}
      */
     public static Mvp graph() {

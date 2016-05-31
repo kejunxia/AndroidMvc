@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.LifeCycleTestController;
@@ -101,7 +100,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void shouldThrowProviderMissingWhenControllerImplIsNotFound() throws Exception {
-        Mvp graph = new Mvp(new BaseControllerDependencies());
+        Mvp graph = new Mvp();
 
         TestBadView testView = new TestBadView();
 
@@ -175,7 +174,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
     }
 
 
-    public static class LifeCycleTestControllerModule extends Module {
+    public static class LifeCycleTestControllerModule {
         private LifeCycleTestController.Proxy proxy;
 
         public LifeCycleTestControllerModule(LifeCycleTestController.Proxy proxy) {

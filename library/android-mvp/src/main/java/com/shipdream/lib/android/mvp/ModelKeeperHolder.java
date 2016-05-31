@@ -35,7 +35,7 @@ class ModelKeeperHolder {
     static void saveAllModels(Bundle outState) {
         stateKeeper.bundle = outState;
         //TODO: need to fix
-        Injector.getGraph().appProviderFinder.saveAllBeans(stateKeeper);
+        Injector.getGraph().rootComponent.saveAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 
@@ -46,7 +46,7 @@ class ModelKeeperHolder {
     static void restoreAllModels(Bundle savedState) {
         stateKeeper.bundle = savedState;
         //TODO: need to fix
-        Injector.getGraph().appProviderFinder.restoreAllBeans(stateKeeper);
+        Injector.getGraph().rootComponent.restoreAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 

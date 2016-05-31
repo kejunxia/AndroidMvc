@@ -191,20 +191,20 @@ To be notified when a provider is not used any more, use
 ```java
 SimpleGraph graph = new SimpleGraph();
 
-OnFreedListener onFreed = new OnFreedListener() {
+OnFreedListener onDereferenced = new OnFreedListener() {
     @Override
-    public void onFreed(Provider provider) {
+    public void onDereferenced(Provider provider) {
         System.io.println("Provides the is not used any more. Shall we release something?");
     }
 };
-graph.registerProviderFreedListener(onFreed);
+graph.registerProviderFreedListener(onDereferenced);
 ```
 
 To be notified when a provider is used for injection for the first time, use
 ```java
 Provider.registerOnInjectedListener(new OnInjectedListener() {
     @Override
-    public void onInjected(T object) {
+    public void onReferenced(T object) {
         System.io.println("Provides the first instance injecting to " + object.toString());
     }
 });

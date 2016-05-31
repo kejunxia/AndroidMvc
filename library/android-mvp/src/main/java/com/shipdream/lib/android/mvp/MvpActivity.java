@@ -89,7 +89,7 @@ public abstract class MvpActivity extends AppCompatActivity {
 
         if (toPrintAppExitMessage && logger.isTraceEnabled()) {
             logger.trace("App Exits(UI): {} injected beans are still cached.",
-                    Injector.getGraph().appProviderFinder.appScopeCache.getCachedItems().size());
+                    Injector.getGraph().rootComponent.appScopeCache.getCachedItems().size());
             toPrintAppExitMessage = false;
         }
     }

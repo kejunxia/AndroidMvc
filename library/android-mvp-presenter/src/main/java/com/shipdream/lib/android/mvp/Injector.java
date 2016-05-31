@@ -16,32 +16,54 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.Graph;
+import com.shipdream.lib.poke.Provider;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Injector {
-    static Mvp mvp;
-
-    /**
-     * Config the dependencies of MvpGraph. Be careful to use this method because it will dump the
-     * existing graph and all injectable instances managed by it
-     * @param dependencies the dependencies.
-     */
-    public static void configGraph(Mvp.BaseDependencies dependencies) {
-        try {
-            mvp = new Mvp(dependencies);
-        } catch (PokeException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    static MvpGraph graph;
 
     /**
      * Get the graph managing injectable objects.
      * @return
      */
-    public static Mvp getGraph() {
-        if (mvp == null) {
-            throw new RuntimeException("In unit testing, the graph needs to be mocked before running tests. See how the graph is prepared by TestControllerBase#prepareGraph() in https://github.com/kejunxia/AndroidMvc/blob/master/samples/note/core/src/test/java/com/shipdream/lib/android/mvc/samples/note/controller/internal/TestControllerBase.java");
+    public static MvpGraph getGraph() {
+        if (graph == null) {
+            final Logger logger = LoggerFactory.getLogger(Injector.class);
+            final MvpComponent rootComponent = new MvpComponent("MvpRootComponent");
+
+            graph = new MvpGraph();
+            try {
+                graph.setRootComponent(rootComponent);
+            } catch (Graph.IllegalRootComponentException e) {
+                //ignore
+            }
+
+            graph.registerDereferencedListener(new Provider.DereferenceListener() {
+                @Override
+                public void onDereferenced(Provider provider) {
+                    if (provider.getReferenceCount() == 0) {
+                        Object obj = provider.getCachedInstance();
+
+                        if (obj != null && obj instanceof Bean) {
+                            //When the cached instance is still there free and dispose it.
+                            Bean bean = (Bean) obj;
+                            bean.onDisposed();
+                            rootComponent.beans.remove(obj);
+
+                            logger.trace("--Bean freed - '{}'.",
+                                    provider.type().getSimpleName());
+                        }
+                    }
+                }
+
+            });
         }
-        return mvp;
+        return graph;
     }
+
+
+
 }

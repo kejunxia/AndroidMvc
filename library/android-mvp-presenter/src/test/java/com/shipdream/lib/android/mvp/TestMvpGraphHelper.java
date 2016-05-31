@@ -33,7 +33,7 @@ import static org.mockito.Mockito.mock;
 public class TestMvpGraphHelper {
     @After
     public void tearDown() throws Exception {
-        Injector.mvp = null;
+        Injector.graph = null;
     }
 
     @Test(expected = RuntimeException.class)
