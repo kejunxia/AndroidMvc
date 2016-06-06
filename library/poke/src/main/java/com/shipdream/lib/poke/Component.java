@@ -26,8 +26,11 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,8 +49,8 @@ public class Component {
     }
 
     //TODO document
-    public static class AlreadyAttachedException extends PokeException {
-        public AlreadyAttachedException(String message) {
+    public static class MultiParentException extends PokeException {
+        public MultiParentException(String message) {
             super(message);
         }
     }
@@ -56,8 +59,10 @@ public class Component {
     final ScopeCache scopeCache;
 
     final Map<String, Component> componentLocator = new HashMap<>();
+    Map<String, List<Component>> overriddenChain;
     final Map<String, Provider> providers = new HashMap<>();
     private Component parentComponent;
+    private List<Component> childrenComponents;
 
     public Component() {
         this(null, true);
@@ -149,7 +154,7 @@ public class Component {
 
         Component root = getRootComponent();
         //Only remove it to root component's locator
-        root.componentLocator.put(key, this);
+        root.componentLocator.remove(key, this);
 
         return this;
     }
@@ -211,37 +216,74 @@ public class Component {
         return this;
     }
 
-    public void attach(@NotNull Component childComponent) throws AlreadyAttachedException, ProviderConflictException {
+    public void attach(@NotNull Component childComponent) throws MultiParentException, ProviderConflictException {
+        attach(childComponent, false);
+    }
+
+    /**
+     * Attach a component to this component. The root of the component tree this component belongs
+     * to will be able to find all providers registered to the child component.
+     * @param childComponent The component to be added as a child component
+     * @throws MultiParentException Thrown when the child component has had a parent already.
+     * @throws ProviderConflictException Thrown when the child component has provider has been
+     * registered to component tree this component belongs to.
+     */
+    public void attach(@NotNull Component childComponent, boolean allowOverride) throws MultiParentException, ProviderConflictException {
         if (childComponent.parentComponent != null) {
             String msg = String.format("The attaching component(%s) has a parent already. Remove its parent before attaching it",
                     childComponent.name == null ? "unnamed" : childComponent.name);
-            throw new AlreadyAttachedException(msg);
+            throw new MultiParentException(msg);
         }
 
         //Merge the child component locator to the root component
         Component root = getRootComponent();
 
+        if (childComponent.parentComponent == null) {
+            //Child component was a root component
+        }
+
         Set<String> addedKeys = new HashSet<>();
-        for (Map.Entry<String, Component> entry : childComponent.componentLocator.entrySet()) {
+        Iterator<Map.Entry<String, Component>> iterator = childComponent.componentLocator.entrySet().iterator();
+        while(iterator.hasNext()) {
+            Map.Entry<String, Component> entry = iterator.next();
             String key = entry.getKey();
 
+            //check conflict if override is not allowed
             if (root.componentLocator.containsKey(key)) {
-                for (String k : addedKeys) {
-                    root.componentLocator.remove(k);
-                }
+                if (!allowOverride) {
+                    for (String k : addedKeys) {
+                        root.componentLocator.remove(k);
+                    }
 
-                throw new ProviderConflictException(
-                        String.format("Type(%s) in the adding child component(%s) has been added " +
-                                "to rootComponent(%s) or its attached child components.",
-                                key, childComponent.getComponentId(), root.getComponentId()));
+                    throw new ProviderConflictException(
+                            String.format("Type(%s) in the adding child component(%s) has been added " +
+                                            "to rootComponent(%s) or its attached child components.",
+                                    key, childComponent.getComponentId(), root.getComponentId()));
+                } else {
+                    if (root.overriddenChain == null) {
+                        root.overriddenChain = new HashMap<>();
+                    }
+                    List<Component> chain = root.overriddenChain.get(key);
+                    if (chain == null) {
+                        chain = new ArrayList<>();
+                        root.overriddenChain.put(key, chain);
+                    }
+                    chain.add(childComponent);
+                }
             }
 
             root.componentLocator.put(key, entry.getValue());
+            iterator.remove();
             addedKeys.add(key);
         }
 
         //Update tree nodes
         childComponent.parentComponent = this;
+
+        if (childrenComponents == null) {
+            childrenComponents = new ArrayList<>();
+        }
+        childrenComponents.add(childComponent);
     }
 
     private String getComponentId() {
@@ -275,20 +317,59 @@ public class Component {
     public void detach(@NotNull Component childComponent) throws MismatchDetachException {
         if (childComponent.parentComponent != this) {
             String msg = String.format("The child component(%s) doesn't belong to component(%s)",
-                    childComponent.name == null ? "unnamed" : childComponent.name,
-                    name == null ? "unnamed" : name);
+                    childComponent.name == null ? "unnamed" : childComponent.getComponentId(),
+                    getComponentId());
             throw new MismatchDetachException(msg);
         }
 
         //Update tree nodes
         childComponent.parentComponent = null;
+        if (childrenComponents != null) {
+            childrenComponents.remove(childComponent);
+        }
 
         //Disband the child component locator from the root component and return the keys to child
         //component itself
         Component root = getRootComponent();
         for (String key : childComponent.providers.keySet()) {
-            root.componentLocator.remove(key);
+            //Find all keys in itself
             childComponent.componentLocator.put(key, childComponent);
+
+            //TODO: need to restructure child components overriding priority, say child
+            //has c1, c2 overriding a key before detaching only root is aware of them. After detaching
+            //childComponent should perform as a root component so it needs to know how to manage them
+
+            if (root.overriddenChain != null) {
+                List<Component> chain = root.overriddenChain.get(key);
+
+                if (chain != null && !chain.isEmpty()) {
+                    Component removingItem = null;
+                    for (Component c : chain) {
+                        if (c == childComponent) {
+                            removingItem = c;
+                        }
+                    }
+
+                    chain.remove(removingItem);
+                    //notify root component that child component is surrendering managing the key
+
+                    if (chain.isEmpty()) {
+                        //No overridden any more
+                        if (root.providers.containsKey(key)) {
+                            //Root is managing the key itself
+                            root.componentLocator.put(key, root);
+                        } else {
+                            //Nobody is managing the key
+                            root.componentLocator.remove(key);
+                        }
+                    } else {
+                        //Second last overriding component takes over the management of the key
+                        root.componentLocator.put(key, chain.get(chain.size() - 1));
+                    }
+                }
+            } else {
+                root.componentLocator.remove(key);
+            }
         }
     }
 
@@ -300,6 +381,14 @@ public class Component {
         return root;
     }
 
+    /**
+     * Find the provider specified by the type and qualifier. It will look through the providers
+     * registered to this component and all its children components'.
+     * @param type The type the provider is associated with
+     * @param qualifier The qualifier the provider is associated with
+     * @return The provider
+     * @throws ProviderMissingException Thrown when the provider can't be found
+     */
     protected <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
         String key = PokeHelper.makeProviderKey(type, qualifier);
         Component targetComponent = getRootComponent().componentLocator.get(key);
@@ -327,18 +416,25 @@ public class Component {
         providers.put(key, provider);
     }
 
+    /**
+     * Add key to the component locator of the component. This component and the the component tree
+     * root's component locator will both be updated.
+     * @param key The key to add
+     * @param component The component whose providers directly contain the key
+     * @throws ProviderConflictException The key has been added to the component or the component tree
+     */
     private void addNewKeyToComponent(String key, Component component) throws ProviderConflictException {
         Component root = getRootComponent();
 
         if (componentLocator.keySet().contains(key)) {
             String msg = String.format("Type %s has already been registered " +
-                    "in this component(%s).", key, name == null ? "unnamed" : name);
+                    "in this component(%s).", key, getComponentId());
             throw new ProviderConflictException(msg);
         }
 
         if (root != this && root.componentLocator.keySet().contains(key)) {
             String msg = String.format("Type %s has already been registered " +
-                    "in root component(%s).", key, name == null ? "unnamed" : name);
+                    "in root component(%s).", key, getComponentId());
             throw new ProviderConflictException(msg);
         }
 
@@ -373,6 +469,9 @@ public class Component {
         }
     }
 
+    /**
+     * Method provider to extract providers from object's methods annotated by inject annotation
+     */
     static class MethodProvider extends Provider {
         private final Object providerHolder;
         private final Method method;

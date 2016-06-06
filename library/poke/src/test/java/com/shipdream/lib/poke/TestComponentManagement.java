@@ -270,7 +270,7 @@ public class TestComponentManagement extends BaseTestCases {
         parent.attach(component);
         try {
             rootComponent.attach(component);
-        } catch (Component.AlreadyAttachedException e) {
+        } catch (Component.MultiParentException e) {
             exp = true;
         }
 
@@ -368,7 +368,7 @@ public class TestComponentManagement extends BaseTestCases {
             c1.attach(c2);
         } catch (ProviderConflictException e) {
             exp = true;
-        } catch (Component.AlreadyAttachedException e) {
+        } catch (Component.MultiParentException e) {
 
         }
 
@@ -379,11 +379,107 @@ public class TestComponentManagement extends BaseTestCases {
             c2.attach(c1);
         } catch (ProviderConflictException e) {
             exp = true;
-        } catch (Component.AlreadyAttachedException e) {
+        } catch (Component.MultiParentException e) {
 
         }
 
         Assert.assertTrue(exp);
+    }
+
+    static abstract class Phone {
+    }
+
+    static class iPhone extends Phone {
+
+    }
+
+    static class Galaxy extends Phone {
+
+    }
+
+    static class Note extends Phone {
+
+    }
+
+    static class Nexus extends Phone {
+
+    }
+
+    class Store {
+        @MyInject
+        Phone phone;
+    }
+
+    @Test
+    public void should_use_overridden_components_and_not_throw_exception()
+            throws PokeException {
+        Graph graph = new Graph();
+
+        Component cIphone = new Component("iPhone");
+        cIphone.register(new ProviderByClassType(Phone.class, iPhone.class));
+
+        Component cGalaxy = new Component("Galaxy");
+        cGalaxy.register(new ProviderByClassType(Phone.class, Galaxy.class));
+
+        Component cNote = new Component("Note");
+        cNote.register(new ProviderByClassType(Phone.class, Note.class));
+
+        Component cNexus = new Component("Nexus");
+        cNexus.register(new ProviderByClassType(Phone.class, Nexus.class));
+
+        graph.setRootComponent(cIphone);
+        Store store = new Store();
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(iPhone.class, store.phone.getClass());
+
+        boolean exp = false;
+        try {
+            cIphone.attach(cGalaxy, true);
+        } catch (ProviderConflictException e) {
+            exp = true;
+        } catch (Component.MultiParentException e) {
+        }
+        Assert.assertFalse(exp);
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(Galaxy.class, store.phone.getClass());
+
+        try {
+            cIphone.attach(cNote, true);
+        } catch (ProviderConflictException e) {
+            exp = true;
+        } catch (Component.MultiParentException e) {
+        }
+        Assert.assertFalse(exp);
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(Note.class, store.phone.getClass());
+
+        try {
+            cGalaxy.attach(cNexus, true);
+        } catch (ProviderConflictException e) {
+            exp = true;
+        } catch (Component.MultiParentException e) {
+        }
+        Assert.assertFalse(exp);
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(Nexus.class, store.phone.getClass());
+
+        cIphone.detach(cNote);
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(Nexus.class, store.phone.getClass());
+
+        cGalaxy.detach(cNexus);
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(Galaxy.class, store.phone.getClass());
+
+        cIphone.detach(cGalaxy);
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(iPhone.class, store.phone.getClass());
+
+        Component c0 = new Component();
+        graph.setRootComponent(c0);
+        c0.attach(cIphone);
+        graph.inject(store, MyInject.class);
+        Assert.assertEquals(iPhone.class, store.phone.getClass());
     }
 
     @Test
@@ -401,7 +497,7 @@ public class TestComponentManagement extends BaseTestCases {
             c1.attach(c2);
         } catch (ProviderConflictException e) {
             exp = true;
-        } catch (Component.AlreadyAttachedException e) {
+        } catch (Component.MultiParentException e) {
 
         }
         Assert.assertTrue(exp);
