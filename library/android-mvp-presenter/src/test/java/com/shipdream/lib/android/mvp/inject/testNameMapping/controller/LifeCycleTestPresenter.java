@@ -18,16 +18,13 @@ package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
 import com.shipdream.lib.android.mvp.AbstractPresenter;
 
-import javax.inject.Inject;
-
-public class LifeCycleTestController extends AbstractPresenter {
+public class LifeCycleTestPresenter extends AbstractPresenter {
     public interface Proxy {
         void onConstructCalled();
         void disposeCalled();
     }
 
-    @Inject
-    private Proxy proxy;
+    public Proxy proxy;
 
     public Class modelType() {
         return null;

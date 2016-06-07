@@ -9,18 +9,51 @@ import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.annotation.Annotation;
 
 import javax.inject.Inject;
 
 public class MvpGraph {
+    final Logger logger = LoggerFactory.getLogger(getClass());
+
     public static class Exception extends RuntimeException {
         public Exception(String message, Throwable cause) {
             super(message, cause);
         }
     }
 
-    private Graph graph = new Graph();
+    private Graph graph;
+
+    {
+        graph = new Graph();
+        graph.registerDereferencedListener(new Provider.DereferenceListener() {
+            @Override
+            public void onDereferenced(Provider provider) {
+                if (provider.getReferenceCount() == 0) {
+                    Object obj = provider.getCachedInstance();
+
+                    if (obj != null && obj instanceof Bean) {
+                        //When the cached instance is still there free and dispose it.
+                        Bean bean = (Bean) obj;
+                        bean.onDisposed();
+
+                        MvpComponent mvpRootComponent = (MvpComponent)getRootComponent();
+                        if (mvpRootComponent != null) {
+                            mvpRootComponent.beans.remove(obj);
+
+                            logger.trace("--Bean freed - '{}'.",
+                                    provider.type().getSimpleName());
+                        }
+
+                    }
+                }
+            }
+
+        });
+    }
 
     /**
      * Register {@link Graph.Monitor} which will be called the graph is about to inject or release an object

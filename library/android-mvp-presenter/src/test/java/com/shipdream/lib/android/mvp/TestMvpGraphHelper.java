@@ -20,6 +20,8 @@ import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.junit.After;
 import org.junit.Test;
@@ -41,7 +43,7 @@ public class TestMvpGraphHelper {
         Injector.getGraph();
     }
 
-    static class Comp extends Module {
+    static class Comp {
         @Provides
         @EventBusC
         @Singleton
@@ -51,44 +53,20 @@ public class TestMvpGraphHelper {
     }
 
     @Test(expected = RuntimeException.class)
-    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvp_graph_dependencies() {
-        Injector.getGraph().register(new Module() {
+    public void should_raise_runtime_exception_when_exception_occurs_by_configuring_mvp_graph_dependencies()
+            throws ProvideException, ProviderConflictException {
+        Injector.getGraph().getRootComponent().register(new Object() {
             @Provides
             @EventBusC
             @Singleton
             public EventBus providesIEventBusC() {
                 return mock(EventBus.class);
             }
+
+            public ExecutorService provideExe() {
+                return mock(ExecutorService.class);
+            }
         });
-
-        //Register an event bus that will raise a duplicate registering exception when register the
-        //BaseDependencies
-
-        Mvp.BaseDependencies baseDependencies = new Mvp.BaseDependencies() {
-            @Override
-            protected ExecutorService createExecutorService() {
-                return mock(ExecutorService.class);
-            }
-        };
-
-        Injector.configGraph(baseDependencies);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void should_raise_runtime_exception_when_exception_occurrs_by_configuring_mvp_graph_by_injector() {
-        Mvp.BaseDependencies baseDependencies = new Mvp.BaseDependencies() {
-            @Override
-            protected ExecutorService createExecutorService() {
-                return mock(ExecutorService.class);
-            }
-        };
-
-        Injector.configGraph(baseDependencies);
-
-        //Register component providing duplicate instances
-        Injector.getGraph().register(new Comp());
-
-        //Exception should be raised here
-        Injector.configGraph(baseDependencies);
-    }
 }

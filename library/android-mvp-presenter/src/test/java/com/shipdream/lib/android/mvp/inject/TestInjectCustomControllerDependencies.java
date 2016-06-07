@@ -16,11 +16,13 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrinterController2;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.AndroidPartImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.manager.internal.InkManagerImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.service.Cartridge;
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -28,12 +30,29 @@ import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 public class TestInjectCustomControllerDependencies extends BaseTestCases {
+    MvpGraph graph;
+
+    @Before
+    public void setUp() throws Exception {
+        graph = new MvpGraph();
+        graph.setRootComponent(new Component().register(new Object(){
+            @Provides
+            public ExecutorService executorService() {
+                return Executors.newCachedThreadPool();
+            }
+        }));
+    }
+
     private static class PaperView {
         @Inject
         private PrinterController2 printerController;
@@ -45,8 +64,6 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
 
     @Test
     public void testInjectionOfRealController() throws Exception {
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-
         PaperView testView = new PaperView();
         graph.inject(testView);
 
@@ -70,7 +87,7 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
         private AndroidPart androidPart;
     }
 
-    public class AndroidModule extends Module {
+    public class AndroidModule {
         @Provides
         @Singleton
         public AndroidPart provideAndroidPart() {
@@ -84,8 +101,7 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
             throws ProvideException, ProviderConflictException, ProviderMissingException, CircularDependenciesException {
         AndroidModule component = new AndroidModule();
 
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-        graph.register(component);
+        graph.getRootComponent().register(component);
 
         AndroidView androidView = new AndroidView();
         Assert.assertNull(androidView.androidPart);

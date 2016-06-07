@@ -16,21 +16,25 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
+import com.shipdream.lib.android.mvp.MvpComponent;
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
-import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.LifeCycleTestController;
-import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.MissingImplController;
+import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
+import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.LifeCycleTestPresenter;
+import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.MissingImplPresenter;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
-import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -39,6 +43,25 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class TestControllerSimpleInject extends BaseTestCases {
+    MvpGraph graph;
+
+    @Before
+    public void setUp() throws Exception {
+        graph = new MvpGraph();
+        graph.setRootComponent(new MvpComponent("Root").register(new Object(){
+            @Provides
+            @EventBusC
+            public EventBus eventBusC() {
+                return new EventBusImpl();
+            }
+
+            @Provides
+            public ExecutorService executorService() {
+                return Executors.newCachedThreadPool();
+            }
+        }));
+    }
+
     private static class TestView {
         @Inject
         private PrintController printController;
@@ -50,8 +73,6 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void testInjectionOfRealController() throws Exception {
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-
         TestView testView = new TestView();
         graph.inject(testView);
 
@@ -62,32 +83,14 @@ public class TestControllerSimpleInject extends BaseTestCases {
     public void testInjectionOfMockController() throws Exception {
         final PrintController mockPrintController = mock(PrintController.class);
 
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(new Module() {
-            @Override
-            public ScopeCache getScopeCache() {
-                return super.getScopeCache();
-            }
-
-            @Provides
-            @EventBusC
-            public EventBus provideEventBusC() {
-                return mock(EventBus.class);
-            }
-
-            @Provides
-            public ExecutorService provideExecutorService() {
-                return mock(ExecutorService.class);
-            }
-        });
-        graph.register(new Provider<PrintController>(PrintController.class) {
+        graph.getRootComponent().register(new Provider<PrintController>(PrintController.class) {
             @Override
             protected PrintController createInstance() throws ProvideException {
                 return mockPrintController;
             }
         });
         TestView testView = new TestView();
-        graph.inject(testView, Inject.class);
+        graph.inject(testView);
         testView.present();
 
         verify(mockPrintController, times(1)).print();
@@ -95,13 +98,11 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     public static class TestBadView {
         @Inject
-        private MissingImplController controller;
+        private MissingImplPresenter controller;
     }
 
     @Test
     public void shouldThrowProviderMissingWhenControllerImplIsNotFound() throws Exception {
-        Mvp graph = new Mvp();
-
         TestBadView testView = new TestBadView();
 
         boolean detectedProviderMissingException = false;
@@ -117,8 +118,6 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void injectedControllerShouldBeSingleton() throws Exception {
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-
         TestView testView = new TestView();
         graph.inject(testView);
 
@@ -131,14 +130,13 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     private static class TestLifCycleView {
         @Inject
-        private LifeCycleTestController controller;
+        private LifeCycleTestPresenter controller;
     }
 
     @Test
     public void testOnDisposeShouldBeCalledWhenControllerReleased() throws Exception {
-        final LifeCycleTestController.Proxy lifeCycleProxy = mock(LifeCycleTestController.Proxy.class);
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-        graph.register(new LifeCycleTestControllerModule(lifeCycleProxy));
+        final LifeCycleTestPresenter.Proxy lifeCycleProxy = mock(LifeCycleTestPresenter.Proxy.class);
+        graph.getRootComponent().register(new LifeCycleTestControllerModule(lifeCycleProxy));
 
         TestLifCycleView testView = new TestLifCycleView();
         verify(lifeCycleProxy, times(0)).onConstructCalled();
@@ -162,8 +160,6 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
     @Test
     public void should_be_able_to_inject_concrete_class() throws Exception {
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-
         Road road = new Road();
 
         Assert.assertNull(road.car);
@@ -175,15 +171,17 @@ public class TestControllerSimpleInject extends BaseTestCases {
 
 
     public static class LifeCycleTestControllerModule {
-        private LifeCycleTestController.Proxy proxy;
+        private LifeCycleTestPresenter.Proxy proxy;
 
-        public LifeCycleTestControllerModule(LifeCycleTestController.Proxy proxy) {
+        public LifeCycleTestControllerModule(LifeCycleTestPresenter.Proxy proxy) {
             this.proxy = proxy;
         }
 
         @Provides
-        public LifeCycleTestController.Proxy provideLifeCycleTestController$Proxy() {
-            return proxy;
+        public LifeCycleTestPresenter provideLifeCycleTestPresenter() {
+            LifeCycleTestPresenter controller = new LifeCycleTestPresenter();
+            controller.proxy = proxy;
+            return controller;
         }
     }
 }

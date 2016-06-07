@@ -16,8 +16,10 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintModel;
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -25,11 +27,28 @@ import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
 public class TestOverridesControllerImpl extends BaseTestCases {
+    MvpGraph graph;
+
+    @Before
+    public void setUp() throws Exception {
+        graph = new MvpGraph();
+        graph.setRootComponent(new Component().register(new Object(){
+            @Provides
+            public ExecutorService executorService() {
+                return Executors.newCachedThreadPool();
+            }
+        }));
+    }
+
     private static class TestView {
         @Inject
         private PrintController printController;
@@ -51,7 +70,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
         }
     }
 
-    public static class PrinterModule extends Module {
+    public static class PrinterModule  {
         private PrintController printController;
 
         public PrinterModule(PrintController printController) {
@@ -67,9 +86,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
     @Test
     public void controllerShouldBeOverrideAfterExplicitlyRegistration()
             throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-
-        graph.register(new PrinterModule(new MockPrinter()));
+        graph.getRootComponent().register(new PrinterModule(new MockPrinter()));
 
         TestView testView = new TestView();
         graph.inject(testView);
@@ -81,10 +98,8 @@ public class TestOverridesControllerImpl extends BaseTestCases {
     @Test
     public void shouldRecoverDefaultUsingDefaultImplAfterExplicitlyUnregistration()
             throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        Mvp graph = new Mvp(new BaseControllerDependencies());
-
         PrinterModule component = new PrinterModule(new MockPrinter());
-        graph.register(component);
+        graph.getRootComponent().register(component);
 
         TestView testView = new TestView();
         graph.inject(testView);
@@ -92,7 +107,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
         Assert.assertEquals(testView.printController.getClass(), MockPrinter.class);
         Assert.assertEquals(testView.printController.print(), ((MockPrinter)testView.printController).printContent);
 
-        graph.unregister(component);
+        graph.getRootComponent().unregister(component);
         TestView testView1 = new TestView();
         graph.inject(testView1);
 

@@ -77,9 +77,9 @@ public class Navigator {
      *
      * @param type The class type of the instance needs to be prepared
      * @return This navigator
-     * @throws Mvp.Exception Raised when the required injectable object cannot be injected
+     * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type) throws Mvp.Exception {
+    public <T> Navigator with(Class<T> type) throws MvpGraph.Exception {
         with(type, null, null);
         return this;
     }
@@ -119,9 +119,9 @@ public class Navigator {
      * @param type The class type of the instance needs to be prepared
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws Mvp.Exception Raised when the required injectable object cannot be injected
+     * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws Mvp.Exception {
+    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws MvpGraph.Exception {
         with(type, null, preparer);
         return this;
     }
@@ -161,9 +161,9 @@ public class Navigator {
      * @param qualifier The qualifier
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws Mvp.Exception Raised when the required injectable object cannot be injected
+     * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws Mvp.Exception {
+    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvpGraph.Exception {
         try {
             T instance = Injector.getGraph().reference(type, qualifier);
 
@@ -180,7 +180,7 @@ public class Navigator {
             pendingReleaseInstance.qualifier = qualifier;
             pendingReleaseInstances.add(pendingReleaseInstance);
         } catch (PokeException e) {
-            throw new Mvp.Exception(e.getMessage(), e);
+            throw new MvpGraph.Exception(e.getMessage(), e);
         }
         return this;
     }

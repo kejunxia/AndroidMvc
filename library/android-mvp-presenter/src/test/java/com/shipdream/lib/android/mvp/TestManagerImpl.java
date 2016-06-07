@@ -18,6 +18,9 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.junit.After;
 import org.junit.Test;
@@ -54,7 +57,7 @@ public class TestManagerImpl {
     }
 
     @Test
-    public void should_be_able_to_post_events_to_controller_event_bus_from_manager() {
+    public void should_be_able_to_post_events_to_controller_event_bus_from_manager() throws ProvideException, ProviderConflictException {
         class MyEvent extends BaseEventC{
             public MyEvent(Object sender) {
                 super(sender);
@@ -76,13 +79,13 @@ public class TestManagerImpl {
 
         final EventBus bus = mock(EventBus.class);
 
-        Injector.configGraph(new Mvp.BaseDependencies() {
-            @Override
+        Injector.getGraph().getRootComponent().register(new Object() {
+            @Provides
             protected EventBus createEventBusC() {
                 return bus;
             }
 
-            @Override
+            @Provides
             protected ExecutorService createExecutorService() {
                 return null;
             }

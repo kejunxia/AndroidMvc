@@ -82,8 +82,17 @@ public class MvpComponent extends Component {
                 public T createInstance() throws ProvideException {
                     T instance = super.createInstance();
                     if (instance instanceof Bean) {
-                        Bean bean = (Bean) instance;
-                        bean.onConstruct();
+                        final Bean bean = (Bean) instance;
+
+                        //TODO: should register the listener to provider found from super as well
+
+                        registerOnReferencedListener(new ReferencedListener<T>() {
+                            @Override
+                            public void onReferenced(Provider<T> provider, T instance) {
+                                bean.onConstruct();
+                                unregisterOnReferencedListener(this);
+                            }
+                        });
 
                         logger.trace("+++Bean instantiated - '{}'.",
                                 type().getSimpleName());

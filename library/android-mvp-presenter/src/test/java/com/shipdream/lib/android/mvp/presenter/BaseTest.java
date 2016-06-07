@@ -16,9 +16,13 @@
 
 package com.shipdream.lib.android.mvp.presenter;
 
-import com.shipdream.lib.android.mvp.Injector;
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
+import com.shipdream.lib.poke.Component;
+import com.shipdream.lib.poke.Provides;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
@@ -36,35 +40,34 @@ public class BaseTest {
     protected EventBus eventBusV;
     protected ExecutorService executorService;
 
-    private void prepareGraph() {
+    protected MvpGraph graph;
+
+    @Before
+    public void setUp() throws Exception {
+        graph = new MvpGraph();
+
         eventBusC = new EventBusImpl();
         eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
 
-        Injector.configGraph(new Mvp.BaseDependencies() {
-            @Override
+        graph.setRootComponent(new Component().register(new Object(){
+            @Provides
+            @EventBusC
             public EventBus createEventBusC() {
                 return eventBusC;
             }
 
-            @Override
+            @Provides
+            @EventBusV
             public EventBus createEventBusV() {
                 return eventBusV;
             }
 
-            @Override
-            public ExecutorService createExecutorService() {
+            @Provides
+            public ExecutorService executorService() {
                 return executorService;
             }
-        });
-    }
-
-    protected Mvp graph;
-
-    @Before
-    public void setUp() throws Exception {
-        prepareGraph();
-        graph = Injector.getGraph();
+        }));
     }
 
     @BeforeClass
@@ -78,27 +81,5 @@ public class BaseTest {
         //add appender to any Logger (here is root)
         Logger.getRootLogger().addAppender(console);
     }
-
-    static class ControllerDependencies extends Mvp.BaseDependencies {
-        private BaseTest baseTest;
-
-        public ControllerDependencies(BaseTest baseTest) {
-            this.baseTest = baseTest;
-        }
-
-        @Override
-        public EventBus createEventBusC() {
-            return baseTest.eventBusC;
-        }
-
-        @Override
-        public EventBus createEventBusV() {
-            return baseTest.eventBusV;
-        }
-
-        @Override
-        public ExecutorService createExecutorService() {
-            return baseTest.executorService;
-        }
-    }
+    
 }

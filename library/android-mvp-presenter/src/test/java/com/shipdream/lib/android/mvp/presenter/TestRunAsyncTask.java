@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvp.presenter;
 
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.Task;
 
 import org.junit.Assert;
@@ -92,7 +93,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(1)).onResourceLoaded();
 
-        verify(view, times(0)).onResourceFailed(any(Mvp.Exception.class));
+        verify(view, times(0)).onResourceFailed(any(MvpGraph.Exception.class));
 
         verify(view, times(0)).onResourceCancelled();
 
@@ -107,7 +108,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(0)).onResourceLoaded();
 
-        verify(view, times(1)).onResourceFailed(any(Mvp.Exception.class));
+        verify(view, times(1)).onResourceFailed(any(MvpGraph.Exception.class));
 
         verify(view, times(0)).onResourceCancelled();
 
@@ -123,7 +124,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(0)).onResourceLoaded();
 
-        verify(view, times(0)).onResourceFailed(any(Mvp.Exception.class));
+        verify(view, times(0)).onResourceFailed(any(MvpGraph.Exception.class));
 
         verify(view, times(1)).onResourceCancelled();
 

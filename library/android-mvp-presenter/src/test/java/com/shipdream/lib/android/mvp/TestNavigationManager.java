@@ -453,9 +453,9 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
     }
 
-    @Test(expected = Mvp.Exception.class)
+    @Test(expected = MvpGraph.Exception.class)
     public void should_catch_invocation_exception_when_NPE_detected_on_injection() throws Exception {
-        Module com = new Module() {
+        Object com = new Object() {
             @Provides
             @Singleton
             @Slower2
@@ -472,7 +472,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
                 };
             }
         };
-        Injector.getGraph().register(com);
+        Injector.getGraph().getRootComponent().register(com);
 
         Annotation slower2Qualifier = SlowXHolder.class.getAnnotation(Slower2.class);
 
@@ -490,7 +490,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         // Arrange
         final long fiveMinutes = 60 * 5;
 
-        Module com = new Module() {
+        Object module = new Object() {
             @Provides
             @Singleton
             @Slower2
@@ -531,7 +531,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             }
         };
 
-        Injector.getGraph().register(com);
+        Injector.getGraph().getRootComponent().register(module);
 
         Annotation slower2Qualifier = SlowXHolder.class.getAnnotation(Slower2.class);
         Annotation slower3Qualifier = SlowXHolder.class.getAnnotation(Slower3.class);

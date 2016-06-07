@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.inject;
+package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-public class BaseControllerDependencies extends Mvp.BaseDependencies {
-    @Override
-    protected ExecutorService createExecutorService() {
-        return Executors.newCachedThreadPool();
-    }
+public interface MissingImplPresenter {
 }

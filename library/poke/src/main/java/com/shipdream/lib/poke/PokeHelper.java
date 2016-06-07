@@ -24,7 +24,7 @@ class PokeHelper {
     static String makeProviderKey(Class type, Annotation qualifier) {
         String qualifierStr;
         if (qualifier == null) {
-            qualifierStr = "null";
+            qualifierStr = "@null";
         } else {
             if (qualifier.annotationType() == Named.class) {
                 qualifierStr = qualifier.toString() + ":" + ((Named) qualifier).value();
@@ -32,7 +32,7 @@ class PokeHelper {
                 qualifierStr = qualifier.toString();
             }
         }
-        return type.getName() + "@" + qualifierStr;
+        return type.getName() + qualifierStr;
     }
 
 }

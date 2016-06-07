@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp;
+package com.shipdream.lib.poke;
 
+import com.shipdream.lib.android.mvp.Injector;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -27,13 +30,14 @@ import org.junit.Test;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import static org.mockito.Mockito.mock;
 
 public class TestInjector {
     @After
     public void tearDown() throws Exception {
-        Injector.graph = null;
+        Injector.getGraph().setRootComponent(null);
     }
 
     @Test(expected = RuntimeException.class)
@@ -42,14 +46,21 @@ public class TestInjector {
     }
 
     private int getGraphSize() {
-        return Injector.getGraph().rootComponent.scopeCache.getCachedItems().size();
+        return Injector.getGraph().getRootComponent().scopeCache.getCachedItems().size();
     }
     
     @Test
-    public void should_return_all_cached_instances_from_injector_graph() {
-        Injector.configGraph(new Mvp.BaseDependencies() {
-            @Override
-            protected ExecutorService createExecutorService() {
+    public void should_return_all_cached_instances_from_injector_graph() throws ProvideException, ProviderConflictException {
+        Injector.getGraph().getRootComponent().register(new Object() {
+            @Provides
+            @EventBusC
+            @Singleton
+            public EventBus providesIEventBusC() {
+                return mock(EventBus.class);
+            }
+
+            @Provides
+            public ExecutorService provideExe() {
                 return mock(ExecutorService.class);
             }
         });
