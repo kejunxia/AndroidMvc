@@ -94,7 +94,7 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
         component.register(module);
         graph.registerDereferencedListener(new Provider.DereferenceListener() {
             @Override
-            public void onDereferenced(Provider provider) {
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
                 if (provider.type() == Service.class) {
                     if (provider.getReferenceCount() == 0) {
                         serviceOnFreed.onFreed();

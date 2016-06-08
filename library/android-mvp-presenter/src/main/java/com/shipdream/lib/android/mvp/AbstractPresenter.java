@@ -26,19 +26,19 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * Called when the controller is constructed. Note that it could be called either when the
-     * controller is instantiated for the first time or restored by views.
+     * Called when the presenter is created. Note that it could be called either when the
+     * presenter is instantiated for the first time or restored by views.
      * <p/>
-     * <p>The model of the controller will be instantiated by model's default no-argument
+     * <p>The model of the presenter will be instantiated by model's default no-argument
      * constructor here whe {@link #modelType()} doesn't return null.</p>
      */
-    public void onConstruct() {
-        super.onConstruct();
+    public void onCreated() {
+        super.onCreated();
         eventBus2C.register(this);
     }
 
     /**
-     * Called when the controller is disposed. This occurs when the controller is de-referenced and
+     * Called when the presenter is disposed. This occurs when the presenter is de-referenced and
      * not retained by any objects.
      */
     @Override
@@ -51,7 +51,7 @@ public class AbstractPresenter<MODEL> extends Bean<MODEL> {
      * Get the view model the presenter is holding. Don't write but only read the model from view.
      * Should only presenter write the model.
      *
-     * @return Null if the controller doesn't need to get its model saved and restored automatically
+     * @return Null if the presenter doesn't need to get its model saved and restored automatically
      * when {@link #modelType()} returns null.
      */
     @Override

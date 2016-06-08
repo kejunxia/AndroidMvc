@@ -44,7 +44,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         controller = new MyPresenter();
         graph.inject(controller);
-        controller.onConstruct();
+        controller.onCreated();
 
         view = mock(MyPresenter.View.class);
         eventBusV.register(view);

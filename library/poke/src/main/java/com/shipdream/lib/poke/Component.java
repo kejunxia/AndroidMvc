@@ -153,8 +153,8 @@ public class Component {
         }
 
         Component root = getRootComponent();
-        //Only remove it to root component's locator
-        root.componentLocator.remove(key, this);
+        //Remove it from root component's locator
+        root.componentLocator.remove(key);
 
         return this;
     }
@@ -404,6 +404,13 @@ public class Component {
         }
     }
 
+    /**
+     * Add provider to this component and notify the root component this component is
+     * managing the provider.
+     * @param provider The adding provider
+     * @throws ProviderConflictException Thrown when a provider bound to same type and qualifier is
+     * added in the component tree that this component is in.
+     */
     private <T> void addProvider(@NotNull Provider<T> provider)
             throws ProviderConflictException {
         Class<T> type = provider.type();

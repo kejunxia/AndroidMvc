@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvp.view.nav;
 import android.content.pm.ActivityInfo;
 
 import com.google.gson.Gson;
-import com.shipdream.lib.android.mvp.Injector;
+import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.AndroidMvp;
@@ -128,9 +128,9 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvpTestActivityNaviga
     }
 
     private NavigationManager.Model getNavManagerModel() throws PokeException {
-        NavigationManager navigationManager = Injector.getGraph().reference(NavigationManager.class, null);
+        NavigationManager navigationManager = Mvp.graph().reference(NavigationManager.class, null);
         NavigationManager.Model model = navigationManager.getModel();
-        Injector.getGraph().dereference(navigationManager, NavigationManager.class, null);
+        Mvp.graph().dereference(navigationManager, NavigationManager.class, null);
         return model;
     }
 

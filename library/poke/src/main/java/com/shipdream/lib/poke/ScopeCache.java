@@ -49,6 +49,8 @@ class ScopeCache {
                         provider.type().getName(), qualifierName));
             }
             cache.put(key, item);
+
+            provider.newlyCreatedInstance = item.instance;
         }
 
         return item.instance;

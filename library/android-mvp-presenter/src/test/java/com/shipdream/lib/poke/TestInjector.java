@@ -16,46 +16,37 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.android.mvp.Injector;
+import com.shipdream.lib.android.mvp.Mvp;
+import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 
 import static org.mockito.Mockito.mock;
 
 public class TestInjector {
-    @After
-    public void tearDown() throws Exception {
-        Injector.getGraph().setRootComponent(null);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void should_raise_exception_when_getting_mvp_graph_before_configuring_it() {
-        Injector.getGraph();
-    }
-
-    private int getGraphSize() {
-        return Injector.getGraph().getRootComponent().scopeCache.getCachedItems().size();
-    }
-    
-    @Test
-    public void should_return_all_cached_instances_from_injector_graph() throws ProvideException, ProviderConflictException {
-        Injector.getGraph().getRootComponent().register(new Object() {
+    @Before
+    public void setUp() throws Exception {
+        Mvp.graph().setRootComponent(new MvpComponent("RootMvp").register(new Object() {
             @Provides
             @EventBusC
-            @Singleton
             public EventBus providesIEventBusC() {
+                return mock(EventBus.class);
+            }
+
+            @Provides
+            @EventBusV
+            public EventBus providesIEventBusV() {
                 return mock(EventBus.class);
             }
 
@@ -63,7 +54,15 @@ public class TestInjector {
             public ExecutorService provideExe() {
                 return mock(ExecutorService.class);
             }
-        });
+        }));
+    }
+
+    private int getGraphSize() {
+        return Mvp.graph().getRootComponent().scopeCache.getCachedItems().size();
+    }
+    
+    @Test
+    public void should_return_all_cached_instances_from_mvp_graph() throws ProvideException, ProviderConflictException {
         Assert.assertEquals(0, getGraphSize());
 
         class View1 {
@@ -73,7 +72,7 @@ public class TestInjector {
         }
 
         View1 v1 = new View1();
-        Injector.getGraph().inject(v1);
+        Mvp.graph().inject(v1);
         Assert.assertEquals(1, getGraphSize());
 
         class View2 {
@@ -83,7 +82,7 @@ public class TestInjector {
         }
 
         View2 v2 = new View2();
-        Injector.getGraph().inject(v2);
+        Mvp.graph().inject(v2);
         Assert.assertEquals(1, getGraphSize());
 
         class View3 {
@@ -93,7 +92,7 @@ public class TestInjector {
         }
 
         View3 v3 = new View3();
-        Injector.getGraph().inject(v3);
+        Mvp.graph().inject(v3);
         Assert.assertEquals(2, getGraphSize());
     }
 }

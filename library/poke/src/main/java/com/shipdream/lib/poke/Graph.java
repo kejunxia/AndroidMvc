@@ -49,6 +49,7 @@ public class Graph {
     private Set<String> visitedInjectNodes = new LinkedHashSet<>();
     private Map<Object, Map<String, Set<String>>> visitedFields = new HashMap<>();
     private List<Provider.DereferenceListener> dereferenceListeners;
+    private List<Provider.DisposeListener> disposeListeners;
 
     private Component rootComponent;
 
@@ -94,7 +95,7 @@ public class Graph {
      * @param component The root {@link Component} of this graph.
      */
     public void setRootComponent(Component component) throws IllegalRootComponentException {
-        if (component.getParent() != null) {
+        if (component != null && component.getParent() != null) {
             throw new IllegalRootComponentException("A component with parent cannot be set as a graph's root component. Make sure the component doesn't parent.");
         }
         this.rootComponent = component;
@@ -105,39 +106,91 @@ public class Graph {
     }
 
     /**
-     * Register {@link Provider.DereferenceListener} which will be called when the provider
-     *
-     * @param onProviderFreedListener The listener
+     * Register {@link Provider.DisposeListener} which will be called when either
+     * <ul>
+     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     * </ul>
+     * @param disposeListener The listener
      */
-    public void registerDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
+    public void registerDisposeListener(Provider.DisposeListener disposeListener) {
+        if (disposeListeners == null) {
+            disposeListeners = new CopyOnWriteArrayList<>();
+        }
+        disposeListeners.add(disposeListener);
+    }
+
+    /**
+     * Unregister {@link Provider.DisposeListener} which will be called when either
+     * <ul>
+     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     * </ul>
+     *
+     * @param disposeListener The listener
+     */
+    public void unregisterDisposeListener(Provider.DisposeListener disposeListener) {
+        if (disposeListeners != null) {
+            disposeListeners.remove(disposeListener);
+
+            if (disposeListeners.isEmpty()) {
+                disposeListeners = null;
+            }
+        }
+    }
+
+    /**
+     * Clear {@link Provider.DisposeListener}s which will be called when when either
+     * <ul>
+     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     * </ul>
+     */
+    public void clearDisposeListeners() {
+        if (disposeListeners != null) {
+            disposeListeners.clear();
+            disposeListeners = null;
+        }
+    }
+
+    /**
+     * Register {@link Provider.DereferenceListener} which will be called when the provider's
+     * instance is dereferenced.
+     *
+     * @param dereferenceListener The listener
+     */
+    public void registerDereferencedListener(Provider.DereferenceListener dereferenceListener) {
         if (dereferenceListeners == null) {
             dereferenceListeners = new CopyOnWriteArrayList<>();
         }
-        dereferenceListeners.add(onProviderFreedListener);
+        dereferenceListeners.add(dereferenceListener);
     }
 
     /**
-     * Unregister {@link Provider.DereferenceListener} which will be called when the last cached
-     * instance of an injected contract is freed.
+     * Unregister {@link Provider.DereferenceListener} which will be called when the provider's
+     * instance is dereferenced.
      *
-     * @param onProviderFreedListener The listener
+     * @param dereferenceListener The listener
      */
-    public void unregisterDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
+    public void unregisterDereferencedListener(Provider.DereferenceListener dereferenceListener) {
         if (dereferenceListeners != null) {
-            dereferenceListeners.remove(onProviderFreedListener);
+            dereferenceListeners.remove(dereferenceListener);
+            if (dereferenceListeners.isEmpty()) {
+                dereferenceListeners = null;
+            }
         }
     }
 
     /**
-     * Clear {@link Provider.DereferenceListener}s which will be called when the last cached
-     * instance of an injected contract is freed.
+     * Clear {@link Provider.DereferenceListener}s which will be called when the provider's
+     * instance is dereferenced.
      */
     public void clearDereferencedListeners() {
         if (dereferenceListeners != null) {
             dereferenceListeners.clear();
+            dereferenceListeners = null;
         }
     }
-
 
     /**
      * Inject all fields annotated by the given injectAnnotation
@@ -314,6 +367,7 @@ public class Graph {
      * Dereference an injectable object. When it's not referenced by anything else after this
      * dereferencing, release its cached instance if possible.
      *
+     * @param instance         the instance is to release
      * @param type             the type of the object
      * @param qualifier        the qualifier
      * @param injectAnnotation the inject annotation
@@ -324,7 +378,7 @@ public class Graph {
 
         Provider<T> provider = findProvider(type, qualifier);
         provider.release();
-        checkToFreeProvider(provider);
+        dereferenceProvider(provider, instance);
     }
 
     @SuppressWarnings("unchecked")
@@ -433,7 +487,7 @@ public class Graph {
 
                                 provider.release(target, field);
 
-                                checkToFreeProvider(provider);
+                                dereferenceProvider(provider, fieldValue);
                             }
                         }
                     }
@@ -447,11 +501,25 @@ public class Graph {
         }
     }
 
-    private void checkToFreeProvider(Provider provider) {
+    private <T> void dereferenceProvider(Provider<T> provider, T instance) {
         if (dereferenceListeners != null) {
             int listenerSize = dereferenceListeners.size();
-            for (int k = 0; k < listenerSize; k++) {
-                dereferenceListeners.get(k).onDereferenced(provider);
+            for (int i = 0; i < listenerSize; i++) {
+                dereferenceListeners.get(i).onDereferenced(provider, instance);
+            }
+        }
+        if (disposeListeners != null) {
+            boolean disposing = false;
+            if (provider.getScopeCache() == null) {
+                disposing = true;
+            } else if (provider.getReferenceCount() == 0) {
+                disposing = true;
+            }
+            if (disposing) {
+                int listenerSize = disposeListeners.size();
+                for (int i = 0; i < listenerSize; i++) {
+                    disposeListeners.get(i).onDisposed(provider, instance);
+                }
             }
         }
     }

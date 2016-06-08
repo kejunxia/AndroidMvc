@@ -144,10 +144,18 @@ public class TestControllerSimpleInject extends BaseTestCases {
         verify(lifeCycleProxy, times(1)).onConstructCalled();
         verify(lifeCycleProxy, times(0)).disposeCalled();
 
+        TestLifCycleView testView1 = new TestLifCycleView();
+        graph.inject(testView1);
+        //Should be 1 still since a cached instance will be reused.
+        verify(lifeCycleProxy, times(1)).onConstructCalled();
+        verify(lifeCycleProxy, times(0)).disposeCalled();
+
+        graph.release(testView1);
+        verify(lifeCycleProxy, times(0)).disposeCalled();
+
         graph.release(testView);
         verify(lifeCycleProxy, times(1)).disposeCalled();
     }
-
 
     public static class Car {
 

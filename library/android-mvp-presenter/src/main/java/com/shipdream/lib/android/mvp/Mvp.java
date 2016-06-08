@@ -18,21 +18,16 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.poke.Graph;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-public class Injector {
+public class Mvp {
     static MvpGraph graph;
 
     /**
      * Get the graph managing injectable objects.
      * @return
      */
-    public static MvpGraph getGraph() {
+    public static MvpGraph graph() {
         if (graph == null) {
-
             final MvpComponent rootComponent = new MvpComponent("MvpRootComponent");
-
             graph = new MvpGraph();
             try {
                 graph.setRootComponent(rootComponent);
@@ -42,7 +37,5 @@ public class Injector {
         }
         return graph;
     }
-
-
 
 }

@@ -20,10 +20,10 @@ import com.shipdream.lib.poke.exception.ProvideException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Provider controls the injection type mapping as well as the scope by associated
@@ -31,7 +31,41 @@ import java.util.Map;
  */
 public abstract class Provider<T> {
     /**
-     * Listener monitoring when the provider is referenced for the first time
+     * Listener monitoring when the provider is instantiating a new instance.
+     */
+    public interface CreationListener<T> {
+        /**
+         * Called when a new instance is constructed by the provider
+         *
+         * @param provider The provider used to provide the injecting instance
+         * @param instance The instance. Its own injectable members should have been injected recursively as well.
+         */
+        void onCreated(Provider<T> provider, T instance);
+    }
+
+    /**
+     * Listener monitoring when the instance provided by the provider is freed. It happens either
+     * <ul>
+     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     * </ul>
+     */
+    public interface DisposeListener {
+        /**
+         * Called when either
+         * <ul>
+         *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
+         *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+         * </ul>
+         *
+         * @param provider The provider used to provide the injecting instance
+         * @param instance The instance. Its own injectable members should have been injected recursively as well.
+         */
+        <T> void onDisposed(Provider<T> provider, T instance);
+    }
+
+    /**
+     * Listener monitoring when the provider is referenced.
      */
     public interface ReferencedListener<T> {
         /**
@@ -45,16 +79,16 @@ public abstract class Provider<T> {
     }
 
     /**
-     * Listener will be called when the given provider is not referenced by any objects. The
-     * listener will be called before its cached instance is freed if there is a cache associated.
+     * Listener will be called when the given provider is dereferenced.
      */
     public interface DereferenceListener {
         /**
          * listener to be invoked when when the given provider is not referenced by any objects.
          *
-         * @param provider  The provider whose content is not referenced by any objects.
+         * @param provider The provider whose content is not referenced by any objects.
+         * @param instance The instance that is being dereferrenced
          */
-        void onDereferenced(Provider provider);
+        <T> void onDereferenced(Provider<T> provider, T instance);
     }
 
     private final Class<T> type;
@@ -219,7 +253,28 @@ public abstract class Provider<T> {
     /**
      * The listeners when the instance is injected.
      */
+    private List<CreationListener<T>> creationListeners;
+
+    /**
+     * @return Instantiation listeners if there are registered listeners. Null may be returned if
+     * nothing is registered ever.
+     */
+    public List<CreationListener<T>> getCreationListeners() {
+        return creationListeners;
+    }
+
+    /**
+     * The listeners when the instance is referenced.
+     */
     private List<ReferencedListener<T>> referencedListeners;
+
+    /**
+     * @return Referenced listeners if there are registered listeners. Null may be returned if
+     * nothing is registered ever.
+     */
+    public List<ReferencedListener<T>> getReferencedListeners() {
+        return referencedListeners;
+    }
 
     /**
      * Get qualifier of the provider
@@ -247,9 +302,32 @@ public abstract class Provider<T> {
         return null;
     }
 
+    public void registerCreationListener(CreationListener<T> listener) {
+        if(creationListeners == null) {
+            creationListeners = new CopyOnWriteArrayList<>();
+        }
+        creationListeners.add(listener);
+    }
+
+    public void unregisterCreationListener(CreationListener<T> listener) {
+        if (creationListeners != null) {
+            creationListeners.remove(listener);
+            if (creationListeners.isEmpty()) {
+                creationListeners = null;
+            }
+        }
+    }
+
+    public void clearCreationListeners() {
+        if (creationListeners != null) {
+            creationListeners.clear();
+            creationListeners = null;
+        }
+    }
+
     public void registerOnReferencedListener(ReferencedListener<T> listener) {
         if(referencedListeners == null) {
-            referencedListeners = new ArrayList<>();
+            referencedListeners = new CopyOnWriteArrayList<>();
         }
         referencedListeners.add(listener);
     }
@@ -257,12 +335,16 @@ public abstract class Provider<T> {
     public void unregisterOnReferencedListener(ReferencedListener<T> listener) {
         if (referencedListeners != null) {
             referencedListeners.remove(listener);
+            if (referencedListeners.isEmpty()) {
+                referencedListeners = null;
+            }
         }
     }
 
     public void clearOnReferencedListener() {
         if (referencedListeners != null) {
             referencedListeners.clear();
+            referencedListeners = null;
         }
     }
 
@@ -283,10 +365,26 @@ public abstract class Provider<T> {
                         "%s) should not provide NULL as instance", type.getName(), qualifierName));
             }
 
+            newlyCreatedInstance = impl;
+
             return impl;
         } else {
             return cache.get(this);
         }
+    }
+
+    /**
+     * Delay notifying instantiation listeners since they need to be full
+     * injected if the instance has injectable fields
+     */
+    T newlyCreatedInstance = null;
+    private void notifyInstanceCreationWhenNeeded() {
+        if (newlyCreatedInstance != null && creationListeners != null) {
+            for (CreationListener l : creationListeners) {
+                l.onCreated(this, newlyCreatedInstance);
+            }
+        }
+        newlyCreatedInstance = null;
     }
 
     /**
@@ -298,6 +396,8 @@ public abstract class Provider<T> {
      * @param instance The instance. Its own injectable members should have been injected recursively as well.
      */
     void notifyReferenced(Provider provider, T instance) {
+        notifyInstanceCreationWhenNeeded();
+
         if (referencedListeners != null) {
             int len = referencedListeners.size();
             for(int i = 0; i < len; i++) {

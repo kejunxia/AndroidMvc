@@ -38,7 +38,7 @@ public class TestRunAsyncTask2 extends BaseTest {
 //
 //        controller = new MyPresenter2();
 //        graph.inject(controller);
-//        controller.onConstruct();
+//        controller.onCreated();
 //
 //        eventMonitor = mock(EventMonitor.class);
 //        eventBusV.register(eventMonitor);

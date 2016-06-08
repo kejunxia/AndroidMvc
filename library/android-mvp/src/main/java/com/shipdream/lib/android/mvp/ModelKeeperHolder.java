@@ -29,24 +29,24 @@ class ModelKeeperHolder {
     }
 
     /**
-     * Save model of all {@link Bean}s currently live in the {@link Injector#getGraph()}
+     * Save model of all {@link Bean}s currently live in the {@link Mvp#graph()}
      * @param outState the out state
      */
     static void saveAllModels(Bundle outState) {
         stateKeeper.bundle = outState;
         //TODO: need to fix
-        Injector.getGraph().rootComponent.saveAllBeans(stateKeeper);
+        Mvp.graph().rootComponent.saveAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 
     /**
-     * Restore model of all {@link Bean}s currently live in the {@link Injector#getGraph()}
+     * Restore model of all {@link Bean}s currently live in the {@link Mvp#graph()}
      * @Bundle savedState the saved state
      */
     static void restoreAllModels(Bundle savedState) {
         stateKeeper.bundle = savedState;
         //TODO: need to fix
-        Injector.getGraph().rootComponent.restoreAllBeans(stateKeeper);
+        Mvp.graph().rootComponent.restoreAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 

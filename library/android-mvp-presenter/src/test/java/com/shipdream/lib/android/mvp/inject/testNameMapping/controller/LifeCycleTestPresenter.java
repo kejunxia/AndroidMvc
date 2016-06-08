@@ -30,8 +30,8 @@ public class LifeCycleTestPresenter extends AbstractPresenter {
         return null;
     }
 
-    public void onConstruct() {
-        super.onConstruct();
+    public void onCreated() {
+        super.onCreated();
         proxy.onConstructCalled();
     }
 

@@ -32,7 +32,7 @@ import java.util.List;
 public class Navigator {
     /**
      * The callback when the navigation is settled. Since Android Fragment doesn't invoke its call
-     * back like onCreate, onCreateView and etc after a fragment manager commits fragment transaction,
+     * back like onCreated, onCreateView and etc after a fragment manager commits fragment transaction,
      * if something needs to be done after the fragment being navigated to is ready to show
      * (MvpFragment.onViewReady is called), put the actions in here.
      */
@@ -165,7 +165,7 @@ public class Navigator {
      */
     public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvpGraph.Exception {
         try {
-            T instance = Injector.getGraph().reference(type, qualifier);
+            T instance = Mvp.graph().reference(type, qualifier);
 
             if (preparer != null) {
                 preparer.prepare(instance);
@@ -450,7 +450,7 @@ public class Navigator {
         if (pendingReleaseInstances != null) {
             for (PendingReleaseInstance i : pendingReleaseInstances) {
                 try {
-                    Injector.getGraph().dereference(i.instance, i.type, i.qualifier);
+                    Mvp.graph().dereference(i.instance, i.type, i.qualifier);
                 } catch (ProviderMissingException e) {
                     //should not happen
                     //in case this happens just logs it

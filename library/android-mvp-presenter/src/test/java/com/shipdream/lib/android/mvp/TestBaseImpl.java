@@ -84,6 +84,6 @@ public class TestBaseImpl extends BaseTest {
     public void should_throw_out_runtime_exception_when_unable_to_create_model_instance() throws Exception {
         BadPresenter presenter = new BadPresenter();
         graph.inject(presenter);
-        presenter.onConstruct();
+        presenter.onCreated();
     }
 }

@@ -462,7 +462,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             TimerController timerSlowerX2() {
                 return new TimerController() {
                     {
-                        onConstruct();
+                        onCreated();
                     }
 
                     @Override
@@ -472,11 +472,11 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
                 };
             }
         };
-        Injector.getGraph().getRootComponent().register(com);
+        Mvp.graph().getRootComponent().register(com);
 
         Annotation slower2Qualifier = SlowXHolder.class.getAnnotation(Slower2.class);
 
-        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should have now been released
@@ -498,7 +498,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
                 return new TimerController() {
                     {
                         try {
-                            onConstruct();
+                            onCreated();
                         } catch (Exception e) {
                         }
 
@@ -518,7 +518,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
                 return new TimerController() {
                     {
                         try {
-                            onConstruct();
+                            onCreated();
                         } catch (Exception e) {
                         }
                     }
@@ -531,12 +531,12 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             }
         };
 
-        Injector.getGraph().getRootComponent().register(module);
+        Mvp.graph().getRootComponent().register(module);
 
         Annotation slower2Qualifier = SlowXHolder.class.getAnnotation(Slower2.class);
         Annotation slower3Qualifier = SlowXHolder.class.getAnnotation(Slower3.class);
 
-        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should have now been released
@@ -553,7 +553,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
         navigator.to(TimerFragmentX2.class.getName());
 
-        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should not have been released yet
@@ -564,7 +564,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         //destroy the navigator
         navigator.destroy();
 
-        Injector.getGraph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should have now been released
@@ -573,7 +573,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
 
         //Test fragment 3
-        Injector.getGraph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should have now been released
@@ -589,7 +589,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
         navigator.to(TimerFragmentX3.class.getName());
 
-        Injector.getGraph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should not have been released yet
@@ -600,7 +600,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         //destroy the navigator
         navigator.destroy();
 
-        Injector.getGraph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, slower3Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should have now been released
@@ -628,7 +628,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
         navigator.to(TimerFragment.class.getName());
 
-        Injector.getGraph().use(TimerController.class, null, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, null, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should not have been released yet
@@ -639,7 +639,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         //destroy the navigator
         navigator.destroy();
 
-        Injector.getGraph().use(TimerController.class, new Consumer<TimerController>() {
+        Mvp.graph().use(TimerController.class, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should have now been released

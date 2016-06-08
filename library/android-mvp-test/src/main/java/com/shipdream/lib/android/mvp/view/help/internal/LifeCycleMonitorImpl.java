@@ -30,7 +30,7 @@ public class LifeCycleMonitorImpl implements LifeCycleMonitor {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        logger.info("Lifecycle method invoked: onCreate");
+        logger.info("Lifecycle method invoked: onCreated");
     }
 
     @Override

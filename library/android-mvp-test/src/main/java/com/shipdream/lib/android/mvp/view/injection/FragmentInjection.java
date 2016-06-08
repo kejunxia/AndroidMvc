@@ -141,7 +141,7 @@ public abstract class FragmentInjection extends MvpFragment {
         super.onCreate(savedInstanceState);
         getLifeCycleMonitor().onCreate(savedInstanceState);
 
-        Log.d("MvcTesting", "onCreate " + getClass().getSimpleName());
+        Log.d("MvcTesting", "onCreated " + getClass().getSimpleName());
     }
 
     @Override

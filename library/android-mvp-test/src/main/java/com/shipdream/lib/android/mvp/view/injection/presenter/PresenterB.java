@@ -40,8 +40,8 @@ public class PresenterB extends AbstractPresenter<PresenterB.Model> {
     }
 
     @Override
-    public void onConstruct() {
-        super.onConstruct();
+    public void onCreated() {
+        super.onCreated();
         getModel().setTags(new ArrayList<String>());
     }
 

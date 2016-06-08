@@ -112,7 +112,7 @@ public class TestMvpBean {
 
         Assert.assertNull(mvpBean.getModel());
 
-        mvpBean.onConstruct();
+        mvpBean.onCreated();
 
         Assert.assertNotNull(mvpBean.getModel());
     }
@@ -128,7 +128,7 @@ public class TestMvpBean {
 
         Assert.assertNull(mvpBean.getModel());
 
-        mvpBean.onConstruct();
+        mvpBean.onCreated();
 
         Assert.assertNull(mvpBean.getModel());
     }
@@ -148,7 +148,7 @@ public class TestMvpBean {
 
         MyBean mvpBean = new MyBean();
 
-        mvpBean.onConstruct();
+        mvpBean.onCreated();
     }
 
     @Test(expected = IllegalArgumentException.class)

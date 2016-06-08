@@ -32,6 +32,8 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -265,12 +267,12 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             private Os os;
         }
 
-        final int[] onInjectedCalled = {0};
+        final int[] onCreatedCalled = {0};
         final Object[] injected = new Object[1];
         final Provider.ReferencedListener<Os> injectListener = new Provider.ReferencedListener() {
             @Override
             public void onReferenced(Provider provider, Object instance) {
-                onInjectedCalled[0]++;
+                onCreatedCalled[0]++;
                 injected[0] = instance;
 
                 provider.unregisterOnReferencedListener(this);
@@ -281,9 +283,9 @@ public class TestInjectionWithQualifier extends BaseTestCases {
         final Provider.DereferenceListener osDereferenceListener = mock(Provider.DereferenceListener.class);
         graph.registerDereferencedListener(new Provider.DereferenceListener() {
             @Override
-            public void onDereferenced(Provider provider) {
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
                 if (provider.type() == Os.class && provider.getReferenceCount() == 0) {
-                    osDereferenceListener.onDereferenced(provider);
+                    osDereferenceListener.onDereferenced(provider, instance);
                 }
             }
         });
@@ -296,10 +298,10 @@ public class TestInjectionWithQualifier extends BaseTestCases {
             @Override
             public void consume(Os instance) {
                 Assert.assertTrue(injected[0] == phone.os);
-                Assert.assertEquals(1, onInjectedCalled[0]);
+                Assert.assertEquals(1, onCreatedCalled[0]);
 
                 Assert.assertTrue(phone.os == instance);
-                verify(osDereferenceListener, times(0)).onDereferenced(provider);
+                verify(osDereferenceListener, times(0)).onDereferenced(eq(provider), any(Os.class));
 
                 try {
                     graph.release(phone, MyInject.class);
@@ -307,18 +309,18 @@ public class TestInjectionWithQualifier extends BaseTestCases {
                     throw new RuntimeException(e);
                 }
 
-                verify(osDereferenceListener, times(0)).onDereferenced(provider);
+                verify(osDereferenceListener, times(0)).onDereferenced(eq(provider), any(Os.class));
             }
         });
 
         Assert.assertTrue(injected[0] == phone.os);
-        Assert.assertEquals(1, onInjectedCalled[0]);
+        Assert.assertEquals(1, onCreatedCalled[0]);
 
-        verify(osDereferenceListener, times(1)).onDereferenced(provider);
+        verify(osDereferenceListener, times(1)).onDereferenced(eq(provider), any(Os.class));
 
         //OnInject listener has been unregistered so the count should not increment
         graph.inject(phone, MyInject.class);
-        Assert.assertEquals(1, onInjectedCalled[0]);
+        Assert.assertEquals(1, onCreatedCalled[0]);
     }
 
     interface Connector{

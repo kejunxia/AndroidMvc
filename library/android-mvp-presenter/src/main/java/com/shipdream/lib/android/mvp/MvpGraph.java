@@ -25,33 +25,33 @@ public class MvpGraph {
         }
     }
 
-    private Graph graph;
+    Graph graph;
 
     {
         graph = new Graph();
-        graph.registerDereferencedListener(new Provider.DereferenceListener() {
+        try {
+            graph.setRootComponent(new MvpComponent("MvpRootComponent"));
+        } catch (Graph.IllegalRootComponentException e) {
+            //ignore
+        }
+        graph.registerDisposeListener(new Provider.DisposeListener() {
             @Override
-            public void onDereferenced(Provider provider) {
-                if (provider.getReferenceCount() == 0) {
-                    Object obj = provider.getCachedInstance();
+            public <T> void onDisposed(Provider<T> provider, T instance) {
+                if (instance != null && instance instanceof Bean) {
+                    //When the cached instance is still there free and dispose it.
+                    Bean bean = (Bean) instance;
+                    bean.onDisposed();
 
-                    if (obj != null && obj instanceof Bean) {
-                        //When the cached instance is still there free and dispose it.
-                        Bean bean = (Bean) obj;
-                        bean.onDisposed();
+                    MvpComponent mvpRootComponent = (MvpComponent)getRootComponent();
+                    if (mvpRootComponent != null) {
+                        mvpRootComponent.beans.remove(instance);
 
-                        MvpComponent mvpRootComponent = (MvpComponent)getRootComponent();
-                        if (mvpRootComponent != null) {
-                            mvpRootComponent.beans.remove(obj);
-
-                            logger.trace("--Bean freed - '{}'.",
-                                    provider.type().getSimpleName());
-                        }
-
+                        logger.trace("--Bean freed - '{}'.",
+                                provider.type().getSimpleName());
                     }
+
                 }
             }
-
         });
     }
 
@@ -96,6 +96,7 @@ public class MvpGraph {
     /**
      * Dereference an injectable object. When it's not referenced by anything else after this
      * dereferencing, release its cached instance if possible.
+     * @param instance the instance is to release
      * @param type the type of the object
      * @param qualifier the qualifier
      */

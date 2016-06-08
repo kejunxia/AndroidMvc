@@ -16,19 +16,57 @@
 
 package com.shipdream.lib.android.mvp.manager.internal;
 
+import com.shipdream.lib.android.mvp.Mvp;
+import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.android.mvp.presenter.BaseTest;
+import com.shipdream.lib.poke.Provides;
 
 import org.junit.Before;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import java.util.concurrent.ExecutorService;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 
 public class BaseNavigationManagerTest extends BaseTest {
     protected NavigationManager navigationManager;
+    protected ExecutorService executorService;
 
     @Before
     public void setUp() throws Exception {
         super.setUp();
+        executorService = mock(ExecutorService.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Runnable runnable = (Runnable) invocation.getArguments()[0];
+                runnable.run();
+                return null;
+            }
+        }).when(executorService).submit(any(Runnable.class));
+
+        Mvp.graph().setRootComponent(new MvpComponent("MvpTestRoot").register(new Object() {
+            @Provides
+            @EventBusC
+            protected EventBus createEventBusC() {
+                return new EventBusImpl();
+            }
+
+            @Provides
+            protected ExecutorService createExecutorService() {
+                return executorService;
+            }
+        }));
+
         navigationManager = new NavigationManager();
         graph.inject(navigationManager);
-        navigationManager.onConstruct();
+        navigationManager.onCreated();
     }
 }

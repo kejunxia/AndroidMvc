@@ -3,10 +3,10 @@ package com.shipdream.lib.android.mvp;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ProviderByClassType;
-import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,38 +77,34 @@ public class MvpComponent extends Component {
                 impClass = type;
             }
 
-            provider = new ProviderByClassType<T>(type, impClass) {
-                @Override
-                public T createInstance() throws ProvideException {
-                    T instance = super.createInstance();
-                    if (instance instanceof Bean) {
-                        final Bean bean = (Bean) instance;
-
-                        //TODO: should register the listener to provider found from super as well
-
-                        registerOnReferencedListener(new ReferencedListener<T>() {
-                            @Override
-                            public void onReferenced(Provider<T> provider, T instance) {
-                                bean.onConstruct();
-                                unregisterOnReferencedListener(this);
-                            }
-                        });
-
-                        logger.trace("+++Bean instantiated - '{}'.",
-                                type().getSimpleName());
-                    }
-                    return instance;
-                };
-            };
+            provider = new ProviderByClassType<T>(type, impClass);
 
             try {
-                super.register(provider);
+                register(provider);
             } catch (ProviderConflictException e) {
                 //Should not happen since otherwise it should have been found already
                 e.printStackTrace();
             }
         }
         return provider;
+    }
+
+    @Override
+    public Component register(@NotNull Provider provider) throws ProviderConflictException {
+        super.register(provider);
+        provider.registerCreationListener(new Provider.CreationListener() {
+            @Override
+            public void onCreated(Provider provider, Object instance) {
+                if (instance instanceof Bean) {
+                    final Bean bean = (Bean) instance;
+
+                    bean.onCreated();
+                    logger.trace("+++Bean instantiated - '{}'.",
+                            provider.type().getSimpleName());
+                }
+            }
+        });
+        return this;
     }
 
     private static String getClassName(Class type) {

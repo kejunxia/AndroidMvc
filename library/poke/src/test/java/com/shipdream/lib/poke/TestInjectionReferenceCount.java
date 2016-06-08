@@ -248,7 +248,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
         Provider.DereferenceListener onFreed = new DereferenceListener() {
             @Override
-            public void onDereferenced(Provider provider) {
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
                 if (provider.getReferenceCount() == 0) {
                     proxy.onFreed(provider.type());
                 }
@@ -288,7 +288,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
         DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onDereferenced(Provider provider) {
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
                 if (provider.getReferenceCount() == 0) {
                     proxy.onFreed(provider.type());
                 }
@@ -317,8 +317,10 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
         DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onDereferenced(Provider provider) {
-                proxy.onFreed(provider.type());
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
         graph.registerDereferencedListener(onFreed);
@@ -345,8 +347,10 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
         DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onDereferenced(Provider provider) {
-                proxy.onFreed(provider.type());
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
         graph.registerDereferencedListener(onFreed);

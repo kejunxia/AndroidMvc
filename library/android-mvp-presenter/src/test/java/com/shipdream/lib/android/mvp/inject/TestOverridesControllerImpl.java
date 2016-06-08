@@ -16,10 +16,10 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
+import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintModel;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -41,7 +41,7 @@ public class TestOverridesControllerImpl extends BaseTestCases {
     @Before
     public void setUp() throws Exception {
         graph = new MvpGraph();
-        graph.setRootComponent(new Component().register(new Object(){
+        graph.setRootComponent(new MvpComponent("MvpRoot").register(new Object(){
             @Provides
             public ExecutorService executorService() {
                 return Executors.newCachedThreadPool();

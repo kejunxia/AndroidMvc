@@ -16,13 +16,13 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
+import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrinterController2;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.AndroidPartImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.manager.internal.InkManagerImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.service.Cartridge;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.ProvideException;
@@ -45,7 +45,7 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
     @Before
     public void setUp() throws Exception {
         graph = new MvpGraph();
-        graph.setRootComponent(new Component().register(new Object(){
+        graph.setRootComponent(new MvpComponent("RootMvp").register(new Object(){
             @Provides
             public ExecutorService executorService() {
                 return Executors.newCachedThreadPool();

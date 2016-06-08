@@ -18,6 +18,7 @@ package com.shipdream.lib.android.mvp;
 
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.verify;
 public class TestManagerImpl {
     @After
     public void tearDown() throws Exception {
-        Injector.graph = null;
+        Mvp.graph = null;
     }
 
     @Test
@@ -79,8 +80,9 @@ public class TestManagerImpl {
 
         final EventBus bus = mock(EventBus.class);
 
-        Injector.getGraph().getRootComponent().register(new Object() {
+        Mvp.graph().getRootComponent().register(new Object() {
             @Provides
+            @EventBusC
             protected EventBus createEventBusC() {
                 return bus;
             }
@@ -92,7 +94,7 @@ public class TestManagerImpl {
         });
 
         MyManager myManager = new MyManager();
-        Injector.getGraph().inject(myManager);
+        Mvp.graph().inject(myManager);
 
         verify(bus, times(0)).post(anyObject());
 

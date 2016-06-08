@@ -42,7 +42,7 @@ public abstract class Bean<MODEL> {
      * However, if the MvpBean needs to be restored, a new instance of model restored by
      * {@link #restoreModel(Object)} will replace the model created by this method.</p>
      */
-    public void onConstruct() {
+    public void onCreated() {
         model = instantiateModel();
     }
 
@@ -78,7 +78,7 @@ public abstract class Bean<MODEL> {
     /**
      * Provides the type class of the model.
      * @return Implementing class should return the type class of the model that will be used by
-     * this MvpBean to instantiate its model in {@link #onConstruct()} and restores model in
+     * this MvpBean to instantiate its model in {@link #onCreated()} and restores model in
      * {@link #restoreModel(Object)}. Returning null is allowed which means this MvpBean doesn't
      * have a model needs to be automatically saved and restored.
      */

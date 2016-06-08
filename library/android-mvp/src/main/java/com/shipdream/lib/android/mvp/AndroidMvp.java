@@ -25,43 +25,25 @@ import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.PokeException;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import javax.inject.Singleton;
-
 import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 
 /**
  * {@link AndroidMvp} will generate a default {@link Mvp} for injection. To replace
- * {@link Mvp.BaseDependencies} use {@link Injector#configGraph(Mvp.BaseDependencies)}.
+ * {@link Mvp.BaseDependencies} use {@link Mvp#configGraph(Mvp.BaseDependencies)}.
  * By default, the graph uses naming convention to locate the implementations of dependencies. See
  * {@link Mvp} how it works.
  */
 public class AndroidMvp {
-    private static class DefaultPresenterDependencies extends Mvp.BaseDependencies {
-        private static ExecutorService sNetworkExecutorService;
-
-
-        @Override
-        public ExecutorService createExecutorService() {
-            if (sNetworkExecutorService == null) {
-
-            }
-            return sNetworkExecutorService;
-        }
-    }
-
     static final String MVP_SATE_PREFIX = "__android.graph.state:";
 
     static {
-        Injector.configGraph();
         try {
-            Injector.getGraph().graph().getRootComponent().register(new Object() {
+            Mvp.graph().getRootComponent().register(new Object() {
                 private final static String BACKGROUND_THREAD_NAME = "MvpBackgroundThread";
 
                 @Provides
@@ -98,14 +80,6 @@ public class AndroidMvp {
     }
 
     private AndroidMvp() {
-    }
-
-    /**
-     * The graph to inject dependencies for graph components.
-     * @return The {@link Mvp}
-     */
-    public static Mvp graph() {
-        return Injector.getGraph();
     }
 
     /**

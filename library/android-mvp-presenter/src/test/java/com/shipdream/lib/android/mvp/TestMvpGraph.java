@@ -62,6 +62,8 @@ public class TestMvpGraph {
             }
         }).when(executorService).submit(any(Runnable.class));
 
+        graph = new MvpGraph();
+        graph.setRootComponent(new MvpComponent("Root"));
         graph.getRootComponent().register(new Object(){
             @Provides
             protected ExecutorService createExecutorService() {
@@ -292,7 +294,9 @@ public class TestMvpGraph {
     @Test
     public void should_delegate_mvp_graph_properly() throws ProvideException, ProviderConflictException {
         // Arrange
-        MvpGraph graphMock = mock(MvpGraph.class);
+        Graph graphMock = mock(Graph.class);
+
+        graph.graph = graphMock;
 
         // Act
         Graph.Monitor monitor = mock(Graph.Monitor.class);
