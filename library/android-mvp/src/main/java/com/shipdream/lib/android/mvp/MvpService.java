@@ -34,7 +34,7 @@ public abstract class MvpService extends Service{
     public void onCreate() {
         super.onCreate();
 
-        AndroidMvp.graph().inject(this);
+        Mvp.graph().inject(this);
 
         eventRegister = new EventRegister(this);
         eventRegister.onCreate();
@@ -49,7 +49,7 @@ public abstract class MvpService extends Service{
         super.onDestroy();
         eventRegister.unregisterEventBuses();
         eventRegister.onDestroy();
-        AndroidMvp.graph().release(this);
+        Mvp.graph().release(this);
     }
 
     /**

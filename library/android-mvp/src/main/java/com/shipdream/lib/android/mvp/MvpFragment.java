@@ -173,14 +173,14 @@ public abstract class MvpFragment extends Fragment {
 
     private void injectDependencies() {
         if (!dependenciesInjected) {
-            AndroidMvp.graph().inject(this);
+            Mvp.graph().inject(this);
             dependenciesInjected = true;
         }
     }
 
     private void releaseDependencies() {
         if (dependenciesInjected) {
-            AndroidMvp.graph().release(this);
+            Mvp.graph().release(this);
             dependenciesInjected = false;
         }
     }

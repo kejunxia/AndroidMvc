@@ -41,7 +41,7 @@ public class MvpDialogFragment extends DialogFragment {
             setRetainInstance(true);
         }
 
-        AndroidMvp.graph().inject(this);
+        Mvp.graph().inject(this);
 
         eventRegister = new EventRegister(this);
         eventRegister.onCreate();
@@ -72,7 +72,7 @@ public class MvpDialogFragment extends DialogFragment {
         super.onDestroy();
         eventRegister.unregisterEventBuses();
         eventRegister.onDestroy();
-        AndroidMvp.graph().release(this);
+        Mvp.graph().release(this);
     }
 
     /**

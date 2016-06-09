@@ -93,6 +93,14 @@ public class Component {
         return scopeCache != null;
     }
 
+    public int getCachedItemSize() {
+        if (scopeCache == null) {
+            return 0;
+        } else {
+            return scopeCache.getCachedItems().size();
+        }
+    }
+
     public Component getParent() {
         return parentComponent;
     }

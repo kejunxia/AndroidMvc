@@ -35,7 +35,7 @@ class ModelKeeperHolder {
     static void saveAllModels(Bundle outState) {
         stateKeeper.bundle = outState;
         //TODO: need to fix
-        Mvp.graph().rootComponent.saveAllBeans(stateKeeper);
+//        Mvp.graph().rootComponent.saveAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 
@@ -46,7 +46,7 @@ class ModelKeeperHolder {
     static void restoreAllModels(Bundle savedState) {
         stateKeeper.bundle = savedState;
         //TODO: need to fix
-        Mvp.graph().rootComponent.restoreAllBeans(stateKeeper);
+//        Mvp.graph().rootComponent.restoreAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 

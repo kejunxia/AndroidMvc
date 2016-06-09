@@ -74,11 +74,11 @@ class EventRegister {
     }
 
     void onCreate() {
-        AndroidMvp.graph().inject(this);
+        Mvp.graph().inject(this);
     }
 
     void onDestroy() {
-        AndroidMvp.graph().release(this);
+        Mvp.graph().release(this);
     }
 
     void postEvent2V(final BaseEventV event) {
