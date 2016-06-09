@@ -28,6 +28,7 @@ import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorBImpl;
 import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorCImpl;
 import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorDImpl;
 import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorImpl;
+import com.shipdream.lib.android.mvp.view.test.BuildConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

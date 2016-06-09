@@ -27,7 +27,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.R;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
@@ -62,7 +61,7 @@ public abstract class MvpActivity extends AppCompatActivity {
 
         eventRegister.registerEventBuses();
 
-        setContentView(R.layout.mvp_activity);
+        setContentView(R.layout.activity_mvp);
         delegateFragment = (DelegateFragment) getSupportFragmentManager().findFragmentByTag(
                 getDelegateFragmentTag());
 
@@ -75,7 +74,7 @@ public abstract class MvpActivity extends AppCompatActivity {
                 throw new RuntimeException("Failed to instantiate delegate fragment.", e);
             }
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.android_mvp_activity_root, delegateFragment, getDelegateFragmentTag());
+            trans.replace(R.id.activity_mvp_root, delegateFragment, getDelegateFragmentTag());
             trans.commit();
         }
     }

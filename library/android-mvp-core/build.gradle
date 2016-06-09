@@ -111,7 +111,7 @@ bintray {
     configurations = ['archives']
     pkg {
         repo = "maven"
-        name = "android-mvc-presenter"
+        name = "android-mvp-core"
         websiteUrl = rootProject.ext.siteUrl
         vcsUrl = rootProject.ext.gitUrl
         licenses = ["Apache-2.0"]

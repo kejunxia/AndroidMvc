@@ -22,7 +22,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 dependencies {
-    compile project(':library:android-mvp-presenter')
+    compile project(':library:android-mvp-core')
     compile rootProject.lib.androidSupportLib
 }
 

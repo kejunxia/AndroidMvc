@@ -19,7 +19,7 @@
 //include ':library:android-mvc-controller'
 include ':library:android-mvp-test'
 include ':library:android-mvp'
-include ':library:android-mvp-presenter'
+include ':library:android-mvp-core'
 include ':library:poke'
 
 include ':extension:service-core'
