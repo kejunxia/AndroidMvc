@@ -41,44 +41,6 @@ import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 public class AndroidMvp {
     static final String MVP_SATE_PREFIX = "__android.graph.state:";
 
-    static {
-        try {
-            Mvp.graph().getRootComponent().register(new Object() {
-                private final static String BACKGROUND_THREAD_NAME = "MvpBackgroundThread";
-
-                @Provides
-                @EventBusC
-                public EventBus providesEventBusC() {
-                    return new EventBusImpl();
-                }
-
-                @Provides
-                @EventBusV
-                public EventBus providesEventBusV() {
-                    return new EventBusImpl();
-                }
-
-                @Provides
-                public ExecutorService providesExecutorService() {
-                    return Executors.newFixedThreadPool(10, new ThreadFactory() {
-                        @Override
-                        public Thread newThread(final @NonNull Runnable r) {
-                            return new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    android.os.Process.setThreadPriority(THREAD_PRIORITY_BACKGROUND);
-                                    r.run();
-                                }
-                            }, BACKGROUND_THREAD_NAME);
-                        }
-                    });
-                }
-            });
-        } catch (PokeException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private AndroidMvp() {
     }
 

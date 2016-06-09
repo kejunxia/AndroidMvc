@@ -19,11 +19,11 @@ package com.shipdream.lib.android.mvp;
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
+import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
-import org.junit.After;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -34,11 +34,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class TestManagerImpl {
-    @After
-    public void tearDown() throws Exception {
-        Mvp.graph = null;
-    }
-
     @Test
     public void should_not_crash_when_manager_post_event_even_without_registering_controller_event_bus() {
         class MyManager extends AbstractManager {
@@ -58,7 +53,8 @@ public class TestManagerImpl {
     }
 
     @Test
-    public void should_be_able_to_post_events_to_controller_event_bus_from_manager() throws ProvideException, ProviderConflictException {
+    public void should_be_able_to_post_events_to_controller_event_bus_from_manager()
+            throws ProvideException, ProviderConflictException, Graph.IllegalRootComponentException {
         class MyEvent extends BaseEventC{
             public MyEvent(Object sender) {
                 super(sender);
@@ -80,7 +76,7 @@ public class TestManagerImpl {
 
         final EventBus bus = mock(EventBus.class);
 
-        Mvp.graph().getRootComponent().register(new Object() {
+        Mvp.graph().setRootComponent(new MvpComponent("Root").register(new Object() {
             @Provides
             @EventBusC
             protected EventBus createEventBusC() {
@@ -91,7 +87,7 @@ public class TestManagerImpl {
             protected ExecutorService createExecutorService() {
                 return null;
             }
-        });
+        }));
 
         MyManager myManager = new MyManager();
         Mvp.graph().inject(myManager);
