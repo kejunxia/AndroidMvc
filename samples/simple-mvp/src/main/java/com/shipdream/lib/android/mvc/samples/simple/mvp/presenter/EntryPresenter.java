@@ -12,4 +12,9 @@ public class EntryPresenter extends AbstractPresenter {
     public void startApp(Object sender) {
         navigationManager.navigate(sender).to("LocationA");
     }
+
+    @Override
+    public Class modelType() {
+        return null;
+    }
 }

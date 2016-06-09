@@ -7,6 +7,11 @@ import com.shipdream.lib.android.mvp.NavigationManager;
 import javax.inject.Inject;
 
 public class CounterBasicPresenter extends AbstractPresenter {
+    @Override
+    public Class modelType() {
+        return null;
+    }
+
     public interface View {
         void onCounterUpdated(int count, String countInEnglish);
     }

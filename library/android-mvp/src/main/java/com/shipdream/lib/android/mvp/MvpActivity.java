@@ -538,7 +538,9 @@ public abstract class MvpActivity extends AppCompatActivity {
 
             MvpActivity activity = ((MvpActivity) getActivity());
 
-            Class<? extends MvpFragment> fragmentClass = activity.mapNavigationFragment(event.getCurrentValue().getLocationId());
+            Class<? extends MvpFragment> fragmentClass = activity.mapNavigationFragment(
+                    event.getCurrentValue().getLocationId());
+
             if (fragmentClass == null) {
                 throw new RuntimeException("Cannot find fragment class mapped in MvpActivity.mapNavigationFragment(location) for location: "
                         + event.getCurrentValue().getLocationId());

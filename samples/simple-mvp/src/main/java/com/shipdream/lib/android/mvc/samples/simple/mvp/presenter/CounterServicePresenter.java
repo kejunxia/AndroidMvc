@@ -8,6 +8,11 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.service.Poster;
 import javax.inject.Inject;
 
 public class CounterServicePresenter extends AbstractPresenter {
+    @Override
+    public Class modelType() {
+        return null;
+    }
+
     public interface View {
         void onCounterUpdated(int count);
         void counterFinished();
