@@ -10,7 +10,7 @@ public class EntryPresenter extends AbstractPresenter {
     private NavigationManager navigationManager;
 
     public void startApp(Object sender) {
-        navigationManager.navigate(sender).to("LocationA");
+        navigationManager.navigate(sender).to(CounterBasicPresenter.class);
     }
 
     @Override

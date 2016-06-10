@@ -39,7 +39,7 @@ public class CounterBasicPresenter extends AbstractPresenter {
     }
 
     public void goToDetailView(Object sender) {
-        navigationManager.navigate(sender).to("LocationB");
+        navigationManager.navigate(sender).to(CounterDetailPresenter.class);
     }
 
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {

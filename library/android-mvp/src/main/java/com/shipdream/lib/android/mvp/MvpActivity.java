@@ -98,12 +98,18 @@ public abstract class MvpActivity extends AppCompatActivity {
     }
 
     /**
-     * Provides class types of fragments to present navigation location of given location id.
+     * Map a presenter class type to fragment class type. This is used for navigation. When the
+     * {@link Navigator} navigates to a presenter, in view layer, it loads the mapped fragment.
      *
-     * @param locationId The location id in string
-     * @return The class type of the {@link MvpFragment}
+     * <p>
+     *     To make the mapping generic, consider to use {@link Class#forName(String)}.
+     * </p>
+     *
+     * @param presenterClass The presenter class type
+     * @return The class type of the {@link MvpFragment} mapped to the presenter
      */
-    protected abstract Class<? extends MvpFragment> mapNavigationFragment(String locationId);
+    protected abstract Class<? extends MvpFragment> mapPresenterFragment(
+            Class<? extends AbstractPresenter> presenterClass);
 
     /**
      * Provides the class type of the delegate fragment which is the root fragment holding fragments
@@ -538,11 +544,16 @@ public abstract class MvpActivity extends AppCompatActivity {
 
             MvpActivity activity = ((MvpActivity) getActivity());
 
-            Class<? extends MvpFragment> fragmentClass = activity.mapNavigationFragment(
-                    event.getCurrentValue().getLocationId());
+            Class<? extends MvpFragment> fragmentClass = null;
+            try {
+                fragmentClass = activity.mapPresenterFragment(
+                        (Class<? extends AbstractPresenter>) Class.forName(event.getCurrentValue().getLocationId()));
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
 
             if (fragmentClass == null) {
-                throw new RuntimeException("Cannot find fragment class mapped in MvpActivity.mapNavigationFragment(location) for location: "
+                throw new RuntimeException("Cannot find fragment class mapped in MvpActivity.mapPresenterFragment(location) for location: "
                         + event.getCurrentValue().getLocationId());
             } else {
                 MvpFragment lastFragment = null;

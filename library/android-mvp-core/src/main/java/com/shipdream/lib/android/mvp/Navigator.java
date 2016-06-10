@@ -54,7 +54,8 @@ public class Navigator {
 
     /**
      * Construct a {@link Navigator}
-     * @param sender Who wants to navigate
+     *
+     * @param sender            Who wants to navigate
      * @param navigationManager The navigation manager
      */
     Navigator(Object sender, NavigationManager navigationManager) {
@@ -64,6 +65,7 @@ public class Navigator {
 
     /**
      * Who wants to navigate
+     *
      * @return the sender
      */
     public Object getSender() {
@@ -91,32 +93,33 @@ public class Navigator {
      * fragment can be prepared here and set the title in the controller's model. Then in the
      * MvpFragment.onViewReady bind the value of the page title from the controller's model to the
      * fragment.
-     *
+     * <p/>
      * <p>Example:</p>
      * To initialize the timer of a TimerFragment which counts down seconds,sets the initial value
      * of its controller by this with method.
      * <pre>
-     class TimerFragment {
-        @Inject
-        TimerController timerController;
-     }
-
-     interface TimerController {
-        void setInitialValue(long howManySeconds);
-     }
-
-     navigationManager.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
-        @Override
-        public void prepare(TimerController instance) {
-            long fiveMinutes = 60 * 5;
-            instance.setInitialValue(fiveMinutes);
-
-            //Then the value set to the controller will be guaranteed to be retained when
-            //TimerFragment is ready to show
-        }
-     }).to(TimerFragment.class.getName());
+     * class TimerFragment {
+     * @Inject
+     * TimerController timerController;
+     * }
+     *
+     * interface TimerController {
+     * void setInitialValue(long howManySeconds);
+     * }
+     *
+     * navigationManager.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
+     * @Override
+     * public void prepare(TimerController instance) {
+     * long fiveMinutes = 60 * 5;
+     * instance.setInitialValue(fiveMinutes);
+     *
+     * //Then the value set to the controller will be guaranteed to be retained when
+     * //TimerFragment is ready to show
+     * }
+     * }).to(TimerFragment.class.getName());
      * </pre>
-     * @param type The class type of the instance needs to be prepared
+     *
+     * @param type     The class type of the instance needs to be prepared
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
      * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
@@ -132,34 +135,35 @@ public class Navigator {
      * to have a pre set page title name, the controller referenced by the fragment can be prepared
      * here and set the title in the controller's model. Then in the MvpFragment.onViewReady bind
      * the value of the page title from the controller's model to the fragment.
-     *
+     * <p/>
      * <p>Example:</p>
      * To initialize the timer of a TimerFragment which counts down seconds,sets the initial value
      * of its controller by this with method.
      * <pre>
-     class TimerFragment {
-        @Inject
-        TimerController timerController;
-     }
-
-     interface TimerController {
-        void setInitialValue(long howManySeconds);
-     }
-
-     navigationManager.navigate(this).with(TimerController.class, null, new Preparer<TimerController>() {
-        @Override
-        public void prepare(TimerController instance) {
-            long fiveMinutes = 60 * 5;
-            instance.setInitialValue(fiveMinutes);
-
-            //Then the value set to the controller will be guaranteed to be retained when
-            //TimerFragment is ready to show
-        }
-     }).to(TimerFragment.class.getName());
+     * class TimerFragment {
+     * @Inject
+     * TimerController timerController;
+     * }
+     *
+     * interface TimerController {
+     * void setInitialValue(long howManySeconds);
+     * }
+     *
+     * navigationManager.navigate(this).with(TimerController.class, null, new Preparer<TimerController>() {
+     * @Override
+     * public void prepare(TimerController instance) {
+     * long fiveMinutes = 60 * 5;
+     * instance.setInitialValue(fiveMinutes);
+     *
+     * //Then the value set to the controller will be guaranteed to be retained when
+     * //TimerFragment is ready to show
+     * }
+     * }).to(TimerFragment.class.getName());
      * </pre>
-     * @param type The class type of the instance needs to be prepared
+     *
+     * @param type      The class type of the instance needs to be prepared
      * @param qualifier The qualifier
-     * @param preparer The preparer in which the injected instance will be prepared
+     * @param preparer  The preparer in which the injected instance will be prepared
      * @return This navigator
      * @throws MvpGraph.Exception Raised when the required injectable object cannot be injected
      */
@@ -186,75 +190,41 @@ public class Navigator {
     }
 
     /**
-     * Navigates to the specified location. Navigation only takes effect when the given locationId
-     * is different from the current location and raises {@link NavigationManager.Event2C.OnLocationForward}
-     *
+     * Navigate to the location represented by the presenter. Navigation only takes effect when the
+     * given locationId is different from the current location and raises {@link NavigationManager.Event2C.OnLocationForward}
+     * <p/>
      * <p>
-     * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
+     * To set argument for the next location navigating to, use {@link #with(Class, Annotation, Preparer)}
+     * to prepare the presenter injecting into the next fragment.
      * </p>
      *
-     * <p>
-     * Navigation will automatically manage continuity of state before and after the
-     * navigation is performed. The injected instance will not be released until the next fragment
-     * is settled. So when the current fragment and next fragment share same injected
-     * controller their instance will be same.
-     * </p>
-     *
-     * @param locationId           The id of the location navigate to
+     * @param presenterClass The presenter of which screen the app is navigating to.
      */
-    public void to(String locationId) {
-        doNavigateTo(locationId, null);
+    public void to(@NotNull Class<? extends AbstractPresenter> presenterClass) {
+        doNavigateTo(presenterClass, null);
         go();
     }
 
     /**
-     * Navigates to a new location and exclusively clears history prior to the given
-     * clearTopToLocationId (clearTopToLocationId will be last location below given location).
-     * When clearTopToLocationId is null, it clears all history. In other words, the current given
-     * location will be the only location in the history stack and all other previous locations
-     * will be cleared. Navigation only takes effect when the given locationId is different from the
-     * current location and raises {@link NavigationManager.Event2C.OnLocationForward}
-     *
+     * Navigate to the location represented by the presenter. Navigation only takes effect when the
+     * given locationId is different from the current location and raises {@link NavigationManager.Event2C.OnLocationForward}
+     * <p/>
      * <p>
-     * To set argument for the next fragment navigating to, use {@link #with(Class, Annotation, Preparer)}
+     * To set argument for the next location navigating to, use {@link #with(Class, Annotation, Preparer)}
+     * to prepare the presenter injecting into the next fragment.
      * </p>
      *
-     * <p>
-     * Navigation will automatically manage continuity of state before and after the
-     * navigation is performed. The injected instance will not be released until the next fragment
-     * is settled. So when the current fragment and next fragment share same injected
-     * controller their instance will be same.
-     * </p>
-     *
-     * @param locationId           The id of the location navigate to
-     * @param clearTopToLocationId Null if all history locations want to be cleared otherwise, the
-     *                             id of the location the history will be exclusively cleared up to
-     *                             which will be the second last location after navigation.
-     * @deprecated
+     * @param presenterClass The presenter class type.
+     * @param forwarder      The configuration by {@link Forwarder} of the forward navigation.
      */
-    public void to(String locationId, String clearTopToLocationId) {
-        Forwarder forwarder = new Forwarder();
-        if (clearTopToLocationId == null) {
-            forwarder.clearAll();
-        } else {
-            forwarder.clearTo(clearTopToLocationId);
-        }
-
-        doNavigateTo(locationId, forwarder);
+    public void to(@NotNull Class<? extends AbstractPresenter> presenterClass,
+                   @NotNull Forwarder forwarder) {
+        doNavigateTo(presenterClass, forwarder);
         go();
     }
 
-    /**
-     * Navigate to the next location.
-     * @param locationId The id of the location navigating to.
-     * @param forwarder The configuration by {@link Forwarder} of the forward navigation.
-     */
-    public void to(String locationId, @NotNull Forwarder forwarder) {
-        doNavigateTo(locationId, forwarder);
-        go();
-    }
-
-    private void doNavigateTo(String locationId, Forwarder forwarder) {
+    private void doNavigateTo(@NotNull Class<? extends AbstractPresenter> presenterClass,
+                              Forwarder forwarder) {
         boolean clearTop = false;
         String clearToLocationId = null;
 
@@ -288,13 +258,15 @@ public class Navigator {
         NavLocation lastLoc = navigationManager.getModel().getCurrentLocation();
         boolean locationChanged = false;
 
+        String locationId = presenterClass == null ? null : presenterClass.getName();
+
         if (clearTop) {
             locationChanged = true;
         } else {
             if (locationId != null) {
-                if(lastLoc == null) {
+                if (lastLoc == null) {
                     locationChanged = true;
-                } else if(!locationId.equals(lastLoc.getLocationId())) {
+                } else if (!locationId.equals(lastLoc.getLocationId())) {
                     locationChanged = true;
                 }
             }
@@ -347,17 +319,14 @@ public class Navigator {
     }
 
     /**
-     * Navigates back. If current location is null it doesn't take any effect. When toLocationId
+     * Navigates back. If current location is null it doesn't take any effect. When presenterClass
      * is null, navigate to the very first location and clear all history prior to it, otherwise
      * navigate to location with given locationId and clear history prior to it. Then a
      * {@link NavigationManager.Event2C.OnLocationBack} event will be raised.
      *
-     * @param toLocationId Null when needs to navigate to the very first location and all history
-     *                     locations will be above it will be cleared. Otherwise, the id of the
-     *                     location where the history will be exclusively cleared up to. Then this
-     *                     location will be the second last one.
+     * @param presenterClass the presenter class type
      */
-    public void back(String toLocationId) {
+    public void back(Class<? extends AbstractPresenter> presenterClass) {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationManager.logger.warn("Current location should never be null before navigating backwards.");
@@ -372,23 +341,25 @@ public class Navigator {
         boolean success = false;
         NavLocation previousLoc = currentLoc;
 
-        if(toLocationId == null) {
+        String toLocationId = presenterClass == null ? null : presenterClass.getName();
+
+        if (toLocationId == null) {
             success = true;
         }
         while (currentLoc != null) {
-            if(toLocationId != null) {
+            if (toLocationId != null) {
                 if (toLocationId.equals(currentLoc.getLocationId())) {
                     success = true;
                     break;
                 }
             } else {
-                if(currentLoc.getPreviousLocation() == null) {
+                if (currentLoc.getPreviousLocation() == null) {
                     break;
                 }
             }
             currentLoc = currentLoc.getPreviousLocation();
         }
-        if(success) {
+        if (success) {
             navigationManager.getModel().setCurrentLocation(currentLoc);
             navigateEvent = new NavigationManager.Event2C.OnLocationBack(sender, previousLoc, currentLoc, true, this);
         }
@@ -398,6 +369,7 @@ public class Navigator {
     /**
      * Sets the call back when fragment being navigated to is ready to show(MvpFragment.onViewReady
      * is called).
+     *
      * @param onSettled {@link OnSettled} call back
      * @return The navigator itself
      */
@@ -462,6 +434,7 @@ public class Navigator {
 
     /**
      * Check the app is exiting
+     *
      * @param sender The sender
      */
     private void checkAppExit(Object sender) {

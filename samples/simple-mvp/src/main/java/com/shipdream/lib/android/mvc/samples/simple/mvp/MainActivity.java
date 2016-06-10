@@ -1,28 +1,27 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp;
 
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.EntryPresenter;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.view.CounterDetailView;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.view.CounterBasicView;
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
 
 import javax.inject.Inject;
 
 public class MainActivity extends MvpActivity {
-    /**
-     * Define how to map navigation location id to full screen fragments
-     * @param locationId The location id in string
-     * @return The class of the fragment representing the navigation locations
-     */
+
     @Override
-    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
-        switch (locationId) {
-            case "LocationA":
-                return CounterBasicView.class;
-            case "LocationB":
-                return CounterDetailView.class;
-            default:
-                return null;
+    protected Class<? extends MvpFragment> mapPresenterFragment(
+            Class<? extends AbstractPresenter> presenterClass) {
+        String presenterPkgName = presenterClass.getPackage().getName();
+        String viewPkgName = presenterPkgName.substring(0, presenterPkgName.lastIndexOf(".")) + ".view";
+        String fragmentClassName = viewPkgName + "."
+                + presenterClass.getSimpleName().replace("Presenter", "View");
+        try {
+            return (Class<? extends MvpFragment>) Class.forName(fragmentClassName);
+        } catch (ClassNotFoundException e) {
+            String msg = String.format("Fragment class(%s) for presenter(%s) can not be found",
+                    presenterClass.getName());
+            throw new RuntimeException(msg, e);
         }
     }
 
