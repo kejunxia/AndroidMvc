@@ -60,7 +60,7 @@ public class Component {
 
     final Map<String, Component> componentLocator = new HashMap<>();
     Map<String, List<Component>> overriddenChain;
-    final Map<String, Provider> providers = new HashMap<>();
+    protected final Map<String, Provider> providers = new HashMap<>();
     private Component parentComponent;
     private List<Component> childrenComponents;
 

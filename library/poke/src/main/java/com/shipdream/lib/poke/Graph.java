@@ -567,7 +567,7 @@ public class Graph {
     }
 
     private boolean recordVisit(Class classType, Annotation qualifier) {
-        String key = makeCircularRecordKey(classType, qualifier);
+        String key = PokeHelper.makeProviderKey(classType, qualifier);
         boolean circularVisitDetected = visitedInjectNodes.contains(key);
         if (!circularVisitDetected) {
             visitedInjectNodes.add(key);
@@ -578,12 +578,8 @@ public class Graph {
     }
 
     private void unrecordVisit(Class classType, Annotation qualifier) {
-        String key = makeCircularRecordKey(classType, qualifier);
+        String key = PokeHelper.makeProviderKey(classType, qualifier);
         visitedInjectNodes.remove(key);
-    }
-
-    private String makeCircularRecordKey(Class classType, Annotation qualifier) {
-        return classType.getName() + "@" + ((qualifier == null) ? "NoQualifier" : qualifier.toString());
     }
 
     /**
