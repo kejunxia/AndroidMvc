@@ -228,7 +228,6 @@ public class TestInjectionWithQualifier extends BaseTestCases {
 
     @Test
     public void should_be_able_to_use_instance_injected_with_qualifier() throws PokeException {
-        ScopeCache scopeCache = new ScopeCache();
         component.register(new ProviderByClassType(Os.class, iOs.class));
         component.register(new ProviderByClassType(Os.class, Android.class));
         component.register(new ProviderByClassType(Os.class, Windows.class));

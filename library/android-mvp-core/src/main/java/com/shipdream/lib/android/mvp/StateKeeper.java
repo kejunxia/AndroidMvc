@@ -16,22 +16,21 @@
 
 package com.shipdream.lib.android.mvp;
 
+import com.shipdream.lib.poke.Provider;
+
 /**
- * ModelKeeper can save model of objects implementing {@link Bean} into it. The model can
- * be got back from the keeper later on.
+ * StateKeeper saves and restores state of providers. If provider
  */
-public interface BeanKeeper {
+public interface StateKeeper {
     /**
-     * Save the bean into this {@link BeanKeeper}
-     * @param bean The bean to save
+     * Saves the provider's cached instance into this {@link StateKeeper}
+     * @param provider The provider whose cached instance will be saved
      */
-    void saveBean(Bean bean);
+    void saveState(Provider provider);
 
     /**
-     * Retrieves the bean by bean type
-     * @param type The class type of the bean
-     * @return null if the bean with the given type has not been saved or a null bean was saved,
-     * otherwise returns the bean saved previously
+     * Retrieves the provider's cached instanced previously saved
+     * @return null if the provider's cached instance
      */
-    <T> T retrieveBean(Class<T> type);
+    <T> T retrieveInstance(String providerTypeKey);
 }

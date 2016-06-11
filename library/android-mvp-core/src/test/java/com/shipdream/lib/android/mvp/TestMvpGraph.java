@@ -377,13 +377,13 @@ public class TestMvpGraph {
 //        graph.rootComponent.saveAllBeans(beanKeeperMock);
 //
 //        // Verify
-//        verify(beanKeeperMock).saveBean(beanMock);
+//        verify(beanKeeperMock).saveState(beanMock);
 //
 //        // Arrange
 //        reset(beanKeeperMock);
 //
 //        Object stateMock = mock(Object.class);
-//        when(beanKeeperMock.retrieveBean(any(Class.class))).thenReturn(stateMock);
+//        when(beanKeeperMock.retrieveInstance(any(Class.class))).thenReturn(stateMock);
 //
 //        graph.rootComponent.restoreAllBeans(beanKeeperMock);
 //

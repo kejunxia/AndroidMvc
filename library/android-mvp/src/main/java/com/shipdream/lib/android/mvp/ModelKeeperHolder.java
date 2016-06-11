@@ -18,14 +18,16 @@ package com.shipdream.lib.android.mvp;
 
 import android.os.Bundle;
 
+import com.shipdream.lib.poke.Component;
+
 /**
  * This class holds a stateKeeper as a singleton.
  */
 class ModelKeeperHolder {
-    static MvpBeanKeeper stateKeeper;
+    static MvpStateKeeper stateKeeper;
 
     static {
-        stateKeeper = new MvpBeanKeeper();
+        stateKeeper = new MvpStateKeeper();
     }
 
     /**
@@ -34,8 +36,7 @@ class ModelKeeperHolder {
      */
     static void saveAllModels(Bundle outState) {
         stateKeeper.bundle = outState;
-        //TODO: need to fix
-//        Mvp.graph().rootComponent.saveAllBeans(stateKeeper);
+        getRootComponent().saveAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 
@@ -45,9 +46,16 @@ class ModelKeeperHolder {
      */
     static void restoreAllModels(Bundle savedState) {
         stateKeeper.bundle = savedState;
-        //TODO: need to fix
-//        Mvp.graph().rootComponent.restoreAllBeans(stateKeeper);
+        getRootComponent().restoreAllBeans(stateKeeper);
         stateKeeper.bundle = null;
     }
 
+    private static MvpComponent getRootComponent() {
+        Component root = Mvp.graph().getRootComponent();
+        if (root == null && root instanceof MvpComponent) {
+            throw new IllegalStateException("RootComponent of MvpGraph must inherit MvpComponent");
+        }
+        MvpComponent mvpComponent = (MvpComponent) root;
+        return mvpComponent;
+    }
 }

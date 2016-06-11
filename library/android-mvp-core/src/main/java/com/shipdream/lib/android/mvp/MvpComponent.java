@@ -26,26 +26,27 @@ public class MvpComponent extends Component {
 
     /**
      * Save model of all injected objects
-     * @param beanKeeper The model keeper managing the model
+     * @param stateKeeper The model keeper managing the model
      */
-    public void saveAllBeans(BeanKeeper beanKeeper) {
+    public void saveAllBeans(StateKeeper stateKeeper) {
+
         int size = beans.size();
         for (int i = 0; i < size; i++) {
             Bean bean = beans.get(i);
-            beanKeeper.saveBean(bean);
+            stateKeeper.saveState(bean);
         }
     }
 
     /**
      * Restore beans injected by this provider finder.
-     * @param beanKeeper The model keeper managing the model
+     * @param stateKeeper The model keeper managing the model
      */
     @SuppressWarnings("unchecked")
-    public void restoreAllBeans(BeanKeeper beanKeeper) {
+    public void restoreAllBeans(StateKeeper stateKeeper) {
         int size = beans.size();
         for (int i = 0; i < size; i++) {
             Bean bean = beans.get(i);
-            Object model = beanKeeper.retrieveBean(bean.modelType());
+            Object model = stateKeeper.retrieveInstance(bean.modelType());
             if(model != null) {
                 beans.get(i).restoreModel(model);
             }

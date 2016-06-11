@@ -22,28 +22,31 @@ import android.os.Parcelable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
+import com.shipdream.lib.poke.Provider;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class MvpBeanKeeper implements BeanKeeper {
+class MvpStateKeeper implements StateKeeper {
     private static Gson gson;
     private Logger logger = LoggerFactory.getLogger(getClass());
     private AndroidModelKeeper navigationModelKeeper = new NavigationModelKeeperModelKeeper();
     AndroidModelKeeper customModelKeeper;
     Bundle bundle;
 
-    MvpBeanKeeper() {
+    MvpStateKeeper() {
         gson = new GsonBuilder().create();
     }
 
     private static String getModelKey(String modelTypeName) {
-        return AndroidMvp.MVP_SATE_PREFIX + modelTypeName.replace("com.shipdream.lib.android.graph", "graph");
+        return AndroidMvp.MVP_SATE_PREFIX + modelTypeName;
     }
 
     //TODO: first param should be Bean and bean's model should be saved recursively
     @Override
-    public void saveBean(Bean bean) {
+    public void saveState(Provider provider) {
+        Mvp.graph().reference()
+        String
         Class type = bean.modelType();
         if (type != null) {
             Parcelable parcelable = null;
@@ -139,5 +142,10 @@ class MvpBeanKeeper implements BeanKeeper {
                 type.getName(), System.currentTimeMillis() - ts);
 
         return model;
+    }
+
+    @Override
+    public <T> T retrieveInstance(String providerTypeKey) {
+        return null;
     }
 }

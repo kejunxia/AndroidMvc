@@ -145,8 +145,6 @@ public abstract class MvpFragment extends Fragment {
     private int lastOrientation;
     private boolean dependenciesInjected = false;
 
-    boolean isStateManagedByRootDelegateFragment = false;
-
     /**
      * @return orientation before last orientation change.
      */
@@ -209,12 +207,6 @@ public abstract class MvpFragment extends Fragment {
             setRetainInstance(true);
         }
         injectDependencies();
-
-        if (!isStateManagedByRootDelegateFragment) {
-            if (savedInstanceState != null) {
-//                ModelKeeperHolder.restoreModelOfInjectedMvcBeanFields(savedInstanceState, this);
-            }
-        }
     }
 
     /**
@@ -256,16 +248,17 @@ public abstract class MvpFragment extends Fragment {
         onPreViewReady(view, savedInstanceState);
 
         final boolean restoring = savedInstanceState != null;
-        if (restoring && isStateManagedByRootDelegateFragment) {
-            ((MvpActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
-                @Override
-                public void run() {
-                    doOnViewCreatedCallBack(view, savedInstanceState, restoring);
-                }
-            });
-        } else {
-            doOnViewCreatedCallBack(view, savedInstanceState, restoring);
-        }
+//        if (restoring && isStateManagedByRootDelegateFragment) {
+//            ((MvpActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
+//                @Override
+//                public void run() {
+//                    doOnViewCreatedCallBack(view, savedInstanceState, restoring);
+//                }
+//            });
+//        } else {
+//
+//        }
+        doOnViewCreatedCallBack(view, savedInstanceState, restoring);
     }
 
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
@@ -419,10 +412,6 @@ public abstract class MvpFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_LAST_ORIENTATION, lastOrientation);
-
-        if (!isStateManagedByRootDelegateFragment) {
-//            ModelKeeperHolder.saveModelOfInjectedMvcBeanFields(outState, this);
-        }
     }
 
     /**
