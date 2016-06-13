@@ -16,12 +16,12 @@
 
 package com.shipdream.lib.android.mvp.view.injection.manager;
 
-import com.shipdream.lib.android.mvp.AbstractManager;
+import com.shipdream.lib.android.mvp.Manager;
 import com.shipdream.lib.android.mvp.view.injection.service.StorageService;
 
 import javax.inject.Inject;
 
-public class AccountManager extends AbstractManager<AccountManager.Session>{
+public class AccountManager extends Manager<AccountManager.Session> {
     public static class Session {
         private long userId;
 

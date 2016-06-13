@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 
-public class LifeCycleTestPresenter extends AbstractPresenter {
+public class LifeCycleTestPresenter extends Presenter {
     public interface Proxy {
         void onConstructCalled();
         void disposeCalled();

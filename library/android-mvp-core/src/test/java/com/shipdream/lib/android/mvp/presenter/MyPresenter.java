@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.presenter;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.Task;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 
@@ -31,7 +31,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
-public class MyPresenter extends AbstractPresenter {
+public class MyPresenter extends Presenter {
     public interface View {
         void onResourceLoaded();
 

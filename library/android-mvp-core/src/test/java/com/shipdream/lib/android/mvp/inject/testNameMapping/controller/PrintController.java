@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 
-public class PrintController extends AbstractPresenter<PrintModel> {
+public class PrintController extends Presenter<PrintModel> {
     public String print() {
         return getModel().getContent();
     }

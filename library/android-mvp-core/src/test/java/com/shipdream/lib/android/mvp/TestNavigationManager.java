@@ -59,23 +59,23 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         }
     }
 
-    abstract class Presenter1 extends AbstractPresenter {
+    abstract class Presenter1 extends Presenter {
     }
-    abstract class Presenter2 extends AbstractPresenter {
+    abstract class Presenter2 extends Presenter {
     }
-    abstract class Presenter3 extends AbstractPresenter {
+    abstract class Presenter3 extends Presenter {
     }
-    abstract class Presenter4 extends AbstractPresenter {
+    abstract class Presenter4 extends Presenter {
     }
-    abstract class Presenter5 extends AbstractPresenter {
+    abstract class Presenter5 extends Presenter {
     }
 
 
-    private Class<? extends AbstractPresenter> locId1 = Presenter1.class;
-    private Class<? extends AbstractPresenter> locId2 = Presenter2.class;
-    private Class<? extends AbstractPresenter> locId3 = Presenter3.class;
-    private Class<? extends AbstractPresenter> locId4 = Presenter4.class;
-    private Class<? extends AbstractPresenter> locId5 = Presenter5.class;
+    private Class<? extends Presenter> locId1 = Presenter1.class;
+    private Class<? extends Presenter> locId2 = Presenter2.class;
+    private Class<? extends Presenter> locId3 = Presenter3.class;
+    private Class<? extends Presenter> locId4 = Presenter4.class;
+    private Class<? extends Presenter> locId5 = Presenter5.class;
 
     @Test
     public void shouldClearNavigationHistoryUpToSpecified() throws Exception {
@@ -328,7 +328,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         prepareLocationHistory();
 
         // Arrange
-        navigationManager.navigate(this).back(AbstractPresenter.class);
+        navigationManager.navigate(this).back(Presenter.class);
 
         // Verify
         ArgumentCaptor<NavigationManager.Event2C.OnLocationBack> event
@@ -360,7 +360,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.logger = logger;
 
         // Act
-        navigationManager.navigate(this).to(Presenter1.class, new Forwarder().clearTo(AbstractPresenter.class));
+        navigationManager.navigate(this).to(Presenter1.class, new Forwarder().clearTo(Presenter.class));
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
@@ -403,7 +403,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.logger = logger;
 
         // Act
-        navigationManager.navigate(this).to(Presenter1.class, new Forwarder().clearTo(AbstractPresenter.class));
+        navigationManager.navigate(this).to(Presenter1.class, new Forwarder().clearTo(Presenter.class));
 
         // Verify
         verify(logger, atLeast(0)).trace(anyString());

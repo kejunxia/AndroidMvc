@@ -16,12 +16,12 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.manager.InkManager;
 
 import javax.inject.Inject;
 
-public class PrinterController2 extends AbstractPresenter<PrintModel> {
+public class PrinterController2 extends Presenter<PrintModel> {
     @Inject
     private InkManager inkManager;
 

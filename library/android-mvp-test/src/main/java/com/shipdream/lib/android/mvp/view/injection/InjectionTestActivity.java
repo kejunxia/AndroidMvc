@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvp.view.injection;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
@@ -30,7 +30,7 @@ import javax.inject.Inject;
 
 public class InjectionTestActivity extends MvpActivity {
     @Override
-    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends Presenter> presenterClass) {
         if (presenterClass == PresenterA.class) {
             return FragmentA.class;
         } else if (presenterClass == PresenterB.class) {

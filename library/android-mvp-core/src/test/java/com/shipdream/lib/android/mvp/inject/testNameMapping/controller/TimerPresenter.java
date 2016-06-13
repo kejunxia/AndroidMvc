@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvp.inject.testNameMapping.controller;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 
-public class TimerPresenter extends AbstractPresenter<TimerModel> {
+public class TimerPresenter extends Presenter<TimerModel> {
     @Override
     public Class<TimerModel> modelType() {
         return TimerModel.class;

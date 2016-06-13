@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvp.view.nav;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvp.NavigationManager;
@@ -44,7 +44,7 @@ public class MvpTestActivityNavigation extends MvpActivity {
      * @return The class type of the {@link MvpFragment} mapped to the presenter
      */
     @Override
-    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends Presenter> presenterClass) {
         if (presenterClass == PresenterA.class) {
             return NavFragmentA.class;
         } else if (presenterClass == PresenterB.class) {

@@ -2,9 +2,9 @@ package com.shipdream.lib.android.mvc.samples.simple.mvp.manager;
 
 import com.shipdream.lib.android.mvp.event.BaseEventC;
 
-import com.shipdream.lib.android.mvp.AbstractManager;
+import com.shipdream.lib.android.mvp.Manager;
 
-public class CounterManager extends AbstractManager<CounterManager.CounterModel> {
+public class CounterManager extends Manager<CounterManager.CounterModel> {
     /**
      * Namespace the events for this controller by nested interface so that all its events would
      * be referenced as CounterController.EventC2V.BlaBlaEvent.

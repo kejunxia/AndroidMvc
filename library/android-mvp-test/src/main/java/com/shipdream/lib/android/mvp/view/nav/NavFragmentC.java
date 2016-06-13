@@ -20,7 +20,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterD;
 
 import javax.inject.Inject;
@@ -30,7 +30,7 @@ public class NavFragmentC extends NavFragment{
     private DisposeCheckerC disposeCheckerC;
 
     @Override
-    protected Class<? extends AbstractPresenter> getNextFragmentLocId() {
+    protected Class<? extends Presenter> getNextFragmentLocId() {
         return PresenterD.class;
     }
     @Override

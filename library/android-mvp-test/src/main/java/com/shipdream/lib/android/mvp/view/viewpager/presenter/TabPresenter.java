@@ -16,10 +16,10 @@
 
 package com.shipdream.lib.android.mvp.view.viewpager.presenter;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.view.viewpager.TabModel;
 
-public class TabPresenter extends AbstractPresenter<TabModel> {
+public class TabPresenter extends Presenter<TabModel> {
      @Override
      public Class<TabModel> modelType() {
           return TabModel.class;

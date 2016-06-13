@@ -44,7 +44,7 @@ public class TestBaseImpl extends BaseTest {
         Assert.assertEquals(restoreState, navigationManager.getModel());
     }
 
-    class StatelessPresenter extends AbstractPresenter {
+    class StatelessPresenter extends Presenter {
         @Override
         public Class modelType() {
             return null;
@@ -73,7 +73,7 @@ public class TestBaseImpl extends BaseTest {
         private PrivateModel() {}
     }
 
-    class BadPresenter extends AbstractPresenter<PrivateModel> {
+    class BadPresenter extends Presenter<PrivateModel> {
         @Override
         public Class<PrivateModel> modelType() {
             return PrivateModel.class;

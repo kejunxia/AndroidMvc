@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvp.view.nav;
 
 import android.os.Bundle;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 
 import javax.inject.Inject;
 
@@ -27,7 +27,7 @@ public class NavFragmentD extends NavFragment{
     private DisposeCheckerD disposeCheckerD;
 
     @Override
-    protected Class<? extends AbstractPresenter> getNextFragmentLocId() {
+    protected Class<? extends Presenter> getNextFragmentLocId() {
         return null;
     }
     @Override

@@ -109,7 +109,7 @@ public abstract class MvpActivity extends AppCompatActivity {
      * @return The class type of the {@link MvpFragment} mapped to the presenter
      */
     protected abstract Class<? extends MvpFragment> mapPresenterFragment(
-            Class<? extends AbstractPresenter> presenterClass);
+            Class<? extends Presenter> presenterClass);
 
     /**
      * Provides the class type of the delegate fragment which is the root fragment holding fragments
@@ -147,7 +147,7 @@ public abstract class MvpActivity extends AppCompatActivity {
         delegateFragment.pendingOnViewReadyActions.add(runnable);
     }
 
-    private static class DelegateFragmentPresenter extends AbstractPresenter {
+    private static class DelegateFragmentPresenter extends Presenter {
         private Handler handler = new Handler(Looper.getMainLooper());
 
         @Inject
@@ -549,7 +549,7 @@ public abstract class MvpActivity extends AppCompatActivity {
             Class<? extends MvpFragment> fragmentClass = null;
             try {
                 fragmentClass = activity.mapPresenterFragment(
-                        (Class<? extends AbstractPresenter>) Class.forName(event.getCurrentValue().getLocationId()));
+                        (Class<? extends Presenter>) Class.forName(event.getCurrentValue().getLocationId()));
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }

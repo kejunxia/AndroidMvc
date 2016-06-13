@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvp.view.eventv2v;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
@@ -43,7 +43,7 @@ public class EventBusV2VActivity extends MvpActivity {
      * @return The class type of the {@link MvpFragment} mapped to the presenter
      */
     @Override
-    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends Presenter> presenterClass) {
         return EventBusV2VFragment.class;
     }
 

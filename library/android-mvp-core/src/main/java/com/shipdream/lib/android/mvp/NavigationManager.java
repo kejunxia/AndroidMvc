@@ -22,7 +22,7 @@ import com.shipdream.lib.android.mvp.event.ValueChangeEventC;
 /**
  * Controller to navigate among different fragments in the SAME activity.
  */
-public class NavigationManager extends AbstractManager<NavigationManager.Model> {
+public class NavigationManager extends Manager<NavigationManager.Model> {
     /**
      * Model/State of navigation manager manage the navigation history
      */

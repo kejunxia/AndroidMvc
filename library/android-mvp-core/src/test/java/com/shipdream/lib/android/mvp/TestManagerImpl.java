@@ -36,7 +36,7 @@ import static org.mockito.Mockito.verify;
 public class TestManagerImpl {
     @Test
     public void should_not_crash_when_manager_post_event_even_without_registering_controller_event_bus() {
-        class MyManager extends AbstractManager {
+        class MyManager extends Manager {
             void doPost(){
                 postEvent2C(mock(BaseEventC.class));
             }
@@ -63,7 +63,7 @@ public class TestManagerImpl {
 
         final MyEvent myEvent = mock(MyEvent.class);
 
-        class MyManager extends AbstractManager {
+        class MyManager extends Manager {
             void doPost(){
                 postEvent2C(myEvent);
             }

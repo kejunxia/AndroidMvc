@@ -42,7 +42,7 @@ public class Forwarder {
      * @param clearTo The presenter below the next location after clearing history
      * @return This instance
      */
-    public Forwarder clearTo(@NotNull Class<? extends AbstractPresenter> clearTo) {
+    public Forwarder clearTo(@NotNull Class<? extends Presenter> clearTo) {
         clearHistory = true;
         clearToLocationId = clearTo.getName();
         return this;

@@ -1,7 +1,7 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp;
 
 import com.shipdream.lib.android.mvc.samples.simple.mvp.presenter.EntryPresenter;
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
 
@@ -11,7 +11,7 @@ public class MainActivity extends MvpActivity {
 
     @Override
     protected Class<? extends MvpFragment> mapPresenterFragment(
-            Class<? extends AbstractPresenter> presenterClass) {
+            Class<? extends Presenter> presenterClass) {
         String presenterPkgName = presenterClass.getPackage().getName();
         String viewPkgName = presenterPkgName.substring(0, presenterPkgName.lastIndexOf(".")) + ".view";
         String fragmentClassName = viewPkgName + "."
@@ -20,7 +20,7 @@ public class MainActivity extends MvpActivity {
             return (Class<? extends MvpFragment>) Class.forName(fragmentClassName);
         } catch (ClassNotFoundException e) {
             String msg = String.format("Fragment class(%s) for presenter(%s) can not be found",
-                    presenterClass.getName());
+                    fragmentClassName, presenterClass.getName());
             throw new RuntimeException(msg, e);
         }
     }

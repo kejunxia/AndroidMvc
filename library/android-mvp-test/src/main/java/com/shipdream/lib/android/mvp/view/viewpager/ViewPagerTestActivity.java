@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvp.view.viewpager;
 
 import android.content.Intent;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
@@ -30,7 +30,7 @@ import javax.inject.Inject;
 
 public class ViewPagerTestActivity extends MvpActivity {
     @Override
-    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends Presenter> presenterClass) {
         if (presenterClass == HomePresenter.class) {
             return ViewPagerHomeFragment.class;
         } else if (presenterClass == SubViewPresenter.class) {

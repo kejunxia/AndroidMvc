@@ -16,10 +16,10 @@
 
 package com.shipdream.lib.android.mvp.view.eventv2v.controller;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.event.BaseEventV;
 
-public class V2VTestPresenter extends AbstractPresenter {
+public class V2VTestPresenter extends Presenter {
     public interface View {
         void updateDialogButton(String text);
     }

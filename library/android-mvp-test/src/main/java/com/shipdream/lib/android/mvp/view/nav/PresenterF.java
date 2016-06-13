@@ -18,11 +18,11 @@ package com.shipdream.lib.android.mvp.view.nav;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 
 import javax.inject.Inject;
 
-public class PresenterF extends AbstractPresenter<PresenterF.Model> {
+public class PresenterF extends Presenter<PresenterF.Model> {
     public static class Model {
         public String value;
     }

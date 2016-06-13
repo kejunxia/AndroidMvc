@@ -16,9 +16,9 @@
 
 package com.shipdream.lib.android.mvp.view.nav;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 
-public class AnotherPresenter extends AbstractPresenter<AnotherPresenter.Model> {
+public class AnotherPresenter extends Presenter<AnotherPresenter.Model> {
     public static class Model {
         private String name;
         private String address;

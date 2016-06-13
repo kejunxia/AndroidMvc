@@ -16,14 +16,14 @@
 
 package com.shipdream.lib.android.mvp.view.injection.presenter;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.view.injection.manager.AccountManager;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class PresenterD extends AbstractPresenter<PresenterD.Model> {
+public class PresenterD extends Presenter<PresenterD.Model> {
     public static class Model {
         private List<String> tags;
 

@@ -21,7 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.Presenter;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpFragment;
@@ -81,5 +81,5 @@ public abstract class NavFragment extends MvpFragment {
         super.onDestroy();
     }
 
-    protected abstract Class<? extends AbstractPresenter> getNextFragmentLocId();
+    protected abstract Class<? extends Presenter> getNextFragmentLocId();
 }

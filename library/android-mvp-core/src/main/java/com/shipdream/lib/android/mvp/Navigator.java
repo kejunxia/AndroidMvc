@@ -200,7 +200,7 @@ public class Navigator {
      *
      * @param presenterClass The presenter of which screen the app is navigating to.
      */
-    public void to(@NotNull Class<? extends AbstractPresenter> presenterClass) {
+    public void to(@NotNull Class<? extends Presenter> presenterClass) {
         doNavigateTo(presenterClass, null);
         go();
     }
@@ -217,13 +217,13 @@ public class Navigator {
      * @param presenterClass The presenter class type.
      * @param forwarder      The configuration by {@link Forwarder} of the forward navigation.
      */
-    public void to(@NotNull Class<? extends AbstractPresenter> presenterClass,
+    public void to(@NotNull Class<? extends Presenter> presenterClass,
                    @NotNull Forwarder forwarder) {
         doNavigateTo(presenterClass, forwarder);
         go();
     }
 
-    private void doNavigateTo(@NotNull Class<? extends AbstractPresenter> presenterClass,
+    private void doNavigateTo(@NotNull Class<? extends Presenter> presenterClass,
                               Forwarder forwarder) {
         boolean clearTop = false;
         String clearToLocationId = null;
@@ -326,7 +326,7 @@ public class Navigator {
      *
      * @param presenterClass the presenter class type
      */
-    public void back(Class<? extends AbstractPresenter> presenterClass) {
+    public void back(Class<? extends Presenter> presenterClass) {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationManager.logger.warn("Current location should never be null before navigating backwards.");
