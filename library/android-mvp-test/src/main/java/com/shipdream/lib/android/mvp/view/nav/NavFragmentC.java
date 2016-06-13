@@ -17,6 +17,8 @@
 package com.shipdream.lib.android.mvp.view.nav;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 
 import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterD;
@@ -34,6 +36,12 @@ public class NavFragmentC extends NavFragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    @Override
+    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
+        super.onViewReady(view, savedInstanceState, reason);
+        Log.d("", "");
     }
 
     @Override

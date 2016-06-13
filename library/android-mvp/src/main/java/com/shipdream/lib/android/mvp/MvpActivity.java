@@ -412,7 +412,9 @@ public abstract class MvpActivity extends AppCompatActivity {
             if (savedInstanceState != null) {
                 Bundle mvpOutState = savedInstanceState.getBundle(MVP_STATE_BUNDLE_KEY);
                 long ts = System.currentTimeMillis();
-                ModelKeeperHolder.restoreAllModels(mvpOutState);
+
+                //TODO: if its rotation, consider not restore since the fragment is retained
+//                ModelKeeperHolder.restoreAllModels(mvpOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
                 notifyAllSubMvpFragmentsTheirStateIsManagedByMe(this, false);

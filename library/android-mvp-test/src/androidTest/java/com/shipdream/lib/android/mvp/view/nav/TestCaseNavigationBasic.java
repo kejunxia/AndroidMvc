@@ -117,13 +117,13 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvpTestActivityNaviga
         disposeCheckerDMock = mock(DisposeCheckerD.class);
         comp = new Comp();
         comp.testCaseNavigation = this;
-        Mvp.graph().getRootComponent().register(comp);
-    }
 
-    @Override
-    protected void cleanDependencies() throws ProviderMissingException {
-        super.cleanDependencies();
-        Mvp.graph().getRootComponent().unregister(comp);
+        try {
+            Mvp.graph().getRootComponent().unregister(comp);
+        } catch (ProviderMissingException e) {
+            e.printStackTrace();
+        }
+        Mvp.graph().getRootComponent().register(comp);
     }
 
     private NavigationManager.Model getNavManagerModel() throws PokeException {

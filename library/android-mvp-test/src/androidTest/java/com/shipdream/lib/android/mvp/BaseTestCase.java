@@ -36,7 +36,6 @@ import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorD;
-import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -49,7 +48,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -113,12 +111,6 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
         root.addAppender(logcatAppender);
 
         root.setLevel(Level.ALL);
-    }
-
-    class testCache extends ScopeCache {
-        Map<String, Object> getCacheMap() {
-            return cache;
-        }
     }
 
     @Before
@@ -247,11 +239,12 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
                 lifeCycleValidatorD.reset();
             }
         });
+
         super.tearDown();
     }
 
     protected void cleanDependencies() throws ProviderMissingException {
-
+        Mvp.graph = null;
     }
 
     protected void pressHome() {

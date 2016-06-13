@@ -63,7 +63,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
 
     @Override
     protected void waitTest() throws InterruptedException {
-        waitTest(200);
+        waitTest(300);
     }
 
     public static class Comp {
