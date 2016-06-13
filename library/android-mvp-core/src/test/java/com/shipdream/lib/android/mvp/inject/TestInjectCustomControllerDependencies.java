@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrinterController2;
@@ -45,12 +44,12 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
     @Before
     public void setUp() throws Exception {
         graph = new MvpGraph();
-        graph.setRootComponent(new MvpComponent("RootMvp").register(new Object(){
+        graph.getRootComponent().register(new Object(){
             @Provides
             public ExecutorService executorService() {
                 return Executors.newCachedThreadPool();
             }
-        }));
+        });
     }
 
     private static class PaperView {

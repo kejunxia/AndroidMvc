@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintModel;
@@ -41,12 +40,12 @@ public class TestOverridesControllerImpl extends BaseTestCases {
     @Before
     public void setUp() throws Exception {
         graph = new MvpGraph();
-        graph.setRootComponent(new MvpComponent("MvpRoot").register(new Object(){
+        graph.getRootComponent().register(new Object(){
             @Provides
             public ExecutorService executorService() {
                 return Executors.newCachedThreadPool();
             }
-        }));
+        });
     }
 
     private static class TestView {

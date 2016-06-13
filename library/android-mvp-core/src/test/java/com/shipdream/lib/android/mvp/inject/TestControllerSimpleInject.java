@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.inject;
 
-import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
@@ -48,7 +47,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
     @Before
     public void setUp() throws Exception {
         graph = new MvpGraph();
-        graph.setRootComponent(new MvpComponent("Root").register(new Object(){
+        graph.getRootComponent().register(new Object(){
             @Provides
             @EventBusC
             public EventBus eventBusC() {
@@ -59,7 +58,7 @@ public class TestControllerSimpleInject extends BaseTestCases {
             public ExecutorService executorService() {
                 return Executors.newCachedThreadPool();
             }
-        }));
+        });
     }
 
     private static class TestView {

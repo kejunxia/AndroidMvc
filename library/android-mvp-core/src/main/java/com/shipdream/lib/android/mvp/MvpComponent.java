@@ -12,15 +12,12 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 //TODO: documents
 public class MvpComponent extends Component {
+    private String id;
     private Logger logger = LoggerFactory.getLogger(getClass());
-    List<Bean> beans = new CopyOnWriteArrayList<>();
-
-    public MvpComponent(String name) {
+    MvpComponent(String name) {
         super(name);
     }
 
@@ -28,13 +25,20 @@ public class MvpComponent extends Component {
      * Save model of all injected objects
      * @param stateKeeper The model keeper managing the model
      */
-    public void saveAllBeans(StateKeeper stateKeeper) {
+    public void saveState(StateKeeper stateKeeper) {
+        doSaveState(stateKeeper, this);
+    }
 
-        int size = beans.size();
-        for (int i = 0; i < size; i++) {
-            Bean bean = beans.get(i);
-            stateKeeper.saveState(bean);
+    private void doSaveState(StateKeeper stateKeeper, MvpComponent component) {
+        if (component.getChildrenComponents() != null && !component.getChildrenComponents().isEmpty()) {
+            for (Component child : component.getChildrenComponents()) {
+                if (child instanceof MvpComponent) {
+                    MvpComponent mvpChildComponent = (MvpComponent) child;
+                    doSaveState(stateKeeper, mvpChildComponent);
+                }
+            }
         }
+        stateKeeper.saveState(component);
     }
 
     /**
@@ -42,15 +46,20 @@ public class MvpComponent extends Component {
      * @param stateKeeper The model keeper managing the model
      */
     @SuppressWarnings("unchecked")
-    public void restoreAllBeans(StateKeeper stateKeeper) {
-        int size = beans.size();
-        for (int i = 0; i < size; i++) {
-            Bean bean = beans.get(i);
-            Object model = stateKeeper.retrieveInstance(bean.modelType());
-            if(model != null) {
-                beans.get(i).restoreModel(model);
+    public void restoreState(StateKeeper stateKeeper) {
+        doRestoreState(stateKeeper, this);
+    }
+
+    private void doRestoreState(StateKeeper stateKeeper, MvpComponent component) {
+        if (component.getChildrenComponents() != null && !component.getChildrenComponents().isEmpty()) {
+            for (Component child : component.getChildrenComponents()) {
+                if (child instanceof MvpComponent) {
+                    MvpComponent mvpChildComponent = (MvpComponent) child;
+                    doRestoreState(stateKeeper, mvpChildComponent);
+                }
             }
         }
+        stateKeeper.restoreState(component);
     }
 
     @SuppressWarnings("unchecked")

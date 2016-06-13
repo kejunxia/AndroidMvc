@@ -39,19 +39,19 @@ public class Forwarder {
      * A->B->A->C->B, clearToLocationId("A") will pop B and C and leave the back stack as A->B->A.
      *
      * <p>Note that, if {@link #clearAll()} is called, this method has no effect</p>
-     * @param locationId The location id clear up to
+     * @param clearTo The presenter below the next location after clearing history
      * @return This instance
      */
-    public Forwarder clearTo(@NotNull String locationId) {
+    public Forwarder clearTo(@NotNull Class<? extends AbstractPresenter> clearTo) {
         clearHistory = true;
-        clearToLocationId = locationId;
+        clearToLocationId = clearTo.getName();
         return this;
     }
 
     /**
      * Clear all history.
      *
-     * <p>Note that, if this method is called, {@link #clearTo(String)} will have no effect</p>
+     * <p>Note that, if this method is called, {@link #clearTo(Class)} will have no effect</p>
      * @return This instance
      */
     public Forwarder clearAll() {

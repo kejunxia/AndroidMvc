@@ -16,21 +16,19 @@
 
 package com.shipdream.lib.android.mvp;
 
-import com.shipdream.lib.poke.Provider;
-
 /**
  * StateKeeper saves and restores state of providers. If provider
  */
 public interface StateKeeper {
     /**
-     * Saves the provider's cached instance into this {@link StateKeeper}
-     * @param provider The provider whose cached instance will be saved
+     * Saves the component's cached instance into this {@link StateKeeper}
+     * @param component The component whose cached instance will be saved
      */
-    void saveState(Provider provider);
+    void saveState(MvpComponent component);
 
     /**
-     * Retrieves the provider's cached instanced previously saved
-     * @return null if the provider's cached instance
+     * Restores the component's cached instance into this {@link StateKeeper}
+     * @param component The component whose cached instance will be restored
      */
-    <T> T retrieveInstance(String providerTypeKey);
+    void restoreState(MvpComponent component);
 }

@@ -42,14 +42,8 @@ public class MvpGraph {
                     Bean bean = (Bean) instance;
                     bean.onDisposed();
 
-                    MvpComponent mvpRootComponent = (MvpComponent)getRootComponent();
-                    if (mvpRootComponent != null) {
-                        mvpRootComponent.beans.remove(instance);
-
-                        logger.trace("--Bean freed - '{}'.",
-                                provider.type().getSimpleName());
-                    }
-
+                    logger.trace("--Bean disposed - '{}'.",
+                            provider.type().getSimpleName());
                 }
             }
         });

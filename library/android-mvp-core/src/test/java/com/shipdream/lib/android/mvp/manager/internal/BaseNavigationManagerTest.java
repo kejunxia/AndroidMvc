@@ -17,12 +17,9 @@
 package com.shipdream.lib.android.mvp.manager.internal;
 
 import com.shipdream.lib.android.mvp.Mvp;
-import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.NavigationManager;
-import com.shipdream.lib.android.mvp.event.bus.EventBus;
-import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
-import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.android.mvp.presenter.BaseTest;
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 
 import org.junit.Before;
@@ -52,18 +49,12 @@ public class BaseNavigationManagerTest extends BaseTest {
             }
         }).when(executorService).submit(any(Runnable.class));
 
-        Mvp.graph().setRootComponent(new MvpComponent("MvpTestRoot").register(new Object() {
-            @Provides
-            @EventBusC
-            protected EventBus createEventBusC() {
-                return new EventBusImpl();
-            }
-
+        Mvp.graph().getRootComponent().attach(new Component().register(new Object() {
             @Provides
             protected ExecutorService createExecutorService() {
                 return executorService;
             }
-        }));
+        }), true);
 
         navigationManager = new NavigationManager();
         graph.inject(navigationManager);

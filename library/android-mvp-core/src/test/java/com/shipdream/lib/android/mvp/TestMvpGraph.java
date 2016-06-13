@@ -374,7 +374,7 @@ public class TestMvpGraph {
 //        final BeanKeeper beanKeeperMock = mock(BeanKeeper.class);
 //
 //        // Act
-//        graph.rootComponent.saveAllBeans(beanKeeperMock);
+//        graph.rootComponent.saveState(beanKeeperMock);
 //
 //        // Verify
 //        verify(beanKeeperMock).saveState(beanMock);
@@ -383,9 +383,9 @@ public class TestMvpGraph {
 //        reset(beanKeeperMock);
 //
 //        Object stateMock = mock(Object.class);
-//        when(beanKeeperMock.retrieveInstance(any(Class.class))).thenReturn(stateMock);
+//        when(beanKeeperMock.restoreState(any(Class.class))).thenReturn(stateMock);
 //
-//        graph.rootComponent.restoreAllBeans(beanKeeperMock);
+//        graph.rootComponent.restoreState(beanKeeperMock);
 //
 //        // Verify
 //        verify(beanMock).restoreModel(eq(stateMock));

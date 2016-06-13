@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvp.presenter;
 
-import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.poke.Provides;
@@ -39,12 +38,12 @@ public class TestControllerInjectionByComponent {
     public void dependenciesOfBaseControllerImplShouldBeInjected() throws Exception{
         MvpGraph graph = new MvpGraph();
 
-        graph.setRootComponent(new MvpComponent("RootMvp").register(new Object() {
+        graph.getRootComponent().register(new Object() {
             @Provides
             public ExecutorService provideExe() {
                 return mock(ExecutorService.class);
             }
-        }));
+        });
 
         TestBadView testView = new TestBadView();
         graph.inject(testView);

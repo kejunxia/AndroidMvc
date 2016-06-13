@@ -17,7 +17,6 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.android.mvp.Mvp;
-import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
@@ -28,37 +27,16 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.concurrent.ExecutorService;
-
 import javax.inject.Inject;
-
-import static org.mockito.Mockito.mock;
 
 public class TestInjector {
     @Before
     public void setUp() throws Exception {
-        Mvp.graph().setRootComponent(new MvpComponent("RootMvp").register(new Object() {
-            @Provides
-            @EventBusC
-            public EventBus providesIEventBusC() {
-                return mock(EventBus.class);
-            }
-
-            @Provides
-            @EventBusV
-            public EventBus providesIEventBusV() {
-                return mock(EventBus.class);
-            }
-
-            @Provides
-            public ExecutorService provideExe() {
-                return mock(ExecutorService.class);
-            }
-        }));
+        Mvp.graph().getRootComponent().scopeCache.cache.clear();
     }
 
     private int getGraphSize() {
-        return Mvp.graph().getRootComponent().scopeCache.getCachedItems().size();
+        return Mvp.graph().getRootComponent().getCachedItemSize();
     }
     
     @Test
