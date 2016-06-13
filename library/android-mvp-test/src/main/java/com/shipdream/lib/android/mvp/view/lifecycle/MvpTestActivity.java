@@ -16,17 +16,18 @@
 
 package com.shipdream.lib.android.mvp.view.lifecycle;
 
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterA;
 
 import javax.inject.Inject;
 
 public class MvpTestActivity extends MvpActivity {
-
     @Override
-    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
         return MvpTestFragment.class;
     }
 
@@ -41,7 +42,7 @@ public class MvpTestActivity extends MvpActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to("TestFragment", new Forwarder().clearAll());
+            navigationManager.navigate(this).to(PresenterA.class, new Forwarder().clearAll());
         }
     }
 

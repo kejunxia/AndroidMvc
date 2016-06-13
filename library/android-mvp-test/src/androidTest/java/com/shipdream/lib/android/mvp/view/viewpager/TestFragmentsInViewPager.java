@@ -21,6 +21,7 @@ import android.util.Log;
 import com.shipdream.lib.android.mvp.BaseTestCase;
 import com.shipdream.lib.android.mvp.view.LifeCycle;
 import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvp.view.viewpager.presenter.SubViewPresenter;
 
 import org.junit.Test;
 
@@ -76,7 +77,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubFragment.class.getSimpleName());
+        navigationManager.navigate(this).to(SubViewPresenter.class);
         waitTest(1200);
 
         lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -153,7 +154,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubFragment.class.getSimpleName());
+        navigationManager.navigate(this).to(SubViewPresenter.class);
         waitTest(1200);
 
         lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -353,7 +354,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     @Test
     public void test_should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubFragment.class.getSimpleName());
+        navigationManager.navigate(this).to(SubViewPresenter.class);
         waitTest(1200);
 
         lifeCycleValidator.reset();

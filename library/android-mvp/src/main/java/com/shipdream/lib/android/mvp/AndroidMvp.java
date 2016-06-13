@@ -44,16 +44,4 @@ public class AndroidMvp {
     private AndroidMvp() {
     }
 
-    /**
-     * Set the custom state keeper for the objects that are wanted to be saved and restored by it.
-     * Other objects will still be saved and restored by json serialization.
-     * @param customStateKeeper The State keeper use {@link Parcelable} to save and restore state.
-     *                          If any state doesn't need to be managed by this state keeper return
-     *                          null in its {@link AndroidModelKeeper#saveModel(Object, Class)} and
-     *                          {@link AndroidModelKeeper#getModel(Parcelable, Class)}
-     */
-    public static void setCustomStateKeeper(AndroidModelKeeper customStateKeeper) {
-        ModelKeeperHolder.stateKeeper.customModelKeeper = customStateKeeper;
-    }
-
 }

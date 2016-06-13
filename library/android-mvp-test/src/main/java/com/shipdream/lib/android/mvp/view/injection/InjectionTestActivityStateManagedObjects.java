@@ -16,23 +16,31 @@
 
 package com.shipdream.lib.android.mvp.view.injection;
 
-import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
-import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterA;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterB;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterC;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterD;
 
 import javax.inject.Inject;
 
 public class InjectionTestActivityStateManagedObjects extends MvpActivity {
     @Override
-    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
-        switch (locationId) {
-            case MvpTestActivityNavigation.Loc.D:
-                return FragmentD.class;
-            default:
-                return null;
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
+        if (presenterClass == PresenterA.class) {
+            return FragmentA.class;
+        } else if (presenterClass == PresenterB.class) {
+            return FragmentB.class;
+        } else if (presenterClass == PresenterC.class) {
+            return FragmentC.class;
+        } else if (presenterClass == PresenterD.class) {
+            return FragmentD.class;
         }
+        return null;
     }
 
     @Override
@@ -46,7 +54,7 @@ public class InjectionTestActivityStateManagedObjects extends MvpActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(MvpTestActivityNavigation.Loc.D, new Forwarder().clearAll());
+            navigationManager.navigate(this).to(PresenterD.class, new Forwarder().clearAll());
         }
     }
 

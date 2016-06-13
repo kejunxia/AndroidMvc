@@ -19,17 +19,31 @@ package com.shipdream.lib.android.mvp.view.eventv2v;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
+import com.shipdream.lib.android.mvp.NavigationManager;
+import com.shipdream.lib.android.mvp.Navigator;
+import com.shipdream.lib.android.mvp.view.eventv2v.controller.V2VTestPresenter;
 
 import javax.inject.Inject;
 
 public class EventBusV2VActivity extends MvpActivity {
 
+    /**
+     * Map a presenter class type to fragment class type. This is used for navigation. When the
+     * {@link Navigator} navigates to a presenter, in view layer, it loads the mapped fragment.
+     * <p/>
+     * <p>
+     * To make the mapping generic, consider to use {@link Class#forName(String)}.
+     * </p>
+     *
+     * @param presenterClass The presenter class type
+     * @return The class type of the {@link MvpFragment} mapped to the presenter
+     */
     @Override
-    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
         return EventBusV2VFragment.class;
     }
 
@@ -46,7 +60,7 @@ public class EventBusV2VActivity extends MvpActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to("TestFragment", new Forwarder().clearAll());
+            navigationManager.navigate(this).to(V2VTestPresenter.class, new Forwarder().clearAll());
         }
 
         @Override

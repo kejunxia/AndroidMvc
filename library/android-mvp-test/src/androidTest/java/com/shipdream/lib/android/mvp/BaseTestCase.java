@@ -37,9 +37,11 @@ import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorD;
 import com.shipdream.lib.poke.ScopeCache;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -79,8 +81,6 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
     protected T activity;
     protected android.app.Instrumentation instrumentation;
 
-    protected testCache scopeCache;
-
     public BaseTestCase(Class<T> activityClass) {
         super(activityClass);
     }
@@ -116,7 +116,7 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
     }
 
     class testCache extends ScopeCache {
-        Map<String, CachedItem> getCacheMap() {
+        Map<String, Object> getCacheMap() {
             return cache;
         }
     }
@@ -124,12 +124,9 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        scopeCache = new testCache();
-        AndroidMvp.graph().hijack(scopeCache);
+        injectDependencies();
 
-        injectDependencies(scopeCache);
-
-        AndroidMvp.graph().inject(this);
+        Mvp.graph().inject(this);
 
         lifeCycleMonitorMock = mock(LifeCycleMonitor.class);
         lifeCycleValidator = new LifeCycleValidator(lifeCycleMonitorMock);
@@ -179,7 +176,7 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
         activity = getActivity();
     }
 
-    protected void injectDependencies(ScopeCache mvcSingletonCache){
+    protected void injectDependencies() throws ProvideException, ProviderConflictException {
 
     }
 
@@ -201,15 +198,14 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
         lifeCycleValidatorD.reset();
 
         cleanDependencies();
-        AndroidMvp.graph().release(this);
-        Assert.assertTrue(scopeCache.getCacheMap().size() == 0);
+        Mvp.graph().release(this);
 
         activity.runOnUiThread(new Runnable() {
             private void clearStateOfFragments(Fragment fragment) {
                 FragmentManager fm = activity.getSupportFragmentManager();
 
                 if (fragment != null) {
-                    AndroidMvp.graph().release(fragment);
+                    Mvp.graph().release(fragment);
                     try {
                         fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
                     } catch (Exception e) {
@@ -222,7 +218,7 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
                         for (int i = 0; i < size; i++) {
                             Fragment frag = frags.get(i);
                             if (frag != null) {
-                                AndroidMvp.graph().release(frag);
+                                Mvp.graph().release(frag);
                                 try {
                                     fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
                                 } catch (Exception e) {
@@ -254,7 +250,7 @@ public class BaseTestCase <T extends MvpActivity> extends ActivityInstrumentatio
         super.tearDown();
     }
 
-    protected void cleanDependencies() {
+    protected void cleanDependencies() throws ProviderMissingException {
 
     }
 

@@ -25,11 +25,14 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvp.NavLocation;
 import com.shipdream.lib.android.mvp.NavigationManager;
-import com.shipdream.lib.android.mvp.MvpFragment;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.nav.MvpTestActivityNavigation;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterA;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterB;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterC;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterD;
 import com.shipdream.lib.android.mvp.view.test.R;
 
 import java.util.List;
@@ -74,16 +77,16 @@ public abstract class FragmentInjection extends MvpFragment {
             @Override
             public void onClick(View view) {
                 int position = spinner.getSelectedItemPosition();
-                String loc = "";
+                Class loc = null;
                 CharSequence item = adapter.getItem(position);
                 if (item.equals("A")) {
-                    loc = MvpTestActivityNavigation.Loc.A;
+                    loc = PresenterA.class;
                 } else if (item.equals("B")) {
-                    loc = MvpTestActivityNavigation.Loc.B;
+                    loc = PresenterB.class;
                 } else if (item.equals("C")) {
-                    loc = MvpTestActivityNavigation.Loc.C;
+                    loc = PresenterC.class;
                 }else if (item.equals("D")) {
-                    loc = MvpTestActivityNavigation.Loc.D;
+                    loc = PresenterD.class;
                 }
                 navigationManager.navigate(view).to(loc);
             }

@@ -265,12 +265,12 @@ public class MvpGraph {
      *
      * @param component The root {@link Component} of this graph.
      */
-    public void setRootComponent(Component component) throws Graph.IllegalRootComponentException {
+    public void setRootComponent(MvpComponent component) throws Graph.IllegalRootComponentException {
         graph.setRootComponent(component);
     }
 
-    public Component getRootComponent() {
-        return graph.getRootComponent();
+    public MvpComponent getRootComponent() {
+        return (MvpComponent) graph.getRootComponent();
     }
 
     /**

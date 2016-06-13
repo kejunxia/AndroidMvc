@@ -24,6 +24,7 @@ import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.view.MvpApp;
 import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvp.view.viewpager.presenter.SubViewPresenter;
 import com.shipdream.lib.android.mvp.view.viewpager.presenter.TabPresenter;
 
 import javax.inject.Inject;
@@ -65,7 +66,7 @@ public class TabFragmentA extends BaseTabFragment {
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationManager.navigate(v).to(SubFragment.class.getSimpleName());
+                navigationManager.navigate(v).to(SubViewPresenter.class);
             }
         });
     }

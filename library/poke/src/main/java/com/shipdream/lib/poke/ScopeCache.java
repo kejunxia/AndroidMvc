@@ -26,7 +26,7 @@ import java.util.Map;
 /**
  * The cache controls how the provider associated should generate new instances.
  */
-class ScopeCache {
+public class ScopeCache {
     protected Map<String, Object> cache = new HashMap<>();
 
     @SuppressWarnings("unchecked")

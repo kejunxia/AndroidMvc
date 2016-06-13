@@ -24,11 +24,11 @@ public interface StateKeeper {
      * Saves the component's cached instance into this {@link StateKeeper}
      * @param component The component whose cached instance will be saved
      */
-    void saveState(MvpComponent component);
+    void saveState(String key, Object value);
 
     /**
      * Restores the component's cached instance into this {@link StateKeeper}
      * @param component The component whose cached instance will be restored
      */
-    void restoreState(MvpComponent component);
+    <T> T restoreState(String key, Class<T> type);
 }

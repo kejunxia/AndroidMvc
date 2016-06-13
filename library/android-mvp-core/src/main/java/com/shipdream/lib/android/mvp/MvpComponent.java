@@ -3,6 +3,7 @@ package com.shipdream.lib.android.mvp;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ProviderByClassType;
+import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -15,7 +16,6 @@ import java.lang.reflect.Modifier;
 
 //TODO: documents
 public class MvpComponent extends Component {
-    private String id;
     private Logger logger = LoggerFactory.getLogger(getClass());
     MvpComponent(String name) {
         super(name);
@@ -38,7 +38,7 @@ public class MvpComponent extends Component {
                 }
             }
         }
-        stateKeeper.saveState(component);
+        stateKeeper.saveState(component.getName(), component.scopeCache);
     }
 
     /**
@@ -59,7 +59,7 @@ public class MvpComponent extends Component {
                 }
             }
         }
-        stateKeeper.restoreState(component);
+        component.scopeCache = stateKeeper.restoreState(component.getName(), ScopeCache.class);
     }
 
     @SuppressWarnings("unchecked")

@@ -36,7 +36,7 @@ class ModelKeeperHolder {
      */
     static void saveAllModels(Bundle outState) {
         stateKeeper.bundle = outState;
-        getRootComponent().saveAllBeans(stateKeeper);
+        getRootComponent().saveState(stateKeeper);
         stateKeeper.bundle = null;
     }
 
@@ -46,7 +46,7 @@ class ModelKeeperHolder {
      */
     static void restoreAllModels(Bundle savedState) {
         stateKeeper.bundle = savedState;
-        getRootComponent().restoreAllBeans(stateKeeper);
+        getRootComponent().restoreState(stateKeeper);
         stateKeeper.bundle = null;
     }
 

@@ -16,12 +16,14 @@
 
 package com.shipdream.lib.android.mvp.view.nav;
 
+import com.shipdream.lib.android.mvp.BaseTestCase;
+import com.shipdream.lib.android.mvp.Mvp;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Preparer;
-import com.shipdream.lib.android.mvp.AndroidMvp;
-import com.shipdream.lib.android.mvp.BaseTestCase;
 import com.shipdream.lib.poke.Provides;
-import com.shipdream.lib.poke.ScopeCache;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -64,12 +66,8 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
         waitTest(200);
     }
 
-    public static class Comp extends Module {
+    public static class Comp {
         TestCaseNavigationFromController testCaseNavigation;
-
-        Comp(ScopeCache scopeCache) {
-            super(scopeCache);
-        }
 
         @Singleton
         @Provides
@@ -91,8 +89,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
     }
 
     @Override
-    protected void injectDependencies(ScopeCache mvcSingletonCache) {
-        super.injectDependencies(mvcSingletonCache);
+    protected void injectDependencies() throws ProvideException, ProviderConflictException {
 
         disposeCheckerEMock = mock(DisposeCheckerE.class);
         doAnswer(new Answer() {
@@ -118,15 +115,15 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
                 return null;
             }
         }).when(disposeCheckerGMock).onDisposed();
-        comp = new Comp(mvcSingletonCache);
+        comp = new Comp();
         comp.testCaseNavigation = this;
-        AndroidMvp.graph().register(comp);
+        Mvp.graph().getRootComponent().register(comp);
     }
 
     @Override
-    protected void cleanDependencies() {
+    protected void cleanDependencies() throws ProviderMissingException {
         super.cleanDependencies();
-        AndroidMvp.graph().unregister(comp);
+        Mvp.graph().getRootComponent().unregister(comp);
     }
 
     @Test
@@ -140,7 +137,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
             public void prepare(PresenterE instance) {
                 instance.setValue(val);
             }
-        }).to(MvpTestActivityNavigation.Loc.E);
+        }).to(PresenterE.class);
 
         //The value set to controller e in Injector.graph().use should be retained during the
         //navigation
@@ -170,7 +167,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
             public void prepare(PresenterE instance) {
                 instance.setValue(valE);
             }
-        }).to(MvpTestActivityNavigation.Loc.E);
+        }).to(PresenterE.class);
         waitTest();
         onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
@@ -183,7 +180,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
             public void prepare(PresenterF instance) {
                 instance.setValue(valF);
             }
-        }).to(MvpTestActivityNavigation.Loc.F);
+        }).to(PresenterF.class);
         waitTest();
         onView(withText(valF)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
@@ -196,7 +193,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvpTestActiv
             public void prepare(PresenterG instance) {
                 instance.setValue(valG);
             }
-        }).to(MvpTestActivityNavigation.Loc.G);
+        }).to(PresenterG.class);
         waitTest();
         onView(withText(valG)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();

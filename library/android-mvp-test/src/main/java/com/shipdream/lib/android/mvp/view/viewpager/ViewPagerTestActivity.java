@@ -18,18 +18,19 @@ package com.shipdream.lib.android.mvp.view.viewpager;
 
 import android.content.Intent;
 
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpActivity;
 import com.shipdream.lib.android.mvp.MvpFragment;
+import com.shipdream.lib.android.mvp.view.viewpager.presenter.SubViewPresenter;
 
 import javax.inject.Inject;
 
 public class ViewPagerTestActivity extends MvpActivity {
-
     @Override
-    protected Class<? extends MvpFragment> mapNavigationFragment(String locationId) {
-        if (locationId.equals(SubFragment.class.getSimpleName())) {
+    protected Class<? extends MvpFragment> mapPresenterFragment(Class<? extends AbstractPresenter> presenterClass) {
+        if (presenterClass == SubViewPresenter.class) {
             return SubFragment.class;
         }
         return ViewPagerHomeFragment.class;
@@ -46,7 +47,7 @@ public class ViewPagerTestActivity extends MvpActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(ViewPagerHomeFragment.class.getSimpleName(), new Forwarder().clearAll());
+            navigationManager.navigate(this).to(SubViewPresenter.class, new Forwarder().clearAll());
         }
     }
 

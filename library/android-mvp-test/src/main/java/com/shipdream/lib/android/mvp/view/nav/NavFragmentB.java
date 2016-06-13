@@ -18,6 +18,9 @@ package com.shipdream.lib.android.mvp.view.nav;
 
 import android.os.Bundle;
 
+import com.shipdream.lib.android.mvp.AbstractPresenter;
+import com.shipdream.lib.android.mvp.view.injection.presenter.PresenterC;
+
 import javax.inject.Inject;
 
 public class NavFragmentB extends NavFragment{
@@ -25,10 +28,9 @@ public class NavFragmentB extends NavFragment{
     private DisposeCheckerB disposeCheckerB;
 
     @Override
-    protected String getNextFragmentLocId() {
-        return MvpTestActivityNavigation.Loc.C;
+    protected Class<? extends AbstractPresenter> getNextFragmentLocId() {
+        return PresenterC.class;
     }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

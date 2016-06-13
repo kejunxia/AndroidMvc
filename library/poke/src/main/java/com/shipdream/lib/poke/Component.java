@@ -56,7 +56,7 @@ public class Component {
     }
 
     private final String name;
-    final ScopeCache scopeCache;
+    protected ScopeCache scopeCache;
 
     final Map<String, Component> componentLocator = new HashMap<>();
     Map<String, List<Component>> overriddenChain;

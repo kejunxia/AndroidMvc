@@ -21,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
+import com.shipdream.lib.android.mvp.AbstractPresenter;
 import com.shipdream.lib.android.mvp.NavigationManager;
 import com.shipdream.lib.android.mvp.Forwarder;
 import com.shipdream.lib.android.mvp.MvpFragment;
@@ -52,7 +53,7 @@ public abstract class NavFragment extends MvpFragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean interim = getNextFragmentLocId().contains("C");
+                boolean interim = getNextFragmentLocId().getName().contains("C");
                 navigationManager.navigate(v).to(getNextFragmentLocId(), new Forwarder().setInterim(interim));
             }
         });
@@ -80,5 +81,5 @@ public abstract class NavFragment extends MvpFragment {
         super.onDestroy();
     }
 
-    protected abstract String getNextFragmentLocId();
+    protected abstract Class<? extends AbstractPresenter> getNextFragmentLocId();
 }
