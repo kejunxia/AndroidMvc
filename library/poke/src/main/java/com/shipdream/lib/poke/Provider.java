@@ -216,9 +216,10 @@ public abstract class Provider<T> {
     private void freeCache() {
         ScopeCache cache = getScopeCache();
         if (cache != null) {
-            ScopeCache.CachedItem cachedItem = cache.findCacheItem(type, qualifier);
-            if (cachedItem != null) {
-                cache.removeCache(cachedItem.provider.type, cachedItem.provider.qualifier);
+            String key = PokeHelper.makeProviderKey(type, qualifier);
+            Object instance = cache.findCacheInstance(key);
+            if (instance != null) {
+                cache.removeCache(key);
             }
         }
     }
@@ -293,10 +294,12 @@ public abstract class Provider<T> {
      */
     public T getCachedInstance() {
         ScopeCache cache = getScopeCache();
+
         if (cache != null) {
-            ScopeCache.CachedItem<T> cachedItem = cache.findCacheItem(type, qualifier);
-            if(cachedItem != null) {
-                return cachedItem.instance;
+            String key = PokeHelper.makeProviderKey(type, qualifier);
+            Object instance = cache.findCacheInstance(key);
+            if(instance != null) {
+                return (T) instance;
             }
         }
         return null;

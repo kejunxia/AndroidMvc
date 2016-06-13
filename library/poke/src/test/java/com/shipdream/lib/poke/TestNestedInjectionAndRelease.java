@@ -133,8 +133,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
@@ -150,8 +150,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInC);
@@ -172,8 +172,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
@@ -189,8 +189,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
@@ -203,8 +203,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(1)).onFreed();
         verify(serviceOnFreed, times(1)).onFreed();
-        Assert.assertNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertEquals(0, component.findProvider(Controller.class, null).getReferenceCount());
         Assert.assertEquals(0, component.findProvider(Service.class, null).getReferenceCount());
     }
@@ -276,8 +276,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
@@ -295,8 +295,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInC);
@@ -319,8 +319,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
@@ -338,8 +338,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
         Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
         Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
@@ -352,8 +352,8 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(1)).onFreed();
         verify(serviceOnFreed, times(1)).onFreed();
-        Assert.assertNull(component.scopeCache.findCacheItem(Controller.class, null));
-        Assert.assertNull(component.scopeCache.findCacheItem(Service.class, null));
+        Assert.assertNull(component.scopeCache.findCacheInstance(Controller.class, null));
+        Assert.assertNull(component.scopeCache.findCacheInstance(Service.class, null));
         Assert.assertEquals(0, component.findProvider(Controller.class, null).getReferenceCount());
         Assert.assertEquals(0, component.findProvider(Service.class, null).getReferenceCount());
     }

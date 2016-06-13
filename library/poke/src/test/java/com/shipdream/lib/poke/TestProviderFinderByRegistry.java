@@ -715,15 +715,11 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     private <T> T findCacheInstance(ScopeCache scopeCache, Provider<T> provider) {
-        ScopeCache.CachedItem<T> cachedItem = scopeCache.findCacheItem(provider.type(), provider.getQualifier());
-        if(cachedItem != null) {
-            return cachedItem.instance;
+        T instance = scopeCache.findCacheInstance(provider.type(), provider.getQualifier());
+        if(instance != null) {
+            return instance;
         }
         return null;
-    }
-
-    interface Contract {
-
     }
 
 }

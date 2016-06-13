@@ -105,6 +105,10 @@ public class Component {
         return parentComponent;
     }
 
+    public List<Component> getChildrenComponents() {
+        return childrenComponents;
+    }
+
     /**
      * //TODO: document how component scope cache will override provider's
      * Register a {@link Provider}. When allowOverride = false, it allows to register overriding
@@ -157,7 +161,7 @@ public class Component {
 
         targetComponent.providers.remove(key);
         if (targetComponent.scopeCache != null) {
-            targetComponent.scopeCache.removeCache(type, qualifier);
+            targetComponent.scopeCache.removeCache(PokeHelper.makeProviderKey(type, qualifier));
         }
 
         Component root = getRootComponent();
