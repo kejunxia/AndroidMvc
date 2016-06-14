@@ -17,6 +17,9 @@
 package com.shipdream.lib.android.mvp.presenter;
 
 import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.poke.Provides;
 
@@ -39,6 +42,12 @@ public class TestControllerInjectionByComponent {
         MvpGraph graph = new MvpGraph();
 
         graph.getRootComponent().register(new Object() {
+            @Provides
+            @EventBusC
+            public EventBus eventBus() {
+                return new EventBusImpl();
+            }
+
             @Provides
             public ExecutorService provideExe() {
                 return mock(ExecutorService.class);

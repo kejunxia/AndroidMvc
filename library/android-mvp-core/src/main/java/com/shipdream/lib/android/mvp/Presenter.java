@@ -126,8 +126,8 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
      * task.
      *
      */
-    protected Task.Monitor runTask(Object sender, ExecutorService executorService,
-                                   final Task task, final Task.Callback callback) {
+    protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, ExecutorService executorService,
+                                   final Task<RESULT> task, final Task.Callback<RESULT> callback) {
         final Task.Monitor monitor = new Task.Monitor(task, callback);
 
         if (monitor.getState() == Task.Monitor.State.CANCELED) {
@@ -144,7 +144,7 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
             @Override
             public Void call() throws Exception {
                 try {
-                    task.execute(monitor);
+                    final RESULT result = task.execute(monitor);
 
                     if (monitor.getState() != Task.Monitor.State.CANCELED) {
                         monitor.setState(Task.Monitor.State.DONE);
@@ -154,13 +154,13 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
                                 @Override
                                 public void run() {
                                     if (Presenter.uiThreadRunner.isOnUiThread()) {
-                                        callback.onSuccess();
+                                        callback.onSuccess(result);
                                         callback.onFinally();
                                     } else {
                                         Presenter.uiThreadRunner.run(new Runnable() {
                                             @Override
                                             public void run() {
-                                                callback.onSuccess();
+                                                callback.onSuccess(result);
                                                 callback.onFinally();
                                             }
                                         });

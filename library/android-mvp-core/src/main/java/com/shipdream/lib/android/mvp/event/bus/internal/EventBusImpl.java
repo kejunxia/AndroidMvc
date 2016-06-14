@@ -18,9 +18,6 @@ package com.shipdream.lib.android.mvp.event.bus.internal;
 
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
@@ -28,7 +25,6 @@ import java.util.Map;
 
 public class EventBusImpl implements EventBus {
     Map<Class<?>, Map<Object, Method>> subscribers = new LinkedHashMap<>();
-    private Logger logger = LoggerFactory.getLogger(getClass());
 
     public void register(Object subscriber) {
         if(subscriber == null) {

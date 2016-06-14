@@ -17,6 +17,9 @@
 package com.shipdream.lib.android.mvp.inject;
 
 import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvp.event.bus.EventBus;
+import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.PrinterController2;
 import com.shipdream.lib.android.mvp.inject.testNameMapping.controller.internal.AndroidPartImpl;
@@ -45,6 +48,12 @@ public class TestInjectCustomControllerDependencies extends BaseTestCases {
     public void setUp() throws Exception {
         graph = new MvpGraph();
         graph.getRootComponent().register(new Object(){
+            @Provides
+            @EventBusC
+            public EventBus eventBus() {
+                return new EventBusImpl();
+            }
+
             @Provides
             public ExecutorService executorService() {
                 return Executors.newCachedThreadPool();

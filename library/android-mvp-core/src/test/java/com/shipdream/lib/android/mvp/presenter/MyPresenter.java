@@ -57,17 +57,18 @@ public class MyPresenter extends Presenter {
         return null;
     }
 
-    public Task.Monitor loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(final Object sender) {
+    public Task.Monitor<Void> loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(final Object sender) {
         return runTask(this, new Task() {
             @Override
-            public void execute(Monitor monitor) throws Exception {
+            public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 view.onResourceLoaded();
+                return null;
             }
         });
     }
 
-    public Task.Monitor loadHeavyResourceSuccessfullyWithoutErrorHandler(final Object sender) {
+    public Task.Monitor<Void> loadHeavyResourceSuccessfullyWithoutErrorHandler(final Object sender) {
         ExecutorService executorService = mock(ExecutorService.class);
         doAnswer(new Answer() {
             @Override
@@ -78,21 +79,23 @@ public class MyPresenter extends Presenter {
             }
         }).when(executorService).submit(any(Callable.class));
 
-        return runTask(this, executorService, new Task() {
+        return runTask(this, executorService, new Task<Void>() {
             @Override
-            public void execute(Monitor monitor) throws Exception {
+            public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 view.onResourceLoaded();
+                return null;
             }
         }, null);
     }
 
-    public Task.Monitor loadHeavyResourceSuccessfullyWithErrorHandler(final Object sender) {
-        return runTask(this, new Task() {
+    public Task.Monitor<Void> loadHeavyResourceSuccessfullyWithErrorHandler(final Object sender) {
+        return runTask(this, new Task<Void>() {
             @Override
-            public void execute(Monitor monitor) throws Exception {
+            public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 view.onResourceLoaded();
+                return null;
             }
         }, new Task.Callback() {
             @Override
@@ -102,24 +105,24 @@ public class MyPresenter extends Presenter {
         });
     }
 
-    public Task.Monitor loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(final Object sender) {
-        return runTask(this, new Task() {
+    public Task.Monitor<Void> loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(final Object sender) {
+        return runTask(this, new Task<Void>() {
             @Override
-            public void execute(Monitor monitor) throws Exception {
+            public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 throw new RuntimeException("Something went wrong");
             }
         });
     }
 
-    public Task.Monitor loadHeavyResourceWithException(final Object sender) {
+    public Task.Monitor<Void> loadHeavyResourceWithException(final Object sender) {
         return runTask(this, new Task() {
             @Override
-            public void execute(Monitor monitor) throws Exception {
+            public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 throw new RuntimeException("Something went wrong");
             }
-        }, new Task.Callback() {
+        }, new Task.Callback<Void>() {
             @Override
             public void onException(Exception e) {
                 view.onResourceFailed(e);
@@ -128,16 +131,17 @@ public class MyPresenter extends Presenter {
     }
 
 
-    public Task.Monitor loadHeavyResourceAndCancel(final Object sender) {
-        Task asyncTask = new Task() {
+    public Task.Monitor<Void> loadHeavyResourceAndCancel(final Object sender) {
+        Task asyncTask = new Task<Void>() {
             @Override
-            public void execute(Monitor monitor) throws Exception {
+            public Void execute(Monitor<Void> monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
                 if (monitor.getState() == Monitor.State.CANCELED) {
                     view.onResourceCancelled();
                 } else {
                     view.onResourceLoaded();
                 }
+                return null;
             }
         };
 

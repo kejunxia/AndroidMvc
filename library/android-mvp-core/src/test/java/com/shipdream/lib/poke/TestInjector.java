@@ -16,10 +16,12 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.android.mvp.Mvp;
+import com.shipdream.lib.android.mvp.MvpComponent;
+import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
+import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
@@ -27,16 +29,40 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutorService;
+
 import javax.inject.Inject;
 
+import static org.mockito.Mockito.mock;
+
 public class TestInjector {
+    MvpGraph graph;
+    
     @Before
     public void setUp() throws Exception {
-        Mvp.graph().getRootComponent().scopeCache.cache.clear();
+        graph = new MvpGraph();
+        graph.setRootComponent((MvpComponent) new MvpComponent("Root").register(new Object() {
+            @Provides
+            @EventBusC
+            public EventBus eventBusC() {
+                return new EventBusImpl();
+            }
+
+            @Provides
+            @EventBusV
+            public EventBus eventBusV() {
+                return new EventBusImpl();
+            }
+
+            @Provides
+            public ExecutorService provideExe() {
+                return mock(ExecutorService.class);
+            }
+        }));
     }
 
     private int getGraphSize() {
-        return Mvp.graph().getRootComponent().getCachedItemSize();
+        return graph.getRootComponent().getCachedItemSize();
     }
     
     @Test
@@ -50,7 +76,7 @@ public class TestInjector {
         }
 
         View1 v1 = new View1();
-        Mvp.graph().inject(v1);
+        graph.inject(v1);
         Assert.assertEquals(1, getGraphSize());
 
         class View2 {
@@ -60,7 +86,7 @@ public class TestInjector {
         }
 
         View2 v2 = new View2();
-        Mvp.graph().inject(v2);
+        graph.inject(v2);
         Assert.assertEquals(1, getGraphSize());
 
         class View3 {
@@ -70,7 +96,7 @@ public class TestInjector {
         }
 
         View3 v3 = new View3();
-        Mvp.graph().inject(v3);
+        graph.inject(v3);
         Assert.assertEquals(2, getGraphSize());
     }
 }

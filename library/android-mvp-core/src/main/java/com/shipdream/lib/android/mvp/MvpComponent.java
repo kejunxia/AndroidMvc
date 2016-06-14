@@ -87,7 +87,20 @@ public class MvpComponent extends Component {
                 impClass = type;
             }
 
-            provider = new ProviderByClassType<T>(type, impClass);
+            provider = new ProviderByClassType<>(type, impClass);
+
+            if ((qualifier != null && !qualifier.equals(provider.getQualifier()))
+                    || provider.getQualifier() != null) {
+                String msg;
+                if (qualifier == null) {
+                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists",
+                            type.getName(), getClassName(type));
+                } else {
+                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists",
+                            type.getName(), getClassName(type) + "@" + qualifier.toString());
+                }
+                throw new ProviderMissingException(msg);
+            }
 
             try {
                 register(provider);

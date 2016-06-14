@@ -21,11 +21,11 @@ import java.util.concurrent.Future;
 /**
  * Task to execute a block of code
  */
-public interface Task {
+public interface Task<RESULT> {
     /**
      * Monitor is used to track and cancel the task
      */
-    class Monitor {
+    class Monitor<RESULT> {
         /**
          * State of executing phases of {@link Task}
          */
@@ -57,17 +57,17 @@ public interface Task {
             INTERRUPTED
         }
 
-        private final Callback callback;
+        private final Callback<RESULT> callback;
         private Future future;
         private State state;
-        private Task task;
+        private Task<RESULT> task;
 
         /**
          * Constructor
          * @param task The task being monitored
          * @param callback The callback for the execution of the task. It can be null.
          */
-        public Monitor(Task task, Callback callback) {
+        public Monitor(Task<RESULT> task, Callback<RESULT> callback) {
             this.state = State.NOT_STARTED;
             this.task = task;
             this.callback = callback;
@@ -166,7 +166,7 @@ public interface Task {
     /**
      * The callback for the execution of a {@link Task}
      */
-    abstract class Callback {
+    abstract class Callback<RESULT> {
         /**
          * Called when the execution of the task starts
          */
@@ -174,8 +174,9 @@ public interface Task {
 
         /**
          * Called when the execution of the task completes successfully
+         * @param result The result of the execution
          */
-        public void onSuccess(){}
+        public void onSuccess(RESULT result){}
 
         /**
          * Called when the execution of the task is cancelled
@@ -193,7 +194,7 @@ public interface Task {
         public void onException(Exception e){}
 
         /**
-         * Called when the task has started and runs into {@link #onSuccess()},
+         * Called when the task has started and runs into {@link #onSuccess(Object)} ()},
          * {@link #onCancelled(boolean)} or {@link #onException(Exception)}
          */
         public void onFinally() {}
@@ -204,5 +205,5 @@ public interface Task {
      * @param monitor The monitor to track the execution of this task
      * @throws Exception exception occurring during the execution
      */
-    void execute(Monitor monitor) throws Exception;
+    RESULT execute(Monitor<RESULT> monitor) throws Exception;
 }
