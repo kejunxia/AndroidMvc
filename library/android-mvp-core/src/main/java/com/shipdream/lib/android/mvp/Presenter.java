@@ -128,7 +128,7 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
      */
     protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, ExecutorService executorService,
                                    final Task<RESULT> task, final Task.Callback<RESULT> callback) {
-        final Task.Monitor monitor = new Task.Monitor(task, callback);
+        final Task.Monitor<RESULT> monitor = new Task.Monitor(task, callback);
 
         if (monitor.getState() == Task.Monitor.State.CANCELED) {
             return null;
