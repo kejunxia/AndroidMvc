@@ -128,6 +128,6 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(1)).onResourceCancelled();
 
-        Assert.assertEquals(monitor.getState(), Task.Monitor.State.CANCELED);
+        Assert.assertEquals(monitor.getState(), Task.Monitor.State.INTERRUPTED);
     }
 }

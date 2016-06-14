@@ -24,6 +24,7 @@ import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -34,6 +35,21 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class TestManagerImpl {
+    @Before
+    public void setUp() throws Exception {
+        Presenter.uiThreadRunner = new Presenter.UiThreadRunner() {
+            @Override
+            public boolean isOnUiThread() {
+                return true;
+            }
+
+            @Override
+            public void run(Runnable runnable) {
+                runnable.run();
+            }
+        };
+    }
+
     @Test
     public void should_not_crash_when_manager_post_event_even_without_registering_controller_event_bus() {
         class MyManager extends Manager {
@@ -76,7 +92,7 @@ public class TestManagerImpl {
 
         final EventBus bus = mock(EventBus.class);
 
-        Mvp.graph().setRootComponent(new MvpComponent("Root").register(new Object() {
+        Mvp.graph().setRootComponent((MvpComponent) new MvpComponent("Root").register(new Object() {
             @Provides
             @EventBusC
             protected EventBus createEventBusC() {

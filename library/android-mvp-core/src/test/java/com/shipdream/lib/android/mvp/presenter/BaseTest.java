@@ -16,12 +16,12 @@
 
 package com.shipdream.lib.android.mvp.presenter;
 
+import com.shipdream.lib.android.mvp.MvpComponent;
 import com.shipdream.lib.android.mvp.MvpGraph;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvp.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 
 import org.apache.log4j.ConsoleAppender;
@@ -50,7 +50,7 @@ public class BaseTest {
         eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
 
-        graph.setRootComponent(new Component().register(new Object(){
+        graph.setRootComponent((MvpComponent) new MvpComponent("Root").register(new Object(){
             @Provides
             @EventBusC
             public EventBus createEventBusC() {

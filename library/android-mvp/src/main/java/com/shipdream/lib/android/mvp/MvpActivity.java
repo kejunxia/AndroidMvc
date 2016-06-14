@@ -18,8 +18,6 @@ package com.shipdream.lib.android.mvp;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentHostCallback;
 import android.support.v4.app.FragmentManager;
@@ -50,6 +48,10 @@ public abstract class MvpActivity extends AppCompatActivity {
     }
 
     private EventRegister eventRegister;
+
+    static {
+        Presenter.uiThreadRunner = new AndroidUiThreadRunner();
+    }
 
     @SuppressWarnings("unchecked")
     @Override
@@ -148,15 +150,13 @@ public abstract class MvpActivity extends AppCompatActivity {
     }
 
     private static class DelegateFragmentPresenter extends Presenter {
-        private Handler handler = new Handler(Looper.getMainLooper());
-
         @Inject
         private NavigationManager navigationManager;
 
         private DelegateFragment delegateFragment;
 
         private void onEvent(final NavigationManager.Event2C.OnLocationForward event) {
-            handler.post(new Runnable() {
+            Presenter.uiThreadRunner.run(new Runnable() {
                 @Override
                 public void run() {
                     delegateFragment.handleForwardNavigation(event);
@@ -165,7 +165,7 @@ public abstract class MvpActivity extends AppCompatActivity {
         }
 
         private void onEvent(final NavigationManager.Event2C.OnLocationBack event) {
-            handler.post(new Runnable() {
+            Presenter.uiThreadRunner.run(new Runnable() {
                 @Override
                 public void run() {
                     delegateFragment.handleBackNavigation(event);

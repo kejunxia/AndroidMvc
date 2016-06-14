@@ -119,12 +119,13 @@ public interface Task {
          * typically because it has already completed normally;
          * <tt>true</tt> otherwise
          */
-        public synchronized boolean cancel(boolean mayInterruptIfRunning) {
+        public synchronized boolean cancel(final boolean mayInterruptIfRunning) {
             switch (state) {
                 case NOT_STARTED:
                     state = State.CANCELED;
                     if (callback != null) {
                         callback.onCancelled(false);
+                        callback.onFinally();
                     }
                     return true;
                 case STARTED:
@@ -136,7 +137,18 @@ public interface Task {
                             state = State.CANCELED;
                         }
                         if (callback != null) {
-                            callback.onCancelled(mayInterruptIfRunning);
+                            if (Presenter.uiThreadRunner.isOnUiThread()) {
+                                callback.onCancelled(mayInterruptIfRunning);
+                                callback.onFinally();
+                            } else {
+                                Presenter.uiThreadRunner.run(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.onCancelled(mayInterruptIfRunning);
+                                        callback.onFinally();
+                                    }
+                                });
+                            }
                         }
                         return cancelled;
                     } else {
@@ -179,6 +191,12 @@ public interface Task {
          * @param e The exception
          */
         public void onException(Exception e){}
+
+        /**
+         * Called when the task has started and runs into {@link #onSuccess()},
+         * {@link #onCancelled(boolean)} or {@link #onException(Exception)}
+         */
+        public void onFinally() {}
     }
 
     /**

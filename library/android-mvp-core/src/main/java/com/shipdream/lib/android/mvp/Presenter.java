@@ -3,6 +3,7 @@ package com.shipdream.lib.android.mvp;
 import com.shipdream.lib.android.mvp.event.bus.EventBus;
 import com.shipdream.lib.android.mvp.event.bus.annotation.EventBusC;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,12 +17,27 @@ import javax.inject.Inject;
  * @param <MODEL> The view model of the presenter.
  */
 public abstract class Presenter<MODEL> extends Bean<MODEL> {
+    interface UiThreadRunner {
+        /**
+         * Indicates whether current thread is UI thread.
+         * @return
+         */
+        boolean isOnUiThread();
+        /**
+         * Run the runnable on Android UI thread
+         * @param runnable
+         */
+        void run(Runnable runnable);
+    }
+
     @Inject
     @EventBusC
     EventBus eventBus2C;
 
     @Inject
     protected ExecutorService executorService;
+
+    static UiThreadRunner uiThreadRunner;
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -100,6 +116,8 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
      * Run a task on the threads supplied by the given {@link ExecutorService}. The task could be
      * run either asynchronously or synchronously depending on the given executorService.
      *
+     * <p>The callback will be guaranteed to be run Android's UI thread</p>
+     *
      * @param sender          Who wants run the task
      * @param executorService The executor service managing how the task will be run
      * @param task            The task
@@ -112,18 +130,19 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
                                    final Task task, final Task.Callback callback) {
         final Task.Monitor monitor = new Task.Monitor(task, callback);
 
+        if (monitor.getState() == Task.Monitor.State.CANCELED) {
+            return null;
+        }
+
+        monitor.setState(Task.Monitor.State.STARTED);
+
+        if (callback != null) {
+            callback.onStarted();
+        }
+
         monitor.setFuture(executorService.submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                if (monitor.getState() == Task.Monitor.State.CANCELED) {
-                    return null;
-                }
-
-                monitor.setState(Task.Monitor.State.STARTED);
-                if (callback != null) {
-                    callback.onStarted();
-                }
-
                 try {
                     task.execute(monitor);
 
@@ -131,10 +150,26 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
                         monitor.setState(Task.Monitor.State.DONE);
 
                         if (callback != null) {
-                            callback.onSuccess();
+                            postToUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (Presenter.uiThreadRunner.isOnUiThread()) {
+                                        callback.onSuccess();
+                                        callback.onFinally();
+                                    } else {
+                                        Presenter.uiThreadRunner.run(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                callback.onSuccess();
+                                                callback.onFinally();
+                                            }
+                                        });
+                                    }
+                                }
+                            });
                         }
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     boolean interruptedByCancel = false;
                     if (e instanceof InterruptedException) {
                         if (monitor.getState() == Task.Monitor.State.INTERRUPTED) {
@@ -145,7 +180,25 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
                     if (!interruptedByCancel) {
                         monitor.setState(Task.Monitor.State.ERRED);
                         if (callback != null) {
-                            callback.onException(e);
+                            if (callback != null) {
+                                postToUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (Presenter.uiThreadRunner.isOnUiThread()) {
+                                            callback.onException(e);
+                                            callback.onFinally();
+                                        } else {
+                                            Presenter.uiThreadRunner.run(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    callback.onException(e);
+                                                    callback.onFinally();
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            }
                         } else {
                             logger.warn(e.getMessage(), e);
                         }
@@ -159,4 +212,16 @@ public abstract class Presenter<MODEL> extends Bean<MODEL> {
         return monitor;
     }
 
+    /**
+     * Run the runnable on the UI thread
+     * @param runnable runnable
+     */
+    protected void postToUiThread(@NotNull final Runnable runnable) {
+        uiThreadRunner.run(new Runnable() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        });
+    }
 }

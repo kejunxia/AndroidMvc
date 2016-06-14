@@ -17,7 +17,7 @@ import java.lang.reflect.Modifier;
 //TODO: documents
 public class MvpComponent extends Component {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    MvpComponent(String name) {
+    public MvpComponent(String name) {
         super(name);
     }
 
