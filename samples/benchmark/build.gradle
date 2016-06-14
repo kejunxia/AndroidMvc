@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-apply plugin: 'android'
+apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
     provided 'javax.annotation:javax.annotation-api:1.2'
-    apt "com.google.dagger:dagger-compiler:2.0"
-    compile "com.google.dagger:dagger:2.0"
+    apt "com.google.dagger:dagger-compiler:2.2"
+    compile "com.google.dagger:dagger:2.2"
 
-    compile project(':library:poke')
+    compile project(':library:android-mvp-core')
 }
 
 android {
@@ -39,6 +39,7 @@ android {
     buildToolsVersion rootProject.ext.androidBuildToolVersion
 
     defaultConfig {
+        applicationId "com.shipdream.lib.android.mvp.samples.benchmark"
         minSdkVersion rootProject.ext.androidMinSdkVersion
         targetSdkVersion rootProject.ext.androidTargetSdkVersion
         versionCode 1
@@ -64,16 +65,5 @@ android {
             debuggable false
             signingConfig signingConfigs.DefaultConfig
         }
-    }
-
-    /**
-     * Fix the issues for some libs with Android gradle build tool 0.7.+
-     */
-    packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/services/javax.annotation.processing.Processor'
-        exclude 'LICENSE.txt'
     }
 }
