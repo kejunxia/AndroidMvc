@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp;
+package com.shipdream.lib.android.mvc;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -32,8 +32,8 @@ import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.view.LifeCycleMonitorFactory;
-import com.shipdream.lib.android.mvp.view.LifeCycleValidator;
-import com.shipdream.lib.android.mvc.view.MvpApp;
+import com.shipdream.lib.android.mvc.view.LifeCycleValidator;
+import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
@@ -139,7 +139,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         lifeCycleValidatorD = new LifeCycleValidator(lifeCycleMonitorMockD);
 
 
-        MvpApp.lifeCycleMonitorFactory = new LifeCycleMonitorFactory() {
+        MvcApp.lifeCycleMonitorFactory = new LifeCycleMonitorFactory() {
             @Override
             public LifeCycleMonitor provideLifeCycleMonitor() {
                 return lifeCycleMonitorMock;

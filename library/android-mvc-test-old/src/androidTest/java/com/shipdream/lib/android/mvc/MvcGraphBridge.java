@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvp.view.AndroidMvc;
+import com.shipdream.lib.android.mvc.view.AndroidMvc;
 import com.shipdream.lib.poke.ScopeCache;
 
 public class MvcGraphBridge {

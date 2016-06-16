@@ -28,7 +28,7 @@ import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorBImpl;
 import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorCImpl;
 import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorDImpl;
 import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorImpl;
-import com.shipdream.lib.android.mvp.view.test.BuildConfig;
+import com.shipdream.lib.android.mvc.view.test.BuildConfig;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
 
-public class MvpApp extends Application {
+public class MvcApp extends Application {
     public static LifeCycleMonitorFactory lifeCycleMonitorFactory;
 
     @Override

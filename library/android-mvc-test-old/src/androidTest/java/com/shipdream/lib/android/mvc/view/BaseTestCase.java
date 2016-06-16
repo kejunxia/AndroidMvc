@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvc.view;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -30,11 +30,11 @@ import android.test.suitebuilder.annotation.LargeTest;
 
 import com.shipdream.lib.android.mvc.MvcGraphBridge;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
 import com.shipdream.lib.poke.ScopeCache;
 
 import org.junit.After;

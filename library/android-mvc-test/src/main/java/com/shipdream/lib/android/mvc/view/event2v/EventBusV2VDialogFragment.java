@@ -23,7 +23,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.MvcDialogFragment;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 public class EventBusV2VDialogFragment extends MvcDialogFragment {
     private TextView textView;

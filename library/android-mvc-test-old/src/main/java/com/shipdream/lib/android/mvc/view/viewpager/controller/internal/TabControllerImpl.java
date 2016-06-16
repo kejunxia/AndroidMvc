@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager.controller.internal;
+package com.shipdream.lib.android.mvc.view.viewpager.controller.internal;
 
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvp.view.viewpager.TabModel;
-import com.shipdream.lib.android.mvp.view.viewpager.controller.TabController;
+import com.shipdream.lib.android.mvc.view.viewpager.TabModel;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.TabController;
 
 public class TabControllerImpl extends BaseControllerImpl<TabModel> implements TabController {
     @Override

@@ -33,8 +33,8 @@ public class MvcComponent extends Component {
         if (component.getChildrenComponents() != null && !component.getChildrenComponents().isEmpty()) {
             for (Component child : component.getChildrenComponents()) {
                 if (child instanceof MvcComponent) {
-                    MvcComponent mvpChildComponent = (MvcComponent) child;
-                    doSaveState(stateKeeper, mvpChildComponent);
+                    MvcComponent mvcChildComponent = (MvcComponent) child;
+                    doSaveState(stateKeeper, mvcChildComponent);
                 }
             }
         }
@@ -54,8 +54,8 @@ public class MvcComponent extends Component {
         if (component.getChildrenComponents() != null && !component.getChildrenComponents().isEmpty()) {
             for (Component child : component.getChildrenComponents()) {
                 if (child instanceof MvcComponent) {
-                    MvcComponent mvpChildComponent = (MvcComponent) child;
-                    doRestoreState(stateKeeper, mvpChildComponent);
+                    MvcComponent mvcComponent = (MvcComponent) child;
+                    doRestoreState(stateKeeper, mvcComponent);
                 }
             }
         }

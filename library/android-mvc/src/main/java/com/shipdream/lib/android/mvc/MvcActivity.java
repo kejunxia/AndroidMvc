@@ -26,7 +26,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.event.BaseEventV;
-import com.shipdream.lib.android.mvp.R;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -495,7 +494,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 //            traverseFragmentAndSubFragments(fragment, new FragmentManipulator() {
 //                @Override
 //                public void manipulate(Fragment fragment) {
-//                    if (fragment != null && fragment.isAdded() && fragment instanceof MvpFragment) {
+//                    if (fragment != null && fragment.isAdded() && fragment instanceof MvcFragment) {
 //                        ((MvcFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
 //                    }
 //                }

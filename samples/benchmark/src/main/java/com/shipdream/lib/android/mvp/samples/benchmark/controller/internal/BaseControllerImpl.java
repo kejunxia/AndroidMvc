@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.samples.benchmark.controller.internal;
+package com.shipdream.lib.android.mvc.samples.benchmark.controller.internal;
 
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.BaseController;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service0;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service1;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service2;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service3;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service4;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service5;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service6;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service7;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service8;
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service9;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.BaseController;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service0;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service1;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service2;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service3;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service4;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service5;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service6;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service7;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service8;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service9;
 
 import javax.inject.Inject;
 

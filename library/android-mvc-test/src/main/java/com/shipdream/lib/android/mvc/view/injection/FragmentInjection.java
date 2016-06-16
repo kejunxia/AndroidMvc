@@ -33,7 +33,7 @@ import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
 import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
 import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 import java.util.List;
 

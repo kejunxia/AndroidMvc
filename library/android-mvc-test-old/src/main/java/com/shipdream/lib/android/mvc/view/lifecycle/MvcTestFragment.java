@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.lifecycle;
+package com.shipdream.lib.android.mvc.view.lifecycle;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcApp;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 public class MvcTestFragment extends MvcFragment {
     private LifeCycleMonitor lifeCycleMonitor = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitor();

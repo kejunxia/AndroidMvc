@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.injection;
+package com.shipdream.lib.android.mvc.view.injection;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -27,10 +27,10 @@ import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 import java.util.List;
 

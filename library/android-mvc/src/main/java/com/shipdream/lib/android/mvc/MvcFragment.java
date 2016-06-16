@@ -30,7 +30,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
 
 /**
- * Fragment to help utilize Mvp pattern. {@link #setRetainInstance(boolean)} will be set true by
+ * Fragment to help utilize Mvc pattern. {@link #setRetainInstance(boolean)} will be set true by
  * default. Don't set it false which will result unexpected behaviour and life cycles. Controllers
  * and other dependencies can be injected by fields annotated by @{@link Inject}.
  *
@@ -97,7 +97,7 @@ public abstract class MvcFragment extends Fragment {
          * OS and restored. <br><br>
          *
          * <p>Although when a fragment is restored all fields of the fragment will be recreated
-         * ({@link #isNewInstance()} = true), Mvp framework will automatically restore the
+         * ({@link #isNewInstance()} = true), Mvc framework will automatically restore the
          * state(model) of injected controllers held by the fragment . So when a fragment is being
          * restored, only re-instantiate its non-controller fields. All injected {@link Bean}
          * including controllers will be restored by the framework itself.</p>
@@ -248,7 +248,7 @@ public abstract class MvcFragment extends Fragment {
 
         final boolean restoring = savedInstanceState != null;
 //        if (restoring && isStateManagedByRootDelegateFragment) {
-//            ((MvpActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
+//            ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
 //                @Override
 //                public void run() {
 //                    doOnViewCreatedCallBack(view, savedInstanceState, restoring);

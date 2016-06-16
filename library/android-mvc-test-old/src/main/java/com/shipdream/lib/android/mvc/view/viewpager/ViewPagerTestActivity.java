@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.content.Intent;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvc.view.MvcActivity;
+import com.shipdream.lib.android.mvc.view.MvcFragment;
 
 import javax.inject.Inject;
 

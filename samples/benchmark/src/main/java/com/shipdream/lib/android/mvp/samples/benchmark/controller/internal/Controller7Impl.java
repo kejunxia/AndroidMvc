@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.samples.benchmark.controller.internal;
+package com.shipdream.lib.android.mvc.samples.benchmark.controller.internal;
 
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.Controller7;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.Controller7;
 
 public class Controller7Impl extends BaseControllerImpl implements Controller7 {
 

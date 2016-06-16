@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.view.event2v.controller.V2VTestController;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
 

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvc.view.MvcActivity;
+import com.shipdream.lib.android.mvc.view.MvcFragment;
 
 import javax.inject.Inject;
 

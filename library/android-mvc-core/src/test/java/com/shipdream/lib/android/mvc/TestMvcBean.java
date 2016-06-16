@@ -19,9 +19,9 @@ package com.shipdream.lib.android.mvc;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class TestMvpBean {
+public class TestMvcBean {
     @Test(expected = IllegalArgumentException.class)
-    public void should_throw_exception_when_bind_null_to_a_mvpBean() {
+    public void should_throw_exception_when_bind_null_to_a_mvcBean() {
         com.shipdream.lib.android.mvc.Bean bean = new com.shipdream.lib.android.mvc.Bean() {
             @Override
             public Class modelType() {
@@ -33,7 +33,7 @@ public class TestMvpBean {
     }
 
     @Test
-    public void should_rebind_state_after_restoring_mvpBean() {
+    public void should_rebind_state_after_restoring_mvcBean() {
         com.shipdream.lib.android.mvc.Bean<String> bean = new com.shipdream.lib.android.mvc.Bean() {
 
             @Override
@@ -50,7 +50,7 @@ public class TestMvpBean {
     }
 
     @Test
-    public void should_call_on_restore_call_back_after_a_stateful_mvpBean_is_restored() {
+    public void should_call_on_restore_call_back_after_a_stateful_mvcBean_is_restored() {
         class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
             private boolean called = false;
 
@@ -66,17 +66,17 @@ public class TestMvpBean {
             }
         };
 
-        MyBean mvpBean = new MyBean();
+        MyBean mvcBean = new MyBean();
 
-        Assert.assertFalse(mvpBean.called);
+        Assert.assertFalse(mvcBean.called);
 
-        mvpBean.restoreModel("A");
+        mvcBean.restoreModel("A");
 
-        Assert.assertTrue(mvpBean.called);
+        Assert.assertTrue(mvcBean.called);
     }
 
     @Test
-    public void should_not_call_on_restore_call_back_after_a_non_stateful_mvpBean_is_restored() {
+    public void should_not_call_on_restore_call_back_after_a_non_stateful_mvcBean_is_restored() {
         class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
             private boolean called = false;
 
@@ -92,45 +92,45 @@ public class TestMvpBean {
             }
         };
 
-        MyBean mvpBean = new MyBean();
+        MyBean mvcBean = new MyBean();
 
-        Assert.assertFalse(mvpBean.called);
+        Assert.assertFalse(mvcBean.called);
 
-        mvpBean.restoreModel("A");
+        mvcBean.restoreModel("A");
 
-        Assert.assertFalse(mvpBean.called);
+        Assert.assertFalse(mvcBean.called);
     }
 
-    public void should_create_state_instance_on_construct_when_the_state_type_is_specified_for_a_mvpBean() {
+    public void should_create_state_instance_on_construct_when_the_state_type_is_specified_for_a_mvcBean() {
         class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
             @Override
             public Class modelType() {
                 return String.class;
             }
         };
-        MyBean mvpBean = new MyBean();
+        MyBean mvcBean = new MyBean();
 
-        Assert.assertNull(mvpBean.getModel());
+        Assert.assertNull(mvcBean.getModel());
 
-        mvpBean.onCreated();
+        mvcBean.onCreated();
 
-        Assert.assertNotNull(mvpBean.getModel());
+        Assert.assertNotNull(mvcBean.getModel());
     }
 
-    public void should_NOT_create_state_instance_on_construct_when_the_state_type_is_null_for_a_mvpBean() {
+    public void should_NOT_create_state_instance_on_construct_when_the_state_type_is_null_for_a_mvcBean() {
         class MyBean extends com.shipdream.lib.android.mvc.Bean {
             @Override
             public Class modelType() {
                 return null;
             }
         };
-        MyBean mvpBean = new MyBean();
+        MyBean mvcBean = new MyBean();
 
-        Assert.assertNull(mvpBean.getModel());
+        Assert.assertNull(mvcBean.getModel());
 
-        mvpBean.onCreated();
+        mvcBean.onCreated();
 
-        Assert.assertNull(mvpBean.getModel());
+        Assert.assertNull(mvcBean.getModel());
     }
 
     @Test(expected = RuntimeException.class)
@@ -146,13 +146,13 @@ public class TestMvpBean {
             }
         };
 
-        MyBean mvpBean = new MyBean();
+        MyBean mvcBean = new MyBean();
 
-        mvpBean.onCreated();
+        mvcBean.onCreated();
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void should_throw_exception_when_binding_null_to_stateful_mvpBean() {
+    public void should_throw_exception_when_binding_null_to_stateful_mvcBean() {
         class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
             @Override
             public Class<String> modelType() {
@@ -160,13 +160,13 @@ public class TestMvpBean {
             }
         };
 
-        MyBean mvpBean = new MyBean();
+        MyBean mvcBean = new MyBean();
 
-        mvpBean.bindModel(null);
+        mvcBean.bindModel(null);
     }
 
     @Test
-    public void should_be_able_to_successfully_bind_state_to_stateful_mvpBean() {
+    public void should_be_able_to_successfully_bind_state_to_stateful_mvcBean() {
         class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
             @Override
             public Class<String> modelType() {
@@ -174,13 +174,13 @@ public class TestMvpBean {
             }
         };
 
-        MyBean mvpBean = new MyBean();
+        MyBean mvcBean = new MyBean();
 
-        Assert.assertNotEquals("B", mvpBean.getModel());
+        Assert.assertNotEquals("B", mvcBean.getModel());
 
-        mvpBean.bindModel("B");
+        mvcBean.bindModel("B");
 
-        Assert.assertEquals("B", mvpBean.getModel());
+        Assert.assertEquals("B", mvcBean.getModel());
     }
 
 }

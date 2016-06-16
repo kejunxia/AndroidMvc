@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import android.content.pm.ActivityInfo;
 
@@ -23,8 +23,8 @@ import com.shipdream.lib.android.mvc.Injector;
 import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.manager.internal.NavigationManagerImpl;
-import com.shipdream.lib.android.mvp.view.AndroidMvc;
-import com.shipdream.lib.android.mvp.view.BaseTestCase;
+import com.shipdream.lib.android.mvc.view.AndroidMvc;
+import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.ScopeCache;

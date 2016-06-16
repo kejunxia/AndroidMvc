@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import com.shipdream.lib.android.mvc.view.nav.ControllerE;
 import com.shipdream.lib.android.mvc.view.nav.ControllerF;
@@ -24,7 +24,7 @@ import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerF;
 import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerG;
 import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
 import com.shipdream.lib.android.mvc.view.nav.NavFragmentA;
-import com.shipdream.lib.android.mvp.BaseTestCase;
+import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Preparer;
@@ -224,7 +224,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
         verify(disposeCheckerFMock, times(1)).onDisposed();
-        //__MvpGraphHelper retaining all cache is dangerous. Try to only retain relevant injected instances.
+        //__MvcGraphHelper retaining all cache is dangerous. Try to only retain relevant injected instances.
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();

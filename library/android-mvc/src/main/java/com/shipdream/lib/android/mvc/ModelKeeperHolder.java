@@ -53,7 +53,7 @@ class ModelKeeperHolder {
     private static MvcComponent getRootComponent() {
         Component root = Mvc.graph().getRootComponent();
         if (root == null && root instanceof MvcComponent) {
-            throw new IllegalStateException("RootComponent of MvpGraph must inherit MvpComponent");
+            throw new IllegalStateException("RootComponent of MvcGraph must inherit MvcComponent");
         }
         MvcComponent mvcComponent = (MvcComponent) root;
         return mvcComponent;

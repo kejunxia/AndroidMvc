@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.eventv2v;
+package com.shipdream.lib.android.mvc.view.eventv2v;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.eventv2v.controller.V2VTestController;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.view.eventv2v.controller.V2VTestController;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 public class EventBusV2VFragment extends MvcFragment {
     private TextView textView;

@@ -35,7 +35,7 @@ public class Mvc {
      */
     public static MvcGraph graph() {
         if (graph == null) {
-            final MvcComponent rootComponent = new MvcComponent("MvpRootComponent");
+            final MvcComponent rootComponent = new MvcComponent("MvcRootComponent");
 
             try {
                 rootComponent.register(new Object() {
@@ -62,7 +62,7 @@ public class Mvc {
                                         Thread.currentThread().setPriority(Thread.NORM_PRIORITY - 1);
                                         r.run();
                                     }
-                                }, "MvpBackgroundThread");
+                                }, "MvcBackgroundThread");
                             }
                         });
                     }

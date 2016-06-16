@@ -16,8 +16,6 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.MvcComponent;
-import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.Provider;
@@ -48,7 +46,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
-public class TestMvpGraph {
+public class TestMvcGraph {
     private MvcGraph graph;
     private ExecutorService executorService;
 
@@ -294,7 +292,7 @@ public class TestMvpGraph {
     }
 
     @Test
-    public void should_delegate_mvp_graph_properly() throws ProvideException, ProviderConflictException {
+    public void should_delegate_mvc_graph_properly() throws ProvideException, ProviderConflictException {
         // Arrange
         Graph graphMock = mock(Graph.class);
 
@@ -396,7 +394,7 @@ public class TestMvpGraph {
     interface UnimplementedInterface{}
 
     @Test(expected = MvcGraph.Exception.class)
-    public void should_raise_mvp_graph_exception_when_inject_on_poke_exception() {
+    public void should_raise_mvc_graph_exception_when_inject_on_poke_exception() {
         class View {
             @Inject
             UnimplementedInterface unimplementedInterface;
@@ -405,7 +403,7 @@ public class TestMvpGraph {
     }
 
     @Test(expected = MvcGraph.Exception.class)
-    public void should_raise_mvp_graph_exception_when_release_on_poke_exception() {
+    public void should_raise_mvc_graph_exception_when_release_on_poke_exception() {
         class View {
             @Inject
             UnimplementedInterface unimplementedInterface;
@@ -417,7 +415,7 @@ public class TestMvpGraph {
     }
 
     @Test(expected = MvcGraph.Exception.class)
-    public void should_raise_mvp_graph_exception_when_use_on_poke_exception() {
+    public void should_raise_mvc_graph_exception_when_use_on_poke_exception() {
         class View {
             @Inject
             UnimplementedInterface unimplementedInterface;

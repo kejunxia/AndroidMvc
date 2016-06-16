@@ -34,7 +34,7 @@ public class Navigator {
      * The callback when the navigation is settled. Since Android Fragment doesn't invoke its call
      * back like onCreated, onCreateView and etc after a fragment manager commits fragment transaction,
      * if something needs to be done after the fragment being navigated to is ready to show
-     * (MvpFragment.onViewReady is called), put the actions in here.
+     * (MvcFragment.onViewReady is called), put the actions in here.
      */
     public interface OnSettled {
         void run();
@@ -91,7 +91,7 @@ public class Navigator {
      * navigated to. It's an equivalent way to pass arguments to the next fragment.For example, when
      * next fragment needs to have a pre set page title name, the controller referenced by the
      * fragment can be prepared here and set the title in the controller's model. Then in the
-     * MvpFragment.onViewReady bind the value of the page title from the controller's model to the
+     * MvcFragment.onViewReady bind the value of the page title from the controller's model to the
      * fragment.
      * <p/>
      * <p>Example:</p>
@@ -133,7 +133,7 @@ public class Navigator {
      * Prepare the instance subject to being injected for the fragment being navigated to. It's an
      * equivalent way to pass arguments to the next fragment.For example, when next fragment needs
      * to have a pre set page title name, the controller referenced by the fragment can be prepared
-     * here and set the title in the controller's model. Then in the MvpFragment.onViewReady bind
+     * here and set the title in the controller's model. Then in the MvcFragment.onViewReady bind
      * the value of the page title from the controller's model to the fragment.
      * <p/>
      * <p>Example:</p>
@@ -367,7 +367,7 @@ public class Navigator {
     }
 
     /**
-     * Sets the call back when fragment being navigated to is ready to show(MvpFragment.onViewReady
+     * Sets the call back when fragment being navigated to is ready to show(MvcFragment.onViewReady
      * is called).
      *
      * @param onSettled {@link OnSettled} call back

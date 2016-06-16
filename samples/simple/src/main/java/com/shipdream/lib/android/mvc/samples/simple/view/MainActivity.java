@@ -17,8 +17,8 @@
 package com.shipdream.lib.android.mvc.samples.simple.view;
 
 import com.shipdream.lib.android.mvc.samples.simple.controller.AppController;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvc.view.MvcActivity;
+import com.shipdream.lib.android.mvc.view.MvcFragment;
 
 import javax.inject.Inject;
 

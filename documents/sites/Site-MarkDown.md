@@ -643,7 +643,7 @@ Code below is partial implementation, see sample Note in the project for more de
 ````java
 public class TestWeatherController extends TestControllerBase<WeatherController> {
 @Override
-protected void registerDependencies(MvcGraph mvpGraph) {
+protected void registerDependencies(MvcGraph mvcGraph) {
 	...
 
 	//Setup mock executor service mock that runs task on the same thread.
@@ -657,11 +657,11 @@ protected void registerDependencies(MvcGraph mvpGraph) {
 		}
 	}).when(executorService).submit(any(Runnable.class));
 
-    //Register the injecting component to mvpGraph to override the implementation being injected
+    //Register the injecting component to mvcGraph to override the implementation being injected
     //to controllers
 	TestComp testComp = new TestComp();
 	testComp.testNoteController = this;
-	mvpGraph.register(testComp);
+	mvcGraph.register(testComp);
 }
 }
 ````

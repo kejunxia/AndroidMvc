@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.injection;
+package com.shipdream.lib.android.mvc.view.injection;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcApp;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvp.view.injection.presenter.ControllerB;
-import com.shipdream.lib.android.mvp.view.injection.presenter.ControllerC;
+import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
 
 import javax.inject.Inject;
 

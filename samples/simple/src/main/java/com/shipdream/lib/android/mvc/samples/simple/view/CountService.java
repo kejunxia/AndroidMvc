@@ -25,7 +25,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.shipdream.lib.android.mvc.samples.simple.R;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterController;
-import com.shipdream.lib.android.mvp.view.MvcService;
+import com.shipdream.lib.android.mvc.view.MvcService;
 
 import javax.inject.Inject;
 

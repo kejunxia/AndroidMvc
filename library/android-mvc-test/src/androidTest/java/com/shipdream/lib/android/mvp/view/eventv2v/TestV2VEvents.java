@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.eventv2v;
+package com.shipdream.lib.android.mvc.view.eventv2v;
 
 import com.shipdream.lib.android.mvc.view.event2v.EventBusV2VActivity;
-import com.shipdream.lib.android.mvp.BaseTestCase;
+import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.event2v.controller.V2VTestController;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
 

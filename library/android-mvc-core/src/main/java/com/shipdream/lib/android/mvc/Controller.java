@@ -84,7 +84,7 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
 
     /**
      * Run a task on threads supplied by injected {@link ExecutorService} without a callback. By
-     * default it runs tasks on separate threads by {@link ExecutorService} injected from AndroidMvp
+     * default it runs tasks on separate threads by {@link ExecutorService} injected from AndroidMvc
      * framework. A simple {@link ExecutorService} that runs tasks on the same thread in test cases
      * to make the test easier.
      * @param sender          Who wants run the task
@@ -99,7 +99,7 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
 
     /**
      * Run a task on threads supplied by injected {@link ExecutorService}. By default it runs tasks
-     * on separate threads by {@link ExecutorService} injected from AndroidMvp framework. A simple
+     * on separate threads by {@link ExecutorService} injected from AndroidMvc framework. A simple
      * {@link ExecutorService} that runs tasks on the same thread in test cases to make the test
      * easier.
      * @param sender          Who wants run the task

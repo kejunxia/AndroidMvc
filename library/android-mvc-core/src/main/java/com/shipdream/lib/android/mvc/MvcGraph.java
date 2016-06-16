@@ -30,7 +30,7 @@ public class MvcGraph {
     {
         graph = new Graph();
         try {
-            graph.setRootComponent(new MvcComponent("MvpRootComponent"));
+            graph.setRootComponent(new MvcComponent("MvcRootComponent"));
         } catch (Graph.IllegalRootComponentException e) {
             //ignore
         }
@@ -139,10 +139,10 @@ public class MvcGraph {
     private Os os;
     }
 
-     mvpGraph.register(new DeviceComponent());
+     mvcGraph.register(new DeviceComponent());
 
      //OsReferenceCount = 0
-     mvpGraph.use(Os.class, null, new Consumer<Os>() {
+     mvcGraph.use(Os.class, null, new Consumer<Os>() {
     @Override
     public void consume(Os instance) {
     //First time to create the instance.
@@ -153,10 +153,10 @@ public class MvcGraph {
      //OsReferenceCount = 0
 
      final Device device = new Device();
-     mvpGraph.inject(device);  //OsReferenceCount = 1
+     mvcGraph.inject(device);  //OsReferenceCount = 1
      //New instance created and cached
 
-     mvpGraph.use(Os.class, null, new Consumer<Os>() {
+     mvcGraph.use(Os.class, null, new Consumer<Os>() {
     @Override
     public void consume(Os instance) {
     //Since reference count is greater than 0, cached instance will be reused
@@ -167,10 +167,10 @@ public class MvcGraph {
      //Reference count decremented by use method automatically
      //OsReferenceCount = 1
 
-     mvpGraph.release(device);  //OsReferenceCount = 0
+     mvcGraph.release(device);  //OsReferenceCount = 0
      //Last instance released, so next time a new instance will be created
 
-     mvpGraph.use(Os.class, null, new Consumer<Os>() {
+     mvcGraph.use(Os.class, null, new Consumer<Os>() {
     @Override
     public void consume(Os instance) {
     //OsReferenceCount = 1
@@ -181,7 +181,7 @@ public class MvcGraph {
      //Reference count decremented by use method automatically
      //OsReferenceCount = 0
 
-     mvpGraph.use(Os.class, null, new Consumer<Os>() {
+     mvcGraph.use(Os.class, null, new Consumer<Os>() {
     @Override
     public void consume(Os instance) {
     //OsReferenceCount = 1
@@ -193,11 +193,11 @@ public class MvcGraph {
      //OsReferenceCount = 0
      //Cached instance cleared again
 
-     mvpGraph.use(Os.class, null, new Consumer<Os>() {
+     mvcGraph.use(Os.class, null, new Consumer<Os>() {
     @Override
     public void consume(Os instance) {
     //OsReferenceCount = 1
-    mvpGraph.inject(device);
+    mvcGraph.inject(device);
     //Injection will reuse the cached instance and increment the reference count
     //OsReferenceCount = 2
 
@@ -208,7 +208,7 @@ public class MvcGraph {
      //Reference count decremented by use method automatically
      //OsReferenceCount = 1
 
-     mvpGraph.release(device);  //OsReferenceCount = 0
+     mvcGraph.release(device);  //OsReferenceCount = 0
      * </pre>
      *
      * <p><b>Note that, if navigation is involved in {@link Consumer#consume(Object)}, though the

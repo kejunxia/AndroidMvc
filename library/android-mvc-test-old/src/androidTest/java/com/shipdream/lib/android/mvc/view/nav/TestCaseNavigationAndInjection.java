@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.AndroidMvc;
-import com.shipdream.lib.android.mvp.view.BaseTestCase;
+import com.shipdream.lib.android.mvc.view.AndroidMvc;
+import com.shipdream.lib.android.mvc.view.BaseTestCase;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.ScopeCache;
 

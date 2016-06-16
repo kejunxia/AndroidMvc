@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.samples.benchmark;
+package com.shipdream.lib.android.mvc.samples.benchmark;
 
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller0Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller1Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller2Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller3Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller4Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller5Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller6Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller7Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller8Impl;
-import com.shipdream.lib.android.mvp.samples.benchmark.controller.internal.Controller9Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller0Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller1Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller2Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller3Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller4Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller5Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller6Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller7Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller8Impl;
+import com.shipdream.lib.android.mvc.samples.benchmark.controller.internal.Controller9Impl;
 
 import dagger.Component;
 

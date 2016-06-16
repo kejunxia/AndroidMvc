@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.samples.benchmark.controller;
+package com.shipdream.lib.android.mvc.samples.benchmark.controller;
 
 public interface Controller5 extends BaseController {
 }

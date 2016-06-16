@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.eventv2v.controller.internal;
+package com.shipdream.lib.android.mvc.view.eventv2v.controller.internal;
 
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvp.view.eventv2v.controller.V2VTestController;
+import com.shipdream.lib.android.mvc.view.eventv2v.controller.V2VTestController;
 
 public class V2VTestControllerImpl extends BaseControllerImpl implements V2VTestController{
     @Override

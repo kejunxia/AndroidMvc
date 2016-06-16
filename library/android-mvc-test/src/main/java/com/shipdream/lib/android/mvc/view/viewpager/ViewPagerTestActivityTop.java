@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 import android.app.Activity;
 import android.os.Bundle;
 
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 public class ViewPagerTestActivityTop extends Activity {
     @Override

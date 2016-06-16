@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.help;
+package com.shipdream.lib.android.mvc.view.help;
 
 public interface LifeCycleMonitorB extends LifeCycleMonitor {
 }

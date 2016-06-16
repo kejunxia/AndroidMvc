@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.lifecycle;
+package com.shipdream.lib.android.mvc.view.lifecycle;
 
 import android.content.pm.ActivityInfo;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvp.view.LifeCycle;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.LifeCycle;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
 

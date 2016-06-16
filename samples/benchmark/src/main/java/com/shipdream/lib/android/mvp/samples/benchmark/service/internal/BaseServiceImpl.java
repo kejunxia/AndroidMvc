@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.samples.benchmark.service.internal;
+package com.shipdream.lib.android.mvc.samples.benchmark.service.internal;
 
 public class BaseServiceImpl {
 }

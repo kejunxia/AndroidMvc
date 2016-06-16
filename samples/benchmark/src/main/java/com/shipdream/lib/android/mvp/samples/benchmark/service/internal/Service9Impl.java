@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.samples.benchmark.service.internal;
+package com.shipdream.lib.android.mvc.samples.benchmark.service.internal;
 
-import com.shipdream.lib.android.mvp.samples.benchmark.service.Service9;
+import com.shipdream.lib.android.mvc.samples.benchmark.service.Service9;
 
 public class Service9Impl extends BaseServiceImpl implements Service9 {
 }

@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view;
+package com.shipdream.lib.android.mvc.view;
 
 import android.app.Application;
 
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorA;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorB;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorD;
-import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorAImpl;
-import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorBImpl;
-import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorCImpl;
-import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorDImpl;
-import com.shipdream.lib.android.mvp.view.help.internal.LifeCycleMonitorImpl;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorAImpl;
+import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorBImpl;
+import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorCImpl;
+import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorDImpl;
+import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorImpl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.view.viewpager.ViewPagerTestActivity;
-import com.shipdream.lib.android.mvp.BaseTestCase;
-import com.shipdream.lib.android.mvp.view.LifeCycle;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.BaseTestCase;
+import com.shipdream.lib.android.mvc.view.LifeCycle;
+import com.shipdream.lib.android.mvc.view.test.R;
 import com.shipdream.lib.android.mvc.view.viewpager.presenter.SubViewController;
 
 import org.junit.Test;

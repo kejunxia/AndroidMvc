@@ -25,7 +25,7 @@ public class CounterBasicView extends MvcFragment implements CounterBasicControl
     private Button buttonShowAdvancedView;
 
     /**
-     * @return Layout id used to inflate the view of this MvpFragment.
+     * @return Layout id used to inflate the view of this MvcFragment.
      */
     @Override
     protected int getLayoutResId() {

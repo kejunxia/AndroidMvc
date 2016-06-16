@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.lifecycle;
+package com.shipdream.lib.android.mvc.view.lifecycle;
 
 import com.shipdream.lib.android.mvc.view.lifecycle.MvcTestActivity;
-import com.shipdream.lib.android.mvp.BaseTestCase;
+import com.shipdream.lib.android.mvc.BaseTestCase;
 
 public abstract class BaseTestCaseLifeCycle extends BaseTestCase <MvcTestActivity> {
 

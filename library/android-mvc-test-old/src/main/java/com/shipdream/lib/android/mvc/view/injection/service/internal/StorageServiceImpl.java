@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.injection.service.internal;
+package com.shipdream.lib.android.mvc.view.injection.service.internal;
 
 import com.shipdream.lib.android.mvc.MvcBean;
-import com.shipdream.lib.android.mvp.view.injection.service.StorageService;
+import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
 
 public class StorageServiceImpl extends MvcBean<StorageService.Storage> implements StorageService{
     @Override

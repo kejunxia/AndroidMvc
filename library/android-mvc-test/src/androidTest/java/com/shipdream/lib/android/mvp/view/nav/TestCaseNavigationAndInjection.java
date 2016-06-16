@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -25,7 +25,7 @@ import com.shipdream.lib.android.mvc.view.nav.NavFragmentA;
 import com.shipdream.lib.android.mvc.view.nav.NavFragmentB;
 import com.shipdream.lib.android.mvc.view.nav.NavFragmentC;
 import com.shipdream.lib.android.mvc.view.nav.NavFragmentD;
-import com.shipdream.lib.android.mvp.BaseTestCase;
+import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;

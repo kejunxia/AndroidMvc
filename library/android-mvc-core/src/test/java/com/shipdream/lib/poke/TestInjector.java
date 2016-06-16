@@ -66,7 +66,7 @@ public class TestInjector {
     }
     
     @Test
-    public void should_return_all_cached_instances_from_mvp_graph() throws ProvideException, ProviderConflictException {
+    public void should_return_all_cached_instances_from_mvc_graph() throws ProvideException, ProviderConflictException {
         Assert.assertEquals(0, getGraphSize());
 
         class View1 {

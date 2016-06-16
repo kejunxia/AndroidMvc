@@ -20,9 +20,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.view.MvpApp;
+import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.test.R;
+import com.shipdream.lib.android.mvc.view.test.R;
 
 public class TabFragmentC extends BaseTabFragment {
     private TextView textView;
@@ -34,7 +34,7 @@ public class TabFragmentC extends BaseTabFragment {
 
     @Override
     protected LifeCycleMonitor getLifeCycleMonitor() {
-        return MvpApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
+        return MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
     }
 
     @Override
