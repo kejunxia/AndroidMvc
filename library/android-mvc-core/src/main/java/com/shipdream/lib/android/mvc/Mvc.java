@@ -16,7 +16,10 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.poke.Graph;
+import com.shipdream.lib.android.mvc.event.bus.EventBus;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
+import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
@@ -35,20 +38,20 @@ public class Mvc {
      */
     public static MvcGraph graph() {
         if (graph == null) {
-            final MvcComponent rootComponent = new MvcComponent("MvcRootComponent");
+            graph = new MvcGraph();
 
             try {
-                rootComponent.register(new Object() {
+                graph.getRootComponent().register(new Object() {
                     @Provides
-                    @com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC
-                    public com.shipdream.lib.android.mvc.event.bus.EventBus providesEventBusC() {
-                        return new com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl();
+                    @EventBusC
+                    public EventBus provideEventBusC() {
+                        return new EventBusImpl();
                     }
 
                     @Provides
-                    @com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV
-                    public com.shipdream.lib.android.mvc.event.bus.EventBus providesEventBusV() {
-                        return new com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl();
+                    @EventBusV
+                    public EventBus provideEventBusV() {
+                        return new EventBusImpl();
                     }
 
                     @Provides
@@ -70,13 +73,6 @@ public class Mvc {
             } catch (ProvideException e) {
                 e.printStackTrace();
             } catch (ProviderConflictException e) {
-                e.printStackTrace();
-            }
-
-            graph = new MvcGraph();
-            try {
-                graph.setRootComponent(rootComponent);
-            } catch (Graph.IllegalRootComponentException e) {
                 e.printStackTrace();
             }
         }
