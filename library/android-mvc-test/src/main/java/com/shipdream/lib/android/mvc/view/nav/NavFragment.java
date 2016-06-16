@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Forwarder;
+import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvp.view.test.R;
 
 import javax.inject.Inject;
@@ -37,7 +38,7 @@ public abstract class NavFragment extends MvcFragment {
     private NavigationManager navigationManager;
 
     @Inject
-    private AnotherController anotherController;
+    private AnotherController anotherPresenter;
 
     @Override
     protected int getLayoutResId() {
@@ -52,7 +53,7 @@ public abstract class NavFragment extends MvcFragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                boolean interim = getNextFragmentLocId().contains("C");
+                boolean interim = getNextFragmentLocId().getName().contains("C");
                 navigationManager.navigate(v).to(getNextFragmentLocId(), new Forwarder().setInterim(interim));
             }
         });
@@ -65,7 +66,7 @@ public abstract class NavFragment extends MvcFragment {
             }
         });
 
-        anotherController.populateData();
+        anotherPresenter.populateData();
     }
 
     @Override
@@ -80,5 +81,5 @@ public abstract class NavFragment extends MvcFragment {
         super.onDestroy();
     }
 
-    protected abstract String getNextFragmentLocId();
+    protected abstract Class<? extends Controller> getNextFragmentLocId();
 }

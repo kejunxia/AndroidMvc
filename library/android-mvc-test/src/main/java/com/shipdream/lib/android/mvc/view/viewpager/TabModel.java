@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
 public class TabModel {
     private String name;

@@ -1,0 +1,58 @@
+/*
+ * Copyright 2016 Kejun Xia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.shipdream.lib.android.mvc.inject.testNameMapping.manager.internal;
+
+import com.shipdream.lib.android.mvc.inject.testNameMapping.manager.InkManager;
+import com.shipdream.lib.android.mvc.inject.testNameMapping.service.Cartridge;
+
+import javax.inject.Inject;
+
+public class InkManagerImpl implements InkManager {
+    private int intLevel = 0;
+
+    @Inject
+    private Cartridge cartridge;
+
+    @Override
+    public int getInkLevel() {
+        return intLevel;
+    }
+
+    @Override
+    public void refill(int amount) {
+        intLevel += amount;
+    }
+
+    @Override
+    public boolean fetchInk() {
+        if(intLevel > 0) {
+            intLevel--;
+            return true;
+        } else {
+            return  false;
+        }
+    }
+
+    @Override
+    public void setup() {
+        cartridge.install(this);
+    }
+
+    public Cartridge getCartridge() {
+        return cartridge;
+    }
+}

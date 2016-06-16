@@ -14,23 +14,23 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvp.view.test.R;
 
 import javax.inject.Inject;
 
 public class NavFragmentE extends MvcFragment {
     @Inject
-    private ControllerE controllerE;
+    private ControllerE presenterE;
 
     @Inject
-    private ControllerG controllerG;
+    private ControllerG presenterG;
 
     private TextView textView;
 
@@ -44,7 +44,7 @@ public class NavFragmentE extends MvcFragment {
         super.onViewReady(view, savedInstanceState, reason);
         textView = (TextView) view.findViewById(R.id.nav_frag_e_text);
 
-        textView.setText(controllerE.getValue());
+        textView.setText(presenterE.getValue());
     }
 
 }

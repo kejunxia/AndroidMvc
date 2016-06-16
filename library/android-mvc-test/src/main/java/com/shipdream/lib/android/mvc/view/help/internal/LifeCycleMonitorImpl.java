@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.help.internal;
+package com.shipdream.lib.android.mvc.view.help.internal;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class LifeCycleMonitorImpl implements LifeCycleMonitor {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        logger.info("Lifecycle method invoked: onCreate");
+        logger.info("Lifecycle method invoked: onCreated");
     }
 
     @Override

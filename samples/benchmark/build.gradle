@@ -22,7 +22,7 @@ dependencies {
     apt "com.google.dagger:dagger-compiler:2.2"
     compile "com.google.dagger:dagger:2.2"
 
-    compile project(':library:android-mvp-core')
+    compile project(':library:android-mvc-core')
 }
 
 android {
@@ -39,7 +39,7 @@ android {
     buildToolsVersion rootProject.ext.androidBuildToolVersion
 
     defaultConfig {
-        applicationId "com.shipdream.lib.android.mvp.samples.benchmark"
+        applicationId "com.shipdream.lib.android.mvc.samples.benchmark"
         minSdkVersion rootProject.ext.androidMinSdkVersion
         targetSdkVersion rootProject.ext.androidTargetSdkVersion
         versionCode 1

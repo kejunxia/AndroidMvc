@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
 public abstract class BaseTabFragment extends MvcFragment {
     protected abstract LifeCycleMonitor getLifeCycleMonitor();
 
     @Override
-    public void onViewReady(View view, Bundle savedInstanceState, MvcFragment.Reason reason) {
+    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         getLifeCycleMonitor().onCreateView(view, savedInstanceState);
         getLifeCycleMonitor().onViewCreated(view, savedInstanceState);
         super.onViewReady(view, savedInstanceState, reason);

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.help.internal;
+package com.shipdream.lib.android.mvc.view.help.internal;
 
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 
 public class LifeCycleMonitorCImpl extends LifeCycleMonitorImpl implements LifeCycleMonitorC {
 }

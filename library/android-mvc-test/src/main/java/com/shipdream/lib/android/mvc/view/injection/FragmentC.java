@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.injection;
+package com.shipdream.lib.android.mvc.view.injection;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcApp;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvp.view.injection.presenter.ControllerB;
-import com.shipdream.lib.android.mvp.view.injection.presenter.ControllerC;
+import com.shipdream.lib.android.mvc.view.MvpApp;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
 
 import javax.inject.Inject;
 
 public class FragmentC extends FragmentInjection {
     @Inject
-    private ControllerB controllerB;
+    private ControllerB presenterB;
 
+    //TODO: should be removed if designed correctly
     @Inject
-    private ControllerC controllerC;
+    private ControllerC presenterC;
 
-    private LifeCycleMonitorC lifeCycleMonitorC = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
+    private LifeCycleMonitorC lifeCycleMonitorC = MvpApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
 
     @Override
     protected void setUpData() {
-        controllerB.addTag("Added by " + getClass().getSimpleName());
-        controllerC.addTag("Added by " + getClass().getSimpleName());
+        presenterB.addTag("Added by " + getClass().getSimpleName());
+        presenterC.addTag("Added by " + getClass().getSimpleName());
     }
 
     @Override
@@ -50,7 +51,7 @@ public class FragmentC extends FragmentInjection {
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-        displayTags(textViewB, controllerB.getTags());
-        displayTags(textViewC, controllerC.getTags());
+        displayTags(textViewB, presenterB.getTags());
+        displayTags(textViewC, presenterC.getTags());
     }
 }

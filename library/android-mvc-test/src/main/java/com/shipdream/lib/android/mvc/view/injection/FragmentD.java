@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.injection;
+package com.shipdream.lib.android.mvc.view.injection;
 
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcApp;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvp.view.injection.presenter.ControllerD;
+import com.shipdream.lib.android.mvc.view.MvpApp;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvp.view.test.R;
 
 import javax.inject.Inject;
 
 public class FragmentD extends FragmentInjection {
     @Inject
-    private ControllerD controllerD;
+    private ControllerD presenterD;
 
-    private LifeCycleMonitorC lifeCycleMonitorC = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
+    private LifeCycleMonitorC lifeCycleMonitorC = MvpApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
 
     @Override
     protected void setUpData() {
@@ -62,12 +62,12 @@ public class FragmentD extends FragmentInjection {
     };
 
     private void update() {
-        long i = controllerD.getAccountManager().getUserId();
-        controllerD.setUserId(i + 1);
-        controllerD.setStorage(contents[((int) (i)) % contents.length]);
+        long i = presenterD.getAccountManager().getUserId();
+        presenterD.setUserId(i + 1);
+        presenterD.setStorage(contents[((int) (i)) % contents.length]);
 
-        String msg = String.format("%d:%s", controllerD.getAccountManager().getUserId(),
-                controllerD.getAccountManager().getContent());
+        String msg = String.format("%d:%s", presenterD.getAccountManager().getUserId(),
+                presenterD.getAccountManager().getContent());
         textViewA.setText(msg);
     }
 }

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvp.view.MvcApp;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.MvpApp;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.test.R;
 
 public class TabFragmentC extends BaseTabFragment {
@@ -34,7 +34,7 @@ public class TabFragmentC extends BaseTabFragment {
 
     @Override
     protected LifeCycleMonitor getLifeCycleMonitor() {
-        return MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
+        return MvpApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
     }
 
     @Override

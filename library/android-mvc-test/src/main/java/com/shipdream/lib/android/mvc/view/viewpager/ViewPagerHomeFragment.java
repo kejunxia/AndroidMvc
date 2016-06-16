@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,9 +23,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import com.shipdream.lib.android.mvp.view.MvcApp;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.MvpApp;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvp.view.test.R;
 
 public class ViewPagerHomeFragment extends MvcFragment {
@@ -33,7 +33,7 @@ public class ViewPagerHomeFragment extends MvcFragment {
 
     private PagerAdapter pagerAdapter;
 
-    private LifeCycleMonitor lifeCycleMonitor = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitor();
+    private LifeCycleMonitor lifeCycleMonitor = MvpApp.lifeCycleMonitorFactory.provideLifeCycleMonitor();
     
     @Override
     protected int getLayoutResId() {

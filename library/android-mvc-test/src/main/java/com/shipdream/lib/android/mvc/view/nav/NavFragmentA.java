@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.nav;
+package com.shipdream.lib.android.mvc.view.nav;
 
 import android.os.Bundle;
 import android.view.View;
+
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
 
 import javax.inject.Inject;
 
@@ -26,8 +29,8 @@ public class NavFragmentA extends NavFragment{
     private DisposeCheckerA disposeCheckerA;
 
     @Override
-    protected String getNextFragmentLocId() {
-        return MvcTestActivityNavigation.Loc.B;
+    protected Class<? extends Controller> getNextFragmentLocId() {
+        return ControllerB.class;
     }
 
     @Override

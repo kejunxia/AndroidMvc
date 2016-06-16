@@ -14,31 +14,33 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.injection;
+package com.shipdream.lib.android.mvc.view.injection;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.Forwarder;
+import com.shipdream.lib.android.mvc.MvcActivity;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
 
 import javax.inject.Inject;
 
 public class InjectionTestActivity extends MvcActivity {
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
-        switch (locationId) {
-            case MvcTestActivityNavigation.Loc.A:
-                return FragmentA.class;
-            case MvcTestActivityNavigation.Loc.B:
-                return FragmentB.class;
-            case MvcTestActivityNavigation.Loc.C:
-                return FragmentC.class;
-            case MvcTestActivityNavigation.Loc.D:
-                return FragmentD.class;
-            default:
-                return null;
+    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
+        if (presenterClass == ControllerA.class) {
+            return FragmentA.class;
+        } else if (presenterClass == ControllerB.class) {
+            return FragmentB.class;
+        } else if (presenterClass == ControllerC.class) {
+            return FragmentC.class;
+        } else if (presenterClass == ControllerD.class) {
+            return FragmentD.class;
         }
+        return null;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class InjectionTestActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A, new Forwarder().clearAll());
+            navigationManager.navigate(this).to(ControllerA.class, new Forwarder().clearAll());
         }
     }
 

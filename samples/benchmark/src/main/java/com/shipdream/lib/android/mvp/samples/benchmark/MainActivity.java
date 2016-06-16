@@ -21,7 +21,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvp.MvpGraph;
+import com.shipdream.lib.android.mvc.MvcGraph;
 import com.shipdream.lib.android.mvp.samples.benchmark.controller.Controller0;
 import com.shipdream.lib.android.mvp.samples.benchmark.controller.Controller1;
 import com.shipdream.lib.android.mvp.samples.benchmark.controller.Controller2;
@@ -130,7 +130,7 @@ public class MainActivity extends Activity {
 
                 long ts = System.currentTimeMillis();
                 try {
-                    MvpGraph graph = new MvpGraph();
+                    MvcGraph graph = new MvcGraph();
                     
                     register(graph, Service0.class, Service0Impl.class);
                     register(graph, Service1.class, Service1Impl.class);
@@ -161,7 +161,7 @@ public class MainActivity extends Activity {
 
                 long ts = System.currentTimeMillis();
                 try {
-                    MvpGraph graph = new MvpGraph();
+                    MvcGraph graph = new MvcGraph();
 
                     register(graph, Controller0.class, Controller0Impl.class);
                     register(graph, Controller1.class, Controller1Impl.class);
@@ -201,7 +201,7 @@ public class MainActivity extends Activity {
                 Container10 container = new Container10();
                 long ts = System.currentTimeMillis();
                 try {
-                    new MvpGraph().inject(container);
+                    new MvcGraph().inject(container);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -218,7 +218,7 @@ public class MainActivity extends Activity {
 
                 long ts = System.currentTimeMillis();
                 try {
-                    new MvpGraph().inject(container);
+                    new MvcGraph().inject(container);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -229,7 +229,7 @@ public class MainActivity extends Activity {
         });
     }
     
-    private void register(MvpGraph graph, Class type, Class impl) throws ProviderConflictException {
+    private void register(MvcGraph graph, Class type, Class impl) throws ProviderConflictException {
         graph.getRootComponent().register(new ProviderByClassType(type, impl));
     }
 

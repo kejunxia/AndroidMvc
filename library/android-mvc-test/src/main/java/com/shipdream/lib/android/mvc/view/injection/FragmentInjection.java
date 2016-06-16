@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.injection;
+package com.shipdream.lib.android.mvc.view.injection;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -25,11 +25,14 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavLocation;
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
-import com.shipdream.lib.android.mvp.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvp.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
 import com.shipdream.lib.android.mvp.view.test.R;
 
 import java.util.List;
@@ -74,16 +77,16 @@ public abstract class FragmentInjection extends MvcFragment {
             @Override
             public void onClick(View view) {
                 int position = spinner.getSelectedItemPosition();
-                String loc = "";
+                Class loc = null;
                 CharSequence item = adapter.getItem(position);
                 if (item.equals("A")) {
-                    loc = MvcTestActivityNavigation.Loc.A;
+                    loc = ControllerA.class;
                 } else if (item.equals("B")) {
-                    loc = MvcTestActivityNavigation.Loc.B;
+                    loc = ControllerB.class;
                 } else if (item.equals("C")) {
-                    loc = MvcTestActivityNavigation.Loc.C;
+                    loc = ControllerC.class;
                 }else if (item.equals("D")) {
-                    loc = MvcTestActivityNavigation.Loc.D;
+                    loc = ControllerD.class;
                 }
                 navigationManager.navigate(view).to(loc);
             }
@@ -141,7 +144,7 @@ public abstract class FragmentInjection extends MvcFragment {
         super.onCreate(savedInstanceState);
         getLifeCycleMonitor().onCreate(savedInstanceState);
 
-        Log.d("MvcTesting", "onCreate " + getClass().getSimpleName());
+        Log.d("MvcTesting", "onCreated " + getClass().getSimpleName());
     }
 
     @Override

@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvp.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.content.Intent;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvp.view.MvcActivity;
-import com.shipdream.lib.android.mvp.view.MvcFragment;
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Forwarder;
+import com.shipdream.lib.android.mvc.MvcActivity;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.view.viewpager.presenter.HomeController;
+import com.shipdream.lib.android.mvc.view.viewpager.presenter.SubViewController;
 
 import javax.inject.Inject;
 
 public class ViewPagerTestActivity extends MvcActivity {
-
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
-        if (locationId.equals(SubFragment.class.getSimpleName())) {
+    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
+        if (presenterClass == HomeController.class) {
+            return ViewPagerHomeFragment.class;
+        } else if (presenterClass == SubViewController.class) {
             return SubFragment.class;
         }
         return ViewPagerHomeFragment.class;
@@ -46,7 +50,7 @@ public class ViewPagerTestActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(ViewPagerHomeFragment.class.getSimpleName(), new Forwarder().clearAll());
+            navigationManager.navigate(this).to(HomeController.class, new Forwarder().clearAll());
         }
     }
 
