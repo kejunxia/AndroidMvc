@@ -50,10 +50,6 @@ public abstract class MvcActivity extends AppCompatActivity {
 
     private EventRegister eventRegister;
 
-    static {
-        Controller.uiThreadRunner = new AndroidUiThreadRunner();
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +153,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         private DelegateFragment delegateFragment;
 
         private void onEvent(final NavigationManager.Event2C.OnLocationForward event) {
-            Controller.uiThreadRunner.run(new Runnable() {
+            uiThreadRunner.run(new Runnable() {
                 @Override
                 public void run() {
                     delegateFragment.handleForwardNavigation(event);
@@ -166,7 +162,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         private void onEvent(final NavigationManager.Event2C.OnLocationBack event) {
-            Controller.uiThreadRunner.run(new Runnable() {
+            uiThreadRunner.run(new Runnable() {
                 @Override
                 public void run() {
                     delegateFragment.handleBackNavigation(event);

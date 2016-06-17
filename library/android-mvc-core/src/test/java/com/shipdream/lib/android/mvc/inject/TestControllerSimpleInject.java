@@ -16,24 +16,17 @@
 
 package com.shipdream.lib.android.mvc.inject;
 
-import com.shipdream.lib.android.mvc.MvcGraph;
-import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
-import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
-import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.PrintController;
+import com.shipdream.lib.android.mvc.BaseTest;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.LifeCycleTestController;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.MissingImplPresenter;
+import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.PrintController;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 
@@ -41,26 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestControllerSimpleInject extends BaseTestCases {
-    MvcGraph graph;
-
-    @Before
-    public void setUp() throws Exception {
-        graph = new MvcGraph();
-        graph.getRootComponent().register(new Object(){
-            @Provides
-            @EventBusC
-            public EventBus eventBusC() {
-                return new EventBusImpl();
-            }
-
-            @Provides
-            public ExecutorService executorService() {
-                return Executors.newCachedThreadPool();
-            }
-        });
-    }
-
+public class TestControllerSimpleInject extends BaseTest {
     private static class TestView {
         @Inject
         private PrintController printController;

@@ -24,7 +24,6 @@ import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -32,7 +31,6 @@ import org.mockito.stubbing.Answer;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
 import javax.inject.Qualifier;
@@ -46,32 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
-public class TestMvcGraph {
-    private MvcGraph graph;
-    private ExecutorService executorService;
-
-    @Before
-    public void setUp() throws Exception {
-        executorService = mock(ExecutorService.class);
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Runnable runnable = (Runnable) invocation.getArguments()[0];
-                runnable.run();
-                return null;
-            }
-        }).when(executorService).submit(any(Runnable.class));
-
-        graph = new MvcGraph();
-        graph.setRootComponent(new MvcComponent("Root"));
-        graph.getRootComponent().register(new Object(){
-            @Provides
-            protected ExecutorService createExecutorService() {
-                return executorService;
-            }
-        });
-    }
-
+public class TestMvcGraph extends BaseTest{
     interface Os {
     }
 
@@ -341,24 +314,25 @@ public class TestMvcGraph {
         verify(graphMock).clearDereferencedListeners();
     }
 
-    @Test (expected = RuntimeException.class)
+    @Test (expected = IllegalStateException.class)
     public void should_throw_out_exceptions_when_registering_component()
             throws ProvideException, ProviderConflictException, Graph.IllegalRootComponentException {
         // Arrange
-        MvcComponent providerFinder = mock(MvcComponent.class);
-        graph.setRootComponent(providerFinder);
+        MvcComponent badComponent = mock(MvcComponent.class);
+        MvcGraph mvcGraph = new MvcGraph();
+        mvcGraph.setRootComponent(badComponent);
 
         Object obj = new Object();
 
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                throw new RuntimeException();
+                throw new IllegalStateException();
             }
-        }).when(providerFinder).register(any(Object.class));
+        }).when(badComponent).register(any(Object.class));
 
         // Act
-        graph.getRootComponent().register(obj);
+        mvcGraph.getRootComponent().register(obj);
     }
 
     //TODO: should restore

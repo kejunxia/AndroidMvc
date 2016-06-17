@@ -44,18 +44,18 @@ public class Mvc {
                 graph.getRootComponent().register(new Object() {
                     @Provides
                     @EventBusC
-                    public EventBus provideEventBusC() {
+                    public EventBus eventBusC() {
                         return new EventBusImpl();
                     }
 
                     @Provides
                     @EventBusV
-                    public EventBus provideEventBusV() {
+                    public EventBus eventBusV() {
                         return new EventBusImpl();
                     }
 
                     @Provides
-                    public ExecutorService providesExecutorService() {
+                    public ExecutorService executorService() {
                         return Executors.newFixedThreadPool(10, new ThreadFactory() {
                             @Override
                             public Thread newThread(final Runnable r) {

@@ -58,6 +58,7 @@ public interface Task<RESULT> {
         }
 
         private final Callback<RESULT> callback;
+        private final UiThreadRunner uiThreadRunner;
         private Future future;
         private State state;
         private Task<RESULT> task;
@@ -65,9 +66,12 @@ public interface Task<RESULT> {
         /**
          * Constructor
          * @param task The task being monitored
+         * @param uiThreadRunner The runner runs runnable on ui thread
          * @param callback The callback for the execution of the task. It can be null.
+         * @param uiThreadRunner
          */
-        public Monitor(Task<RESULT> task, Callback<RESULT> callback) {
+        public Monitor(Task<RESULT> task, UiThreadRunner uiThreadRunner, Callback<RESULT> callback) {
+            this.uiThreadRunner = uiThreadRunner;
             this.state = State.NOT_STARTED;
             this.task = task;
             this.callback = callback;
@@ -137,11 +141,11 @@ public interface Task<RESULT> {
                             state = State.CANCELED;
                         }
                         if (callback != null) {
-                            if (Controller.uiThreadRunner.isOnUiThread()) {
+                            if (uiThreadRunner.isOnUiThread()) {
                                 callback.onCancelled(mayInterruptIfRunning);
                                 callback.onFinally();
                             } else {
-                                Controller.uiThreadRunner.run(new Runnable() {
+                                uiThreadRunner.run(new Runnable() {
                                     @Override
                                     public void run() {
                                         callback.onCancelled(mayInterruptIfRunning);

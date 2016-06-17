@@ -484,11 +484,11 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
                 };
             }
         };
-        Mvc.graph().getRootComponent().register(com);
+        graph.getRootComponent().register(com);
 
         Annotation slower2Qualifier = SlowXHolder.class.getAnnotation(Slower2.class);
 
-        Mvc.graph().use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
+        graph.use(TimerController.class, slower2Qualifier, new Consumer<TimerController>() {
             @Override
             public void consume(TimerController instance) {
                 //Controller should have now been released
@@ -496,7 +496,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             }
         });
 
-        Mvc.graph().getRootComponent().unregister(com);
+        graph.getRootComponent().unregister(com);
     }
 
     @Test
@@ -505,7 +505,6 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         final long fiveMinutes = 60 * 5;
          Object module = new Object() {
             @Provides
-            @Singleton
             @Slower2
             TimerController timerSlowerX2() {
                 return new TimerController() {
@@ -525,7 +524,6 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             }
 
             @Provides
-            @Singleton
             @Slower3
             TimerController timerSlowerX3() {
                 return new TimerController() {
@@ -558,7 +556,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
 
         // Act
-        com.shipdream.lib.android.mvc.Navigator navigator = navigationManager.navigate(this).with(TimerController.class, slower2Qualifier, new com.shipdream.lib.android.mvc.Preparer<TimerController>() {
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, slower2Qualifier, new com.shipdream.lib.android.mvc.Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);

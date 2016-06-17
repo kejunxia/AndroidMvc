@@ -21,16 +21,24 @@ import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
 import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.concurrent.ExecutorService;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 
 public class BaseTest {
@@ -40,19 +48,50 @@ public class BaseTest {
 
     protected MvcGraph graph;
 
-    @BeforeClass
-    public static void setupClass() {
-        Controller.uiThreadRunner = new Controller.UiThreadRunner() {
-            @Override
-            public boolean isOnUiThread() {
-                return false;
-            }
+    private static Object component = new Object(){
+        @Provides
+        public UiThreadRunner uiThreadRunner() {
+            return new UiThreadRunner() {
+                @Override
+                public boolean isOnUiThread() {
+                    return true;
+                }
 
-            @Override
-            public void run(Runnable runnable) {
-                runnable.run();
-            }
-        };
+                @Override
+                public void run(Runnable runnable) {
+                    runnable.run();
+                }
+            };
+        }
+    };
+
+    @BeforeClass
+    public static void beforeClass() {
+        try {
+            Mvc.graph().getRootComponent().register(component);
+        } catch (ProvideException e) {
+            e.printStackTrace();
+        } catch (ProviderConflictException e) {
+            e.printStackTrace();
+        }
+
+        ConsoleAppender console = new ConsoleAppender(); //create appender
+        //configure the appender
+        String PATTERN = "%d [%p] %C{1}: %m%n";
+        console.setLayout(new PatternLayout(PATTERN));
+        console.setThreshold(Level.DEBUG);
+        console.activateOptions();
+        //add appender to any Logger (here is root)
+        Logger.getRootLogger().addAppender(console);
+    }
+
+    @AfterClass
+    public static void afterClass() {
+        try {
+            Mvc.graph().getRootComponent().unregister(component);
+        } catch (ProviderMissingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Before
@@ -62,8 +101,16 @@ public class BaseTest {
         eventBusC = new EventBusImpl();
         eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Runnable runnable = (Runnable) invocation.getArguments()[0];
+                runnable.run();
+                return null;
+            }
+        }).when(executorService).submit(any(Runnable.class));
 
-        graph.setRootComponent((MvcComponent) new MvcComponent("Root").register(new Object(){
+        graph.setRootComponent((MvcComponent) new MvcComponent("TestRootComponent").register(new Object(){
             @Provides
             @EventBusC
             public EventBus createEventBusC() {
@@ -80,19 +127,22 @@ public class BaseTest {
             public ExecutorService executorService() {
                 return executorService;
             }
+
+            @Provides
+            public UiThreadRunner uiThreadRunner() {
+                return new UiThreadRunner() {
+                    @Override
+                    public boolean isOnUiThread() {
+                        return true;
+                    }
+
+                    @Override
+                    public void run(Runnable runnable) {
+                        runnable.run();
+                    }
+                };
+            }
         }));
     }
 
-    @BeforeClass
-    public static void beforeClass() {
-        ConsoleAppender console = new ConsoleAppender(); //create appender
-        //configure the appender
-        String PATTERN = "%d [%p] %C{1}: %m%n";
-        console.setLayout(new PatternLayout(PATTERN));
-        console.setThreshold(Level.DEBUG);
-        console.activateOptions();
-        //add appender to any Logger (here is root)
-        Logger.getRootLogger().addAppender(console);
-    }
-    
 }

@@ -24,32 +24,14 @@ import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.ExecutorService;
 
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestManagerImpl {
-    @Before
-    public void setUp() throws Exception {
-        Controller.uiThreadRunner = new Controller.UiThreadRunner() {
-            @Override
-            public boolean isOnUiThread() {
-                return true;
-            }
-
-            @Override
-            public void run(Runnable runnable) {
-                runnable.run();
-            }
-        };
-    }
-
+public class TestManagerImpl extends BaseTest {
     @Test
     public void should_not_crash_when_manager_post_event_even_without_registering_controller_event_bus() {
         class MyManager extends com.shipdream.lib.android.mvc.Manager {
@@ -92,21 +74,16 @@ public class TestManagerImpl {
 
         final EventBus bus = mock(EventBus.class);
 
-        Mvc.graph().setRootComponent((MvcComponent) new MvcComponent("Root").register(new Object() {
+        graph.setRootComponent((MvcComponent) new MvcComponent("Root").register(new Object() {
             @Provides
             @EventBusC
             protected EventBus createEventBusC() {
                 return bus;
             }
-
-            @Provides
-            protected ExecutorService createExecutorService() {
-                return null;
-            }
         }));
 
         MyManager myManager = new MyManager();
-        Mvc.graph().inject(myManager);
+        graph.inject(myManager);
 
         verify(bus, times(0)).post(anyObject());
 

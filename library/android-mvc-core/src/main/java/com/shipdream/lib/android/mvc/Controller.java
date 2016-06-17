@@ -2,6 +2,7 @@ package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -17,27 +18,19 @@ import javax.inject.Inject;
  * @param <MODEL> The view model of the presenter.
  */
 public abstract class Controller<MODEL> extends Bean<MODEL> {
-    interface UiThreadRunner {
-        /**
-         * Indicates whether current thread is UI thread.
-         * @return
-         */
-        boolean isOnUiThread();
-        /**
-         * Run the runnable on Android UI thread
-         * @param runnable
-         */
-        void run(Runnable runnable);
-    }
-
     @Inject
     @EventBusC
     private EventBus eventBus2C;
 
     @Inject
+    @EventBusV
+    private EventBus eventBus2V;
+
+    @Inject
     protected ExecutorService executorService;
 
-    static UiThreadRunner uiThreadRunner;
+    @Inject
+    protected UiThreadRunner uiThreadRunner;
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -128,7 +121,7 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
      */
     protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, ExecutorService executorService,
                                    final Task<RESULT> task, final Task.Callback<RESULT> callback) {
-        final Task.Monitor<RESULT> monitor = new Task.Monitor(task, callback);
+        final Task.Monitor<RESULT> monitor = new Task.Monitor(task, uiThreadRunner, callback);
 
         if (monitor.getState() == Task.Monitor.State.CANCELED) {
             return null;
@@ -153,11 +146,11 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
                             postToUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (Controller.uiThreadRunner.isOnUiThread()) {
+                                    if (uiThreadRunner.isOnUiThread()) {
                                         callback.onSuccess(result);
                                         callback.onFinally();
                                     } else {
-                                        Controller.uiThreadRunner.run(new Runnable() {
+                                        uiThreadRunner.run(new Runnable() {
                                             @Override
                                             public void run() {
                                                 callback.onSuccess(result);
@@ -184,11 +177,11 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
                                 postToUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if (Controller.uiThreadRunner.isOnUiThread()) {
+                                        if (uiThreadRunner.isOnUiThread()) {
                                             callback.onException(e);
                                             callback.onFinally();
                                         } else {
-                                            Controller.uiThreadRunner.run(new Runnable() {
+                                            uiThreadRunner.run(new Runnable() {
                                                 @Override
                                                 public void run() {
                                                     callback.onException(e);

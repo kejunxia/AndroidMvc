@@ -16,10 +16,7 @@
 
 package com.shipdream.lib.android.mvc.inject;
 
-import com.shipdream.lib.android.mvc.MvcGraph;
-import com.shipdream.lib.android.mvc.event.bus.EventBus;
-import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
-import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
+import com.shipdream.lib.android.mvc.BaseTest;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.AndroidPart;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.PrinterController2;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.internal.AndroidPartImpl;
@@ -32,35 +29,12 @@ import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-public class TestInjectCustomControllerDependencies extends BaseTestCases {
-    MvcGraph graph;
-
-    @Before
-    public void setUp() throws Exception {
-        graph = new MvcGraph();
-        graph.getRootComponent().register(new Object(){
-            @Provides
-            @EventBusC
-            public EventBus eventBus() {
-                return new EventBusImpl();
-            }
-
-            @Provides
-            public ExecutorService executorService() {
-                return Executors.newCachedThreadPool();
-            }
-        });
-    }
-
+public class TestInjectCustomControllerDependencies extends BaseTest {
     private static class PaperView {
         @Inject
         private PrinterController2 printerController;

@@ -19,10 +19,12 @@ package com.shipdream.lib.android.mvc;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
+import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +37,44 @@ class EventRegister {
     private EventBus eventBusV;
 
     private static Handler handler;
+
+    static {
+        try {
+            Mvc.graph().getRootComponent().register(new Object() {
+                @Provides
+                public UiThreadRunner uiThreadRunner() {
+                    return new UiThreadRunner() {
+                        @Override
+                        public boolean isOnUiThread() {
+                            return Looper.getMainLooper().getThread() == Thread.currentThread();
+                        }
+
+                        @Override
+                        public void run(final Runnable runnable) {
+                            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                                runnable.run();
+                            } else {
+                                //Android handler is presented, posting to the main thread on Android.
+                                if (handler == null) {
+                                    handler = new Handler(Looper.getMainLooper());
+                                }
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        runnable.run();
+                                    }
+                                });
+                            }
+                        }
+                    };
+                }
+            });
+        } catch (ProvideException e) {
+            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+        } catch (ProviderConflictException e) {
+            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+        }
+    }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
     private Object androidComponent;
