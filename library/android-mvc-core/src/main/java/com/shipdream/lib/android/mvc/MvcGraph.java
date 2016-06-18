@@ -246,9 +246,9 @@ public class MvcGraph {
     }
 
     /**
-     * Release cached instances held by fields of target object. References of cache of the
+     * Release cached instances held by fields of target object. References of instances of the
      * instances will be decremented. Once the reference count of a contract type reaches 0, it will
-     * be removed from the cache.
+     * be removed from the instances.
      *
      * @param target of which the object fields will be released.
      */

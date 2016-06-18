@@ -37,7 +37,7 @@ import java.util.Set;
 import javax.inject.Qualifier;
 
 /**
- * //TODO: document, component has a default scope cache
+ * //TODO: document, component has a default scope instances
  * {@link Component} that registers providers manually.
  */
 public class Component {
@@ -97,7 +97,7 @@ public class Component {
         if (scopeCache == null) {
             return 0;
         } else {
-            return scopeCache.getCachedItems().size();
+            return scopeCache.getCachedInstances().size();
         }
     }
 
@@ -110,7 +110,7 @@ public class Component {
     }
 
     /**
-     * //TODO: document how component scope cache will override provider's
+     * //TODO: document how component scope instances will override provider's
      * Register a {@link Provider}. When allowOverride = false, it allows to register overriding
      * binding against the same type and {@link Qualifier} and <b>last wins</b>, otherwise
      * {@link ProviderConflictException} will be thrown.
@@ -143,7 +143,7 @@ public class Component {
     /**
      * Find the provider in this {@link Component} and its descents. If the provider is found,
      * detach it from its associated {@link Component}. After this point, the provider will use its
-     * own scope cache.
+     * own scope instances.
      * @param type The type of the provider
      * @param qualifier The qualifier of the provider
      * @return this instance
@@ -161,7 +161,7 @@ public class Component {
 
         targetComponent.providers.remove(key);
         if (targetComponent.scopeCache != null) {
-            targetComponent.scopeCache.removeCache(PokeHelper.makeProviderKey(type, qualifier));
+            targetComponent.scopeCache.removeInstance(PokeHelper.makeProviderKey(type, qualifier));
         }
 
         Component root = getRootComponent();

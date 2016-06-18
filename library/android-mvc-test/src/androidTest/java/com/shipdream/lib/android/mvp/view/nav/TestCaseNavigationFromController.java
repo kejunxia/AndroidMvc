@@ -224,7 +224,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDisposed();
         verify(disposeCheckerFMock, times(1)).onDisposed();
-        //__MvcGraphHelper retaining all cache is dangerous. Try to only retain relevant injected instances.
+        //__MvcGraphHelper retaining all instances is dangerous. Try to only retain relevant injected instances.
         verify(disposeCheckerGMock, times(0)).onDisposed();
 
         resetDisposeCheckers();

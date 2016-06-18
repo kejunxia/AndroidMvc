@@ -24,15 +24,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The cache controls how the provider associated should generate new instances.
+ * The instances controls how the provider associated should generate new instances.
  */
 public class ScopeCache {
-    protected Map<String, Object> cache = new HashMap<>();
+    protected Map<String, Object> instances = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     <T> T get(Provider<T> provider) throws ProvideException {
         String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());
-        T instance = (T) cache.get(key);
+        T instance = (T) instances.get(key);
         if (instance == null) {
             instance = provider.createInstance();
             if(instance == null) {
@@ -41,7 +41,7 @@ public class ScopeCache {
                                 "%s) should not provide NULL as instance",
                         provider.type().getName(), qualifierName));
             }
-            cache.put(key, instance);
+            instances.put(key, instance);
 
             provider.newlyCreatedInstance = instance;
         }
@@ -54,29 +54,29 @@ public class ScopeCache {
      * Get the cached instance
      * @param cacheKey result of {@link PokeHelper#makeProviderKey(Class, Annotation)}
      */
-    Object findCacheInstance(String cacheKey) {
-        return cache.get(cacheKey);
+    Object findInstance(String cacheKey) {
+        return instances.get(cacheKey);
     }
 
     @SuppressWarnings("unchecked")
-    <T> T findCacheInstance(Class<T> type, Annotation qualifier) {
-        return (T) this.findCacheInstance(PokeHelper.makeProviderKey(type, qualifier));
+    <T> T findInstance(Class<T> type, Annotation qualifier) {
+        return (T) this.findInstance(PokeHelper.makeProviderKey(type, qualifier));
     }
 
     @SuppressWarnings("unchecked")
     /**
-     * Remove the cached instance from the scope cache.
+     * Remove the cached instance from the scope instances.
      * @param cacheKey result of {@link PokeHelper#makeProviderKey(Class, Annotation)}
      */
-    <T> void removeCache(String cacheKey) {
-        cache.remove(cacheKey);
+    <T> void removeInstance(String key) {
+        instances.remove(key);
     }
 
     /**
-     * Gets all cached items this cache still manages
+     * Gets all cached instances this instances still manages
      * @return The collection of cached times
      */
-    public Collection<Object> getCachedItems() {
-        return cache.values();
+    public Collection<Object> getCachedInstances() {
+        return instances.values();
     }
 }

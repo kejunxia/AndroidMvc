@@ -39,6 +39,10 @@ class EventRegister {
     private static Handler handler;
 
     static {
+        /**
+         * All mvc components will use this class to register events. So the static configuration
+         * is set in this class static blcok.
+         */
         try {
             Mvc.graph().getRootComponent().register(new Object() {
                 @Provides

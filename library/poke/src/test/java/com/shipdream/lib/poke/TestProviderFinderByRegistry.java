@@ -715,7 +715,7 @@ public class TestProviderFinderByRegistry extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     private <T> T findCacheInstance(ScopeCache scopeCache, Provider<T> provider) {
-        T instance = scopeCache.findCacheInstance(provider.type(), provider.getQualifier());
+        T instance = scopeCache.findInstance(provider.type(), provider.getQualifier());
         if(instance != null) {
             return instance;
         }

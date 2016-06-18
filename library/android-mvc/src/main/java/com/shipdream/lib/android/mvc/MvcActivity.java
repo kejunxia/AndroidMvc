@@ -523,7 +523,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 if (frags != null) {
                     int size = frags.size();
                     for (int i = 0; i < size; i++) {
-                        MvcFragment frag = (MvcFragment) frags.get(i);
+                        Fragment frag = frags.get(i);
                         if (frag != null) {
                             traverseFragmentAndSubFragments(frag, manipulator);
                         }

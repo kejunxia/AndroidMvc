@@ -108,8 +108,8 @@ public class Graph {
     /**
      * Register {@link Provider.DisposeListener} which will be called when either
      * <ul>
-     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
-     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
      * </ul>
      * @param disposeListener The listener
      */
@@ -123,8 +123,8 @@ public class Graph {
     /**
      * Unregister {@link Provider.DisposeListener} which will be called when either
      * <ul>
-     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
-     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
      * </ul>
      *
      * @param disposeListener The listener
@@ -142,8 +142,8 @@ public class Graph {
     /**
      * Clear {@link Provider.DisposeListener}s which will be called when when either
      * <ul>
-     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
-     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
      * </ul>
      */
     public void clearDisposeListeners() {
@@ -438,9 +438,9 @@ public class Graph {
     }
 
     /**
-     * Release cached instances held by fields of target object. References of cache of the
+     * Release cached instances held by fields of target object. References of instances of the
      * instances will be decremented. Once the reference count of a controller reaches 0, it will
-     * be removed from the cache and raise {@link Provider.DereferenceListener}.
+     * be removed from the instances and raise {@link Provider.DereferenceListener}.
      *
      * @param target           Whose fields will be injected
      * @param injectAnnotation Annotated which a field will be recognize

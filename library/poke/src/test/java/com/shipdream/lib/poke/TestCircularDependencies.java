@@ -209,9 +209,9 @@ public class TestCircularDependencies extends BaseTestCases {
         final Factory factory = new Factory();
 
         graph.inject(factory, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
         graph.release(factory, MyInject.class);
-        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
     }
 
     @Test
@@ -228,16 +228,16 @@ public class TestCircularDependencies extends BaseTestCases {
         Provider<Driver> driverProvider = component.findProvider(Driver.class, null);
         Provider<Robot> robotProvider = component.findProvider(Robot.class, null);
 
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         graph.inject(factory2, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         graph.release(factory2, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         graph.release(factory1, MyInject.class);
-        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
 
         Assert.assertTrue(powerProvider.owners.isEmpty());
         Assert.assertEquals(0, powerProvider.getReferenceCount());
@@ -261,16 +261,16 @@ public class TestCircularDependencies extends BaseTestCases {
         Provider<Driver> driverProvider = component.findProvider(Driver.class, null);
         Provider<Robot> robotProvider = component.findProvider(Robot.class, null);
 
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         graph.inject(factory, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         graph.release(factory, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         graph.release(factory, MyInject.class);
-        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
 
         Assert.assertTrue(powerProvider.owners.isEmpty());
         Assert.assertEquals(0, powerProvider.getReferenceCount());
@@ -294,14 +294,14 @@ public class TestCircularDependencies extends BaseTestCases {
         Provider<Driver> driverProvider = component.findProvider(Driver.class, null);
         Provider<Robot> robotProvider = component.findProvider(Robot.class, null);
 
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         final Factory factory2 = new Factory();
         graph.inject(factory2, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         graph.inject(factory1, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -324,7 +324,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -347,7 +347,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -364,7 +364,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory1, MyInject.class);
-        Assert.assertFalse(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertFalse(component.scopeCache.getCachedInstances().isEmpty());
 
         Assert.assertNotNull(factory1);
         Assert.assertNotNull(factory1.power);
@@ -381,7 +381,7 @@ public class TestCircularDependencies extends BaseTestCases {
         Assert.assertNotNull(((RobotImpl)((DriverImpl) factory2.driver).robot).power);
 
         graph.release(factory2, MyInject.class);
-        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
 
         Assert.assertTrue(powerProvider.owners.isEmpty());
         Assert.assertEquals(0, powerProvider.getReferenceCount());

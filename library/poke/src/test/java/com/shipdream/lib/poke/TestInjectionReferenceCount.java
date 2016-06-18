@@ -130,7 +130,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertTrue(fruitProvider.getReferenceCount() == 2);
 
         graph.release(house, MyInject.class);
-        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
     }
 
     static class Mansion extends House {
@@ -157,7 +157,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertEquals(4, fruitProvider.getReferenceCount());
 
         graph.release(mansion, MyInject.class);
-        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
     }
 
     static class Kitchen {
@@ -231,7 +231,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
 
         graph.release(kitchen, MyInject.class);
 
-        Assert.assertTrue(component.scopeCache.getCachedItems().isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
     }
 
     @Test

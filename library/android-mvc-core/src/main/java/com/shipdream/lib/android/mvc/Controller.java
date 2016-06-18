@@ -1,10 +1,10 @@
 package com.shipdream.lib.android.mvc;
 
+import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,23 +143,18 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
                         monitor.setState(Task.Monitor.State.DONE);
 
                         if (callback != null) {
-                            postToUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (uiThreadRunner.isOnUiThread()) {
+                            if (uiThreadRunner.isOnUiThread()) {
+                                callback.onSuccess(result);
+                                callback.onFinally();
+                            } else {
+                                uiThreadRunner.run(new Runnable() {
+                                    @Override
+                                    public void run() {
                                         callback.onSuccess(result);
                                         callback.onFinally();
-                                    } else {
-                                        uiThreadRunner.run(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                callback.onSuccess(result);
-                                                callback.onFinally();
-                                            }
-                                        });
                                     }
-                                }
-                            });
+                                });
+                            }
                         }
                     }
                 } catch (final Exception e) {
@@ -174,23 +169,18 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
                         monitor.setState(Task.Monitor.State.ERRED);
                         if (callback != null) {
                             if (callback != null) {
-                                postToUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (uiThreadRunner.isOnUiThread()) {
+                                if (uiThreadRunner.isOnUiThread()) {
+                                    callback.onException(e);
+                                    callback.onFinally();
+                                } else {
+                                    uiThreadRunner.run(new Runnable() {
+                                        @Override
+                                        public void run() {
                                             callback.onException(e);
                                             callback.onFinally();
-                                        } else {
-                                            uiThreadRunner.run(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    callback.onException(e);
-                                                    callback.onFinally();
-                                                }
-                                            });
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         } else {
                             logger.warn(e.getMessage(), e);
@@ -206,15 +196,21 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
     }
 
     /**
-     * Run the runnable on the UI thread
-     * @param runnable runnable
+     * Post the event to views. It automatically guarantees the event will be received
+     * and run on UI thread of Android
+     * @param eventV The event
      */
-    protected void postToUiThread(@NotNull final Runnable runnable) {
-        uiThreadRunner.run(new Runnable() {
-            @Override
-            public void run() {
-                runnable.run();
-            }
-        });
+    protected void postEvent(final BaseEventV eventV) {
+        if (uiThreadRunner.isOnUiThread()) {
+            eventBus2V.post(eventV);
+        } else {
+            uiThreadRunner.run(new Runnable() {
+                @Override
+                public void run() {
+                    eventBus2V.post(eventV);
+                }
+            });
+        }
+
     }
 }

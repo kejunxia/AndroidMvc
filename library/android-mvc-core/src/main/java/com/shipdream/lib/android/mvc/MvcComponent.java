@@ -30,7 +30,8 @@ public class MvcComponent extends Component {
     }
 
     private void doSaveState(StateKeeper stateKeeper, MvcComponent component) {
-        if (component.getChildrenComponents() != null && !component.getChildrenComponents().isEmpty()) {
+        if (component.getChildrenComponents() != null
+                && !component.getChildrenComponents().isEmpty()) {
             for (Component child : component.getChildrenComponents()) {
                 if (child instanceof MvcComponent) {
                     MvcComponent mvcChildComponent = (MvcComponent) child;

@@ -46,16 +46,16 @@ public abstract class Provider<T> {
     /**
      * Listener monitoring when the instance provided by the provider is freed. It happens either
      * <ul>
-     *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
-     *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+     *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
      * </ul>
      */
     public interface DisposeListener {
         /**
          * Called when either
          * <ul>
-         *     <li>The provider doesn't have a scope cache and a provided instance is dereferenced</li>
-         *     <li>The provider has a scope cache and the provider is dereferenced with 0 reference count</li>
+         *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+         *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
          * </ul>
          *
          * @param provider The provider used to provide the injecting instance
@@ -122,7 +122,7 @@ public abstract class Provider<T> {
     /**
      * Construct a scoped and unqualified provider
      * @param type The type of the instance the provider is providing
-     * @param scopeCache the cache for the scope
+     * @param scopeCache the instances for the scope
      */
     public Provider(Class<T> type, ScopeCache scopeCache) {
         this(type, null, scopeCache);
@@ -149,8 +149,8 @@ public abstract class Provider<T> {
     }
 
     /**
-     * Get the scope cache. If this provider is not attached to any component. It returns this
-     * provider's own scope cache otherwise the component's scope cache.
+     * Get the scope instances. If this provider is not attached to any component. It returns this
+     * provider's own scope instances otherwise the component's scope instances.
      * @return
      */
     ScopeCache getScopeCache() {
@@ -217,9 +217,9 @@ public abstract class Provider<T> {
         ScopeCache cache = getScopeCache();
         if (cache != null) {
             String key = PokeHelper.makeProviderKey(type, qualifier);
-            Object instance = cache.findCacheInstance(key);
+            Object instance = cache.findInstance(key);
             if (instance != null) {
-                cache.removeCache(key);
+                cache.removeInstance(key);
             }
         }
     }
@@ -286,10 +286,10 @@ public abstract class Provider<T> {
     }
 
     /**
-     * Get the cached instance of this provider when there is a cache associated with this provider
+     * Get the cached instance of this provider when there is a instances associated with this provider
      * and the instance is cached already. Note that, the method will NOT increase reference count of
      * this provider
-     * @return The cached instance of this provider if there is a cache associated with this provider
+     * @return The cached instance of this provider if there is a instances associated with this provider
      * and the instance is cached already, otherwise null will be returned
      */
     public T getCachedInstance() {
@@ -297,7 +297,7 @@ public abstract class Provider<T> {
 
         if (cache != null) {
             String key = PokeHelper.makeProviderKey(type, qualifier);
-            Object instance = cache.findCacheInstance(key);
+            Object instance = cache.findInstance(key);
             if(instance != null) {
                 return (T) instance;
             }

@@ -60,5 +60,4 @@ public abstract class MvcService extends Service{
     protected void postEvent2V(BaseEventV event) {
         eventRegister.postEvent2V(event);
     }
-
 }
