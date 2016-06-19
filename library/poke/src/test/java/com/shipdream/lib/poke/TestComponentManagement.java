@@ -339,19 +339,19 @@ public class TestComponentManagement extends BaseTestCases {
     @Test
     public void test_component_constructor() {
         Component c1 = new Component("A");
-        Assert.assertTrue(c1.hasCache());
+        Assert.assertNotNull(c1.getCache());
         Assert.assertEquals("A", c1.getName());
 
         Component c2 = new Component("B", false);
-        Assert.assertFalse(c2.hasCache());
+        Assert.assertNull(c2.getCache());
         Assert.assertEquals("B", c2.getName());
 
         Component c3 = new Component(false);
-        Assert.assertFalse(c3.hasCache());
+        Assert.assertNull(c3.getCache());
         Assert.assertEquals(null, c3.getName());
 
         Component c4 = new Component();
-        Assert.assertTrue(c4.hasCache());
+        Assert.assertNotNull(c4.getCache());
         Assert.assertEquals(null, c4.getName());
     }
 

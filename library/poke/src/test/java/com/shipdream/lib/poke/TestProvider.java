@@ -32,7 +32,6 @@ public class TestProvider {
 
     @Test
     public void test_provider_missing_exception_constructor() {
-        ProviderMissingException e1 = new ProviderMissingException(String.class, null, new Throwable());
         ProviderMissingException e2 = new ProviderMissingException("msg");
         ProviderMissingException e3 = new ProviderMissingException("msg", new Throwable());
     }

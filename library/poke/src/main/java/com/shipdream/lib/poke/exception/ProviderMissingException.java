@@ -18,35 +18,15 @@ package com.shipdream.lib.poke.exception;
 
 import com.shipdream.lib.poke.Graph;
 
-import java.lang.annotation.Annotation;
-
 /**
  * Exception occurs when a {@link Graph} fails to find a provider by given injection type
  */
 public class ProviderMissingException extends PokeException{
-    public ProviderMissingException(Class instanceType, Annotation qualifier) {
-        super(makeMessage(instanceType, qualifier));
-    }
-
-    public ProviderMissingException(Class instanceType, Annotation qualifier, Throwable cause) {
-        super(makeMessage(instanceType, qualifier), cause);
-    }
-
     public ProviderMissingException(String message) {
         super(message);
     }
 
     public ProviderMissingException(String message, Throwable cause) {
         super(message, cause);
-    }
-
-    private static String makeMessage(Class instanceType, Annotation qualifier) {
-        if (qualifier == null) {
-            return String.format("Provider for type without qualifier: %s cannot be found.", instanceType.getName());
-        } else {
-            return String.format("Provider for type: %s, qualifier: %s cannot be found.",
-                    instanceType.getName(), qualifier.toString());
-        }
-
     }
 }

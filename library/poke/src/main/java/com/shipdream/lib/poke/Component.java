@@ -89,15 +89,11 @@ public class Component {
         return name;
     }
 
-    public boolean hasCache() {
-        return scopeCache != null;
-    }
-
-    public int getCachedItemSize() {
+    public Map<String, Object> getCache() {
         if (scopeCache == null) {
-            return 0;
+            return null;
         } else {
-            return scopeCache.getCachedInstances().size();
+            return scopeCache.instances;
         }
     }
 
@@ -403,18 +399,24 @@ public class Component {
      */
     protected <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
         String key = PokeHelper.makeProviderKey(type, qualifier);
+        return findProvider(key);
+    }
+
+    Provider findProvider(String key) throws ProviderMissingException {
         Component targetComponent = getRootComponent().componentLocator.get(key);
 
-        Provider<T> provider = null;
+        Provider provider = null;
         if (targetComponent != null) {
             provider = targetComponent.providers.get(key);
         }
         if (provider == null) {
-            throw new ProviderMissingException(type, qualifier);
+            String msg = String.format("Provider(%s) cannot be found", key);
+            throw new ProviderMissingException(msg);
         } else {
             return provider;
         }
     }
+
 
     /**
      * Add provider to this component and notify the root component this component is
