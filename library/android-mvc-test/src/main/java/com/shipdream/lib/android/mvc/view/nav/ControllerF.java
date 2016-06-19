@@ -31,7 +31,7 @@ public class ControllerF extends Controller<ControllerF.Model> {
     private DisposeCheckerF disposeCheckerF;
 
     @Override
-    public void onDisposed() {
+    public void onDestroy() {
         Log.i("DisposeCheck", "Controller F disposed");
     }
 

@@ -24,14 +24,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.R;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.view.service.CountService;
-import com.shipdream.lib.android.mvc.MvcFragment;
 
-import javax.inject.Inject;
-
-public class CounterDetailView extends MvcFragment implements CounterDetailController.View{
+public class CounterDetailView extends MvcFragment<CounterDetailController> implements CounterDetailController.View{
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;
@@ -45,9 +44,9 @@ public class CounterDetailView extends MvcFragment implements CounterDetailContr
         public void run() {
             if (!canceled) {
                 if (incrementing) {
-                    presenter.increment(this);
+                    controller.increment(this);
                 } else {
-                    presenter.decrement(this);
+                    controller.decrement(this);
                 }
 
                 handler.postDelayed(this, INTERVAL);
@@ -59,9 +58,6 @@ public class CounterDetailView extends MvcFragment implements CounterDetailContr
         }
     }
 
-    @Inject
-    private CounterDetailController presenter;
-
     private TextView display;
     private Button increment;
     private Button decrement;
@@ -69,6 +65,11 @@ public class CounterDetailView extends MvcFragment implements CounterDetailContr
     private Handler handler;
     private ContinuousCounter incrementCounter;
     private ContinuousCounter decrementCounter;
+
+    @Override
+    protected Class<CounterDetailController> getControllerClass() {
+        return CounterDetailController.class;
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -85,7 +86,7 @@ public class CounterDetailView extends MvcFragment implements CounterDetailContr
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
 
-        presenter.view = this;
+        controller.view = this;
 
         display = (TextView) view.findViewById(R.id.fragment_b_counterDisplay);
         increment = (Button) view.findViewById(R.id.fragment_b_buttonIncrement);
@@ -132,13 +133,13 @@ public class CounterDetailView extends MvcFragment implements CounterDetailContr
             }
         });
 
-        updateCountDisplay(presenter.getCount());
+        updateCountDisplay(controller.getCount());
     }
 
     @Override
     public boolean onBackButtonPressed() {
         //Use counterController to manage navigation back make navigation testable
-        presenter.goBackToBasicView(this);
+        controller.goBackToBasicView(this);
         //Return true to not pass the back button pressed event to upper level handler.
         return true;
         //Or we can let the fragment manage back navigation back automatically where we don't
@@ -148,7 +149,7 @@ public class CounterDetailView extends MvcFragment implements CounterDetailContr
 
     @Override
     public void onCounterUpdated(int count, String countInEnglish) {
-        updateCountDisplay(presenter.getCount());
+        updateCountDisplay(controller.getCount());
     }
 
     private void startContinuousIncrement() {

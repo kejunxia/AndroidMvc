@@ -5,24 +5,27 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.R;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicController;
-import com.shipdream.lib.android.mvc.MvcFragment;
 
 import javax.inject.Inject;
 
-public class CounterBasicView extends MvcFragment implements CounterBasicController.View {
+public class CounterBasicView extends MvcFragment<CounterBasicController> implements CounterBasicController.View {
     @Inject
     private NavigationManager navigationManager;
-
-    @Inject
-    private CounterBasicController presenter;
 
     private TextView display;
     private Button increment;
     private Button decrement;
     private Button buttonShowAdvancedView;
+
+    @Override
+    protected Class<CounterBasicController> getControllerClass() {
+        return CounterBasicController.class;
+    }
 
     /**
      * @return Layout id used to inflate the view of this MvcFragment.
@@ -45,7 +48,7 @@ public class CounterBasicView extends MvcFragment implements CounterBasicControl
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
 
-        presenter.view = this;
+        controller.view = this;
 
         display = (TextView) view.findViewById(R.id.fragment_a_counterDisplay);
         increment = (Button) view.findViewById(R.id.fragment_a_buttonIncrement);
@@ -55,14 +58,14 @@ public class CounterBasicView extends MvcFragment implements CounterBasicControl
         increment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.increment(v);
+                controller.increment(v);
             }
         });
 
         decrement.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                presenter.decrement(v);
+                controller.decrement(v);
             }
         });
 
@@ -70,7 +73,7 @@ public class CounterBasicView extends MvcFragment implements CounterBasicControl
             @Override
             public void onClick(View v) {
                 //Use counterController to manage navigation to make navigation testable
-                presenter.goToDetailView(v);
+                controller.goToDetailView(v);
                 //Or we can use NavigationManager directly though it's harder to unit test on
                 //controller level.
                 //example:
@@ -85,7 +88,7 @@ public class CounterBasicView extends MvcFragment implements CounterBasicControl
                     .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();
         }
 
-        updateCountDisplay(presenter.getCount());
+        updateCountDisplay(controller.getCount());
     }
 
     /**
@@ -94,7 +97,7 @@ public class CounterBasicView extends MvcFragment implements CounterBasicControl
     @Override
     protected void onPoppedOutToFront() {
         super.onPoppedOutToFront();
-        updateCountDisplay(presenter.getCount());
+        updateCountDisplay(controller.getCount());
     }
 
     /**

@@ -190,7 +190,8 @@ public abstract class MvcActivity extends AppCompatActivity {
      * fragment or pop out the stacked history fragments. {@link NavigationManager} can be simply
      * injected into any fragments extending {@link MvcFragment} by fields annotated by @Inject.
      */
-    public static abstract class DelegateFragment extends MvcFragment {
+    public static abstract class DelegateFragment<CONTROLLER extends Controller>
+            extends MvcFragment<CONTROLLER> {
         private static final String MVC_STATE_BUNDLE_KEY = STATE_PREFIX + "RootBundle";
         private Logger logger = LoggerFactory.getLogger(getClass());
         //Track if the state is saved and not able to commit fragment transaction

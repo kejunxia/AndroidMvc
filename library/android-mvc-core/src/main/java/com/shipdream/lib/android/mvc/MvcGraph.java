@@ -40,7 +40,7 @@ public class MvcGraph {
                 if (instance != null && instance instanceof Bean) {
                     //When the cached instance is still there free and dispose it.
                     Bean bean = (Bean) instance;
-                    bean.onDisposed();
+                    bean.onDestroy();
 
                     logger.trace("--Bean disposed - '{}'.",
                             provider.type().getSimpleName());

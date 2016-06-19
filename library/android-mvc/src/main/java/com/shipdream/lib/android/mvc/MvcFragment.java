@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -24,6 +25,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.shipdream.lib.android.mvc.event.BaseEventV;
+import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -33,7 +39,7 @@ import javax.inject.Inject;
  * Fragment to help utilize Mvc pattern. {@link #setRetainInstance(boolean)} will be set true by
  * default. Don't set it false which will result unexpected behaviour and life cycles. Controllers
  * and other dependencies can be injected by fields annotated by @{@link Inject}.
- *
+ * <p>
  * <p>
  * This fragment uses life cycles slightly different from original Android Fragment.
  * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} is sealed to be overridden which will
@@ -43,7 +49,7 @@ import javax.inject.Inject;
  * {@link #onViewReady(View, Bundle, Reason)} to setup views and bind data where all dependencies
  * and restored state will be guaranteed ready.
  * </p>
- *
+ * <p>
  * <p>
  * If some actions need to be delayed to invoke after the fragment is ready, use {@link #registerOnViewReadyListener(Runnable)}
  * For example, when the fragment is just instantiated before it's inflated and added to view
@@ -51,99 +57,18 @@ import javax.inject.Inject;
  * action after the first {@link #onViewReady(View, Bundle, Reason)} lifecycle of the fragment
  * </p>
  */
-public abstract class MvcFragment extends Fragment {
-    private Object newInstanceChecker;
-    public boolean isStateManagedByRootDelegateFragment;
-
-    /**
-     * Reason of creating the view of the fragment
-     */
-    public static class Reason {
-        private boolean isNewInstance;
-        private boolean isFirstTime;
-        private boolean isRestored;
-        private boolean isRotated;
-        private boolean isPoppedOut;
-
-        /**
-         * @return Indicates whether the fragment is a new instance that all its fields need to be
-         * reinitialized and configured. This could happen when a fragment is created for the first
-         * time (when {@link #isFirstTime()} = true) or the fragment is recreated on restoration
-         * after its holding activity was killed by OS (when {@link #isRestored()} = true).
-         *
-         * <p>Note that even this flag is true, widgets of the view of the fragment still need to be
-         * reconfigured whenever {@link #onViewReady(View, Bundle, Reason)} is called. For example,
-         * onClickListener of a Button still need be set regardless inNewStance() is true or false.
-         * But a view pager adapter as a field of the fragment doesn't need to be re-instantiated
-         * because as a fragment instance field, it is still held by the fragment when
-         * isNewInstance() is false. This usually happens when the fragment is popped out on back
-         * navigation.</p>
-         */
-        public boolean isNewInstance() {
-            return this.isNewInstance;
-        }
-
-        /**
-         * @return Indicates whether the fragment view is created when the fragment is created for
-         * the first time. When this flag is true it's a good time to initialize the state fragment.
-         *
-         * <p>false will be returned when the view is created by rotation, back navigation or restoration</p>
-         */
-        public boolean isFirstTime() {
-            return this.isFirstTime;
-        }
-
-        /**
-         * @return Indicates whether the fragment view is created after the activity is killed by
-         * OS and restored. <br><br>
-         *
-         * <p>Although when a fragment is restored all fields of the fragment will be recreated
-         * ({@link #isNewInstance()} = true), Mvc framework will automatically restore the
-         * state(model) of injected controllers held by the fragment . So when a fragment is being
-         * restored, only re-instantiate its non-controller fields. All injected {@link Bean}
-         * including controllers will be restored by the framework itself.</p>
-         */
-        public boolean isRestored() {
-            return this.isRestored;
-        }
-
-        /**
-         * @return Indicates whether the fragment view is created when the fragment was pushed to
-         * back stack and just popped out.
-         *
-         * <p>Note that, when a fragment is popped out, it will reuses its previous instance and the
-         * fields of the instance, so {@link #isNewInstance()} won't be true in this case. This is
-         * because Android OS won't call onDestroy when a fragment is pushed into back stack.</p>
-         */
-        public boolean isPoppedOut() {
-            return this.isPoppedOut;
-        }
-
-        /**
-         * @return Indicates whether the fragment view is created after its orientation changed.
-         */
-        public boolean isRotated() {
-            return this.isRotated;
-        }
-
-        @Override
-        public String toString() {
-            return "Reason: {" +
-                    "newInstance: " + isNewInstance() +
-                    ", firstTime: " + isFirstTime() +
-                    ", restore: " + isRestored() +
-                    ", popOut: " + isPoppedOut() +
-                    ", rotate: " + isRotated() +
-                    '}';
-        }
-    }
-
+public abstract class MvcFragment<CONTROLLER extends Controller> extends Fragment {
     private final static String STATE_LAST_ORIENTATION = MvcActivity.STATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;
     private boolean fragmentComesBackFromBackground = false;
     private int lastOrientation;
     private boolean dependenciesInjected = false;
+    private Object newInstanceChecker;
+    public boolean isStateManagedByRootDelegateFragment;
+    protected CONTROLLER controller;
+
+    protected abstract Class<CONTROLLER> getControllerClass();
 
     /**
      * @return orientation before last orientation change.
@@ -194,10 +119,15 @@ public abstract class MvcFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        if (getControllerClass() == null) {
+            throw new IllegalArgumentException("Must specify the controller class type for " +
+                    "fragment " + this.getClass().getName());
+        }
+
         eventRegister = new EventRegister(this);
         eventRegister.onCreate();
 
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             lastOrientation = getResources().getConfiguration().orientation;
         } else {
             lastOrientation = savedInstanceState.getInt(STATE_LAST_ORIENTATION);
@@ -205,6 +135,14 @@ public abstract class MvcFragment extends Fragment {
 
         if (getParentFragment() == null) {
             setRetainInstance(true);
+        }
+
+        try {
+            controller = Mvc.graph().reference(getControllerClass(), null);
+        } catch (PokeException e) {
+            throw new IllegalArgumentException("Unable to find controller "
+                    + getControllerClass().getName() + ". Either create a controller with " +
+                    "default constructor or register it to Mvc.graph().getRootComponent()");
         }
         injectDependencies();
     }
@@ -215,8 +153,8 @@ public abstract class MvcFragment extends Fragment {
      * prepare views in {@link #onViewReady(View, Bundle, Reason)} where all injected dependencies
      * and all restored state will be ready to use.
      *
-     * @param inflater The inflater
-     * @param container The container
+     * @param inflater           The inflater
+     * @param container          The container
      * @param savedInstanceState The savedInstanceState
      * @return The view for the fragment
      */
@@ -236,7 +174,7 @@ public abstract class MvcFragment extends Fragment {
      * This Android lifecycle callback is sealed. Use {@link #onViewReady(View, Bundle, Reason)}
      * instead which provides a flag to indicate if the creation of the view is caused by rotation.
      *
-     * @param view View of this fragment
+     * @param view               View of this fragment
      * @param savedInstanceState The savedInstanceState: Null when the view is newly created,
      *                           otherwise the state to restore and recreate the view
      */
@@ -249,7 +187,7 @@ public abstract class MvcFragment extends Fragment {
 
         final boolean restoring = savedInstanceState != null;
         if (restoring && isStateManagedByRootDelegateFragment) {
-            ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
+            ((MvcActivity) getActivity()).addPendingOnViewReadyActions(new Runnable() {
                 @Override
                 public void run() {
                     doOnViewCreatedCallBack(view, savedInstanceState, restoring);
@@ -262,6 +200,8 @@ public abstract class MvcFragment extends Fragment {
 
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
         int currentOrientation = getResources().getConfiguration().orientation;
+        controller.orientation = parseOrientation(currentOrientation);
+
         boolean orientationChanged = currentOrientation != lastOrientation;
         Reason reason = new Reason();
 
@@ -305,6 +245,8 @@ public abstract class MvcFragment extends Fragment {
                 r.run();
             }
         }
+
+        controller.onBindModel(reason);
     }
 
     /**
@@ -312,11 +254,11 @@ public abstract class MvcFragment extends Fragment {
      * {@link #onViewCreated(View, Bundle)} and provide an extra flag to indicate the {@link Reason}
      * why this callback is invoked.
      *
-     * @param view The root view of the fragment
+     * @param view               The root view of the fragment
      * @param savedInstanceState The savedInstanceState when the fragment is being recreated after
      *                           its enclosing activity is killed by OS, otherwise null including on
      *                           rotation
-     * @param reason Indicates the {@link Reason} why the onViewReady is called.
+     * @param reason             Indicates the {@link Reason} why the onViewReady is called.
      */
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
     }
@@ -325,10 +267,11 @@ public abstract class MvcFragment extends Fragment {
     public void onResume() {
         super.onResume();
         checkWhetherReturnFromForeground();
+        controller.onResume();
     }
 
     private void checkWhetherReturnFromForeground() {
-        if(fragmentComesBackFromBackground) {
+        if (fragmentComesBackFromBackground) {
             onReturnForeground();
         }
         fragmentComesBackFromBackground = false;
@@ -340,6 +283,7 @@ public abstract class MvcFragment extends Fragment {
      * This method is called after {@link #onResume}
      */
     protected void onReturnForeground() {
+        controller.onReturnForeground();
     }
 
     /**
@@ -347,6 +291,7 @@ public abstract class MvcFragment extends Fragment {
      * back stack.
      */
     protected void onPushingToBackStack() {
+        controller.onPushingToBackground();
     }
 
     /**
@@ -355,7 +300,7 @@ public abstract class MvcFragment extends Fragment {
      * right before the transaction is committed. This is the ideal place to
      * {@link FragmentTransaction#addSharedElement(View, String)}.
      *
-     * @param transaction The transaction being committing
+     * @param transaction  The transaction being committing
      * @param nextFragment Next fragment is going to
      */
     protected void onPreNavigationTransaction(FragmentTransaction transaction, MvcFragment nextFragment) {
@@ -368,21 +313,36 @@ public abstract class MvcFragment extends Fragment {
      * invoked after {@link #onViewReady(View, Bundle, Reason)}.
      */
     protected void onPoppedOutToFront() {
+        controller.onPoppedOutToFront();
     }
 
     /**
      * Called after {@link #onViewReady(View, Bundle, Reason)} when orientation changed.
      *
-     * @param lastOrientation Orientation before rotation
+     * @param lastOrientation    Orientation before rotation
      * @param currentOrientation Current orientation
      */
     protected void onOrientationChanged(int lastOrientation, int currentOrientation) {
+        controller.onOrientationChanged(
+                parseOrientation(lastOrientation),
+                parseOrientation(currentOrientation));
+    }
+
+    private static Orientation parseOrientation(int androidOrientation) {
+        if (androidOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            return Orientation.PORTRAIT;
+        } else if (androidOrientation == Configuration.ORIENTATION_LANDSCAPE) {
+            return Orientation.LANDSCAPE;
+        } else {
+            return Orientation.UNSPECIFIED;
+        }
     }
 
     @Override
     public void onPause() {
         super.onPause();
         fragmentComesBackFromBackground = true;
+        controller.onPause();
     }
 
     @Override
@@ -394,7 +354,7 @@ public abstract class MvcFragment extends Fragment {
     /**
      * Called when the fragment is no longer in use. This is called after onStop() and before onDetach().
      * Event2C bus will be unregistered in the method.
-     *
+     * <p>
      * <p><b>Note that, when a new fragment to create and pushes this fragment to back stack,
      * onDestroy of this fragment will NOT be called. This method will be called until this fragment
      * is removed completely.</b></p>
@@ -402,7 +362,17 @@ public abstract class MvcFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        try {
+            Mvc.graph().dereference(controller, getControllerClass(), null);
+        } catch (ProviderMissingException e) {
+            //should never happen
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.warn("Failed to dereference controller " + getControllerClass().getName(), e);
+        }
+
         releaseDependencies();
+
         eventRegister.onDestroy();
         eventRegister = null;
     }
@@ -465,6 +435,7 @@ public abstract class MvcFragment extends Fragment {
     /**
      * Handy method to post an event to other views directly. However, when possible, it's
      * recommended to post events from controllers to views.
+     *
      * @param event
      */
     protected void postEvent2V(BaseEventV event) {

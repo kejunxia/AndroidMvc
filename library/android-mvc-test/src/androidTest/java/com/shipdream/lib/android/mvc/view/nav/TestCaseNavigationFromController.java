@@ -98,7 +98,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
                 logger.debug("Dispose checker E");
                 return null;
             }
-        }).when(disposeCheckerEMock).onDisposed();
+        }).when(disposeCheckerEMock).onDestroy();
         disposeCheckerFMock = mock(DisposeCheckerF.class);
         doAnswer(new Answer() {
             @Override
@@ -106,7 +106,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
                 logger.debug("Dispose checker F");
                 return null;
             }
-        }).when(disposeCheckerFMock).onDisposed();
+        }).when(disposeCheckerFMock).onDestroy();
         disposeCheckerGMock = mock(DisposeCheckerG.class);
         doAnswer(new Answer() {
             @Override
@@ -114,7 +114,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
                 logger.debug("Dispose checker G");
                 return null;
             }
-        }).when(disposeCheckerGMock).onDisposed();
+        }).when(disposeCheckerGMock).onDestroy();
         comp = new Comp();
         comp.testCaseNavigation = this;
         Mvc.graph().getRootComponent().register(comp);
@@ -144,13 +144,13 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         onView(withText(val)).check(matches(isDisplayed()));
 
         //The controller should not be disposed yet
-        verify(disposeCheckerEMock, times(0)).onDisposed();
+        verify(disposeCheckerEMock, times(0)).onDestroy();
 
         navigationManager.navigate(this).back();
 
         //Controller should be disposed after navigated away from fragment E
         waitTest();
-        verify(disposeCheckerEMock, times(1)).onDisposed();
+        verify(disposeCheckerEMock, times(1)).onDestroy();
     }
 
     @Test
@@ -170,9 +170,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         }).to(ControllerE.class);
         waitTest();
         onView(withText(valE)).check(matches(isDisplayed()));
-        verify(disposeCheckerEMock, times(0)).onDisposed();
-        verify(disposeCheckerFMock, times(0)).onDisposed();
-        verify(disposeCheckerGMock, times(0)).onDisposed();
+        verify(disposeCheckerEMock, times(0)).onDestroy();
+        verify(disposeCheckerFMock, times(0)).onDestroy();
+        verify(disposeCheckerGMock, times(0)).onDestroy();
 
         resetDisposeCheckers();
         navigationManager.navigate(this).with(ControllerF.class, new Preparer<ControllerF>() {
@@ -183,9 +183,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         }).to(ControllerF.class);
         waitTest();
         onView(withText(valF)).check(matches(isDisplayed()));
-        verify(disposeCheckerEMock, times(0)).onDisposed();
-        verify(disposeCheckerFMock, times(0)).onDisposed();
-        verify(disposeCheckerGMock, times(0)).onDisposed();
+        verify(disposeCheckerEMock, times(0)).onDestroy();
+        verify(disposeCheckerFMock, times(0)).onDestroy();
+        verify(disposeCheckerGMock, times(0)).onDestroy();
 
         resetDisposeCheckers();
         navigationManager.navigate(this).with(ControllerG.class, new Preparer<ControllerG>() {
@@ -196,9 +196,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         }).to(ControllerG.class);
         waitTest();
         onView(withText(valG)).check(matches(isDisplayed()));
-        verify(disposeCheckerEMock, times(0)).onDisposed();
-        verify(disposeCheckerFMock, times(0)).onDisposed();
-        verify(disposeCheckerGMock, times(0)).onDisposed();
+        verify(disposeCheckerEMock, times(0)).onDestroy();
+        verify(disposeCheckerFMock, times(0)).onDestroy();
+        verify(disposeCheckerGMock, times(0)).onDestroy();
 
         resetDisposeCheckers();
         //The value set to controller e in Injector.graph().use should be retained during the
@@ -206,25 +206,25 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         navigationManager.navigate(this).back();
         waitTest();
         onView(withText(valF)).check(matches(isDisplayed()));
-        verify(disposeCheckerEMock, times(0)).onDisposed();
-        verify(disposeCheckerFMock, times(0)).onDisposed();
-        verify(disposeCheckerGMock, times(0)).onDisposed();
+        verify(disposeCheckerEMock, times(0)).onDestroy();
+        verify(disposeCheckerFMock, times(0)).onDestroy();
+        verify(disposeCheckerGMock, times(0)).onDestroy();
 
         resetDisposeCheckers();
         navigationManager.navigate(this).back();
         waitTest();
         onView(withText(valE)).check(matches(isDisplayed()));
-        verify(disposeCheckerEMock, times(0)).onDisposed();
-        verify(disposeCheckerFMock, times(1)).onDisposed();
+        verify(disposeCheckerEMock, times(0)).onDestroy();
+        verify(disposeCheckerFMock, times(1)).onDestroy();
         //__MvcGraphHelper retaining all instances is dangerous. Try to only retain relevant injected instances.
-        verify(disposeCheckerGMock, times(0)).onDisposed();
+        verify(disposeCheckerGMock, times(0)).onDestroy();
 
         resetDisposeCheckers();
         navigationManager.navigate(this).back();
         waitTest();
-        verify(disposeCheckerEMock, times(1)).onDisposed();
-        verify(disposeCheckerFMock, times(0)).onDisposed();
-        verify(disposeCheckerGMock, times(1)).onDisposed();
+        verify(disposeCheckerEMock, times(1)).onDestroy();
+        verify(disposeCheckerFMock, times(0)).onDestroy();
+        verify(disposeCheckerGMock, times(1)).onDestroy();
     }
 
     private void resetDisposeCheckers() {

@@ -64,7 +64,7 @@ public abstract class Bean<MODEL> {
      * Called when the MvcBean is disposed. This occurs when the MvcBean is de-referenced and
      * not retained by any other objects.
      */
-    public void onDisposed() {
+    public void onDestroy() {
     }
 
     /**

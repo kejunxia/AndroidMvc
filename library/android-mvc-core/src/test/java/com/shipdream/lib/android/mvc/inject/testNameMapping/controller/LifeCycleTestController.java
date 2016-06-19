@@ -35,8 +35,8 @@ public class LifeCycleTestController extends Controller {
         proxy.onConstructCalled();
     }
 
-    public void onDisposed() {
-        super.onDisposed();
+    public void onDestroy() {
+        super.onDestroy();
         proxy.disposeCalled();
     }
 }

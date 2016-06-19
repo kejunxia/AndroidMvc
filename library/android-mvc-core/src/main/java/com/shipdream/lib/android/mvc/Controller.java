@@ -18,6 +18,8 @@ import javax.inject.Inject;
  * @param <MODEL> The view model of the presenter.
  */
 public abstract class Controller<MODEL> extends Bean<MODEL> {
+    Orientation orientation;
+
     @Inject
     @EventBusC
     private EventBus eventBus2C;
@@ -61,13 +63,64 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
         eventBus2C.register(this);
     }
 
+    protected Orientation currentOrientation() {
+        return orientation;
+    }
+
+    /**
+     * Bind the model to the controller that will be reflected in the corresponding fragment.
+     * @param reason Why the model needs to be bound
+     */
+    public void onBindModel(Reason reason) {
+    }
+
+    /**
+     * Called when corresponding fragment's onResume is called
+     */
+    public void onResume() {
+    }
+
+    /**
+     * Called when corresponding fragment is about to be pushed to background
+     */
+    public void onPushingToBackground() {
+    }
+
+    /**
+     * Called when corresponding fragment returns foreground from background <b>ONLY</b> when the
+     * model doesn't need to be rebound to the controller. For example, if the fragment is rotated
+     * or recreated then this method won't be called. But if home button pressed and then then the
+     * app is brought back to front without being killed by the OS, this method will be called.
+     */
+    public void onReturnForeground() {
+    }
+
+    /**
+     * Called when corresponding fragment popped out from back history
+     */
+    public void onPoppedOutToFront() {
+    }
+
+    /**
+     * Called when corresponding fragment's orientation changed
+     */
+    public void onOrientationChanged(Orientation last, Orientation current) {
+        orientation = current;
+    }
+
+    /**
+     * Called when corresponding fragment's onPause is called
+     */
+    public void onPause() {
+    }
+
     /**
      * Called when the presenter is disposed. This occurs when the presenter is de-referenced and
      * not retained by any objects.
      */
     @Override
-    public void onDisposed() {
-        super.onDisposed();
+    public void onDestroy() {
+        super.onDestroy();
         eventBus2C.unregister(this);
     }
 

@@ -1,3 +1,11 @@
+Version: 3.0
+* Rename BaseControllerImpl to Controller. Not necessary to create an interface for controller
+injection. A concrete class can be injected straight away.
+* New life cycles of controllers that match to views
+* MvcComponents manage their own cached instances by themselves.
+* Register providers to Graph's root component rather than to graph itself.
+
+
 Version:2.3
 * New navigation method that allow configuring the location not pushed to back stack
 * Uplift Android Support Lib to 23.4.0
