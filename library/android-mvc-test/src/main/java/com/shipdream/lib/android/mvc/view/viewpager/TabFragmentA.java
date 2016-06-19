@@ -75,4 +75,14 @@ public class TabFragmentA extends BaseTabFragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
 }

@@ -43,6 +43,21 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
      */
     public void onCreated() {
         super.onCreated();
+
+        if (uiThreadRunner == null) {
+            uiThreadRunner = new UiThreadRunner() {
+                @Override
+                public boolean isOnUiThread() {
+                    return true;
+                }
+
+                @Override
+                public void run(Runnable runnable) {
+                    runnable.run();
+                }
+            };
+        }
+
         eventBus2C.register(this);
     }
 

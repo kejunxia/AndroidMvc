@@ -3,7 +3,6 @@ package com.shipdream.lib.android.mvc;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.ProviderByClassType;
-import com.shipdream.lib.poke.ScopeCache;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -19,48 +18,6 @@ public class MvcComponent extends Component {
     private Logger logger = LoggerFactory.getLogger(getClass());
     public MvcComponent(String name) {
         super(name);
-    }
-
-    /**
-     * Save model of all injected objects
-     * @param stateKeeper The model keeper managing the model
-     */
-    public void saveState(StateKeeper stateKeeper) {
-        doSaveState(stateKeeper, this);
-    }
-
-    private void doSaveState(StateKeeper stateKeeper, MvcComponent component) {
-        if (component.getChildrenComponents() != null
-                && !component.getChildrenComponents().isEmpty()) {
-            for (Component child : component.getChildrenComponents()) {
-                if (child instanceof MvcComponent) {
-                    MvcComponent mvcChildComponent = (MvcComponent) child;
-                    doSaveState(stateKeeper, mvcChildComponent);
-                }
-            }
-        }
-        stateKeeper.saveState(component.getName(), component.scopeCache);
-    }
-
-    /**
-     * Restore beans injected by this provider finder.
-     * @param stateKeeper The model keeper managing the model
-     */
-    @SuppressWarnings("unchecked")
-    public void restoreState(StateKeeper stateKeeper) {
-        doRestoreState(stateKeeper, this);
-    }
-
-    private void doRestoreState(StateKeeper stateKeeper, MvcComponent component) {
-        if (component.getChildrenComponents() != null && !component.getChildrenComponents().isEmpty()) {
-            for (Component child : component.getChildrenComponents()) {
-                if (child instanceof MvcComponent) {
-                    MvcComponent mvcComponent = (MvcComponent) child;
-                    doRestoreState(stateKeeper, mvcComponent);
-                }
-            }
-        }
-        component.scopeCache = stateKeeper.restoreState(component.getName(), ScopeCache.class);
     }
 
     @SuppressWarnings("unchecked")

@@ -87,7 +87,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         if (toPrintAppExitMessage && logger.isTraceEnabled()) {
             logger.trace("App Exits(UI): {} injected beans are still cached.",
-                    Mvc.graph().getRootComponent().getCachedItemSize());
+                    Mvc.graph().getRootComponent().getCache());
             toPrintAppExitMessage = false;
         }
     }
@@ -379,6 +379,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setHasOptionsMenu(true);
+
             MvcActivity activity = ((MvcActivity) getActivity());
             activity.delegateFragment = this;
         }
@@ -411,7 +412,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 long ts = System.currentTimeMillis();
 
                 //TODO: if its rotation, consider not restore since the fragment is retained
-//                ModelKeeperHolder.restoreAllModels(mvcOutState);
+                MvcStateKeeperHolder.restoreState(mvcOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
                 notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, false);
@@ -474,7 +475,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
             long ts = System.currentTimeMillis();
             Bundle mvcOutState = new Bundle();
-            ModelKeeperHolder.saveAllModels(mvcOutState);
+            MvcStateKeeperHolder.saveState(mvcOutState);
             outState.putBundle(MVC_STATE_BUNDLE_KEY, mvcOutState);
             logger.trace("Save state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 
@@ -487,14 +488,14 @@ public abstract class MvcActivity extends AppCompatActivity {
          * fragment's outState bundle.
          */
         private void notifyAllSubMvcFragmentsTheirStateIsManagedByMe(MvcFragment fragment, final boolean selfManaged) {
-//            traverseFragmentAndSubFragments(fragment, new FragmentManipulator() {
-//                @Override
-//                public void manipulate(Fragment fragment) {
-//                    if (fragment != null && fragment.isAdded() && fragment instanceof MvcFragment) {
-//                        ((MvcFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
-//                    }
-//                }
-//            });
+            traverseFragmentAndSubFragments(fragment, new FragmentManipulator() {
+                @Override
+                public void manipulate(Fragment fragment) {
+                    if (fragment != null && fragment.isAdded() && fragment instanceof MvcFragment) {
+                        ((MvcFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
+                    }
+                }
+            });
         }
 
         /**

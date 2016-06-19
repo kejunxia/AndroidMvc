@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvc.view.injection;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.injection.InjectionTestActivity;
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;

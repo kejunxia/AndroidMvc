@@ -39,14 +39,14 @@ public class MainActivity extends MvcActivity {
      */
     public static class ContainerFragment extends MvcActivity.DelegateFragment {
         @Inject
-        private EntryController presenter;
+        private EntryController controller;
 
         /**
          * What to do when app starts for the first time
          */
         @Override
         protected void onStartUp() {
-            presenter.startApp(this);
+            controller.startApp(this);
         }
     }
 }

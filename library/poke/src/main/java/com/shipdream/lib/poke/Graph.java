@@ -207,7 +207,7 @@ public class Graph {
                 monitors.get(i).onInject(target);
             }
         }
-        doInject(target, null, null, injectAnnotation);
+        doInject(target, null, null, null, injectAnnotation);
         visitedInjectNodes.clear();
         revisitedNode = null;
         visitedFields.clear();
@@ -333,8 +333,8 @@ public class Graph {
         dereference(instance, type, qualifier, injectAnnotation);
     }
 
-    private <T> Provider<T> findProvider(String key) throws ProviderMissingException {
-        Provider<T> provider = rootComponent.findProvider(key);
+    private <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
+        Provider<T> provider = rootComponent.findProvider(type, qualifier);
         return provider;
     }
 
@@ -350,19 +350,9 @@ public class Graph {
      */
     public <T> T reference(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
             throws ProviderMissingException, ProvideException, CircularDependenciesException {
-        String key = PokeHelper.makeProviderKey(type, qualifier);
-        return reference(key, injectAnnotation);
-    }
-
-    /**
-     * Reference by key made by {@link PokeHelper#makeProviderKey(Class, Annotation)}
-     */
-    protected <T> T reference(String key, Class<? extends Annotation> injectAnnotation)
-            throws ProviderMissingException, ProvideException, CircularDependenciesException {
-
-        Provider<T> provider = findProvider(key);
+        Provider<T> provider = findProvider(type, qualifier);
         T instance = provider.get();
-        doInject(instance, null, key, injectAnnotation);
+        doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
         provider.notifyReferenced(provider, instance);
 
@@ -384,31 +374,23 @@ public class Graph {
      */
     public <T> void dereference(T instance, Class<T> type, Annotation qualifier,
                                 Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
-        deference(instance, PokeHelper.makeProviderKey(type, qualifier), injectAnnotation);
-    }
+        doRelease(instance, null, type, qualifier, injectAnnotation);
 
-    /**
-     * Dereference by key made by {@link PokeHelper#makeProviderKey(Class, Annotation)}
-     */
-    protected void deference(Object instance, String key, Class<? extends Annotation> injectAnnotation)
-            throws ProviderMissingException {
-        doRelease(instance, null, key, injectAnnotation);
-
-        Provider provider = findProvider(key);
+        Provider<T> provider = findProvider(type, qualifier);
         provider.release();
         dereferenceProvider(provider, instance);
     }
 
     @SuppressWarnings("unchecked")
-    private void doInject(Object target, Field targetField, String key,
+    private void doInject(Object target, Field targetField, Class targetType, Annotation targetQualifier,
                           Class<? extends Annotation> injectAnnotation)
             throws ProvideException, ProviderMissingException, CircularDependenciesException {
         boolean circularDetected = false;
         Provider targetProvider;
-        if (key != null) {
+        if (targetType != null) {
             //Nested injection
-            circularDetected = recordVisit(key);
-            targetProvider = findProvider(key);
+            circularDetected = recordVisit(targetType, targetQualifier);
+            targetProvider = findProvider(targetType, targetQualifier);
             Object cachedInstance = targetProvider.getCachedInstance();
             boolean infiniteCircularInjection = true;
             if (circularDetected) {
@@ -430,16 +412,14 @@ public class Graph {
                     if (field.isAnnotationPresent(injectAnnotation)) {
                         Class fieldType = field.getType();
                         Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
-
-                        String k = PokeHelper.makeProviderKey(fieldType, fieldQualifier);
-                        Provider provider = findProvider(k);
+                        Provider provider = findProvider(fieldType, fieldQualifier);
 
                         Object impl = provider.get();
                         ReflectUtils.setField(target, field, impl);
 
                         boolean visited = isFieldVisited(target, targetField, field);
                         if (!visited) {
-                            doInject(impl, field, k, injectAnnotation);
+                            doInject(impl, field, fieldType, fieldQualifier, injectAnnotation);
                         }
 
                         provider.retain(target, field);
@@ -451,8 +431,8 @@ public class Graph {
                 clazz = clazz.getSuperclass();
             }
 
-            if (key != null) {
-                unrecordVisit(key);
+            if (targetType != null) {
+                unrecordVisit(targetType, targetQualifier);
             }
         }
     }
@@ -472,20 +452,20 @@ public class Graph {
                 monitors.get(i).onRelease(target);
             }
         }
-        doRelease(target, null, null, injectAnnotation);
+        doRelease(target, null, null, null, injectAnnotation);
         visitedInjectNodes.clear();
         revisitedNode = null;
         visitedFields.clear();
     }
 
-    private void doRelease(Object target, Field targetField, String key,
+    private void doRelease(Object target, Field targetField, Class targetType, Annotation targetQualifier,
                            final Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
         Class<?> clazz = target.getClass();
 
         boolean circularDetected = false;
 
-        if (key != null) {
-            circularDetected = recordVisit(key);
+        if (targetType != null) {
+            circularDetected = recordVisit(targetType, targetQualifier);
         }
 
         if (!circularDetected) {
@@ -497,14 +477,13 @@ public class Graph {
                         if (fieldValue != null) {
                             final Class<?> fieldType = field.getType();
                             Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
-                            String k = PokeHelper.makeProviderKey(fieldType, fieldQualifier);
-                            Provider provider = findProvider(k);
+                            Provider provider = findProvider(fieldType, fieldQualifier);
 
                             boolean stillReferenced = provider.getReferenceCount(target, field) > 0;
                             boolean fieldVisited = isFieldVisited(target, targetField, field);
                             if (!fieldVisited && stillReferenced) {
                                 recordVisitField(target, targetField, field);
-                                doRelease(fieldValue, field, k, injectAnnotation);
+                                doRelease(fieldValue, field, fieldType, fieldQualifier, injectAnnotation);
 
                                 provider.release(target, field);
 
@@ -516,8 +495,8 @@ public class Graph {
                 clazz = clazz.getSuperclass();
             }
 
-            if (key != null) {
-                unrecordVisit(key);
+            if (targetType != null) {
+                unrecordVisit(targetType, targetQualifier);
             }
         }
     }
@@ -587,7 +566,8 @@ public class Graph {
         return fields != null && fields.contains(field);
     }
 
-    private boolean recordVisit(String key) {
+    private boolean recordVisit(Class classType, Annotation qualifier) {
+        String key = PokeHelper.makeProviderKey(classType, qualifier);
         boolean circularVisitDetected = visitedInjectNodes.contains(key);
         if (!circularVisitDetected) {
             visitedInjectNodes.add(key);
@@ -597,7 +577,8 @@ public class Graph {
         return circularVisitDetected;
     }
 
-    private void unrecordVisit(String key) {
+    private void unrecordVisit(Class classType, Annotation qualifier) {
+        String key = PokeHelper.makeProviderKey(classType, qualifier);
         visitedInjectNodes.remove(key);
     }
 

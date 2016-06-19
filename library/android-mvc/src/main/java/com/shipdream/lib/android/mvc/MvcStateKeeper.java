@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class MvcStateKeeper implements StateKeeper {
-    private static Gson gson;
+    static Gson gson;
     private Logger logger = LoggerFactory.getLogger(getClass());
     private AndroidModelKeeper navigationModelKeeper = new NavigationModelKeeperModelKeeper();
     Bundle bundle;
@@ -42,31 +42,34 @@ class MvcStateKeeper implements StateKeeper {
         if (value instanceof Parcelable) {
             Parcelable parcelable = (Parcelable) value;
             bundle.putParcelable(key, parcelable);
-            logger.trace("Save model by parcel model keeper - {}, {}ms used.",
+            logger.trace("Save state by parcel state keeper - {}, {}ms used.",
                     key, System.currentTimeMillis() - ts);
         } else {
-            //Use Gson to restore model
-//            String json = gson.toJson(value);
-//            bundle.putString(key, json);
-//
-//            logger.trace("Save model by JSON - {}, {}ms used. Content: {}",
-//                    key, System.currentTimeMillis() - ts, json);
+            try {
+                //Use Gson to restore model
+                String json = gson.toJson(value);
+                bundle.putString(key, json);
+
+                logger.trace("Save state by JSON - {}, {}ms used. Content: {}",
+                        key, System.currentTimeMillis() - ts, json);
+            } catch (Exception e) {
+                logger.warn("Failed to save state: " + key, e);
+            }
         }
     }
 
     @Override
     public <T> T restoreState(String key, Class<T> type) {
-//        long ts = System.currentTimeMillis();
-//        String json = bundle.getString(key);
-//        if (json == null) {
-//            throw new IllegalStateException("Can't find restore model for " + key);
-//        } else {
-//            T state = gson.fromJson(json, type);
-//            logger.trace("Save model by JSON - {}, {}ms used. Content: {}",
-//                    key, System.currentTimeMillis() - ts, json);
-//            return state;
-//        }
-        return null;
+        long ts = System.currentTimeMillis();
+        String json = bundle.getString(key);
+        if (json == null) {
+            throw new IllegalStateException("Can't find restore state for " + key);
+        } else {
+            T state = gson.fromJson(json, type);
+            logger.trace("Save state by JSON - {}, {}ms used. Content: {}",
+                    key, System.currentTimeMillis() - ts, json);
+            return state;
+        }
     }
 
 }

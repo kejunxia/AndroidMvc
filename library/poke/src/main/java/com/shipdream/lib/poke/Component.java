@@ -399,10 +399,6 @@ public class Component {
      */
     protected <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
         String key = PokeHelper.makeProviderKey(type, qualifier);
-        return findProvider(key);
-    }
-
-    Provider findProvider(String key) throws ProviderMissingException {
         Component targetComponent = getRootComponent().componentLocator.get(key);
 
         Provider provider = null;
@@ -416,7 +412,6 @@ public class Component {
             return provider;
         }
     }
-
 
     /**
      * Add provider to this component and notify the root component this component is

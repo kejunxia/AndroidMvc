@@ -20,6 +20,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -28,9 +30,6 @@ import android.support.v4.app.FragmentManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import com.shipdream.lib.android.mvc.Mvc;
-import com.shipdream.lib.android.mvc.MvcActivity;
-import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.view.LifeCycleMonitorFactory;
 import com.shipdream.lib.android.mvc.view.LifeCycleValidator;
 import com.shipdream.lib.android.mvc.view.MvcApp;
@@ -39,6 +38,7 @@ import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -116,9 +116,48 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         root.setLevel(Level.ALL);
     }
 
+    private Handler handler;
+
     @Before
     public void setUp() throws Exception {
         super.setUp();
+
+        try {
+            Mvc.graph().getRootComponent().register(new Object() {
+                @Provides
+                public UiThreadRunner uiThreadRunner() {
+                    return new UiThreadRunner() {
+                        @Override
+                        public boolean isOnUiThread() {
+                            return Looper.getMainLooper().getThread() == Thread.currentThread();
+                        }
+
+                        @Override
+                        public void run(final Runnable runnable) {
+                            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+                                runnable.run();
+                            } else {
+                                //Android handler is presented, posting to the main thread on Android.
+                                if (handler == null) {
+                                    handler = new Handler(Looper.getMainLooper());
+                                }
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        runnable.run();
+                                    }
+                                });
+                            }
+                        }
+                    };
+                }
+            });
+        } catch (ProvideException e) {
+            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+        } catch (ProviderConflictException e) {
+            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+        }
+
         injectDependencies();
 
         Mvc.graph().inject(this);

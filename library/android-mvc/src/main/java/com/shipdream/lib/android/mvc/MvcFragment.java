@@ -53,6 +53,7 @@ import javax.inject.Inject;
  */
 public abstract class MvcFragment extends Fragment {
     private Object newInstanceChecker;
+    public boolean isStateManagedByRootDelegateFragment;
 
     /**
      * Reason of creating the view of the fragment
@@ -247,17 +248,16 @@ public abstract class MvcFragment extends Fragment {
         onPreViewReady(view, savedInstanceState);
 
         final boolean restoring = savedInstanceState != null;
-//        if (restoring && isStateManagedByRootDelegateFragment) {
-//            ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
-//                @Override
-//                public void run() {
-//                    doOnViewCreatedCallBack(view, savedInstanceState, restoring);
-//                }
-//            });
-//        } else {
-//
-//        }
-        doOnViewCreatedCallBack(view, savedInstanceState, restoring);
+        if (restoring && isStateManagedByRootDelegateFragment) {
+            ((MvcActivity)getActivity()).addPendingOnViewReadyActions(new Runnable() {
+                @Override
+                public void run() {
+                    doOnViewCreatedCallBack(view, savedInstanceState, restoring);
+                }
+            });
+        } else {
+            doOnViewCreatedCallBack(view, savedInstanceState, restoring);
+        }
     }
 
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {

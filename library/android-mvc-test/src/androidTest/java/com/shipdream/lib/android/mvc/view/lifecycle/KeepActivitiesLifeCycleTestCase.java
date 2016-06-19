@@ -155,7 +155,6 @@ public class KeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         lifeCycleValidator.expect(LifeCycle.onCreateViewNull,
                 LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyRotate,
-                LifeCycle.onReturnForeground,
                 LifeCycle.onOrientationChanged,
                 LifeCycle.onDestroyView);
 

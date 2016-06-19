@@ -18,6 +18,9 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile project(':library:android-mvc')
+    compile rootProject.lib.logbackAndroidCore
+    compile rootProject.lib.logbackAndroidClassic
+
     compile 'com.squareup.okhttp:okhttp:2.4.0'
 
     compile 'io.reactivex:rxjava:1.1.5'

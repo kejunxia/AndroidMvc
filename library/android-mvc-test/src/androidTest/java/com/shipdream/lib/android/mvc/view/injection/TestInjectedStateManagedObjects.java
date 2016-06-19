@@ -18,26 +18,21 @@ package com.shipdream.lib.android.mvc.view.injection;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.injection.InjectionTestActivityTestRootFragment;
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
-public class TestInjectionAndLifeCycleForRootFragment extends BaseTestCase<InjectionTestActivityTestRootFragment> {
+public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestActivityStateManagedObjects> {
 
-    @Override
-    protected void waitTest() throws InterruptedException {
-        waitTest(1000);
-    }
-
-    public TestInjectionAndLifeCycleForRootFragment() {
-        super(InjectionTestActivityTestRootFragment.class);
+    public TestInjectedStateManagedObjects() {
+        super(InjectionTestActivityStateManagedObjects.class);
     }
 
     @Override
@@ -47,24 +42,30 @@ public class TestInjectionAndLifeCycleForRootFragment extends BaseTestCase<Injec
     }
 
     @Test
-    public void test_should_delay_call_on_view_ready_on_root_fragment_after_dependencies_injected_when_restore_from_kill() throws Throwable {
+    public void test_should_manage_state_of_nested_stateManagedObjects() throws Throwable {
         if (!isDontKeepActivities()) {
-            Log.i(getClass().getSimpleName(), "Not tested as Don't Keep Activities setting is disabled");
+            Log.i(getClass().getSimpleName(), "testLifeCyclesWhenKeepActivities not tested as Don't Keep Activities setting is disabled");
             return;
         }
 
-        //=============================> At A
-        onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA")));
-        onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
-        onView(withId(R.id.textC)).check(matches(withText("")));
+        onView(withId(R.id.textA)).check(matches(withText("")));
+
+        onView(withId(R.id.fragment_injection_root)).perform(click());
+
+        onView(withId(R.id.textA)).check(matches(withText("1:A")));
+
+        onView(withId(R.id.fragment_injection_root)).perform(click());
+
+        onView(withId(R.id.textA)).check(matches(withText("2:B")));
 
         pressHome();
-        waitTest();
+        waitTest(1000);
 
         bringBack();
-        waitTest();
-        onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\nOK\nAdded by FragmentA")));
-        onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\nAdded by FragmentA")));
+        waitTest(1000);
+
+        onView(withId(R.id.fragment_injection_root)).perform(click());
+        onView(withId(R.id.textA)).check(matches(withText("3:C")));
     }
 
 }

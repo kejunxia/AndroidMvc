@@ -62,7 +62,7 @@ public class TestInjector {
     }
 
     private int getGraphSize() {
-        return graph.getRootComponent().getCachedItemSize();
+        return graph.getRootComponent().getCache();
     }
     
     @Test

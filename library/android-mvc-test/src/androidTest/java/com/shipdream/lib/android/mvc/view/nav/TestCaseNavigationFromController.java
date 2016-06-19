@@ -16,14 +16,6 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.view.nav.ControllerE;
-import com.shipdream.lib.android.mvc.view.nav.ControllerF;
-import com.shipdream.lib.android.mvc.view.nav.ControllerG;
-import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerE;
-import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerF;
-import com.shipdream.lib.android.mvc.view.nav.DisposeCheckerG;
-import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
-import com.shipdream.lib.android.mvc.view.nav.NavFragmentA;
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.NavigationManager;

@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.viewpager.ViewPagerTestActivity;
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvc.view.test.R;
@@ -82,8 +81,8 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         waitTest(1200);
 
         lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
-        lifeCycleValidatorB.expect(LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack,LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack,LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect();
 
         pressHome();
