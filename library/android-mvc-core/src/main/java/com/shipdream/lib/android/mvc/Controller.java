@@ -19,6 +19,7 @@ import javax.inject.Inject;
  */
 public abstract class Controller<MODEL> extends Bean<MODEL> {
     Orientation orientation;
+    protected View view;
 
     @Inject
     @EventBusC
@@ -68,10 +69,10 @@ public abstract class Controller<MODEL> extends Bean<MODEL> {
     }
 
     /**
-     * Bind the model to the controller that will be reflected in the corresponding fragment.
+     * Called when the view of the corresponding fragment is created
      * @param reason Why the model needs to be bound
      */
-    public void onBindModel(Reason reason) {
+    public void onViewReady(Reason reason) {
     }
 
     /**

@@ -19,13 +19,25 @@ package com.shipdream.lib.android.mvc;
 import android.app.Service;
 
 import com.shipdream.lib.android.mvc.event.BaseEventV;
+import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Android service can be thought as a kind of view sitting on top and driven by controller which
  * manage the state of the app.
  */
-public abstract class MvcService extends Service{
+public abstract class MvcService<CONTROLLER extends Controller> extends Service implements View{
     private EventRegister eventRegister;
+    protected CONTROLLER controller;
+
+    /**
+     * Specify the controller of this service
+     * @return The class type of the controller
+     */
+    protected abstract Class<CONTROLLER> getControllerClass();
 
     /**
      * Callback of creating a service
@@ -33,6 +45,21 @@ public abstract class MvcService extends Service{
     @Override
     public void onCreate() {
         super.onCreate();
+
+        if (getControllerClass() == null) {
+            throw new IllegalArgumentException("Must specify the controller class type for " +
+                    "fragment " + this.getClass().getName());
+        }
+
+        try {
+            controller = Mvc.graph().reference(getControllerClass(), null);
+        } catch (PokeException e) {
+            throw new IllegalArgumentException("Unable to find controller "
+                    + getControllerClass().getName() + ". Either create a controller with " +
+                    "default constructor or register it to Mvc.graph().getRootComponent()");
+        }
+
+        controller.view = this;
 
         Mvc.graph().inject(this);
 
@@ -49,6 +76,15 @@ public abstract class MvcService extends Service{
         super.onDestroy();
         eventRegister.unregisterEventBuses();
         eventRegister.onDestroy();
+
+        try {
+            Mvc.graph().dereference(controller, getControllerClass(), null);
+        } catch (ProviderMissingException e) {
+            //should never happen
+            Logger logger = LoggerFactory.getLogger(getClass());
+            logger.warn("Failed to dereference controller " + getControllerClass().getName(), e);
+        }
+
         Mvc.graph().release(this);
     }
 

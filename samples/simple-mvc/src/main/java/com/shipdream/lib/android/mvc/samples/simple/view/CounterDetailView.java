@@ -24,13 +24,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.R;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.view.service.CountService;
 
-public class CounterDetailView extends MvcFragment<CounterDetailController> implements CounterDetailController.View{
+public class CounterDetailView extends AbstractFragment<CounterDetailController> {
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;
@@ -85,8 +84,6 @@ public class CounterDetailView extends MvcFragment<CounterDetailController> impl
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-
-        controller.view = this;
 
         display = (TextView) view.findViewById(R.id.fragment_b_counterDisplay);
         increment = (Button) view.findViewById(R.id.fragment_b_buttonIncrement);
@@ -148,7 +145,7 @@ public class CounterDetailView extends MvcFragment<CounterDetailController> impl
     }
 
     @Override
-    public void onCounterUpdated(int count, String countInEnglish) {
+    public void update() {
         updateCountDisplay(controller.getCount());
     }
 

@@ -22,17 +22,12 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 
-import com.shipdream.lib.android.mvc.samples.simple.R;
-import com.shipdream.lib.android.mvc.samples.simple.MainActivity;
-import com.shipdream.lib.android.mvc.samples.simple.controller.CounterServiceController;
 import com.shipdream.lib.android.mvc.MvcService;
+import com.shipdream.lib.android.mvc.samples.simple.MainActivity;
+import com.shipdream.lib.android.mvc.samples.simple.R;
+import com.shipdream.lib.android.mvc.samples.simple.controller.CounterServiceController;
 
-import javax.inject.Inject;
-
-public class CountService extends MvcService implements CounterServiceController.View{
-    @Inject
-    private CounterServiceController presenter;
-
+public class CountService extends MvcService<CounterServiceController> implements CounterServiceController.View{
     private final static int NOTIFICATION_ID = 0;
 
     private NotificationManager notificationManager;
@@ -43,17 +38,20 @@ public class CountService extends MvcService implements CounterServiceController
     }
 
     @Override
+    protected Class<CounterServiceController> getControllerClass() {
+        return CounterServiceController.class;
+    }
+
+    @Override
     public void onCreate() {
         super.onCreate();
-        presenter.view = this;
-
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        presenter.stopAutoIncrement();
+        controller.stopAutoIncrement();
         notificationManager.cancel(NOTIFICATION_ID);
     }
 
@@ -64,7 +62,7 @@ public class CountService extends MvcService implements CounterServiceController
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        presenter.startAutoIncrement();
+        controller.startAutoIncrement();
         return START_NOT_STICKY;
     }
 
@@ -82,13 +80,12 @@ public class CountService extends MvcService implements CounterServiceController
     }
 
     @Override
-    public void onCounterUpdated(int count) {
-        updateNotification(count);
-    }
-
-    @Override
     public void counterFinished() {
         stopSelf();
     }
 
+    @Override
+    public void update() {
+        updateNotification(controller.getCount());
+    }
 }

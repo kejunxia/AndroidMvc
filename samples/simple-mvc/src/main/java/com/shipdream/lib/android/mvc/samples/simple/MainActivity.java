@@ -48,5 +48,9 @@ public class MainActivity extends MvcActivity {
         protected Class getControllerClass() {
             return EntryController.class;
         }
+
+        @Override
+        public void update() {
+        }
     }
 }

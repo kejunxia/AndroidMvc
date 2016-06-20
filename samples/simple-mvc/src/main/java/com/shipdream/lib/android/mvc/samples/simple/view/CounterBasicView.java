@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.R;
@@ -13,7 +12,8 @@ import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicContr
 
 import javax.inject.Inject;
 
-public class CounterBasicView extends MvcFragment<CounterBasicController> implements CounterBasicController.View {
+public class CounterBasicView extends AbstractFragment<CounterBasicController> {
+
     @Inject
     private NavigationManager navigationManager;
 
@@ -48,8 +48,6 @@ public class CounterBasicView extends MvcFragment<CounterBasicController> implem
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
 
-        controller.view = this;
-
         display = (TextView) view.findViewById(R.id.fragment_a_counterDisplay);
         increment = (Button) view.findViewById(R.id.fragment_a_buttonIncrement);
         decrement = (Button) view.findViewById(R.id.fragment_a_buttonDecrement);
@@ -82,34 +80,17 @@ public class CounterBasicView extends MvcFragment<CounterBasicController> implem
         });
 
         if (reason.isFirstTime()) {
-            CounterSubView f = new CounterSubView();
+            CounterBasicEmbbedView f = new CounterBasicEmbbedView();
 
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();
         }
-
-        updateCountDisplay(controller.getCount());
     }
 
-    /**
-     * Callback when the fragment is popped out by back navigation
-     */
-    @Override
-    protected void onPoppedOutToFront() {
-        super.onPoppedOutToFront();
-        updateCountDisplay(controller.getCount());
-    }
-
-    /**
-     * Update the text view of count number
-     * @param count The number of count
-     */
-    private void updateCountDisplay(int count) {
-        display.setText(String.valueOf(count));
-    }
 
     @Override
-    public void onCounterUpdated(int count, String countInEnglish) {
-        updateCountDisplay(count);
+    public void update() {
+        display.setText(controller.getModel().getCount());
     }
+
 }

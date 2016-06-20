@@ -1,11 +1,10 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
-import com.shipdream.lib.android.mvc.Controller;
 
 import javax.inject.Inject;
 
-public class EntryController extends Controller {
+public class EntryController extends AbstractController {
     @Inject
     private NavigationManager navigationManager;
 

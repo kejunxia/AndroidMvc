@@ -4,18 +4,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.R;
-import com.shipdream.lib.android.mvc.samples.simple.controller.CounterSubViewController;
+import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicEmbeddedController;
 
-public class CounterSubView extends MvcFragment<CounterSubViewController>
-        implements CounterSubViewController.View {
+public class CounterBasicEmbbedView extends AbstractFragment<CounterBasicEmbeddedController> {
     private TextView txtCountInEnglish;
 
     @Override
-    protected Class<CounterSubViewController> getControllerClass() {
-        return CounterSubViewController.class;
+    protected Class<CounterBasicEmbeddedController> getControllerClass() {
+        return CounterBasicEmbeddedController.class;
     }
 
     @Override
@@ -27,19 +25,11 @@ public class CounterSubView extends MvcFragment<CounterSubViewController>
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
 
-        controller.view = this;
-
         txtCountInEnglish = (TextView) view.findViewById(R.id.fragment_a_sub_countInEnglish);
     }
 
     @Override
-    protected void onPoppedOutToFront() {
-        super.onPoppedOutToFront();
-        controller.updateText();
-    }
-
-    @Override
-    public void onCounterUpdated(String countInEnglish) {
-        txtCountInEnglish.setText(countInEnglish);
+    public void update() {
+        txtCountInEnglish.setText(controller.getCountInEnglish());
     }
 }
