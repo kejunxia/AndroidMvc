@@ -1,18 +1,19 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.samples.simple.manager.CounterManager;
 import com.shipdream.lib.android.mvc.samples.simple.service.Poster;
 
 import javax.inject.Inject;
 
-public class CounterServiceController extends AbstractController {
+public class CounterServiceController extends AbstractController<Void, CounterServiceController.View> {
     @Override
     public Class modelType() {
         return null;
     }
 
-    public interface View {
+    public interface View extends UiView{
         void counterFinished();
     }
 
@@ -28,7 +29,7 @@ public class CounterServiceController extends AbstractController {
 
                     poster.postDelayed(this, 1000);
                 } else {
-//                    view.counterFinished();
+                    view.counterFinished();
                 }
             }
         }

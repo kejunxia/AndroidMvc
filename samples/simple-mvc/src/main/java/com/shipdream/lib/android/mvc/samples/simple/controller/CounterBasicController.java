@@ -1,11 +1,12 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller;
 
+import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.simple.manager.CounterManager;
 
 import javax.inject.Inject;
 
-public class CounterBasicController extends AbstractController<CounterBasicController.Model> {
+public class CounterBasicController extends AbstractController<CounterBasicController.Model, UiView> {
     @Override
     public Class<Model> modelType() {
         return Model.class;

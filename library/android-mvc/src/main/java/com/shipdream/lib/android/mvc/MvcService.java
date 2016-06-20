@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * Android service can be thought as a kind of view sitting on top and driven by controller which
  * manage the state of the app.
  */
-public abstract class MvcService<CONTROLLER extends Controller> extends Service implements View{
+public abstract class MvcService<CONTROLLER extends Controller> extends Service implements UiView {
     private EventRegister eventRegister;
     protected CONTROLLER controller;
 
@@ -60,6 +60,7 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
         }
 
         controller.view = this;
+        controller.onCreated();
 
         Mvc.graph().inject(this);
 
@@ -76,6 +77,7 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
         super.onDestroy();
         eventRegister.unregisterEventBuses();
         eventRegister.onDestroy();
+        controller.onDestroy();
 
         try {
             Mvc.graph().dereference(controller, getControllerClass(), null);

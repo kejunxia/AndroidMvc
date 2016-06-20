@@ -56,7 +56,7 @@ import javax.inject.Inject;
  * action after the first {@link #onViewReady(android.view.View, Bundle, Reason)} lifecycle of the fragment
  * </p>
  */
-public abstract class MvcFragment<CONTROLLER extends Controller> extends Fragment implements View {
+public abstract class MvcFragment<CONTROLLER extends FragmentController> extends Fragment implements UiView {
     private final static String STATE_LAST_ORIENTATION = MvcActivity.STATE_PREFIX + "LastOrientation--__";
     private EventRegister eventRegister;
     private CopyOnWriteArrayList<Runnable> onViewReadyListeners;

@@ -22,7 +22,7 @@ public abstract class Bean<MODEL> {
     private MODEL model;
 
     /**
-     * Bind model to MvcBean
+     * Bind model to Bean
      * @param model non-null model
      * @throws IllegalArgumentException thrown when null is being bound
      */
@@ -35,11 +35,11 @@ public abstract class Bean<MODEL> {
     }
 
     /**
-     * Called when the MvcBean is injected for the first time or restored when a new instance of
-     * this MvcBean needs to be instantiated.
+     * Called when the Bean is injected for the first time or restored when a new instance of
+     * this Bean needs to be instantiated.
      *
-     * <p>The model of the MvcBean will be instantiated by model's default no-argument constructor.
-     * However, if the MvcBean needs to be restored, a new instance of model restored by
+     * <p>The model of the Bean will be instantiated by model's default no-argument constructor.
+     * However, if the Bean needs to be restored, a new instance of model restored by
      * {@link #restoreModel(Object)} will replace the model created by this method.</p>
      */
     public void onCreated() {
@@ -61,15 +61,15 @@ public abstract class Bean<MODEL> {
     }
 
     /**
-     * Called when the MvcBean is disposed. This occurs when the MvcBean is de-referenced and
+     * Called when the Bean is disposed. This occurs when the Bean is de-referenced and
      * not retained by any other objects.
      */
     public void onDestroy() {
     }
 
     /**
-     * Model represents the state of this MvcBean.
-     * @return Null if the MvcBean doesn't need to get its model saved and restored automatically.
+     * Model represents the state of this Bean.
+     * @return Null if the Bean doesn't need to get its model saved and restored automatically.
      */
     public MODEL getModel() {
         return model;
@@ -78,20 +78,20 @@ public abstract class Bean<MODEL> {
     /**
      * Provides the type class of the model.
      * @return Implementing class should return the type class of the model that will be used by
-     * this MvcBean to instantiate its model in {@link #onCreated()} and restores model in
-     * {@link #restoreModel(Object)}. Returning null is allowed which means this MvcBean doesn't
+     * this Bean to instantiate its model in {@link #onCreated()} and restores model in
+     * {@link #restoreModel(Object)}. Returning null is allowed which means this Bean doesn't
      * have a model needs to be automatically saved and restored.
      */
     public abstract Class<MODEL> modelType();
 
     /**
-     * Restores the model of this MvcBean.
+     * Restores the model of this Bean.
      * <p>
      * Note that when {@link #modelType()} returns null, this method will have no effect.
      * </p>
      *
      * @param restoredModel The restored model by {@link StateKeeper} that will be rebound to the
-     *                      MvcBean.
+     *                      Bean.
      */
     public void restoreModel(MODEL restoredModel) {
         if (modelType() != null) {

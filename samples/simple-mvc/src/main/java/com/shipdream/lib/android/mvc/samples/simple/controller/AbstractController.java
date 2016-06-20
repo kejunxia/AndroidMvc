@@ -1,6 +1,8 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.UiView;
 
-public abstract class AbstractController<MODEL> extends Controller<MODEL> {
+public abstract class AbstractController<MODEL, VIEW extends UiView>
+        extends FragmentController<MODEL, VIEW> {
 }

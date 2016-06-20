@@ -29,7 +29,8 @@ import com.shipdream.lib.android.mvc.samples.simple.R;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.view.service.CountService;
 
-public class CounterDetailView extends AbstractFragment<CounterDetailController> {
+public class CounterDetailView extends AbstractFragment<CounterDetailController>
+        implements CounterDetailController.View{
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;
@@ -173,7 +174,12 @@ public class CounterDetailView extends AbstractFragment<CounterDetailController>
         }
     }
 
-    private void updateCountDisplay(int count) {
-        display.setText(String.valueOf(count));
+    @Override
+    public void onCounterUpdated(String count) {
+        updateCountDisplay(count);
+    }
+
+    private void updateCountDisplay(String count) {
+        display.setText(count);
     }
 }
