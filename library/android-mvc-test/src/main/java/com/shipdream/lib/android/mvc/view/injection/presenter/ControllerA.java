@@ -17,11 +17,12 @@
 package com.shipdream.lib.android.mvc.view.injection.presenter;
 
 import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControllerA extends Controller<ControllerA.Model> {
+public class ControllerA extends Controller<ControllerA.Model, UiView> {
     public static class Model {
         private List<String> tags;
 

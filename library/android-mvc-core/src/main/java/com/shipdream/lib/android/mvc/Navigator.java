@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -49,7 +48,7 @@ public class Navigator {
     private final Object sender;
     private OnSettled onSettled;
     private NavigationManager navigationManager;
-    private BaseEventC navigateEvent;
+    private Object navigateEvent;
     private List<PendingReleaseInstance> pendingReleaseInstances;
 
     /**
@@ -191,7 +190,7 @@ public class Navigator {
 
     /**
      * Navigate to the location represented by the presenter. Navigation only takes effect when the
-     * given locationId is different from the current location and raises {@link NavigationManager.Event2C.OnLocationForward}
+     * given locationId is different from the current location and raises {@link NavigationManager.Event.OnLocationForward}
      * <p/>
      * <p>
      * To set argument for the next location navigating to, use {@link #with(Class, Annotation, com.shipdream.lib.android.mvc.Preparer)}
@@ -207,7 +206,7 @@ public class Navigator {
 
     /**
      * Navigate to the location represented by the presenter. Navigation only takes effect when the
-     * given locationId is different from the current location and raises {@link NavigationManager.Event2C.OnLocationForward}
+     * given locationId is different from the current location and raises {@link NavigationManager.Event.OnLocationForward}
      * <p/>
      * <p>
      * To set argument for the next location navigating to, use {@link #with(Class, Annotation, com.shipdream.lib.android.mvc.Preparer)}
@@ -290,14 +289,14 @@ public class Navigator {
 
             navigationManager.getModel().setCurrentLocation(currentLoc);
 
-            navigateEvent = new NavigationManager.Event2C.OnLocationForward(sender, lastLoc,
+            navigateEvent = new NavigationManager.Event.OnLocationForward(sender, lastLoc,
                     currentLoc, clearTop, clearedTopToLocation, this);
         }
     }
 
     /**
      * Navigates one step back. If current location is null it doesn't take any effect otherwise
-     * raises a {@link NavigationManager.Event2C.OnLocationBack} event when there is a previous
+     * raises a {@link NavigationManager.Event.OnLocationBack} event when there is a previous
      * location.
      */
     public void back() {
@@ -314,7 +313,7 @@ public class Navigator {
 
         navigationManager.getModel().setCurrentLocation(previousLoc);
 
-        navigateEvent = new NavigationManager.Event2C.OnLocationBack(sender, currentLoc, previousLoc, false, this);
+        navigateEvent = new NavigationManager.Event.OnLocationBack(sender, currentLoc, previousLoc, false, this);
         go();
     }
 
@@ -322,7 +321,7 @@ public class Navigator {
      * Navigates back. If current location is null it doesn't take any effect. When presenterClass
      * is null, navigate to the very first location and clear all history prior to it, otherwise
      * navigate to location with given locationId and clear history prior to it. Then a
-     * {@link NavigationManager.Event2C.OnLocationBack} event will be raised.
+     * {@link NavigationManager.Event.OnLocationBack} event will be raised.
      *
      * @param presenterClass the presenter class type
      */
@@ -361,7 +360,7 @@ public class Navigator {
         }
         if (success) {
             navigationManager.getModel().setCurrentLocation(currentLoc);
-            navigateEvent = new NavigationManager.Event2C.OnLocationBack(sender, previousLoc, currentLoc, true, this);
+            navigateEvent = new NavigationManager.Event.OnLocationBack(sender, previousLoc, currentLoc, true, this);
         }
         go();
     }
@@ -386,8 +385,8 @@ public class Navigator {
             navigationManager.postEvent2C(navigateEvent);
 
             if (navigationManager.logger.isTraceEnabled()) {
-                if (navigateEvent instanceof NavigationManager.Event2C.OnLocationForward) {
-                    NavigationManager.Event2C.OnLocationForward event = (NavigationManager.Event2C.OnLocationForward) navigateEvent;
+                if (navigateEvent instanceof NavigationManager.Event.OnLocationForward) {
+                    NavigationManager.Event.OnLocationForward event = (NavigationManager.Event.OnLocationForward) navigateEvent;
                     String lastLocId = event.getLastValue() == null ? null
                             : event.getLastValue().getLocationId();
                     navigationManager.logger.trace("Nav Manager: Forward: {} -> {}", lastLocId,
@@ -395,9 +394,9 @@ public class Navigator {
                 }
             }
 
-            if (navigateEvent instanceof NavigationManager.Event2C.OnLocationBack) {
+            if (navigateEvent instanceof NavigationManager.Event.OnLocationBack) {
                 if (navigationManager.logger.isTraceEnabled()) {
-                    NavigationManager.Event2C.OnLocationBack event = (NavigationManager.Event2C.OnLocationBack) navigateEvent;
+                    NavigationManager.Event.OnLocationBack event = (NavigationManager.Event.OnLocationBack) navigateEvent;
                     NavLocation lastLoc = event.getLastValue();
                     NavLocation currentLoc = event.getCurrentValue();
                     navigationManager.logger.trace("Nav Manager: Backward: {} -> {}",
@@ -440,7 +439,7 @@ public class Navigator {
     private void checkAppExit(Object sender) {
         NavLocation curLocation = navigationManager.getModel().getCurrentLocation();
         if (curLocation == null) {
-            navigationManager.postEvent2C(new NavigationManager.Event2C.OnAppExit(sender));
+            navigationManager.postEvent2C(new NavigationManager.Event.OnAppExit(sender));
         }
     }
 

@@ -17,11 +17,12 @@
 package com.shipdream.lib.android.mvc.inject.testNameMapping.controller;
 
 import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.inject.testNameMapping.manager.InkManager;
 
 import javax.inject.Inject;
 
-public class PrinterController2 extends Controller<PrintModel> {
+public class PrinterController2 extends Controller<PrintModel, UiView> {
     @Inject
     private InkManager inkManager;
 

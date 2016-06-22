@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.poke.Graph;
@@ -36,7 +35,7 @@ public class TestManagerImpl extends BaseTest {
     public void should_not_crash_when_manager_post_event_even_without_registering_controller_event_bus() {
         class MyManager extends com.shipdream.lib.android.mvc.Manager {
             void doPost(){
-                postEvent2C(mock(BaseEventC.class));
+                postEvent2C(mock(Object.class));
             }
 
             @Override
@@ -53,10 +52,8 @@ public class TestManagerImpl extends BaseTest {
     @Test
     public void should_be_able_to_post_events_to_controller_event_bus_from_manager()
             throws ProvideException, ProviderConflictException, Graph.IllegalRootComponentException {
-        class MyEvent extends BaseEventC{
-            public MyEvent(Object sender) {
-                super(sender);
-            }
+        class MyEvent{
+            public MyEvent() { }
         }
 
         final MyEvent myEvent = mock(MyEvent.class);

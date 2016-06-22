@@ -71,7 +71,7 @@ public class TestBaseImpl extends BaseTest {
         private PrivateModel() {}
     }
 
-    class BadController extends Controller<PrivateModel> {
+    class BadController extends Controller<PrivateModel, UiView> {
         @Override
         public Class<PrivateModel> modelType() {
             return PrivateModel.class;

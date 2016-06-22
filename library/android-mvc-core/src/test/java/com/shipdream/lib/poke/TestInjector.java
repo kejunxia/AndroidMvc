@@ -29,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
 import javax.inject.Inject;
@@ -62,7 +63,8 @@ public class TestInjector {
     }
 
     private int getGraphSize() {
-        return graph.getRootComponent().getCache();
+        Map<String, Object> cache = graph.getRootComponent().getCache();
+        return cache == null ? 0 :cache.size();
     }
     
     @Test

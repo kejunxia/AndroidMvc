@@ -16,13 +16,10 @@
 
 package com.shipdream.lib.android.mvc.view.event2v;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV;
-
 public interface Events {
-    abstract class OnTextChanged extends BaseEventV {
+    abstract class OnTextChanged {
         private final String text;
-        protected OnTextChanged(Object sender, String text) {
-            super(sender);
+        protected OnTextChanged(String text) {
             this.text = text;
         }
 
@@ -32,14 +29,14 @@ public interface Events {
     }
 
     class OnFragmentTextChanged extends OnTextChanged {
-        protected OnFragmentTextChanged(Object sender, String text) {
-            super(sender, text);
+        protected OnFragmentTextChanged(String text) {
+            super(text);
         }
     }
 
     class OnDialogButtonChanged extends OnTextChanged {
-        protected OnDialogButtonChanged(Object sender, String text) {
-            super(sender, text);
+        protected OnDialogButtonChanged(String text) {
+            super(text);
         }
     }
 

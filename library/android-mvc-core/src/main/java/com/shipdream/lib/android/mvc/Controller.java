@@ -1,6 +1,5 @@
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
@@ -210,7 +209,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * and run on UI thread of Android
      * @param eventV The event
      */
-    protected void postEvent(final BaseEventV eventV) {
+    protected void postEvent(final Object eventV) {
         if (uiThreadRunner.isOnUiThread()) {
             eventBus2V.post(eventV);
         } else {

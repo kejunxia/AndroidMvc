@@ -26,10 +26,6 @@ public class CounterBasicController extends AbstractController<CounterBasicContr
     @Inject
     private CounterManager counterManager;
 
-    public int getCount() {
-        return counterManager.getModel().getCount();
-    }
-
     public void increment(Object sender) {
         int count = counterManager.getModel().getCount();
         counterManager.setCount(sender, ++count);

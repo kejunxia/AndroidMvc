@@ -25,6 +25,8 @@ import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Navigator;
+import com.shipdream.lib.android.mvc.Reason;
+import com.shipdream.lib.android.mvc.view.event2v.controller.V2VHomeController;
 import com.shipdream.lib.android.mvc.view.event2v.controller.V2VTestController;
 
 import javax.inject.Inject;
@@ -52,7 +54,7 @@ public class EventBusV2VActivity extends MvcActivity {
         return HomeFragment.class;
     }
 
-    public static class HomeFragment extends DelegateFragment {
+    public static class HomeFragment extends DelegateFragment<V2VHomeController> {
         @Inject
         private NavigationManager navigationManager;
 
@@ -61,6 +63,11 @@ public class EventBusV2VActivity extends MvcActivity {
         @Override
         protected void onStartUp() {
             navigationManager.navigate(this).to(V2VTestController.class, new Forwarder().clearAll());
+        }
+
+        @Override
+        protected Class<V2VHomeController> getControllerClass() {
+            return V2VHomeController.class;
         }
 
         @Override
@@ -78,6 +85,11 @@ public class EventBusV2VActivity extends MvcActivity {
         public void onViewStateRestored(Bundle savedInstanceState) {
             onViewStateRestoredCalled = true;
             super.onViewStateRestored(savedInstanceState);
+        }
+
+        @Override
+        public void update() {
+
         }
     }
 

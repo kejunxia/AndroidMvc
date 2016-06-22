@@ -47,9 +47,6 @@ public class TestOverridesControllerImpl extends BaseTest {
         public Class<PrintModel> modelType() {
             return null;
         }
-        @Override
-        public void bindModel(Object sender, PrintModel printModel) {
-        }
     }
 
     public static class PrinterModule  {
@@ -96,7 +93,7 @@ public class TestOverridesControllerImpl extends BaseTest {
         Assert.assertEquals(testView1.printController.getClass(), PrintController.class);
         PrintModel printModel = new PrintModel();
         printModel.setContent("Hello Poke");
-        testView1.printController.bindModel(this, printModel);
+        testView1.printController.bindModel(printModel);
         Assert.assertEquals(testView1.printController.print(), testView1.printController.getModel().getContent());
     }
 

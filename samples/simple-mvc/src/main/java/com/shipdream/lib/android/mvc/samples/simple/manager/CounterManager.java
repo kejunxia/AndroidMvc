@@ -1,7 +1,5 @@
 package com.shipdream.lib.android.mvc.samples.simple.manager;
 
-import com.shipdream.lib.android.mvc.event.BaseEventC;
-
 import com.shipdream.lib.android.mvc.Manager;
 
 public class CounterManager extends Manager<CounterManager.CounterModel> {
@@ -13,10 +11,9 @@ public class CounterManager extends Manager<CounterManager.CounterModel> {
         /**
          * Event2C to notify views counter has been updated
          */
-        class OnCounterUpdated extends BaseEventC {
+        class OnCounterUpdated {
             private final int count;
-            public OnCounterUpdated(Object sender, int count) {
-                super(sender);
+            public OnCounterUpdated(int count) {
                 this.count = count;
             }
 
@@ -48,7 +45,7 @@ public class CounterManager extends Manager<CounterManager.CounterModel> {
 
     public void setCount(Object sender, int count) {
         getModel().setCount(count);
-        postEvent2C(new Event2C.OnCounterUpdated(sender, count));
+        postEvent2C(new Event2C.OnCounterUpdated(count));
     }
 
     public String convertNumberToEnglish(int number) {

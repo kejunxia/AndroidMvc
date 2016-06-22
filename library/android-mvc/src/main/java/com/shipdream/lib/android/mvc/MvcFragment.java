@@ -23,7 +23,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -447,7 +446,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      *
      * @param event
      */
-    protected void postEvent2V(BaseEventV event) {
+    protected void postEvent2V(Object event) {
         eventRegister.postEvent2V(event);
     }
 

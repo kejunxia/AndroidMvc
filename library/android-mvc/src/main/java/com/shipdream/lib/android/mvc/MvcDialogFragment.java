@@ -21,8 +21,6 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV;
-
 /**
  * This dialog fragment can either use {@link AlertDialog.Builder} to build a alert dialog or use
  * {@link MvcFragment} as an nested fragment for custom view dialog, as a result the underlying
@@ -77,10 +75,10 @@ public class MvcDialogFragment extends DialogFragment {
 
     /**
      * Handy method to post an event to other views directly. However, when possible, it's
-     * recommended to post events from controllers to views.
+     * recommended to post events from controllers to views to keep views' logic simple.
      * @param event
      */
-    protected void postEvent2V(BaseEventV event) {
+    protected void postEvent2V(Object event) {
         eventRegister.postEvent2V(event);
     }
 

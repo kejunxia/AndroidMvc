@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.event;
+package com.shipdream.lib.android.mvc.view.event2v.controller;
 
-/**
- * Base event from controllers to views.
- */
-public abstract class BaseEventV extends BaseEvent{
-    /**
-     * Construct a view event
-     * @param sender Who initially sent the request that triggers this event
-     */
-    public BaseEventV(Object sender) {
-        super(sender);
+import com.shipdream.lib.android.mvc.FragmentController;
+
+public class V2VHomeController extends FragmentController {
+    @Override
+    public Class modelType() {
+        return null;
     }
 }

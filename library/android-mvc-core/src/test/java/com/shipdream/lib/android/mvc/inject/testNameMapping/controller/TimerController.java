@@ -17,8 +17,9 @@
 package com.shipdream.lib.android.mvc.inject.testNameMapping.controller;
 
 import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 
-public class TimerController extends Controller<TimerModel> {
+public class TimerController extends Controller<TimerModel, UiView> {
     @Override
     public Class<TimerModel> modelType() {
         return TimerModel.class;

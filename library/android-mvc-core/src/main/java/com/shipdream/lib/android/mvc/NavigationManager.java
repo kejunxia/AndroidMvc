@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvc;
 
-import com.shipdream.lib.android.mvc.event.BaseEventC;
+import com.shipdream.lib.android.mvc.event.ValueChangeEvent;
 
 /**
  * Controller to navigate among different fragments in the SAME activity.
@@ -37,11 +37,12 @@ public class NavigationManager extends Manager<NavigationManager.Model> {
         }
     }
 
-    public interface Event2C {
+    public interface Event {
         /**
          * Event2C to notify views navigation will move forward.
          */
-        class OnLocationForward extends com.shipdream.lib.android.mvc.event.ValueChangeEventC<NavLocation> {
+        class OnLocationForward extends ValueChangeEvent<NavLocation> {
+            private final Object sender;
             private final Navigator navigator;
             private final boolean clearHistory;
             private final NavLocation locationWhereHistoryClearedUpTo;
@@ -57,10 +58,19 @@ public class NavigationManager extends Manager<NavigationManager.Model> {
             public OnLocationForward(Object sender, NavLocation lastValue, NavLocation currentValue,
                                      boolean clearHistory, NavLocation locationWhereHistoryClearedUpTo,
                                      Navigator navigator) {
-                super(sender, lastValue, currentValue);
+                super(lastValue, currentValue);
+                this.sender = sender;
                 this.clearHistory = clearHistory;
                 this.locationWhereHistoryClearedUpTo = locationWhereHistoryClearedUpTo;
                 this.navigator = navigator;
+            }
+
+            /**
+             * Who causes this event.
+             * @return
+             */
+            public Object getSender() {
+                return sender;
             }
 
             /**
@@ -92,15 +102,25 @@ public class NavigationManager extends Manager<NavigationManager.Model> {
         /**
          * Event2C to notify views navigation will move backward.
          */
-        class OnLocationBack extends com.shipdream.lib.android.mvc.event.ValueChangeEventC<NavLocation> {
+        class OnLocationBack extends ValueChangeEvent<NavLocation> {
+            private final Object sender;
             private final Navigator navigator;
             private final boolean fastRewind;
 
             public OnLocationBack(Object sender, NavLocation lastValue, NavLocation currentValue,
                                   boolean fastRewind, Navigator navigator) {
-                super(sender, lastValue, currentValue);
+                super(lastValue, currentValue);
+                this.sender = sender;
                 this.fastRewind = fastRewind;
                 this.navigator = navigator;
+            }
+
+            /**
+             * Who causes this event.
+             * @return
+             */
+            public Object getSender() {
+                return sender;
             }
 
             /**
@@ -120,15 +140,20 @@ public class NavigationManager extends Manager<NavigationManager.Model> {
         }
 
         /**
-         * Event2C to notify the controllers the app exists, for example by back button. Be aware, this
+         * Fired when navigates away from the last item in the navigation history. Be aware, this
          * doesn't mean the process of the application is killed but only all navigable fragments
          * and their containing activity are destroyed since there might be services still running.
          *
-         * <p><b>This is a good point to notify controllers to clear the their state.</b></p>
+         * <p><b>The references of fragment controllers should be all cleared. However the services
+         * may still hold some controllers</b></p>
          */
-        class OnAppExit extends BaseEventC {
+        class OnAppExit {
+            private final Object sender;
             public OnAppExit(Object sender) {
-                super(sender);
+                this.sender = sender;
+            }
+            public Object getSender() {
+                return sender;
             }
         }
     }

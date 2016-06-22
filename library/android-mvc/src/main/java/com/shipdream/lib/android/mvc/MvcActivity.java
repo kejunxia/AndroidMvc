@@ -25,7 +25,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import org.slf4j.Logger;
@@ -134,7 +133,7 @@ public abstract class MvcActivity extends AppCompatActivity {
      *
      * @param event The event to views
      */
-    protected void postEvent2V(BaseEventV event) {
+    protected void postEvent2V(Object event) {
         eventRegister.postEvent2V(event);
     }
     /**
@@ -152,7 +151,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         private DelegateFragment delegateFragment;
 
-        private void onEvent(final NavigationManager.Event2C.OnLocationForward event) {
+        private void onEvent(final NavigationManager.Event.OnLocationForward event) {
             uiThreadRunner.run(new Runnable() {
                 @Override
                 public void run() {
@@ -161,7 +160,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             });
         }
 
-        private void onEvent(final NavigationManager.Event2C.OnLocationBack event) {
+        private void onEvent(final NavigationManager.Event.OnLocationBack event) {
             uiThreadRunner.run(new Runnable() {
                 @Override
                 public void run() {
@@ -504,7 +503,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          *
          * @param event The forward navigation event
          */
-        private void handleForwardNavigation(final NavigationManager.Event2C.OnLocationForward event) {
+        private void handleForwardNavigation(final NavigationManager.Event.OnLocationForward event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -539,7 +538,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         @SuppressWarnings("unchecked")
-        private void performForwardNav(final NavigationManager.Event2C.OnLocationForward event) {
+        private void performForwardNav(final NavigationManager.Event.OnLocationForward event) {
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
             FragmentManager fm = childFragmentManager();
 
@@ -638,7 +637,7 @@ public abstract class MvcActivity extends AppCompatActivity {
          *
          * @param event The backward navigation event
          */
-        private void handleBackNavigation(final NavigationManager.Event2C.OnLocationBack event) {
+        private void handleBackNavigation(final NavigationManager.Event.OnLocationBack event) {
             if (!canCommitFragmentTransaction) {
                 pendingNavActions.add(new Runnable() {
                     @Override
@@ -651,7 +650,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
         }
 
-        private void performBackNav(final NavigationManager.Event2C.OnLocationBack event) {
+        private void performBackNav(final NavigationManager.Event.OnLocationBack event) {
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
                 destroyNavigator(event.getNavigator());

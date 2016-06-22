@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvc.controller;
 
 import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Task;
-import com.shipdream.lib.android.mvc.event.BaseEventV;
 
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -157,18 +156,5 @@ public class MyController extends Controller {
                         view.onResourceCancelled();
                     }
                 });
-    }
-
-    public static class ResourceLoadFailed extends BaseEventV {
-        private final Exception exception;
-
-        public ResourceLoadFailed(Object sender, Exception exception) {
-            super(sender);
-            this.exception = exception;
-        }
-
-        public Exception getException() {
-            return exception;
-        }
     }
 }

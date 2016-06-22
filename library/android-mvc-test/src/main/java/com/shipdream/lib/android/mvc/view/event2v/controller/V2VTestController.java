@@ -16,37 +16,20 @@
 
 package com.shipdream.lib.android.mvc.view.event2v.controller;
 
-import com.shipdream.lib.android.mvc.Controller;
-import com.shipdream.lib.android.mvc.event.BaseEventV;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.UiView;
 
-public class V2VTestController extends Controller {
-    public interface View {
+public class V2VTestController extends FragmentController<Void, V2VTestController.View> {
+    public interface View extends UiView{
         void updateDialogButton(String text);
     }
-
-    interface EventC2V {
-        class OnButtonUpdated extends BaseEventV {
-            private final String text;
-
-            public OnButtonUpdated(Object sender, String text) {
-                super(sender);
-                this.text = text;
-            }
-
-            public String getText() {
-                return text;
-            }
-        }
-    }
-
-    public View view;
 
     @Override
     public Class modelType() {
         return null;
     }
 
-    public void updateDialogButton(Object sender, String text) {
+    public void updateDialogButton(String text) {
         view.updateDialogButton(text);
     }
 }

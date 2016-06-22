@@ -19,7 +19,6 @@ package com.shipdream.lib.android.mvc;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.poke.Provides;
@@ -126,7 +125,7 @@ class EventRegister {
         Mvc.graph().release(this);
     }
 
-    void postEvent2V(final BaseEventV event) {
+    void postEvent2V(final Object event) {
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             eventBusV.post(event);
         } else {

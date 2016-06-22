@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;

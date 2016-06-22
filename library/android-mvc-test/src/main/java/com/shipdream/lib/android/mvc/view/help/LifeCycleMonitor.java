@@ -19,13 +19,13 @@ package com.shipdream.lib.android.mvc.view.help;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 
 public interface LifeCycleMonitor {
     void onCreate(Bundle savedInstanceState);
     void onCreateView(View rootView, Bundle savedInstanceState);
     void onViewCreated(View rootView, Bundle savedInstanceState);
-    void onViewReady(View rootView, Bundle savedInstanceState, MvcFragment.Reason reason);
+    void onViewReady(View rootView, Bundle savedInstanceState, Reason reason);
     void onResume();
     void onReturnForeground();
     void onPushingToBackStack();

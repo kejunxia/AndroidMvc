@@ -22,18 +22,19 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.event2v.controller.V2VTestController;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-import javax.inject.Inject;
-
-public class EventBusV2VFragment extends MvcFragment implements V2VTestController.View{
+public class EventBusV2VFragment extends MvcFragment<V2VTestController> implements V2VTestController.View{
     private TextView textView;
     private View buttonDialog;
     private View buttonService;
 
-    @Inject
-    V2VTestController presenter;
+    @Override
+    protected Class<V2VTestController> getControllerClass() {
+        return V2VTestController.class;
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -43,8 +44,6 @@ public class EventBusV2VFragment extends MvcFragment implements V2VTestControlle
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-
-        presenter.view = this;
 
         textView = (TextView) view.findViewById(R.id.fragment_mvc_v2v_text);
 
@@ -73,6 +72,11 @@ public class EventBusV2VFragment extends MvcFragment implements V2VTestControlle
 
     @Override
     public void updateDialogButton(String text) {
-        postEvent2V(new Events.OnDialogButtonChanged(this, text));
+        postEvent2V(new Events.OnDialogButtonChanged(text));
+    }
+
+    @Override
+    public void update() {
+
     }
 }

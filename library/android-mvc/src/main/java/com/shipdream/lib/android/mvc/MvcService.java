@@ -18,7 +18,6 @@ package com.shipdream.lib.android.mvc;
 
 import android.app.Service;
 
-import com.shipdream.lib.android.mvc.event.BaseEventV;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -92,10 +91,10 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
 
     /**
      * Handy method to post an event to other views directly. However, when possible, it's
-     * recommended to post events from controllers to views.
+     * recommended to post events from controllers to views to keep views' logic simple.
      * @param event
      */
-    protected void postEvent2V(BaseEventV event) {
+    protected void postEvent2V(Object event) {
         eventRegister.postEvent2V(event);
     }
 }

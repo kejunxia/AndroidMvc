@@ -62,7 +62,7 @@ public class TestV2VEvents extends BaseTestCase<EventBusV2VActivity> {
 
         onView(withId(R.id.fragment_mvc_v2v_dialog_text)).check(matches(withText("Initial Dialog Text")));
 
-        v2VTestPresenter.updateDialogButton(this, "Updated By Under Fragment via V2V event");
+        v2VTestPresenter.updateDialogButton("Updated By Under Fragment via V2V event");
 
         onView(withId(R.id.fragment_mvc_v2v_dialog_text)).check(matches(withText("Updated By Under Fragment via V2V event")));
 

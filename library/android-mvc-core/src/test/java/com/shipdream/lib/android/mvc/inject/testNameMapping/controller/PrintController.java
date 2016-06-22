@@ -17,8 +17,9 @@
 package com.shipdream.lib.android.mvc.inject.testNameMapping.controller;
 
 import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 
-public class PrintController extends Controller<PrintModel> {
+public class PrintController extends Controller<PrintModel, UiView> {
     public String print() {
         return getModel().getContent();
     }

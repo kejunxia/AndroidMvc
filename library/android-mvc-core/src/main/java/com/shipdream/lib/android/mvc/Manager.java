@@ -1,7 +1,6 @@
 package com.shipdream.lib.android.mvc;
 
 
-import com.shipdream.lib.android.mvc.event.BaseEventC;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 
@@ -11,7 +10,8 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 /**
- * Abstract manager to be extended to manage shared presenter logic and data.
+ * Abstract manager to be extended to manage shared presenter logic and data. The manager will listen
+ * to {@link EventBusC}
  * @param <MODEL> The model the manager holds. On Android, models will be automatically
  *               serialized and deserialized by fragments when the manager is injected into a
  *               fragment as a class's field directly or indirectly(held by presenter's field).
@@ -43,11 +43,12 @@ public abstract class Manager<MODEL> extends Bean<MODEL> {
         eventBus2C.unregister(this);
     }
     /**
-     * Post an event to . Event2C will be posted on the same thread as the caller.
+     * Post an event to controllers or other managers on {@link EventBusC}. The event will be posted
+     * on to the same thread as the caller.
      *
      * @param event event to controllers
      */
-    protected void postEvent2C(final BaseEventC event) {
+    protected void postEvent2C(final Object event) {
         if (eventBus2C != null) {
             eventBus2C.post(event);
         } else {
