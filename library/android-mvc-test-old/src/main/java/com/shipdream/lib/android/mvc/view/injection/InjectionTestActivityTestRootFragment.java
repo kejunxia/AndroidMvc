@@ -23,7 +23,7 @@ import com.shipdream.lib.android.mvc.manager.NavigationManager;
 import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
 import com.shipdream.lib.android.mvc.view.MvcActivity;
 import com.shipdream.lib.android.mvc.view.MvcFragment;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
 
 import javax.inject.Inject;

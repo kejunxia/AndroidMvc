@@ -30,6 +30,12 @@ public class NavFragmentD extends NavFragment{
     protected Class<? extends Controller> getNextFragmentLocId() {
         return null;
     }
+
+    @Override
+    protected Class getControllerClass() {
+        return null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,5 +44,10 @@ public class NavFragmentD extends NavFragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 }

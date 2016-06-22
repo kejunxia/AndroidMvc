@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.shipdream.lib.poke.exception.PokeException;
@@ -68,7 +69,14 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
     /**
      *
-     * Specify the controller of this fragment
+     * Specify the class type of the {@link FragmentController} for this fragment. It's recommended
+     * every fragment has a paired controller to deal with the fragment's model and business logic.
+     * If the fragment doesn't need a controller simply returns null and {@link MvcFragment#controller}
+     * will be null. So it this method returns null, be cautious not to use {@link MvcFragment#controller}.
+     *
+     * <p/>
+     * The fragment will instantiate the {@link FragmentController} by this class type. The
+     * instantiated controller will get its fragment lifecycle called automatically by this fragment.
      * @return The class type of the controller
      *
      */
@@ -100,6 +108,16 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
     private void injectDependencies() {
         if (!dependenciesInjected) {
+            if (getControllerClass() != null) {
+                try {
+                    controller = Mvc.graph().reference(getControllerClass(), null);
+                } catch (PokeException e) {
+                    throw new IllegalArgumentException("Unable to find controller "
+                            + getControllerClass().getName() + ". Either create a controller with " +
+                            "default constructor or register it to Mvc.graph().getRootComponent()");
+                }
+            }
+
             Mvc.graph().inject(this);
             dependenciesInjected = true;
         }
@@ -107,6 +125,16 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
     private void releaseDependencies() {
         if (dependenciesInjected) {
+            if (getControllerClass() != null) {
+                try {
+                    Mvc.graph().dereference(controller, getControllerClass(), null);
+                } catch (ProviderMissingException e) {
+                    //should never happen
+                    Logger logger = LoggerFactory.getLogger(getClass());
+                    logger.warn("Failed to dereference controller " + getControllerClass().getName(), e);
+                }
+            }
+
             Mvc.graph().release(this);
             dependenciesInjected = false;
         }
@@ -123,11 +151,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getControllerClass() == null) {
-            throw new IllegalArgumentException("Must specify the controller class type for " +
-                    "fragment " + this.getClass().getName());
-        }
-
         eventRegister = new EventRegister(this);
         eventRegister.onCreate();
 
@@ -141,13 +164,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
             setRetainInstance(true);
         }
 
-        try {
-            controller = Mvc.graph().reference(getControllerClass(), null);
-        } catch (PokeException e) {
-            throw new IllegalArgumentException("Unable to find controller "
-                    + getControllerClass().getName() + ". Either create a controller with " +
-                    "default constructor or register it to Mvc.graph().getRootComponent()");
-        }
         injectDependencies();
     }
 
@@ -163,7 +179,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * @return The view for the fragment
      */
     @Override
-    final public android.view.View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    final public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         injectDependencies();
         return inflater.inflate(getLayoutResId(), container, false);
     }
@@ -203,10 +219,11 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     private void doOnViewCreatedCallBack(android.view.View view, Bundle savedInstanceState, boolean restoring) {
-        controller.view = this;
-
         int currentOrientation = getResources().getConfiguration().orientation;
-        controller.orientation = parseOrientation(currentOrientation);
+        if (controller != null) {
+            controller.view = this;
+            controller.orientation = parseOrientation(currentOrientation);
+        }
 
         boolean orientationChanged = currentOrientation != lastOrientation;
         Reason reason = new Reason();
@@ -252,7 +269,9 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
             }
         }
 
-        controller.onViewReady(reason);
+        if (controller != null) {
+            controller.onViewReady(reason);
+        }
 
         update();
     }
@@ -275,7 +294,9 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     public void onResume() {
         super.onResume();
         checkWhetherReturnFromForeground();
-        controller.onResume();
+        if (controller != null) {
+            controller.onResume();
+        }
     }
 
     private void checkWhetherReturnFromForeground() {
@@ -291,7 +312,9 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * This method is called after {@link #onResume}
      */
     protected void onReturnForeground() {
-        controller.onReturnForeground();
+        if (controller != null) {
+            controller.onReturnForeground();
+        }
     }
 
     /**
@@ -299,7 +322,9 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * back stack.
      */
     protected void onPushingToBackStack() {
-        controller.onPushingToBackground();
+        if (controller != null) {
+            controller.onPushingToBackground();
+        }
     }
 
     /**
@@ -321,7 +346,9 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * invoked after {@link #onViewReady(android.view.View, Bundle, Reason)}.
      */
     protected void onPoppedOutToFront() {
-        controller.onPoppedOutToFront();
+        if (controller != null) {
+            controller.onPoppedOutToFront();
+        }
     }
 
     /**
@@ -331,9 +358,11 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * @param currentOrientation Current orientation
      */
     protected void onOrientationChanged(int lastOrientation, int currentOrientation) {
-        controller.onOrientationChanged(
-                parseOrientation(lastOrientation),
-                parseOrientation(currentOrientation));
+        if (controller != null) {
+            controller.onOrientationChanged(
+                    parseOrientation(lastOrientation),
+                    parseOrientation(currentOrientation));
+        }
     }
 
     private static Orientation parseOrientation(int androidOrientation) {
@@ -350,7 +379,9 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     public void onPause() {
         super.onPause();
         fragmentComesBackFromBackground = true;
-        controller.onPause();
+        if (controller != null) {
+            controller.onPause();
+        }
     }
 
     @Override
@@ -370,14 +401,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        try {
-            Mvc.graph().dereference(controller, getControllerClass(), null);
-        } catch (ProviderMissingException e) {
-            //should never happen
-            Logger logger = LoggerFactory.getLogger(getClass());
-            logger.warn("Failed to dereference controller " + getControllerClass().getName(), e);
-        }
 
         releaseDependencies();
 

@@ -36,7 +36,7 @@ public class MvcComponent extends Component {
                 try {
                     impClass = (Class<T>) Class.forName(getClassName(type));
                 } catch (ClassNotFoundException e) {
-                    String msg = String.format("Can't find implementation class for %s. Make sure class %s exists",
+                    String msg = String.format("Can't find implementation class for %s. Make sure class %s exists, or its implementation is registered to graph's root component",
                             type.getName(), getClassName(type));
                     throw new ProviderMissingException(msg);
                 }
@@ -51,10 +51,10 @@ public class MvcComponent extends Component {
                     || provider.getQualifier() != null) {
                 String msg;
                 if (qualifier == null) {
-                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists",
+                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists, or its implementation is registered to graph's root component",
                             type.getName(), getClassName(type));
                 } else {
-                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists",
+                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists, or its implementation is registered to graph's root component",
                             type.getName(), getClassName(type) + "@" + qualifier.toString());
                 }
                 throw new ProviderMissingException(msg);

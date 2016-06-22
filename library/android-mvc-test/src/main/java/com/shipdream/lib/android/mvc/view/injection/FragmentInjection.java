@@ -28,11 +28,12 @@ import android.widget.TextView;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.NavigationManager;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import java.util.List;

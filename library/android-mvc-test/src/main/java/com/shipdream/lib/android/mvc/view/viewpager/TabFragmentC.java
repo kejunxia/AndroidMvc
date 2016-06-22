@@ -20,12 +20,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.TabControllerC;
 
-public class TabFragmentC extends BaseTabFragment {
+public class TabFragmentC extends BaseTabFragment<TabControllerC> {
     private TextView textView;
+
+    @Override
+    protected Class<TabControllerC> getControllerClass() {
+        return TabControllerC.class;
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -43,5 +50,10 @@ public class TabFragmentC extends BaseTabFragment {
 
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
         textView.setText("Tab C");
+    }
+
+    @Override
+    public void update() {
+
     }
 }

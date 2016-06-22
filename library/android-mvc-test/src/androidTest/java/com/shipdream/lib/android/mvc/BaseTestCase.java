@@ -119,9 +119,9 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
     private Handler handler;
 
     @Before
-    public void setUp() throws Exception {
+    public synchronized void setUp() throws Exception {
         super.setUp();
-
+        Mvc.graph = null;
         try {
             Mvc.graph().getRootComponent().register(new Object() {
                 @Provides
@@ -215,7 +215,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
     }
 
     @After
-    public void tearDown() throws Exception {
+    public synchronized void tearDown() throws Exception {
         if (activity == null) {
             return;
         }
@@ -234,17 +234,15 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         cleanDependencies();
         Mvc.graph().release(this);
 
+        Mvc.graph = null;
+
         activity.runOnUiThread(new Runnable() {
             private void clearStateOfFragments(Fragment fragment) {
                 FragmentManager fm = activity.getSupportFragmentManager();
 
                 if (fragment != null) {
                     Mvc.graph().release(fragment);
-                    try {
-                        fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-                    } catch (Exception e) {
-                        LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
-                    }
+                    removeFragment(fm, fragment);
 
                     List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
                     if (frags != null) {
@@ -253,11 +251,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
                             Fragment frag = frags.get(i);
                             if (frag != null) {
                                 Mvc.graph().release(frag);
-                                try {
-                                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-                                } catch (Exception e) {
-                                    LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
-                                }
+                                removeFragment(fm, frag);
 
                                 clearStateOfFragments(frag);
                             }
@@ -285,8 +279,25 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         super.tearDown();
     }
 
+    private void removeFragment(FragmentManager fm, Fragment fragment) {
+        if (Build.VERSION.SDK_INT >= 17) {
+            if (!activity.isDestroyed()) {
+                try {
+                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+                } catch (Exception e) {
+                    LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
+                }
+            }
+        } else {
+            try {
+                fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
+            } catch (Exception e) {
+                LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
+            }
+        }
+    }
+
     protected void cleanDependencies() throws ProviderMissingException {
-        Mvc.graph = null;
     }
 
     protected void pressHome() {

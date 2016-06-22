@@ -6,8 +6,10 @@ package com.shipdream.lib.android.mvc;
  */
 public interface UiView {
     /**
-     * When a view is requested to update itself, it should read it's controller's model and bind
-     * the data to the view.
+     * When a view is requested to update itself, it should read it's controller's model by
+     * {@link Controller#getModel()} to bind the data to the view.
+     *
+     * <p>Do NOT change values of model from view but only from controllers.</p>
      */
     void update();
 }

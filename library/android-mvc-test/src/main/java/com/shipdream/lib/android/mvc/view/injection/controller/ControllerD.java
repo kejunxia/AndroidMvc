@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection.presenter;
+package com.shipdream.lib.android.mvc.view.injection.controller;
 
 import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-public class ControllerD extends Controller<ControllerD.Model> {
+public class ControllerD extends Controller<ControllerD.Model, UiView> {
     public static class Model {
         private List<String> tags;
 
@@ -54,10 +55,5 @@ public class ControllerD extends Controller<ControllerD.Model> {
 
     public void setStorage(String content) {
         accountManager.setContent(content);
-    }
-
-    @Override
-    public void bindModel(Object sender, Model model) {
-
     }
 }

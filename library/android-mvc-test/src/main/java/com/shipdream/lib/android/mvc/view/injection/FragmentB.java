@@ -19,11 +19,12 @@ package com.shipdream.lib.android.mvc.view.injection;
 import android.os.Bundle;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 
 import javax.inject.Inject;
 
@@ -56,6 +57,11 @@ public class FragmentB extends FragmentInjection {
     }
 
     @Override
+    protected Class getControllerClass() {
+        return null;
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
     }
@@ -63,5 +69,10 @@ public class FragmentB extends FragmentInjection {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 }

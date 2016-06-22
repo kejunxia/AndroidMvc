@@ -19,11 +19,12 @@ package com.shipdream.lib.android.mvc.view.injection;
 import android.os.Bundle;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 
 import javax.inject.Inject;
 
@@ -49,9 +50,19 @@ public class FragmentA extends FragmentInjection {
     }
 
     @Override
+    protected Class getControllerClass() {
+        return null;
+    }
+
+    @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
         displayTags(textViewA, presenterA.getTags());
         displayTags(textViewB, presenterB.getTags());
+    }
+
+    @Override
+    public void update() {
+
     }
 }

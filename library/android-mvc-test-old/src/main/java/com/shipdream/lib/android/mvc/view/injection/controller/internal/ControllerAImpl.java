@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection.presenter.internal;
+package com.shipdream.lib.android.mvc.view.injection.controller.internal;
 
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 
 import java.util.ArrayList;
 import java.util.List;

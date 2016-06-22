@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection.controller;
+package com.shipdream.lib.android.mvc.view.viewpager.controller;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.UiView;
+import com.shipdream.lib.android.mvc.view.viewpager.TabModel;
 
-import java.util.List;
+public class TabControllerB extends FragmentController<TabModel, UiView> {
+     @Override
+     public Class<TabModel> modelType() {
+          return TabModel.class;
+     }
 
-public interface ControllerB extends BaseController<ControllerB.Model> {
-    class Model {
-        private List<String> tags;
-
-        public List<String> getTags() {
-            return tags;
-        }
-
-        public void setTags(List<String> tags){
-            this.tags = tags;
-        }
-    }
-
-    void addTag(String tag);
-    List<String> getTags();
+     public void setName(String name) {
+          getModel().setName(name);
+     }
 }

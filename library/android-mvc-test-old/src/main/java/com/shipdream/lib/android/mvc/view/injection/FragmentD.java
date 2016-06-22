@@ -22,7 +22,7 @@ import android.view.View;
 import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;

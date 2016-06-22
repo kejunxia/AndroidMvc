@@ -21,13 +21,15 @@ import android.view.View;
 
 import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
+import com.shipdream.lib.android.mvc.Reason;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 
 import javax.inject.Inject;
 
@@ -52,6 +54,23 @@ public class InjectionTestActivityTestRootFragment extends MvcActivity {
     }
 
     public static class HomeFragment extends DelegateFragment {
+        static class HomeController extends FragmentController {
+            @Override
+            public Class modelType() {
+                return null;
+            }
+        }
+
+        @Override
+        protected Class<HomeFragment.HomeController> getControllerClass() {
+            return HomeFragment.HomeController.class;
+        }
+
+        @Override
+        public void update() {
+
+        }
+
         @Inject
         private NavigationManager navigationManager;
 

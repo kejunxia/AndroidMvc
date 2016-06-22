@@ -33,7 +33,7 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
     protected CONTROLLER controller;
 
     /**
-     * Specify the controller of this service
+     * Specify the controller of this service. Returns null if this service doesn't need a controller
      * @return The class type of the controller
      */
     protected abstract Class<CONTROLLER> getControllerClass();
@@ -45,21 +45,18 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
     public void onCreate() {
         super.onCreate();
 
-        if (getControllerClass() == null) {
-            throw new IllegalArgumentException("Must specify the controller class type for " +
-                    "fragment " + this.getClass().getName());
-        }
+        if (getControllerClass() != null) {
+            try {
+                controller = Mvc.graph().reference(getControllerClass(), null);
+            } catch (PokeException e) {
+                throw new IllegalArgumentException("Unable to find controller "
+                        + getControllerClass().getName() + ". Either create a controller with " +
+                        "default constructor or register it to Mvc.graph().getRootComponent()");
+            }
 
-        try {
-            controller = Mvc.graph().reference(getControllerClass(), null);
-        } catch (PokeException e) {
-            throw new IllegalArgumentException("Unable to find controller "
-                    + getControllerClass().getName() + ". Either create a controller with " +
-                    "default constructor or register it to Mvc.graph().getRootComponent()");
+            controller.view = this;
+            controller.onCreated();
         }
-
-        controller.view = this;
-        controller.onCreated();
 
         Mvc.graph().inject(this);
 
@@ -78,12 +75,14 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
         eventRegister.onDestroy();
         controller.onDestroy();
 
-        try {
-            Mvc.graph().dereference(controller, getControllerClass(), null);
-        } catch (ProviderMissingException e) {
-            //should never happen
-            Logger logger = LoggerFactory.getLogger(getClass());
-            logger.warn("Failed to dereference controller " + getControllerClass().getName(), e);
+        if (getControllerClass() != null) {
+            try {
+                Mvc.graph().dereference(controller, getControllerClass(), null);
+            } catch (ProviderMissingException e) {
+                //should never happen
+                Logger logger = LoggerFactory.getLogger(getClass());
+                logger.warn("Failed to dereference controller " + getControllerClass().getName(), e);
+            }
         }
 
         Mvc.graph().release(this);

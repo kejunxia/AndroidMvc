@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.event2v;
+package com.shipdream.lib.android.mvc.view.viewpager;
 
-import android.content.Intent;
-import android.os.IBinder;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
 
-import com.shipdream.lib.android.mvc.MvcService;
-
-public class EventBusV2VService extends MvcService {
+public class SecondFragment extends MvcFragment<SecondFragmentController> {
     @Override
-    public IBinder onBind(Intent intent) {
-        return null;
+    protected Class<SecondFragmentController> getControllerClass() {
+        return SecondFragmentController.class;
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        postEvent2V(new Events.OnFragmentTextChanged("Updated By Service"));
-        return START_STICKY;
-    }
-
-    @Override
-    protected Class getControllerClass() {
-        return null;
+    protected int getLayoutResId() {
+        return R.layout.fragment_view_pager_sub;
     }
 
     @Override

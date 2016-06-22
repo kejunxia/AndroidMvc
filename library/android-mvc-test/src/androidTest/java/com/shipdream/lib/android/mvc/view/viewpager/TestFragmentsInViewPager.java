@@ -21,7 +21,7 @@ import android.util.Log;
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvc.view.test.R;
-import com.shipdream.lib.android.mvc.view.viewpager.presenter.SubViewController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
 
 import org.junit.Test;
 
@@ -77,7 +77,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubViewController.class);
+        navigationManager.navigate(this).to(SecondFragmentController.class);
         waitTest(1200);
 
         lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -154,7 +154,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubViewController.class);
+        navigationManager.navigate(this).to(SecondFragmentController.class);
         waitTest(1200);
 
         lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
@@ -354,7 +354,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     @Test
     public void test_should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubViewController.class);
+        navigationManager.navigate(this).to(SecondFragmentController.class);
         waitTest(1200);
 
         lifeCycleValidator.reset();

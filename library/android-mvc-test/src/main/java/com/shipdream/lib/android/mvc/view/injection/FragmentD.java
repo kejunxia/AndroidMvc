@@ -19,10 +19,11 @@ package com.shipdream.lib.android.mvc.view.injection;
 import android.os.Bundle;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.MvcApp;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
@@ -52,7 +53,7 @@ public class FragmentD extends FragmentInjection {
         root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                update();
+                refresh();
             }
         });
     }
@@ -61,7 +62,7 @@ public class FragmentD extends FragmentInjection {
             "A", "B", "C"
     };
 
-    private void update() {
+    private void refresh() {
         long i = presenterD.getAccountManager().getUserId();
         presenterD.setUserId(i + 1);
         presenterD.setStorage(contents[((int) (i)) % contents.length]);
@@ -69,5 +70,15 @@ public class FragmentD extends FragmentInjection {
         String msg = String.format("%d:%s", presenterD.getAccountManager().getUserId(),
                 presenterD.getAccountManager().getContent());
         textViewA.setText(msg);
+    }
+
+    @Override
+    protected Class getControllerClass() {
+        return null;
+    }
+
+    @Override
+    public void update() {
+
     }
 }

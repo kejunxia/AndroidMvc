@@ -24,10 +24,10 @@ import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Navigator;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerA;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
 
 import javax.inject.Inject;
 
@@ -83,8 +83,18 @@ public class MvcTestActivityNavigation extends MvcActivity {
         }
 
         @Override
+        protected Class getControllerClass() {
+            return null;
+        }
+
+        @Override
         public void onDestroy() {
             super.onDestroy();
+        }
+
+        @Override
+        public void update() {
+
         }
     }
 

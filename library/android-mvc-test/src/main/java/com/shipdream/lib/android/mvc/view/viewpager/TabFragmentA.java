@@ -21,25 +21,28 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.MvcApp;
-import com.shipdream.lib.android.mvc.view.viewpager.presenter.SubViewController;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
-import com.shipdream.lib.android.mvc.view.viewpager.presenter.TabController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.TabControllerA;
 
 import javax.inject.Inject;
 
-public class TabFragmentA extends BaseTabFragment {
+public class TabFragmentA extends BaseTabFragment<TabControllerA> {
     static final String INIT_TEXT = "Tab A";
     static final String RESTORE_TEXT = "Restored TabA";
-
-    @Inject
-    TabController tabPresenter;
 
     private TextView textView;
 
     @Inject
     private NavigationManager navigationManager;
+
+    @Override
+    protected Class getControllerClass() {
+        return TabControllerA.class;
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -58,15 +61,15 @@ public class TabFragmentA extends BaseTabFragment {
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
         if (reason.isFirstTime()) {
             textView.setText(INIT_TEXT);
-            tabPresenter.setName(RESTORE_TEXT);
+            controller.setName(RESTORE_TEXT);
         } else if (reason.isRestored()) {
-            textView.setText(tabPresenter.getModel().getName());
+            textView.setText(controller.getModel().getName());
         }
 
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationManager.navigate(v).to(SubViewController.class);
+                navigationManager.navigate(v).to(SecondFragmentController.class);
             }
         });
     }
@@ -84,5 +87,10 @@ public class TabFragmentA extends BaseTabFragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 }

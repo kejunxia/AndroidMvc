@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
@@ -30,6 +31,11 @@ public class NavFragmentG extends MvcFragment {
     private ControllerG presenterG;
 
     private TextView textView;
+
+    @Override
+    protected Class getControllerClass() {
+        return null;
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -44,4 +50,8 @@ public class NavFragmentG extends MvcFragment {
         textView.setText(presenterG.getValue());
     }
 
+    @Override
+    public void update() {
+
+    }
 }

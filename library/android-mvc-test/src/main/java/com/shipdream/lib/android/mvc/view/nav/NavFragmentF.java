@@ -36,6 +36,11 @@ public class NavFragmentF extends MvcFragment {
     private TextView textView;
 
     @Override
+    protected Class getControllerClass() {
+        return null;
+    }
+
+    @Override
     protected int getLayoutResId() {
         return R.layout.fragment_mvc_test_nav_e;
     }
@@ -48,4 +53,8 @@ public class NavFragmentF extends MvcFragment {
         textView.setText(presenterF.getValue());
     }
 
+    @Override
+    public void update() {
+
+    }
 }

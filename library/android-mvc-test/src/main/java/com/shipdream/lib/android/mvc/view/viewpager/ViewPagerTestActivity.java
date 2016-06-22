@@ -23,18 +23,19 @@ import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
-import com.shipdream.lib.android.mvc.view.viewpager.presenter.HomeController;
-import com.shipdream.lib.android.mvc.view.viewpager.presenter.SubViewController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.FirstFragmentController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.HomeController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
 
 import javax.inject.Inject;
 
 public class ViewPagerTestActivity extends MvcActivity {
     @Override
-    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
-        if (presenterClass == HomeController.class) {
+    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> controllerClass) {
+        if (controllerClass == FirstFragmentController.class) {
             return ViewPagerHomeFragment.class;
-        } else if (presenterClass == SubViewController.class) {
-            return SubFragment.class;
+        } else if (controllerClass == SecondFragmentController.class) {
+            return SecondFragment.class;
         }
         return ViewPagerHomeFragment.class;
     }
@@ -44,13 +45,23 @@ public class ViewPagerTestActivity extends MvcActivity {
         return HomeFragment.class;
     }
 
-    public static class HomeFragment extends DelegateFragment {
+    public static class HomeFragment extends DelegateFragment<HomeController> {
         @Inject
         private NavigationManager navigationManager;
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(HomeController.class, new Forwarder().clearAll());
+            navigationManager.navigate(this).to(FirstFragmentController.class, new Forwarder().clearAll());
+        }
+
+        @Override
+        protected Class<HomeController> getControllerClass() {
+            return HomeController.class;
+        }
+
+        @Override
+        public void update() {
+
         }
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.injection.presenter;
+package com.shipdream.lib.android.mvc.view.injection.controller;
 
 import com.shipdream.lib.android.mvc.controller.BaseController;
 import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;

@@ -17,8 +17,9 @@
 package com.shipdream.lib.android.mvc.view.nav;
 
 import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 
-public class AnotherController extends Controller<AnotherController.Model> {
+public class AnotherController extends Controller<AnotherController.Model, UiView> {
     public static class Model {
         private String name;
         private String address;

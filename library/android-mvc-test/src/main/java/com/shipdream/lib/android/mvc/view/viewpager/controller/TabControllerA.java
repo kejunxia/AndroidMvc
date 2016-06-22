@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.viewpager;
+package com.shipdream.lib.android.mvc.view.viewpager.controller;
 
-import com.shipdream.lib.android.mvc.MvcFragment;
-import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.UiView;
+import com.shipdream.lib.android.mvc.view.viewpager.TabModel;
 
-public class SubFragment extends MvcFragment {
-    @Override
-    protected int getLayoutResId() {
-        return R.layout.fragment_view_pager_sub;
-    }
+public class TabControllerA extends FragmentController<TabModel, UiView> {
+     @Override
+     public Class<TabModel> modelType() {
+          return TabModel.class;
+     }
+
+     public void setName(String name) {
+          getModel().setName(name);
+     }
 }

@@ -21,7 +21,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.Controller;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerD;
+import com.shipdream.lib.android.mvc.Reason;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 
 import javax.inject.Inject;
 
@@ -33,6 +34,12 @@ public class NavFragmentC extends NavFragment{
     protected Class<? extends Controller> getNextFragmentLocId() {
         return ControllerD.class;
     }
+
+    @Override
+    protected Class getControllerClass() {
+        return null;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,5 +54,10 @@ public class NavFragmentC extends NavFragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 }

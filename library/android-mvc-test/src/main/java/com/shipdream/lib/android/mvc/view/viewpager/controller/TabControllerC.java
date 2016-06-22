@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.view.viewpager.presenter;
+package com.shipdream.lib.android.mvc.view.viewpager.controller;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.view.viewpager.TabModel;
 
-public class TabController extends Controller<TabModel> {
+public class TabControllerC extends FragmentController<TabModel, UiView> {
      @Override
      public Class<TabModel> modelType() {
           return TabModel.class;

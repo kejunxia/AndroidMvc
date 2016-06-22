@@ -20,8 +20,8 @@ import android.util.Log;
 
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerB;
-import com.shipdream.lib.android.mvc.view.injection.presenter.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;

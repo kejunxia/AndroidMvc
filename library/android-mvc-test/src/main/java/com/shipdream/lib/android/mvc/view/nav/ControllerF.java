@@ -19,10 +19,11 @@ package com.shipdream.lib.android.mvc.view.nav;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 
 import javax.inject.Inject;
 
-public class ControllerF extends Controller<ControllerF.Model> {
+public class ControllerF extends Controller<ControllerF.Model, UiView> {
     public static class Model {
         public String value;
     }
