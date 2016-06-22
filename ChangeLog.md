@@ -1,10 +1,12 @@
 Version: 3.0
+* View and Controller are one to one mapped
+* Navigate based on controller class type instead of string location Id. e.g. navigationManager.navigate(this).to(HomePageController.class)
 * Rename BaseControllerImpl to Controller. Not necessary to create an interface for controller
 injection. A concrete class can be injected straight away.
 * New life cycles of controllers that match to views
 * MvcComponents manage their own cached instances by themselves.
 * Register providers to Graph's root component rather than to graph itself.
-
+* Managers listen to eventBusC
 
 Version:2.3
 * New navigation method that allow configuring the location not pushed to back stack

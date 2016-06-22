@@ -32,6 +32,16 @@ public abstract class Manager<MODEL> extends Bean<MODEL> {
         super.bindModel(model);
     }
 
+    public void onCreated() {
+        super.onCreated();
+        eventBus2C.register(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        eventBus2C.unregister(this);
+    }
     /**
      * Post an event to . Event2C will be posted on the same thread as the caller.
      *
