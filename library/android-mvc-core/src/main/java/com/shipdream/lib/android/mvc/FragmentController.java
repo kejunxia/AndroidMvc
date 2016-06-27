@@ -23,7 +23,14 @@ public abstract class FragmentController<MODEL, VIEW extends UiView> extends Con
     /**
      * Called when corresponding fragment is about to be pushed to background
      */
-    public void onPushingToBackStack() {
+    public void onPushToBackStack() {
+    }
+
+    /**
+     * Called when corresponding fragment was the top most fragment and is about to be removed by
+     * fragment popping out from back stack
+     */
+    public void onPopAway() {
     }
 
     /**

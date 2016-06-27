@@ -68,6 +68,7 @@ class EventRegister {
      */
     void registerEventBuses() {
         if (!eventsRegistered) {
+            Mvc.graph().inject(this);
             eventBusV.register(androidComponent);
             eventsRegistered = true;
             logger.trace("+Event2V bus registered for view - '{}'.",
@@ -87,6 +88,7 @@ class EventRegister {
             eventsRegistered = false;
             logger.trace("-Event2V bus unregistered for view - '{}' and its controllers.",
                     androidComponent.getClass().getSimpleName());
+            Mvc.graph().release(this);
         } else {
             logger.trace("!Event2V bus already unregistered for view - '{}'.",
                     androidComponent.getClass().getSimpleName());

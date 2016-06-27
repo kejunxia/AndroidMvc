@@ -39,7 +39,6 @@ import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,8 +46,6 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -120,9 +117,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
     public void setUp() throws Exception {
         super.setUp();
 
-        injectDependencies();
-
-        Mvc.graph().inject(this);
+        prepareDependencies();
 
         lifeCycleMonitorMock = mock(LifeCycleMonitor.class);
         lifeCycleValidator = new LifeCycleValidator(lifeCycleMonitorMock);
@@ -138,7 +133,6 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
         lifeCycleMonitorMockD = mock(LifeCycleMonitorD.class);
         lifeCycleValidatorD = new LifeCycleValidator(lifeCycleMonitorMockD);
-
 
         MvcApp.lifeCycleMonitorFactory = new LifeCycleMonitorFactory() {
             @Override
@@ -170,10 +164,11 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         instrumentation = InstrumentationRegistry.getInstrumentation();
         injectInstrumentation(instrumentation);
         activity = getActivity();
+
+        Mvc.graph().inject(this);
     }
 
-    protected void injectDependencies() throws ProvideException, ProviderConflictException {
-
+    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
     }
 
     @After
@@ -187,55 +182,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
-        lifeCycleValidator.reset();
-        lifeCycleValidatorA.reset();
-        lifeCycleValidatorB.reset();
-        lifeCycleValidatorC.reset();
-        lifeCycleValidatorD.reset();
-
-        cleanDependencies();
         Mvc.graph().release(this);
-
-        activity.runOnUiThread(new Runnable() {
-            private void clearStateOfFragments(Fragment fragment) {
-                FragmentManager fm = activity.getSupportFragmentManager();
-
-                if (fragment != null) {
-                    Mvc.graph().release(fragment);
-                    removeFragment(fm, fragment);
-
-                    List<Fragment> frags = fragment.getChildFragmentManager().getFragments();
-                    if (frags != null) {
-                        int size = frags.size();
-                        for (int i = 0; i < size; i++) {
-                            Fragment frag = frags.get(i);
-                            if (frag != null) {
-                                Mvc.graph().release(frag);
-                                removeFragment(fm, frag);
-
-                                clearStateOfFragments(frag);
-                            }
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void run() {
-                //Make sure delegate fragment is removed from support fragment manager before
-                //starting next test case
-                FragmentManager fm = activity.getSupportFragmentManager();
-                Fragment fragment = fm.findFragmentByTag(activity.getDelegateFragmentTag());
-                clearStateOfFragments(fragment);
-
-                lifeCycleValidator.reset();
-                lifeCycleValidatorA.reset();
-                lifeCycleValidatorB.reset();
-                lifeCycleValidatorC.reset();
-                lifeCycleValidatorD.reset();
-            }
-        });
-
         super.tearDown();
     }
 
@@ -255,9 +202,6 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
                 LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
             }
         }
-    }
-
-    protected void cleanDependencies() throws ProviderMissingException {
     }
 
     protected void pressHome() {

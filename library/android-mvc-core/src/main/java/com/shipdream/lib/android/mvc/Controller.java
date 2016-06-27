@@ -95,7 +95,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * task.
      *
      */
-    protected Task.Monitor runTask(Object sender, final Task task) {
+    protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, final Task<RESULT> task) {
         return runTask(sender, executorService, task, null);
     }
 
@@ -110,7 +110,8 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * @return The monitor to track the state of the execution of the task. It also can cancel the
      * task.
      */
-    protected Task.Monitor runTask(Object sender, final Task task, final Task.Callback callback) {
+    protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, final Task<RESULT> task,
+                                                    final Task.Callback<RESULT> callback) {
         return runTask(sender, executorService, task, callback);
     }
 

@@ -80,9 +80,15 @@ public class ViewPagerHomeFragment extends MvcFragment<FirstFragmentController> 
     }
 
     @Override
-    protected void onPushingToBackStack() {
-        super.onPushingToBackStack();
-        lifeCycleMonitor.onPushingToBackStack();
+    protected void onPushToBackStack() {
+        super.onPushToBackStack();
+        lifeCycleMonitor.onPushToBackStack();
+    }
+
+    @Override
+    protected void onPopAway() {
+        super.onPopAway();
+        lifeCycleMonitor.onPopAway();
     }
 
     @Override

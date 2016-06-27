@@ -39,6 +39,8 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
     @Inject
     private AnotherController anotherPresenter;
 
+    private CountMonitor monitor;
+
     private int fragAInjectCount = 0;
     private int fragBInjectCount = 0;
     private int fragCInjectCount = 0;
@@ -57,38 +59,55 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         waitTest(800);
     }
 
+    abstract class CountMonitor implements Graph.Monitor {
+         boolean cancelled;
+    }
+    
     @Override
-    protected void injectDependencies() throws ProvideException, ProviderConflictException {
-        super.injectDependencies();
+    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
+        super.prepareDependencies();
         resetGraphMonitorCounts();
 
-        Mvc.graph().registerMonitor(new Graph.Monitor() {
+        monitor = new CountMonitor(){
             @Override
             public void onInject(Object target) {
-                if (target instanceof NavFragmentA) {
-                    fragAInjectCount++;
-                } else if (target instanceof NavFragmentB) {
-                    fragBInjectCount++;
-                } else if (target instanceof NavFragmentC) {
-                    fragCInjectCount++;
-                } else if (target instanceof NavFragmentD) {
-                    fragDInjectCount++;
+                if (!cancelled) {
+                    if (target instanceof NavFragmentA) {
+                        fragAInjectCount++;
+                    } else if (target instanceof NavFragmentB) {
+                        fragBInjectCount++;
+                    } else if (target instanceof NavFragmentC) {
+                        fragCInjectCount++;
+                    } else if (target instanceof NavFragmentD) {
+                        fragDInjectCount++;
+                    }
                 }
             }
 
             @Override
             public void onRelease(Object target) {
-                if (target instanceof NavFragmentA) {
-                    fragAReleaseCount++;
-                } else if (target instanceof NavFragmentB) {
-                    fragBReleaseCount++;
-                } else if (target instanceof NavFragmentC) {
-                    fragCReleaseCount++;
-                } else if (target instanceof NavFragmentD) {
-                    fragDReleaseCount++;
+                if (!cancelled) {
+                    if (target instanceof NavFragmentA) {
+                        fragAReleaseCount++;
+                    } else if (target instanceof NavFragmentB) {
+                        fragBReleaseCount++;
+                    } else if (target instanceof NavFragmentC) {
+                        fragCReleaseCount++;
+                    } else if (target instanceof NavFragmentD) {
+                        fragDReleaseCount++;
+                    }
                 }
             }
-        });
+        };
+
+        Mvc.graph().registerMonitor(monitor);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        resetGraphMonitorCounts();
+        monitor.cancelled = true;
+        super.tearDown();
     }
 
     @Test

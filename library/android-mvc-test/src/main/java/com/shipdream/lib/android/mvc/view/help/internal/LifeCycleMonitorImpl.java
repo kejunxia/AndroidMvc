@@ -59,8 +59,13 @@ public class LifeCycleMonitorImpl implements LifeCycleMonitor {
     }
 
     @Override
-    public void onPushingToBackStack() {
-        logger.info("Lifecycle method invoked: onPushingToBackStack");
+    public void onPushToBackStack() {
+        logger.info("Lifecycle method invoked: onPushToBackStack");
+    }
+
+    @Override
+    public void onPopAway() {
+        logger.info("Lifecycle method invoked: onPopAway");
     }
 
     @Override

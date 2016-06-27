@@ -155,9 +155,15 @@ public abstract class FragmentInjection extends MvcFragment {
     }
 
     @Override
-    protected void onPushingToBackStack() {
-        super.onPushingToBackStack();
-        getLifeCycleMonitor().onPushingToBackStack();
+    protected void onPushToBackStack() {
+        super.onPushToBackStack();
+        getLifeCycleMonitor().onPushToBackStack();
+    }
+
+    @Override
+    protected void onPopAway() {
+        super.onPopAway();
+        getLifeCycleMonitor().onPopAway();
     }
 
     @Override

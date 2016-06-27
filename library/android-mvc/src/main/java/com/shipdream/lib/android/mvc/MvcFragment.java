@@ -152,7 +152,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
         super.onCreate(savedInstanceState);
 
         eventRegister = new EventRegister(this);
-        eventRegister.onCreate();
 
         if (savedInstanceState == null) {
             lastOrientation = getResources().getConfiguration().orientation;
@@ -318,12 +317,32 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
-     * Called before this fragment will be replaced by new fragment and being pushed to fragment
+     * Called before this fragment is about to be replaced by new fragment and being pushed to fragment
      * back stack.
      */
-    protected void onPushingToBackStack() {
+    protected void onPushToBackStack() {
         if (controller != null) {
-            controller.onPushingToBackStack();
+            controller.onPushToBackStack();
+        }
+    }
+
+    /**
+     * Called when the fragment was the top most fragment and is about to be removed by
+     * fragment popping out from back stack
+     */
+    protected void onPopAway() {
+        if (controller != null) {
+            controller.onPopAway();
+        }
+    }
+
+    /**
+     * Called when this fragment is popped out from fragment back stack and will become the top most
+     * fragment. This callback will be invoked after {@link #onViewReady(android.view.View, Bundle, Reason)}.
+     */
+    protected void onPoppedOutToFront() {
+        if (controller != null) {
+            controller.onPoppedOutToFront();
         }
     }
 
@@ -340,16 +359,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     boolean aboutToPopOut = false;
-
-    /**
-     * Called when this fragment is popped out from fragment back stack. This callback will be
-     * invoked after {@link #onViewReady(android.view.View, Bundle, Reason)}.
-     */
-    protected void onPoppedOutToFront() {
-        if (controller != null) {
-            controller.onPoppedOutToFront();
-        }
-    }
 
     /**
      * Called after {@link #onViewReady(android.view.View, Bundle, Reason)} when orientation changed.
@@ -404,7 +413,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
         releaseDependencies();
 
-        eventRegister.onDestroy();
         eventRegister = null;
     }
 

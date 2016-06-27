@@ -7,7 +7,7 @@ import android.os.Looper;
  * Created by kejun on 28/06/2016.
  */
 
-public class AndroidUiThreadRunner implements UiThreadRunner{
+public class AndroidUiThreadRunner implements UiThreadRunner {
     private Handler handler;
 
     @Override

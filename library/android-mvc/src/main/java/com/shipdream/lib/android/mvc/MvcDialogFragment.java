@@ -42,7 +42,6 @@ public class MvcDialogFragment extends DialogFragment {
         Mvc.graph().inject(this);
 
         eventRegister = new EventRegister(this);
-        eventRegister.onCreate();
         eventRegister.registerEventBuses();
     }
 
@@ -69,7 +68,6 @@ public class MvcDialogFragment extends DialogFragment {
     public void onDestroy() {
         super.onDestroy();
         eventRegister.unregisterEventBuses();
-        eventRegister.onDestroy();
         Mvc.graph().release(this);
     }
 

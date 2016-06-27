@@ -80,9 +80,9 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         navigationManager.navigate(this).to(SecondFragmentController.class);
         waitTest(1200);
 
-        lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
-        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack,LifeCycle.onDestroyView);
-        lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack,LifeCycle.onDestroyView);
+        lifeCycleValidator.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onPushToBackStack,LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onPushToBackStack,LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect();
 
         pressHome();
@@ -157,9 +157,9 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         navigationManager.navigate(this).to(SecondFragmentController.class);
         waitTest(1200);
 
-        lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
-        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
-        lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidator.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect();
 
         pressHome();

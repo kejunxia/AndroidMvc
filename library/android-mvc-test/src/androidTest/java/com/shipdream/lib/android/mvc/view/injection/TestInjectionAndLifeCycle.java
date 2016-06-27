@@ -63,7 +63,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //=============================> At B
         //onDestroyView is always called when a fragment is pushed to back stack
         //BUT onDestroy of previous Fragment(FragmentA) is not called when it's pushed to back stack
-        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorB.expect(LifeCycle.onCreateNull,
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
             LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
@@ -76,7 +76,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         navigationManager.navigate(this).to(ControllerC.class);
         waitTest();
         //=============================> At C
-        lifeCycleValidatorB.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect(LifeCycle.onCreateNull, LifeCycle.onCreateViewNull,
             LifeCycle.onViewCreatedNull,
             LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
@@ -89,7 +89,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         navigationManager.navigate(this).back();
         waitTest(1000);
         //=============================> At B
-        lifeCycleValidatorC.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorC.expect(LifeCycle.onPopAway, LifeCycle.onDestroyView, LifeCycle.onDestroy);
         //View is newly created again
         //onPoppedOutToFront is called when the fragment pops out from back stack
         lifeCycleValidatorB.expect(
@@ -110,7 +110,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         waitTest(1000);
         //=============================> At A
         //onDestroy of previous Fragment(FragmentB) is not called until it's removed out from back stack
-        lifeCycleValidatorB.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorB.expect(LifeCycle.onPopAway, LifeCycle.onDestroyView, LifeCycle.onDestroy);
         //View is newly created again
         //onPoppedOutToFront is called when the fragment pops out from back stack
         lifeCycleValidatorA.expect(
@@ -178,7 +178,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         navigationManager.navigate(this).to(ControllerB.class);
         waitTest();
 
-        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
 
         lifeCycleValidatorB.expect(LifeCycle.onCreateNull,
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
@@ -187,7 +187,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         navigationManager.navigate(this).back();
         waitTest();
 
-        lifeCycleValidatorB.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorB.expect(LifeCycle.onPopAway, LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
         lifeCycleValidatorA.expect(LifeCycle.onCreateViewNull,
             LifeCycle.onViewCreatedNull,
@@ -209,7 +209,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
 
         navigationManager.navigate(this).to(ControllerB.class);
         waitTest();
-        lifeCycleValidatorA.expect(LifeCycle.onPushingToBackStack,
+        lifeCycleValidatorA.expect(LifeCycle.onPushToBackStack,
             LifeCycle.onDestroyView);
 
         lifeCycleValidatorB.expect(LifeCycle.onCreateNull,
@@ -248,7 +248,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onViewReadyPopOut,
             LifeCycle.onPoppedOutToFront);
 
-        lifeCycleValidatorB.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
+        lifeCycleValidatorB.expect(LifeCycle.onPopAway, LifeCycle.onDestroyView, LifeCycle.onDestroy);
     }
 
 }

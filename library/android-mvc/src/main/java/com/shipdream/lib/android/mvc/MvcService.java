@@ -61,7 +61,6 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
         Mvc.graph().inject(this);
 
         eventRegister = new EventRegister(this);
-        eventRegister.onCreate();
         eventRegister.registerEventBuses();
     }
 
@@ -72,7 +71,6 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
     public void onDestroy() {
         super.onDestroy();
         eventRegister.unregisterEventBuses();
-        eventRegister.onDestroy();
         controller.onDestroy();
 
         if (getControllerClass() != null) {

@@ -28,7 +28,8 @@ public interface LifeCycleMonitor {
     void onViewReady(View rootView, Bundle savedInstanceState, Reason reason);
     void onResume();
     void onReturnForeground();
-    void onPushingToBackStack();
+    void onPushToBackStack();
+    void onPopAway();
     void onPoppedOutToFront();
     void onOrientationChanged(int lastOrientation, int currentOrientation);
     void onDestroyView();

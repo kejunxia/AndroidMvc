@@ -103,18 +103,19 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
     }
 
     @Override
-    protected void injectDependencies() throws ProvideException, ProviderConflictException {
+    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
         disposeCheckerAMock = mock(DisposeCheckerA.class);
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
-                logger.debug("Dispose checker A");
+                LoggerFactory.getLogger(TestCaseNavigationBasic.class).debug("Dispose checker A");
                 return null;
             }
         }).when(disposeCheckerAMock).onDestroy();
         disposeCheckerBMock = mock(DisposeCheckerB.class);
         disposeCheckerCMock = mock(DisposeCheckerC.class);
         disposeCheckerDMock = mock(DisposeCheckerD.class);
+
         comp = new Comp();
         comp.testCaseNavigation = this;
 
@@ -124,6 +125,12 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
             e.printStackTrace();
         }
         Mvc.graph().getRootComponent().register(comp);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Mvc.graph().getRootComponent().unregister(comp);
+        super.tearDown();
     }
 
     private NavigationManager.Model getNavManagerModel() throws PokeException {

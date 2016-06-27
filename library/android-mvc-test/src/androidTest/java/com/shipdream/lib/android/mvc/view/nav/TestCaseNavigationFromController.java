@@ -23,7 +23,6 @@ import com.shipdream.lib.android.mvc.Preparer;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -89,8 +88,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     }
 
     @Override
-    protected void injectDependencies() throws ProvideException, ProviderConflictException {
-
+    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
         disposeCheckerEMock = mock(DisposeCheckerE.class);
         doAnswer(new Answer() {
             @Override
@@ -121,9 +119,9 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     }
 
     @Override
-    protected void cleanDependencies() throws ProviderMissingException {
-        super.cleanDependencies();
+    public void tearDown() throws Exception {
         Mvc.graph().getRootComponent().unregister(comp);
+        super.tearDown();
     }
 
     @Test

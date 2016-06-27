@@ -51,7 +51,8 @@ public class LifeCycleValidator {
     protected int onViewReadyRotation;
     protected int onViewReadyRestore;
     protected int onViewReadyPopOut;
-    protected int onPushingToBackStackCount;
+    protected int onPushToBackStackCount;
+    protected int onPopAwayCount;
     protected int onPoppedOutToFrontCount;
     protected int onReturnForegroundCount;
     protected int onOrientationChangedCount;
@@ -96,8 +97,11 @@ public class LifeCycleValidator {
                     case onViewReadyPopOut:
                         onViewReadyPopOut++;
                         break;
-                    case onPushingToBackStack:
-                        onPushingToBackStackCount++;
+                    case onPushToBackStack:
+                        onPushToBackStackCount++;
+                        break;
+                    case onPopAway:
+                        onPopAwayCount++;
                         break;
                     case onPoppedOutToFront:
                         onPoppedOutToFrontCount++;
@@ -141,7 +145,8 @@ public class LifeCycleValidator {
                 any(Bundle.class), argThat(new PopOutMatcher()));
 
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
-        verify(lifeCycleMonitorMock, times(onPushingToBackStackCount)).onPushingToBackStack();
+        verify(lifeCycleMonitorMock, times(onPushToBackStackCount)).onPushToBackStack();
+        verify(lifeCycleMonitorMock, times(onPopAwayCount)).onPopAway();
         verify(lifeCycleMonitorMock, times(onPoppedOutToFrontCount)).onPoppedOutToFront();
         verify(lifeCycleMonitorMock, times(onReturnForegroundCount)).onReturnForeground();
         verify(lifeCycleMonitorMock, times(onOrientationChangedCount)).onOrientationChanged(anyInt(), anyInt());
@@ -223,7 +228,8 @@ public class LifeCycleValidator {
         onViewReadyRotation = 0;
         onViewReadyRestore = 0;
         onViewReadyPopOut = 0;
-        onPushingToBackStackCount = 0;
+        onPushToBackStackCount = 0;
+        onPopAwayCount = 0;
         onPoppedOutToFrontCount = 0;
         onReturnForegroundCount = 0;
         onOrientationChangedCount = 0;

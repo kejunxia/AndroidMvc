@@ -55,7 +55,6 @@ public abstract class MvcActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         eventRegister = new EventRegister(this);
-        eventRegister.onCreate();
 
         eventRegister.registerEventBuses();
 
@@ -82,7 +81,6 @@ public abstract class MvcActivity extends AppCompatActivity {
         super.onDestroy();
 
         eventRegister.unregisterEventBuses();
-        eventRegister.onDestroy();
 
         if (toPrintAppExitMessage && logger.isTraceEnabled()) {
             logger.trace("App Exits(UI): {} injected beans are still cached.",
@@ -611,7 +609,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                         @Override
                         public void manipulate(Fragment fragment) {
                             if (fragment != null && fragment instanceof MvcFragment) {
-                                ((MvcFragment)fragment).onPushingToBackStack();
+                                ((MvcFragment)fragment).onPushToBackStack();
                             }
                         }
                     });
@@ -651,6 +649,19 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         private void performBackNav(final NavigationManager.Event.OnLocationBack event) {
+            //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
+            FragmentManager fm = childFragmentManager();
+
+            NavLocation lastLoc = event.getLastValue();
+            if (lastLoc != null) {
+                String lastFragTag = getFragmentTag(lastLoc.getLocationId());
+                final MvcFragment lastFrag = (MvcFragment) fm.findFragmentByTag(lastFragTag);
+
+                if (lastFrag != null) {
+                    lastFrag.onPopAway();
+                }
+            }
+
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
                 destroyNavigator(event.getNavigator());
@@ -660,9 +671,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                 mvcActivity.performSuperBackKeyPressed();
                 mvcActivity.toPrintAppExitMessage = true;
             } else {
-                //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-                FragmentManager fm = childFragmentManager();
-
                 String currentFragTag = getFragmentTag(currentLoc.getLocationId());
                 final MvcFragment currentFrag = (MvcFragment) fm.findFragmentByTag(currentFragTag);
                 if (currentFrag != null) {
