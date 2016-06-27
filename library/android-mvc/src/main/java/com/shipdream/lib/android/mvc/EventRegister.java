@@ -16,9 +16,6 @@
 
 package com.shipdream.lib.android.mvc;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.poke.Provides;
@@ -31,13 +28,15 @@ import org.slf4j.LoggerFactory;
 import javax.inject.Inject;
 
 class EventRegister {
+    private static UiThreadRunner uiThreadRunner;
+
     @Inject
     @EventBusV
     private EventBus eventBusV;
 
-    private static Handler handler;
-
     static {
+        uiThreadRunner = new AndroidUiThreadRunner();
+
         /**
          * All mvc components will use this class to register events. So the static configuration
          * is set in this class static blcok.
@@ -46,30 +45,7 @@ class EventRegister {
             Mvc.graph().getRootComponent().register(new Object() {
                 @Provides
                 public UiThreadRunner uiThreadRunner() {
-                    return new UiThreadRunner() {
-                        @Override
-                        public boolean isOnUiThread() {
-                            return Looper.getMainLooper().getThread() == Thread.currentThread();
-                        }
-
-                        @Override
-                        public void run(final Runnable runnable) {
-                            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                                runnable.run();
-                            } else {
-                                //Android handler is presented, posting to the main thread on Android.
-                                if (handler == null) {
-                                    handler = new Handler(Looper.getMainLooper());
-                                }
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        runnable.run();
-                                    }
-                                });
-                            }
-                        }
-                    };
+                    return uiThreadRunner;
                 }
             });
         } catch (ProvideException e) {
@@ -117,29 +93,13 @@ class EventRegister {
         }
     }
 
-    void onCreate() {
-        Mvc.graph().inject(this);
-    }
-
-    void onDestroy() {
-        Mvc.graph().release(this);
-    }
-
     void postEvent2V(final Object event) {
-        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-            eventBusV.post(event);
-        } else {
-            //Android handler is presented, posting to the main thread on Android.
-            if (handler == null) {
-                handler = new Handler(Looper.getMainLooper());
+        uiThreadRunner.run(new Runnable() {
+            @Override
+            public void run() {
+                eventBusV.post(event);
             }
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    eventBusV.post(event);
-                }
-            });
-        }
+        });
     }
 
 }
