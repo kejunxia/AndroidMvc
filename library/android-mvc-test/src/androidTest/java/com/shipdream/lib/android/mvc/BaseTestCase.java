@@ -21,7 +21,6 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
@@ -38,7 +37,6 @@ import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
-import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
@@ -119,44 +117,8 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
     private Handler handler;
 
     @Before
-    public synchronized void setUp() throws Exception {
+    public void setUp() throws Exception {
         super.setUp();
-        Mvc.graph = null;
-        try {
-            Mvc.graph().getRootComponent().register(new Object() {
-                @Provides
-                public UiThreadRunner uiThreadRunner() {
-                    return new UiThreadRunner() {
-                        @Override
-                        public boolean isOnUiThread() {
-                            return Looper.getMainLooper().getThread() == Thread.currentThread();
-                        }
-
-                        @Override
-                        public void run(final Runnable runnable) {
-                            if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
-                                runnable.run();
-                            } else {
-                                //Android handler is presented, posting to the main thread on Android.
-                                if (handler == null) {
-                                    handler = new Handler(Looper.getMainLooper());
-                                }
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        runnable.run();
-                                    }
-                                });
-                            }
-                        }
-                    };
-                }
-            });
-        } catch (ProvideException e) {
-            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
-        } catch (ProviderConflictException e) {
-            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
-        }
 
         injectDependencies();
 
@@ -215,7 +177,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
     }
 
     @After
-    public synchronized void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         if (activity == null) {
             return;
         }
@@ -233,8 +195,6 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
         cleanDependencies();
         Mvc.graph().release(this);
-
-        Mvc.graph = null;
 
         activity.runOnUiThread(new Runnable() {
             private void clearStateOfFragments(Fragment fragment) {

@@ -80,7 +80,7 @@ public class MvcComponent extends Component {
                     final Bean bean = (Bean) instance;
 
                     bean.onCreated();
-                    logger.trace("+++Bean instantiated - '{}'.",
+                    logger.trace("+++Bean created - '{}'.",
                             provider.type().getSimpleName());
                 }
             }

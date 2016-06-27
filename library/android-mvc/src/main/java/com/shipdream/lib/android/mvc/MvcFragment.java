@@ -323,7 +323,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      */
     protected void onPushingToBackStack() {
         if (controller != null) {
-            controller.onPushingToBackground();
+            controller.onPushingToBackStack();
         }
     }
 

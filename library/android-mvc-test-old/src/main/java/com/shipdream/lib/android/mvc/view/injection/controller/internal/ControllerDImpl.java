@@ -17,8 +17,8 @@
 package com.shipdream.lib.android.mvc.view.injection.controller.internal;
 
 import com.shipdream.lib.android.mvc.controller.internal.BaseControllerImpl;
-import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
+import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
 
 import javax.inject.Inject;
 

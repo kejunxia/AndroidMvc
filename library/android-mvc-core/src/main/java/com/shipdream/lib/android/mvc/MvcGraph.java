@@ -42,7 +42,7 @@ public class MvcGraph {
                     Bean bean = (Bean) instance;
                     bean.onDestroy();
 
-                    logger.trace("--Bean disposed - '{}'.",
+                    logger.trace("---Bean destroyed - '{}'.",
                             provider.type().getSimpleName());
                 }
             }

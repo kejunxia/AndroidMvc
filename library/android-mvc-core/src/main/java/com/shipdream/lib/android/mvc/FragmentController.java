@@ -23,7 +23,7 @@ public abstract class FragmentController<MODEL, VIEW extends UiView> extends Con
     /**
      * Called when corresponding fragment is about to be pushed to background
      */
-    public void onPushingToBackground() {
+    public void onPushingToBackStack() {
     }
 
     /**
