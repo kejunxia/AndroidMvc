@@ -155,7 +155,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onOrientationChanged);
 
         pressHome();
-        waitTest(2000);
+        waitTest(500);
         lifeCycleValidator.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);

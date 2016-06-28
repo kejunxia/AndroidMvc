@@ -151,26 +151,26 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
         testNavigateToA();
         testNavigateToB();
-        waitTest(1000);
+        waitTest();
         verify(disposeCheckerAMock, times(0)).onDestroy();
         verify(disposeCheckerBMock, times(0)).onDestroy();
         verify(disposeCheckerCMock, times(0)).onDestroy();
         verify(disposeCheckerDMock, times(0)).onDestroy();
         testNavigateToC();
-        waitTest(1000);
+        waitTest();
         verify(disposeCheckerAMock, times(0)).onDestroy();
         verify(disposeCheckerBMock, times(0)).onDestroy();
         verify(disposeCheckerCMock, times(0)).onDestroy();
         verify(disposeCheckerDMock, times(0)).onDestroy();
         testNavigateToD();
-        waitTest(1000);
+        waitTest();
         verify(disposeCheckerAMock, times(0)).onDestroy();
         verify(disposeCheckerBMock, times(0)).onDestroy();
         verify(disposeCheckerCMock, times(0)).onDestroy();
         verify(disposeCheckerDMock, times(0)).onDestroy();
         navigationManager.navigate(this).back();
         waitTest();
-        waitTest(2000);
+        waitTest(800);
         verify(disposeCheckerAMock, times(0)).onDestroy();
         verify(disposeCheckerBMock, times(0)).onDestroy();
         verify(disposeCheckerCMock, times(0)).onDestroy();
@@ -182,7 +182,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         reset(disposeCheckerCMock);
         reset(disposeCheckerDMock);
         testNavigateToD();
-        waitTest(1000);
+        waitTest();
         verify(disposeCheckerAMock, times(0)).onDestroy();
         verify(disposeCheckerBMock, times(0)).onDestroy();
         verify(disposeCheckerCMock, times(0)).onDestroy();
@@ -194,7 +194,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         reset(disposeCheckerCMock);
         reset(disposeCheckerDMock);
         navigationManager.navigate(this).back(null);
-        waitTest(1000);
+        waitTest();
         verify(disposeCheckerAMock, times(0)).onDestroy();
         verify(disposeCheckerBMock, times(1)).onDestroy();
         verify(disposeCheckerCMock, times(1)).onDestroy();
@@ -206,7 +206,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         reset(disposeCheckerCMock);
         reset(disposeCheckerDMock);
         navigationManager.navigate(this).back();
-        waitTest(2000);
+        waitTest(800);
         verify(disposeCheckerAMock, times(1)).onDestroy();
         verify(disposeCheckerBMock, times(0)).onDestroy();
         verify(disposeCheckerCMock, times(0)).onDestroy();
