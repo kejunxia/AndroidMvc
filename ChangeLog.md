@@ -1,5 +1,7 @@
 Version: 3.0
 * View and Controller are one to one mapped
+* FragmentController introduced that is bound with the same lifecycle as MvcFragment. It is easier to act as a presenter of fragment
+* Able to post actions to ui thread from controllers by protected uiThreadRunner field
 * Navigate based on controller class type instead of string location Id. e.g. navigationManager.navigate(this).to(HomePageController.class)
 * Rename BaseControllerImpl to Controller. Not necessary to create an interface for controller
 injection. A concrete class can be injected straight away.
@@ -7,6 +9,7 @@ injection. A concrete class can be injected straight away.
 * MvcComponents manage their own cached instances by themselves.
 * Register providers to Graph's root component rather than to graph itself.
 * Managers listen to eventBusC
+* New lifecycle MvcFragment.onPopAway
 
 Version:2.3
 * New navigation method that allow configuring the location not pushed to back stack
