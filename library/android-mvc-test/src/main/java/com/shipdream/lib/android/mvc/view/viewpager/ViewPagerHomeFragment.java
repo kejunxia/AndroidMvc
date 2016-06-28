@@ -25,17 +25,19 @@ import android.view.View;
 
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
 import com.shipdream.lib.android.mvc.view.viewpager.controller.FirstFragmentController;
+
+import javax.inject.Inject;
 
 public class ViewPagerHomeFragment extends MvcFragment<FirstFragmentController> {
     ViewPager viewPager;
 
     private PagerAdapter pagerAdapter;
 
-    private LifeCycleMonitor lifeCycleMonitor = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitor();
+    @Inject
+    private LifeCycleMonitor lifeCycleMonitor;
 
     @Override
     protected Class<FirstFragmentController> getControllerClass() {

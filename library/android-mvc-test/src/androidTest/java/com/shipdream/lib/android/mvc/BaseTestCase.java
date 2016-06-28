@@ -20,23 +20,19 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Build;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 
-import com.shipdream.lib.android.mvc.view.LifeCycleMonitorFactory;
 import com.shipdream.lib.android.mvc.view.LifeCycleValidator;
-import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 
@@ -111,7 +107,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         root.setLevel(Level.ALL);
     }
 
-    private Handler handler;
+    private MvcComponent lifeCycleCom;
 
     @Before
     public void setUp() throws Exception {
@@ -134,32 +130,35 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         lifeCycleMonitorMockD = mock(LifeCycleMonitorD.class);
         lifeCycleValidatorD = new LifeCycleValidator(lifeCycleMonitorMockD);
 
-        MvcApp.lifeCycleMonitorFactory = new LifeCycleMonitorFactory() {
-            @Override
+        lifeCycleCom = new MvcComponent("LifeCycleComponent");
+        lifeCycleCom.register(new Object(){
+            @Provides
             public LifeCycleMonitor provideLifeCycleMonitor() {
                 return lifeCycleMonitorMock;
             }
 
-            @Override
+            @Provides
             public LifeCycleMonitorA provideLifeCycleMonitorA() {
                 return lifeCycleMonitorMockA;
             }
 
-            @Override
+            @Provides
             public LifeCycleMonitorB provideLifeCycleMonitorB() {
                 return lifeCycleMonitorMockB;
             }
 
-            @Override
+            @Provides
             public LifeCycleMonitorC provideLifeCycleMonitorC() {
                 return lifeCycleMonitorMockC;
             }
 
-            @Override
+            @Provides
             public LifeCycleMonitorD provideLifeCycleMonitorD() {
                 return lifeCycleMonitorMockD;
             }
-        };
+        });
+
+        Mvc.graph().getRootComponent().attach(lifeCycleCom, true);
 
         instrumentation = InstrumentationRegistry.getInstrumentation();
         injectInstrumentation(instrumentation);
@@ -183,25 +182,11 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
 
         Mvc.graph().release(this);
-        super.tearDown();
-    }
 
-    private void removeFragment(FragmentManager fm, Fragment fragment) {
-        if (Build.VERSION.SDK_INT >= 17) {
-            if (!activity.isDestroyed()) {
-                try {
-                    fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-                } catch (Exception e) {
-                    LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
-                }
-            }
-        } else {
-            try {
-                fm.beginTransaction().remove(fragment).commitAllowingStateLoss();
-            } catch (Exception e) {
-                LoggerFactory.getLogger(BaseTestCase.this.getClass()).warn(e.getMessage(), e);
-            }
+        if (lifeCycleCom != null && lifeCycleCom.getParent() != null) {
+            Mvc.graph().getRootComponent().detach(lifeCycleCom);
         }
+        super.tearDown();
     }
 
     protected void pressHome() {

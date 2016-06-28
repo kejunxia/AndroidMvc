@@ -18,16 +18,6 @@ package com.shipdream.lib.android.mvc.view;
 
 import android.app.Application;
 
-import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorAImpl;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
-import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorBImpl;
-import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorCImpl;
-import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorDImpl;
-import com.shipdream.lib.android.mvc.view.help.internal.LifeCycleMonitorImpl;
 import com.shipdream.lib.android.mvc.view.test.BuildConfig;
 
 import org.slf4j.Logger;
@@ -41,41 +31,10 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.FileAppender;
 
 public class MvcApp extends Application {
-    public static LifeCycleMonitorFactory lifeCycleMonitorFactory;
-
     @Override
     public void onCreate() {
         super.onCreate();
         configureLogbackDirectly();
-
-        if(lifeCycleMonitorFactory == null) {
-            lifeCycleMonitorFactory = new LifeCycleMonitorFactory() {
-                @Override
-                public LifeCycleMonitor provideLifeCycleMonitor() {
-                    return new LifeCycleMonitorImpl();
-                }
-
-                @Override
-                public LifeCycleMonitorA provideLifeCycleMonitorA() {
-                    return new LifeCycleMonitorAImpl();
-                }
-
-                @Override
-                public LifeCycleMonitorB provideLifeCycleMonitorB() {
-                    return new LifeCycleMonitorBImpl();
-                }
-
-                @Override
-                public LifeCycleMonitorC provideLifeCycleMonitorC() {
-                    return new LifeCycleMonitorCImpl();
-                }
-
-                @Override
-                public LifeCycleMonitorD provideLifeCycleMonitorD() {
-                    return new LifeCycleMonitorDImpl();
-                }
-            };
-        }
     }
 
     private void configureLogbackDirectly() {

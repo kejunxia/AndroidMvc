@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
@@ -36,7 +35,8 @@ public class FragmentC extends FragmentInjection {
     @Inject
     private ControllerC presenterC;
 
-    private LifeCycleMonitorC lifeCycleMonitorC = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
+    @Inject
+    private LifeCycleMonitorC lifeCycleMonitorC;
 
     @Override
     protected void setUpData() {

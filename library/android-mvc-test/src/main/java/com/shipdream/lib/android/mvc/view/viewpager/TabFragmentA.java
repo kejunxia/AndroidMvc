@@ -22,8 +22,8 @@ import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.view.MvcApp;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.test.R;
 import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
 import com.shipdream.lib.android.mvc.view.viewpager.controller.TabControllerA;
@@ -49,9 +49,11 @@ public class TabFragmentA extends BaseTabFragment<TabControllerA> {
         return R.layout.fragment_view_pager_tab;
     }
 
+    @Inject
+    private LifeCycleMonitorA lifeCycleMonitorA;
     @Override
     protected LifeCycleMonitor getLifeCycleMonitor() {
-        return MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorA();
+        return lifeCycleMonitorA;
     }
 
     @Override
