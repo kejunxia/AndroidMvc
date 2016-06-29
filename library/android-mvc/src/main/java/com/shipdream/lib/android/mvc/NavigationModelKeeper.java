@@ -22,7 +22,7 @@ import android.os.Parcelable;
 /**
  * Navigation model state keeper implemented by Android parcelable.
  */
-public class NavigationModelKeeperModelKeeper implements AndroidModelKeeper<NavigationManager.Model> {
+public class NavigationModelKeeper implements AndroidModelKeeper<NavigationManager.Model> {
     @Override
     public Parcelable saveModel(NavigationManager.Model model, Class<NavigationManager.Model> modelType) {
         return new ModelParcelable(model);

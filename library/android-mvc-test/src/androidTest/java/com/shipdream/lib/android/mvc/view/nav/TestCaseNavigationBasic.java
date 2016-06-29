@@ -206,7 +206,8 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         reset(disposeCheckerCMock);
         reset(disposeCheckerDMock);
         navigationManager.navigate(this).back();
-        waitTest(800);
+
+        waitTest(1200);
         verify(disposeCheckerAMock, times(1)).onDestroy();
         verify(disposeCheckerBMock, times(0)).onDestroy();
         verify(disposeCheckerCMock, times(0)).onDestroy();

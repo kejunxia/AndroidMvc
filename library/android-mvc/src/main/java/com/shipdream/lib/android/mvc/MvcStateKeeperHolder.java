@@ -20,16 +20,12 @@ import android.os.Bundle;
 
 import com.shipdream.lib.poke.Component;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Map;
 
 /**
  * This class holds a stateKeeper as a singleton.
  */
 class MvcStateKeeperHolder {
-    private static final Logger logger = LoggerFactory.getLogger(MvcStateKeeperHolder.class);
     static MvcStateKeeper stateKeeper;
 
     static {
@@ -92,14 +88,6 @@ class MvcStateKeeperHolder {
         }
 
         Map<String, Object> cache = component.getCache();
-//        for (String key : keys) {
-//            try {
-//                Object bean = stateKeeper.restoreState(key, clazz);
-//                cache.put(key, bean);
-//            } catch (ClassNotFoundException e) {
-//                e.printStackTrace();
-//            }
-//        }
         for (String key : cache.keySet()) {
             Object v = cache.get(key);
             if (v instanceof Bean) {

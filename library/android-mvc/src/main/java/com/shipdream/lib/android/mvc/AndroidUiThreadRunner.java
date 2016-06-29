@@ -15,21 +15,35 @@ public class AndroidUiThreadRunner implements UiThreadRunner {
         return Looper.getMainLooper().getThread() == Thread.currentThread();
     }
 
+    private Handler handler() {
+        //Android handler is presented, posting to the main thread on Android.
+        if (handler == null) {
+            handler = new Handler(Looper.getMainLooper());
+        }
+        return handler;
+    }
+
     @Override
-    public void run(final Runnable runnable) {
+    public void post(final Runnable runnable) {
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             runnable.run();
         } else {
-            //Android handler is presented, posting to the main thread on Android.
-            if (handler == null) {
-                handler = new Handler(Looper.getMainLooper());
-            }
-            handler.post(new Runnable() {
+            handler().post(new Runnable() {
                 @Override
                 public void run() {
                     runnable.run();
                 }
             });
         }
+    }
+
+    @Override
+    public void postDelayed(final Runnable runnable, long delayMs) {
+        handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        }, delayMs);
     }
 }

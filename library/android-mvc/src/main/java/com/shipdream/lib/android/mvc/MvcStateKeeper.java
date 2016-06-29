@@ -28,14 +28,13 @@ import org.slf4j.LoggerFactory;
 class MvcStateKeeper implements StateKeeper {
     static Gson gson;
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private AndroidModelKeeper navigationModelKeeper = new NavigationModelKeeperModelKeeper();
+    private AndroidModelKeeper navigationModelKeeper = new NavigationModelKeeper();
     Bundle bundle;
 
     MvcStateKeeper() {
         gson = new GsonBuilder().create();
     }
 
-    //TODO: first param should be Bean and bean's model should be saved recursively
     @Override
     public void saveState(String key, Object value) {
         long ts = System.currentTimeMillis();

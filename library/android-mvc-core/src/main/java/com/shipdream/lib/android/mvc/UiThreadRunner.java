@@ -6,9 +6,16 @@ public interface UiThreadRunner {
      * @return
      */
     boolean isOnUiThread();
+
     /**
-     * Run the runnable on Android UI thread
+     * Post the runnable to run on Android UI thread
      * @param runnable
      */
-    void run(Runnable runnable);
+    void post(Runnable runnable);
+
+    /**
+     * Post the runnable to run on Android UI thread
+     * @param runnable
+     */
+    void postDelayed(Runnable runnable, long delayMs);
 }

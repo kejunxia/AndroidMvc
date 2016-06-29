@@ -150,7 +150,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         private DelegateFragment delegateFragment;
 
         private void onEvent(final NavigationManager.Event.OnLocationForward event) {
-            uiThreadRunner.run(new Runnable() {
+            uiThreadRunner.post(new Runnable() {
                 @Override
                 public void run() {
                     delegateFragment.handleForwardNavigation(event);
@@ -159,7 +159,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         private void onEvent(final NavigationManager.Event.OnLocationBack event) {
-            uiThreadRunner.run(new Runnable() {
+            uiThreadRunner.post(new Runnable() {
                 @Override
                 public void run() {
                     delegateFragment.handleBackNavigation(event);

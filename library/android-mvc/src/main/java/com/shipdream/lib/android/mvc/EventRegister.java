@@ -96,7 +96,7 @@ class EventRegister {
     }
 
     void postEvent2V(final Object event) {
-        uiThreadRunner.run(new Runnable() {
+        uiThreadRunner.post(new Runnable() {
             @Override
             public void run() {
                 eventBusV.post(event);

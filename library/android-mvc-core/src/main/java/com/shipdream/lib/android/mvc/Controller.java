@@ -53,7 +53,12 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                 }
 
                 @Override
-                public void run(Runnable runnable) {
+                public void post(Runnable runnable) {
+                    runnable.run();
+                }
+
+                @Override
+                public void postDelayed(Runnable runnable, long delayMs) {
                     runnable.run();
                 }
             };
@@ -157,7 +162,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                                 callback.onSuccess(result);
                                 callback.onFinally();
                             } else {
-                                uiThreadRunner.run(new Runnable() {
+                                uiThreadRunner.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         callback.onSuccess(result);
@@ -183,7 +188,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                                     callback.onException(e);
                                     callback.onFinally();
                                 } else {
-                                    uiThreadRunner.run(new Runnable() {
+                                    uiThreadRunner.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             callback.onException(e);
@@ -214,7 +219,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
         if (uiThreadRunner.isOnUiThread()) {
             eventBus2V.post(eventV);
         } else {
-            uiThreadRunner.run(new Runnable() {
+            uiThreadRunner.post(new Runnable() {
                 @Override
                 public void run() {
                     eventBus2V.post(eventV);

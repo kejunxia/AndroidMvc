@@ -145,7 +145,7 @@ public interface Task<RESULT> {
                                 callback.onCancelled(mayInterruptIfRunning);
                                 callback.onFinally();
                             } else {
-                                uiThreadRunner.run(new Runnable() {
+                                uiThreadRunner.post(new Runnable() {
                                     @Override
                                     public void run() {
                                         callback.onCancelled(mayInterruptIfRunning);
