@@ -39,7 +39,7 @@ class EventRegister {
 
         /**
          * All mvc components will use this class to register events. So the static configuration
-         * is set in this class static blcok.
+         * is set in this class static block.
          */
         try {
             Mvc.graph().getRootComponent().register(new Object() {

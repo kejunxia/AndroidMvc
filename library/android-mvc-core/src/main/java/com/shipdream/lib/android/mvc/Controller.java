@@ -158,18 +158,13 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                         monitor.setState(Task.Monitor.State.DONE);
 
                         if (callback != null) {
-                            if (uiThreadRunner.isOnUiThread()) {
-                                callback.onSuccess(result);
-                                callback.onFinally();
-                            } else {
-                                uiThreadRunner.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        callback.onSuccess(result);
-                                        callback.onFinally();
-                                    }
-                                });
-                            }
+                            uiThreadRunner.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onSuccess(result);
+                                    callback.onFinally();
+                                }
+                            });
                         }
                     }
                 } catch (final Exception e) {
@@ -184,18 +179,13 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                         monitor.setState(Task.Monitor.State.ERRED);
                         if (callback != null) {
                             if (callback != null) {
-                                if (uiThreadRunner.isOnUiThread()) {
-                                    callback.onException(e);
-                                    callback.onFinally();
-                                } else {
-                                    uiThreadRunner.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            callback.onException(e);
-                                            callback.onFinally();
-                                        }
-                                    });
-                                }
+                                uiThreadRunner.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.onException(e);
+                                        callback.onFinally();
+                                    }
+                                });
                             }
                         } else {
                             logger.warn(e.getMessage(), e);
@@ -216,16 +206,11 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * @param eventV The event
      */
     protected void postEvent(final Object eventV) {
-        if (uiThreadRunner.isOnUiThread()) {
-            eventBus2V.post(eventV);
-        } else {
-            uiThreadRunner.post(new Runnable() {
-                @Override
-                public void run() {
-                    eventBus2V.post(eventV);
-                }
-            });
-        }
-
+        uiThreadRunner.post(new Runnable() {
+            @Override
+            public void run() {
+                eventBus2V.post(eventV);
+            }
+        });
     }
 }

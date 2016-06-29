@@ -141,18 +141,13 @@ public interface Task<RESULT> {
                             state = State.CANCELED;
                         }
                         if (callback != null) {
-                            if (uiThreadRunner.isOnUiThread()) {
-                                callback.onCancelled(mayInterruptIfRunning);
-                                callback.onFinally();
-                            } else {
-                                uiThreadRunner.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        callback.onCancelled(mayInterruptIfRunning);
-                                        callback.onFinally();
-                                    }
-                                });
-                            }
+                            uiThreadRunner.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onCancelled(mayInterruptIfRunning);
+                                    callback.onFinally();
+                                }
+                            });
                         }
                         return cancelled;
                     } else {
