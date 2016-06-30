@@ -36,6 +36,7 @@ class EventRegister {
 
     static {
         uiThreadRunner = new AndroidUiThreadRunner();
+        Mvc.graph().uiThreadRunner = uiThreadRunner;
 
         /**
          * All mvc components will use this class to register events. So the static configuration

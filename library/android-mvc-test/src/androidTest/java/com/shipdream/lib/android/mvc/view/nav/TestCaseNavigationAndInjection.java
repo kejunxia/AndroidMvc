@@ -235,7 +235,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         //Now clear history up to A and put C on it. Then A should pop out without re
         navigationManager.navigate(this).to(ControllerB.class, new Forwarder().clearAll());
         //->B
-        waitTest(1500);
+        waitTest(2000);
         Assert.assertEquals(fm.getFragments().size(), 4);
         Assert.assertTrue(fm.getFragments().get(0) instanceof NavFragmentB);
         Assert.assertNull(fm.getFragments().get(1));

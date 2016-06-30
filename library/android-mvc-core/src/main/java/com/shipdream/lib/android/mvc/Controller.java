@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
@@ -46,22 +47,8 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
         super.onCreated();
 
         if (uiThreadRunner == null) {
-            uiThreadRunner = new UiThreadRunner() {
-                @Override
-                public boolean isOnUiThread() {
-                    return true;
-                }
-
-                @Override
-                public void post(Runnable runnable) {
-                    runnable.run();
-                }
-
-                @Override
-                public void postDelayed(Runnable runnable, long delayMs) {
-                    runnable.run();
-                }
-            };
+            //Use mvc graph's default uiThreadRunner
+            uiThreadRunner = Mvc.graph().uiThreadRunner;
         }
 
         eventBus2C.register(this);
@@ -148,7 +135,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
             callback.onStarted();
         }
 
-        monitor.setFuture(executorService.submit(new Callable<Void>() {
+        Future<Void> future = executorService.submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
                 try {
@@ -168,6 +155,17 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                         }
                     }
                 } catch (final Exception e) {
+                    if (e instanceof MvcGraph.Exception) {
+                        //Injection exception will always be thrown out since it's a development
+                        //time error
+                        uiThreadRunner.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                throw new IllegalStateException(e);
+                            }
+                        });
+                    }
+
                     boolean interruptedByCancel = false;
                     if (e instanceof InterruptedException) {
                         if (monitor.getState() == Task.Monitor.State.INTERRUPTED) {
@@ -178,24 +176,29 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                     if (!interruptedByCancel) {
                         monitor.setState(Task.Monitor.State.ERRED);
                         if (callback != null) {
-                            if (callback != null) {
-                                uiThreadRunner.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        callback.onException(e);
-                                        callback.onFinally();
-                                    }
-                                });
-                            }
+                            uiThreadRunner.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    callback.onException(e);
+                                    callback.onFinally();
+                                }
+                            });
                         } else {
-                            logger.warn(e.getMessage(), e);
+                            uiThreadRunner.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    throw new RuntimeException(e);
+                                }
+                            });
                         }
                     }
                 }
 
                 return null;
             }
-        }));
+        });
+
+        monitor.setFuture(future);
 
         return monitor;
     }

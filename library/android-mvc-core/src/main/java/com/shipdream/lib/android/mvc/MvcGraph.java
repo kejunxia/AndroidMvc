@@ -20,14 +20,36 @@ public class MvcGraph {
     final Logger logger = LoggerFactory.getLogger(getClass());
 
     public static class Exception extends RuntimeException {
+        public Exception(String s) {
+            super(s);
+        }
+
         public Exception(String message, Throwable cause) {
             super(message, cause);
         }
     }
 
+    UiThreadRunner uiThreadRunner;
     Graph graph;
 
     {
+        uiThreadRunner = new UiThreadRunner() {
+            @Override
+            public boolean isOnUiThread() {
+                return true;
+            }
+
+            @Override
+            public void post(Runnable runnable) {
+                runnable.run();
+            }
+
+            @Override
+            public void postDelayed(Runnable runnable, long delayMs) {
+                runnable.run();
+            }
+        };
+
         graph = new Graph();
         try {
             graph.setRootComponent(new MvcComponent("MvcRootComponent"));
@@ -84,6 +106,9 @@ public class MvcGraph {
      */
     public <T> T reference(Class<T> type, Annotation qualifier)
             throws ProviderMissingException, ProvideException, CircularDependenciesException {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new IllegalStateException("Cannot reference an instance from Non-UiThread");
+        }
         return graph.reference(type, qualifier, Inject.class);
     }
 
@@ -96,6 +121,9 @@ public class MvcGraph {
      */
     public <T> void dereference(T instance, Class<T> type, Annotation qualifier)
             throws ProviderMissingException {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new IllegalStateException("Cannot dereference an instance from Non-UiThread");
+        }
         graph.dereference(instance, type, qualifier, Inject.class);
     }
 
@@ -105,6 +133,9 @@ public class MvcGraph {
      * @param consumer Consume to use the instance
      */
     public <T> void use(final Class<T> type, final Consumer<T> consumer) {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot use an instance from Non-UiThread");
+        }
         try {
             graph.use(type, Inject.class, consumer);
         } catch (PokeException e) {
@@ -224,6 +255,9 @@ public class MvcGraph {
      * @throws Exception throw when there are exceptions during the consumption of the instance
      */
     public <T> void use(final Class<T> type, final Annotation qualifier, final Consumer<T> consumer) {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot use an instance from Non-UiThread");
+        }
         try {
             graph.use(type, qualifier, Inject.class, consumer);
         } catch (PokeException e) {
@@ -238,6 +272,9 @@ public class MvcGraph {
      * @param target The target object whose fields annotated by {@link Inject} will be injected.
      */
     public void inject(Object target) {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot inject an instance from Non-UiThread");
+        }
         try {
             graph.inject(target, Inject.class);
         } catch (PokeException e) {
@@ -253,6 +290,9 @@ public class MvcGraph {
      * @param target of which the object fields will be released.
      */
     public void release(Object target) {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot release an instance from Non-UiThread");
+        }
         try {
             graph.release(target, Inject.class);
         } catch (ProviderMissingException e) {
@@ -266,6 +306,9 @@ public class MvcGraph {
      * @param component The root {@link Component} of this graph.
      */
     public void setRootComponent(MvcComponent component) throws Graph.IllegalRootComponentException {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot set root component from Non-UiThread");
+        }
         graph.setRootComponent(component);
     }
 
@@ -279,6 +322,9 @@ public class MvcGraph {
      * @param onProviderFreedListener The listener
      */
     public void registerDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot register dereference listener from Non-UiThread");
+        }
         graph.registerDereferencedListener(onProviderFreedListener);
     }
 
@@ -289,6 +335,9 @@ public class MvcGraph {
      * @param onProviderFreedListener The listener
      */
     public void unregisterDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot unregister dereference listener from Non-UiThread");
+        }
         graph.unregisterDereferencedListener(onProviderFreedListener);
     }
 
@@ -297,6 +346,9 @@ public class MvcGraph {
      * instance of an injected contract is freed.
      */
     public void clearDereferencedListeners() {
+        if (!uiThreadRunner.isOnUiThread()) {
+            throw new Exception("Cannot clear dereference listeners from Non-UiThread");
+        }
         graph.clearDereferencedListeners();
     }
 }
