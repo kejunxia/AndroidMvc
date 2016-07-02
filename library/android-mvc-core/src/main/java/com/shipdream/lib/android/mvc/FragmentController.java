@@ -8,10 +8,14 @@ public abstract class FragmentController<MODEL, VIEW extends UiView> extends Con
     }
 
     /**
-     * Called when the view of the corresponding fragment is created
+     * Called when the view of the corresponding fragment is created. When {@link Reason#isNewInstance()}
+     * the corresponding {@link UiView#update()} will be called.
      * @param reason Why the model needs to be bound
      */
     public void onViewReady(Reason reason) {
+        if (reason.isNewInstance()) {
+            view.update();
+        }
     }
 
     /**

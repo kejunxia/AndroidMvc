@@ -271,8 +271,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
         if (controller != null) {
             controller.onViewReady(reason);
         }
-
-        update();
     }
 
     /**
