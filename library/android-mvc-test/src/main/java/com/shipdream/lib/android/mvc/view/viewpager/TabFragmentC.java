@@ -53,11 +53,10 @@ public class TabFragmentC extends BaseTabFragment<TabControllerC> {
         super.onViewReady(view, savedInstanceState, reason);
 
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
-        textView.setText("Tab C");
     }
 
     @Override
     public void update() {
-
+        textView.setText("Tab C");
     }
 }

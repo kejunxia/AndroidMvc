@@ -22,13 +22,12 @@ import android.util.Log;
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.Mvc;
+import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.poke.Graph;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -49,8 +48,8 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
     }
     
     @Override
-    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
-        super.prepareDependencies();
+    protected void prepareDependencies(MvcComponent testComponent) throws Exception {
+        super.prepareDependencies(testComponent);
 
         monitor = new CountMonitor(){
             @Override

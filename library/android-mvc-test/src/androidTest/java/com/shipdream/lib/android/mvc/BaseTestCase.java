@@ -32,9 +32,8 @@ import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -54,7 +53,7 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentationTestCase2<T> {
+public class BaseTestCase<T extends MvcActivity> extends ActivityInstrumentationTestCase2<T> {
     protected LifeCycleValidator lifeCycleValidator;
     protected LifeCycleMonitor lifeCycleMonitorMock;
 
@@ -76,6 +75,8 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
     public BaseTestCase(Class<T> activityClass) {
         super(activityClass);
     }
+
+    protected MvcComponent component;
 
     @BeforeClass
     public static void beforeClass() {
@@ -107,13 +108,9 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         root.setLevel(Level.ALL);
     }
 
-    private MvcComponent lifeCycleCom;
-
     @Before
     public void setUp() throws Exception {
         super.setUp();
-
-        prepareDependencies();
 
         lifeCycleMonitorMock = mock(LifeCycleMonitor.class);
         lifeCycleValidator = new LifeCycleValidator(lifeCycleMonitorMock);
@@ -130,8 +127,8 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
         lifeCycleMonitorMockD = mock(LifeCycleMonitorD.class);
         lifeCycleValidatorD = new LifeCycleValidator(lifeCycleMonitorMockD);
 
-        lifeCycleCom = new MvcComponent("LifeCycleComponent");
-        lifeCycleCom.register(new Object(){
+        component = new MvcComponent("UnitTestComponent");
+        component.register(new Object() {
             @Provides
             public LifeCycleMonitor provideLifeCycleMonitor() {
                 return lifeCycleMonitorMock;
@@ -158,34 +155,46 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
             }
         });
 
-        Mvc.graph().getRootComponent().attach(lifeCycleCom, true);
+        Mvc.graph().getRootComponent().attach(component, true);
+        prepareDependencies(component);
 
         instrumentation = InstrumentationRegistry.getInstrumentation();
         injectInstrumentation(instrumentation);
         activity = getActivity();
 
-        Mvc.graph().inject(this);
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Mvc.graph().inject(BaseTestCase.this);
+            }
+        });
+        instrumentation.waitForIdleSync();
     }
 
-    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
+    protected void prepareDependencies(MvcComponent testComponent) throws Exception {
     }
 
     @After
     public void tearDown() throws Exception {
-        if (activity == null) {
+        if (activity == null || navigationManager == null) {
             return;
         }
 
+        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         navigationManager.navigate(this).back(null);
         navigationManager.navigate(this).back();
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-
-        Mvc.graph().release(this);
-
-        if (lifeCycleCom != null && lifeCycleCom.getParent() != null) {
-            Mvc.graph().getRootComponent().detach(lifeCycleCom);
-        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Mvc.graph().release(BaseTestCase.this);
+                try {
+                    Mvc.graph().getRootComponent().detach(component);
+                } catch (Component.MismatchDetachException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
         super.tearDown();
     }
 
@@ -219,6 +228,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
     /**
      * Thread sleeps for 0 ms by default
+     *
      * @throws InterruptedException
      */
     protected void waitTest() throws InterruptedException {
@@ -227,6 +237,7 @@ public class BaseTestCase <T extends MvcActivity> extends ActivityInstrumentatio
 
     /**
      * Thread sleeps for given ms
+     *
      * @param duration how long to wait
      * @throws InterruptedException
      */

@@ -370,4 +370,16 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
                 LifeCycle.onPoppedOutToFront);
     }
 
+    @Test
+    public void test_call_tab_controller_update_on_swipe() throws Throwable {
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+    }
 }

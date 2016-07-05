@@ -22,6 +22,7 @@ import com.google.gson.Gson;
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.Mvc;
+import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
@@ -29,8 +30,6 @@ import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.PokeException;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
@@ -57,6 +56,9 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
+    private NavigationManager navigationManager;
+
+    @Inject
     private AnotherController anotherPresenter;
 
     private Comp comp;
@@ -71,7 +73,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
     @Override
     protected void waitTest() throws InterruptedException {
-        waitTest(300);
+        getInstrumentation().waitForIdleSync();
     }
 
     public static class Comp {
@@ -103,7 +105,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
     }
 
     @Override
-    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
+    protected void prepareDependencies(MvcComponent testComponent) throws Exception {
         disposeCheckerAMock = mock(DisposeCheckerA.class);
         doAnswer(new Answer() {
             @Override
@@ -134,10 +136,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
     }
 
     private NavigationManager.Model getNavManagerModel() throws PokeException {
-        NavigationManager navigationManager = Mvc.graph().reference(NavigationManager.class, null);
-        NavigationManager.Model model = navigationManager.getModel();
-        Mvc.graph().dereference(navigationManager, NavigationManager.class, null);
-        return model;
+        return navigationManager.getModel();
     }
 
     @Test
@@ -511,6 +510,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
     @Test
     public void test_should_not_push_fragments_to_back_stack_with_interim_nav_location() throws InterruptedException {
+        waitTest();
         navigationManager.navigate(this).to(ControllerA.class);
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
@@ -530,6 +530,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
     @Test
     public void test_should_be_able_to_skip_interim_item_with_clear_history_nav_location() throws InterruptedException {
+        getInstrumentation().waitForIdleSync();
         navigationManager.navigate(this).to(ControllerA.class);
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
@@ -608,24 +609,28 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
     }
 
     private void testNavigateToA() throws InterruptedException {
+        waitTest();
         navigationManager.navigate(this).to(ControllerA.class);
         waitTest();
         onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     private void testNavigateToB() throws InterruptedException {
+        waitTest();
         navigationManager.navigate(this).to(ControllerB.class);
         waitTest();
         onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     private void testNavigateToC() throws InterruptedException {
+        waitTest();
         navigationManager.navigate(this).to(ControllerC.class);
         waitTest();
         onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     private void testNavigateToD() throws InterruptedException {
+        waitTest();
         navigationManager.navigate(this).to(ControllerD.class);
         waitTest();
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));

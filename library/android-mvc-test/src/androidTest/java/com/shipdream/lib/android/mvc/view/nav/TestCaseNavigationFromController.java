@@ -18,11 +18,10 @@ package com.shipdream.lib.android.mvc.view.nav;
 
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.Mvc;
+import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Preparer;
 import com.shipdream.lib.poke.Provides;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -45,7 +44,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActivityNavigation> {
+public class TestCaseNavigationFromController extends BaseTestCase<MvcTestActivityNavigation> {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
@@ -88,7 +87,7 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
     }
 
     @Override
-    protected void prepareDependencies() throws ProvideException, ProviderConflictException {
+    protected void prepareDependencies(MvcComponent testComponent) throws Exception {
         disposeCheckerEMock = mock(DisposeCheckerE.class);
         doAnswer(new Answer() {
             @Override
@@ -130,12 +129,17 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
 
         final String val = "Value = " + new Random().nextInt();
 
-        navigationManager.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
+        instrumentation.runOnMainSync(new Runnable() {
             @Override
-            public void prepare(ControllerE instance) {
-                instance.setValue(val);
+            public void run() {
+                navigationManager.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
+                    @Override
+                    public void prepare(ControllerE instance) {
+                        instance.setValue(val);
+                    }
+                }).to(ControllerE.class);
             }
-        }).to(ControllerE.class);
+        });
 
         //The value set to controller e in Injector.graph().use should be retained during the
         //navigation
@@ -160,25 +164,36 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         final String valG = "ValueG = " + new Random().nextInt();
 
         resetDisposeCheckers();
-        navigationManager.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
+
+        instrumentation.runOnMainSync(new Runnable() {
             @Override
-            public void prepare(ControllerE instance) {
-                instance.setValue(valE);
+            public void run() {
+                navigationManager.navigate(this).with(ControllerE.class, new Preparer<ControllerE>() {
+                    @Override
+                    public void prepare(ControllerE instance) {
+                        instance.setValue(valE);
+                    }
+                }).to(ControllerE.class);
             }
-        }).to(ControllerE.class);
-        waitTest();
+        });
+
         onView(withText(valE)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDestroy();
         verify(disposeCheckerFMock, times(0)).onDestroy();
         verify(disposeCheckerGMock, times(0)).onDestroy();
 
         resetDisposeCheckers();
-        navigationManager.navigate(this).with(ControllerF.class, new Preparer<ControllerF>() {
+        instrumentation.runOnMainSync(new Runnable() {
             @Override
-            public void prepare(ControllerF instance) {
-                instance.setValue(valF);
+            public void run() {
+                navigationManager.navigate(this).with(ControllerF.class, new Preparer<ControllerF>() {
+                    @Override
+                    public void prepare(ControllerF instance) {
+                        instance.setValue(valF);
+                    }
+                }).to(ControllerF.class);
             }
-        }).to(ControllerF.class);
+        });
         waitTest();
         onView(withText(valF)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDestroy();
@@ -186,12 +201,18 @@ public class TestCaseNavigationFromController extends BaseTestCase <MvcTestActiv
         verify(disposeCheckerGMock, times(0)).onDestroy();
 
         resetDisposeCheckers();
-        navigationManager.navigate(this).with(ControllerG.class, new Preparer<ControllerG>() {
+
+        instrumentation.runOnMainSync(new Runnable() {
             @Override
-            public void prepare(ControllerG instance) {
-                instance.setValue(valG);
+            public void run() {
+                navigationManager.navigate(this).with(ControllerG.class, new Preparer<ControllerG>() {
+                    @Override
+                    public void prepare(ControllerG instance) {
+                        instance.setValue(valG);
+                    }
+                }).to(ControllerG.class);
             }
-        }).to(ControllerG.class);
+        });
         waitTest();
         onView(withText(valG)).check(matches(isDisplayed()));
         verify(disposeCheckerEMock, times(0)).onDestroy();
