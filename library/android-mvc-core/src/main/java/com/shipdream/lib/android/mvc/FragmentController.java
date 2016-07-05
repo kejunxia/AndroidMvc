@@ -8,14 +8,11 @@ public abstract class FragmentController<MODEL, VIEW extends UiView> extends Con
     }
 
     /**
-     * Called when the view of the corresponding fragment is created. When {@link Reason#isFirstTime()}
-     * is true or {@link Reason#isRestored()} the corresponding {@link UiView#update()} will be called.
-     * @param reason Why the model needs to be bound
+     * Called when the view of the corresponding fragment is created. It calls {@link UiView#update()}
+     * automatically.
      */
     public void onViewReady(Reason reason) {
-        if (reason.isFirstTime() || reason.isRestored()) {
-            view.update();
-        }
+        view.update();
     }
 
     /**

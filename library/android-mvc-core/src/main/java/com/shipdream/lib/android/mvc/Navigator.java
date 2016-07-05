@@ -189,40 +189,40 @@ public class Navigator {
     }
 
     /**
-     * Navigate to the location represented by the presenter. Navigation only takes effect when the
+     * Navigate to the location represented by the controller. Navigation only takes effect when the
      * given locationId is different from the current location and raises {@link NavigationManager.Event.OnLocationForward}
      * <p/>
      * <p>
      * To set argument for the next location navigating to, use {@link #with(Class, Annotation, com.shipdream.lib.android.mvc.Preparer)}
-     * to prepare the presenter injecting into the next fragment.
+     * to prepare the controller injecting into the next fragment.
      * </p>
      *
-     * @param presenterClass The presenter of which screen the app is navigating to.
+     * @param controllerClass The controller of which screen the app is navigating to.
      */
-    public void to(@NotNull Class<? extends Controller> presenterClass) {
-        doNavigateTo(presenterClass, null);
+    public void to(@NotNull Class<? extends Controller> controllerClass) {
+        doNavigateTo(controllerClass, null);
         go();
     }
 
     /**
-     * Navigate to the location represented by the presenter. Navigation only takes effect when the
+     * Navigate to the location represented by the controller. Navigation only takes effect when the
      * given locationId is different from the current location and raises {@link NavigationManager.Event.OnLocationForward}
      * <p/>
      * <p>
      * To set argument for the next location navigating to, use {@link #with(Class, Annotation, com.shipdream.lib.android.mvc.Preparer)}
-     * to prepare the presenter injecting into the next fragment.
+     * to prepare the controller injecting into the next fragment.
      * </p>
      *
-     * @param presenterClass The presenter class type.
+     * @param controllerClass The controller class type.
      * @param forwarder      The configuration by {@link Forwarder} of the forward navigation.
      */
-    public void to(@NotNull Class<? extends Controller> presenterClass,
+    public void to(@NotNull Class<? extends Controller> controllerClass,
                    @NotNull Forwarder forwarder) {
-        doNavigateTo(presenterClass, forwarder);
+        doNavigateTo(controllerClass, forwarder);
         go();
     }
 
-    private void doNavigateTo(@NotNull Class<? extends Controller> presenterClass,
+    private void doNavigateTo(@NotNull Class<? extends Controller> controllerClass,
                               Forwarder forwarder) {
         boolean clearTop = false;
         String clearToLocationId = null;
@@ -257,7 +257,7 @@ public class Navigator {
         NavLocation lastLoc = navigationManager.getModel().getCurrentLocation();
         boolean locationChanged = false;
 
-        String locationId = presenterClass == null ? null : presenterClass.getName();
+        String locationId = controllerClass == null ? null : controllerClass.getName();
 
         if (clearTop) {
             locationChanged = true;
@@ -318,14 +318,14 @@ public class Navigator {
     }
 
     /**
-     * Navigates back. If current location is null it doesn't take any effect. When presenterClass
+     * Navigates back. If current location is null it doesn't take any effect. When controllerClass
      * is null, navigate to the very first location and clear all history prior to it, otherwise
      * navigate to location with given locationId and clear history prior to it. Then a
      * {@link NavigationManager.Event.OnLocationBack} event will be raised.
      *
-     * @param presenterClass the presenter class type
+     * @param controllerClass the controller class type
      */
-    public void back(Class<? extends Controller> presenterClass) {
+    public void back(Class<? extends Controller> controllerClass) {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationManager.logger.warn("Current location should never be null before navigating backwards.");
@@ -340,7 +340,7 @@ public class Navigator {
         boolean success = false;
         NavLocation previousLoc = currentLoc;
 
-        String toLocationId = presenterClass == null ? null : presenterClass.getName();
+        String toLocationId = controllerClass == null ? null : controllerClass.getName();
 
         if (toLocationId == null) {
             success = true;
