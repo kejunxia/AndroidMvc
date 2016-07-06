@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.inject.Inject;
 
@@ -40,8 +41,9 @@ public abstract class MvcActivity extends AppCompatActivity {
     private Logger logger = LoggerFactory.getLogger(getClass());
     static final String STATE_PREFIX = "$$$mvc:state:";
     private static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
-    private DelegateFragment delegateFragment;
+    protected DelegateFragment delegateFragment;
     boolean toPrintAppExitMessage = false;
+    private List<Runnable> actionsOnDestroy = new CopyOnWriteArrayList<>();
 
     String getDelegateFragmentTag() {
         return FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
@@ -86,6 +88,12 @@ public abstract class MvcActivity extends AppCompatActivity {
             logger.trace("App Exits(UI): {} injected beans are still cached.",
                     Mvc.graph().getRootComponent().getCache());
             toPrintAppExitMessage = false;
+        }
+
+        if (actionsOnDestroy != null) {
+            for (Runnable runnable : actionsOnDestroy) {
+                runnable.run();
+            }
         }
     }
 
@@ -664,7 +672,14 @@ public abstract class MvcActivity extends AppCompatActivity {
 
             NavLocation currentLoc = event.getCurrentValue();
             if (currentLoc == null) {
-                destroyNavigator(event.getNavigator());
+                MvcActivity act = (MvcActivity) getActivity();
+                act.actionsOnDestroy.add(new Runnable() {
+                    @Override
+                    public void run() {
+                        destroyNavigator(event.getNavigator());
+                        pendingNavActions.remove(this);
+                    }
+                });
 
                 MvcActivity mvcActivity = ((MvcActivity) getActivity());
                 //Back to null which should finish the current activity
