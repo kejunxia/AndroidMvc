@@ -342,7 +342,7 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
         }
 
         if (kill) {
-            final Waiter waiter = new Waiter("BringBack", 1200);
+            final Waiter waiter = new Waiter("BringBack", 2000);
             bringBackWaiters.put(ticket, waiter);
             Log.v("TrackLifeSync:BringBack", "Ticket: " + ticket);
 
