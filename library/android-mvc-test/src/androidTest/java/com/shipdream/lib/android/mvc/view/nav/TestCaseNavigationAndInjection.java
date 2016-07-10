@@ -352,9 +352,10 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         prepareAndCheckStack();
         //->A->B->C->D
 
-        waitTest();
         resetGraphMonitorCounts();
         bringBack(pressHome());
+
+        Thread.sleep(1000);
 
         Assert.assertEquals(activity.fragAInjectCount, 1);
         Assert.assertEquals(activity.fragAReleaseCount, 1);
