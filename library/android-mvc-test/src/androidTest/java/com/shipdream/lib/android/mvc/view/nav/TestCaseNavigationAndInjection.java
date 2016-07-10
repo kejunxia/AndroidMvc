@@ -354,10 +354,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
 
         waitTest();
         resetGraphMonitorCounts();
-        pressHome();
-        waitTest();
-        bringBack();
-        waitTest();
+        bringBack(pressHome());
 
         Assert.assertEquals(activity.fragAInjectCount, 1);
         Assert.assertEquals(activity.fragAReleaseCount, 1);
@@ -433,8 +430,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
 
         waitTest();
         resetGraphMonitorCounts();
-        pressHome();
-        bringBack();
+        bringBack(pressHome());
 
         Assert.assertEquals(activity.fragAInjectCount, 1);
         Assert.assertEquals(activity.fragAReleaseCount, 1);
@@ -483,8 +479,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         //->A->B->C->D
         waitTest();
         resetGraphMonitorCounts();
-        pressHome();
-        bringBack();
+        bringBack(pressHome());
 
         Assert.assertEquals(activity.fragAInjectCount, 1);
         Assert.assertEquals(activity.fragAReleaseCount, 1);

@@ -152,9 +152,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        pressHome();
+        bringBack(pressHome());
 
-        bringBack();
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
             "Added by FragmentB\nAdded by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
@@ -215,7 +214,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
             LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
-        pressHome();
+        String ticket = pressHome();
 
         lifeCycleValidatorA.expect(LifeCycle.onDestroy);
 
@@ -223,7 +222,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onDestroyView,
             LifeCycle.onDestroy);
 
-        bringBack();
+        bringBack(ticket);
 
         lifeCycleValidatorB.expect(LifeCycle.onCreateNotNull,
             LifeCycle.onCreateViewNotNull,

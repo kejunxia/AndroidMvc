@@ -45,27 +45,27 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
-        pressHome();
+        String ticket = pressHome();
         lifeCycleValidator.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
-        bringBack();
+        bringBack(ticket);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull,
                 LifeCycle.onCreateViewNotNull, LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyRestore);
 
-        pressHome();
+        ticket = pressHome();
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onDestroyView,
                 LifeCycle.onDestroy);
 
-        bringBack();
+        bringBack(ticket);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull,
                 LifeCycle.onCreateViewNotNull, LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyRestore);
 
-        pressHome();
+        ticket = pressHome();
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onDestroyView,
                 LifeCycle.onDestroy);
@@ -138,12 +138,12 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onOrientationChanged,
                 LifeCycle.onDestroyView);
 
-        pressHome();
+        String ticket = pressHome();
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
         rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        bringBack();
+        bringBack(ticket);
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyNewInstance,
@@ -151,11 +151,11 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged);
 
-        pressHome();
+        ticket = pressHome();
         lifeCycleValidator.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
         rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-        bringBack();
+        bringBack(ticket);
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyNewInstance,

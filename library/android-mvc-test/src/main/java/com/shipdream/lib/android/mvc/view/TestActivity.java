@@ -1,17 +1,34 @@
 package com.shipdream.lib.android.mvc.view;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.MvcActivity;
+import com.shipdream.lib.android.mvc.event.bus.EventBus;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.inject.Inject;
 
 /**
  * Created by kejun on 6/07/2016.
  */
 
 public abstract class TestActivity extends MvcActivity {
+    private static final String EXTRA_BRING_BACK_SENDER = "Intent_BringBackSender";
+
+    public interface Event {
+        class OnFragmentsResumed {
+            public String sender;
+            public OnFragmentsResumed(String sender) {
+                this.sender = sender;
+            }
+        }
+    }
+
     public enum State{
         CREATE,
         RESUME,
@@ -29,6 +46,10 @@ public abstract class TestActivity extends MvcActivity {
         protected void onSaveInstanceState(){}
         protected void onDestroy(){}
     }
+
+    @Inject
+    @EventBusV
+    private EventBus eventBusV;
 
     private State state;
 
@@ -50,18 +71,35 @@ public abstract class TestActivity extends MvcActivity {
         }
     }
 
+    private String bringBackSender;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Mvc.graph().inject(this);
+
         super.onCreate(savedInstanceState);
         state = State.CREATE;
         for (Proxy proxy : proxies) {
             proxy.onCreate();
         }
+
+        if (bringBackSender == null &&
+                savedInstanceState != null && savedInstanceState.containsKey(EXTRA_BRING_BACK_SENDER)) {
+            bringBackSender = savedInstanceState.getString(EXTRA_BRING_BACK_SENDER);
+            Log.v("TrackLifeSync:BringBack", "Ticket found: " + bringBackSender);
+        }
+
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        if (bringBackSender != null) {
+            Log.v("TrackLifeSync:BringBack", "Send skip event for: " + bringBackSender);
+            eventBusV.post(new Event.OnFragmentsResumed(bringBackSender));
+            bringBackSender = null;
+        }
+
         state = State.RESUME;
         for (Proxy proxy : proxies) {
             proxy.onResume();
@@ -77,9 +115,15 @@ public abstract class TestActivity extends MvcActivity {
         }
     }
 
+    public static String ticket = null;
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        if (ticket != null) {
+            outState.putString(EXTRA_BRING_BACK_SENDER, ticket);
+        }
+
         state = State.SAVE_INSTANCE_STATE;
         for (Proxy proxy : proxies) {
             proxy.onSaveInstanceState();
@@ -102,6 +146,8 @@ public abstract class TestActivity extends MvcActivity {
         for (Proxy proxy : proxies) {
             proxy.onDestroy();
         }
+
+        Mvc.graph().release(this);
     }
 
 

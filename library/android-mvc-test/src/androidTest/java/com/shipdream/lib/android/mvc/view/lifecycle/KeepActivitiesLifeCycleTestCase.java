@@ -45,16 +45,16 @@ public class KeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
-        pressHome();
+        String ticket = pressHome();
         lifeCycleValidator.expect();
 
-        bringBack();
+        bringBack(ticket);
         lifeCycleValidator.expect(LifeCycle.onReturnForeground);
 
-        pressHome();
+        ticket = pressHome();
         lifeCycleValidator.expect();
 
-        bringBack();
+        bringBack(ticket);
         lifeCycleValidator.expect(LifeCycle.onReturnForeground);
     }
 
@@ -130,10 +130,10 @@ public class KeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onOrientationChanged,
                 LifeCycle.onDestroyView);
 
-        pressHome();
+        String ticket = pressHome();
         waitTest();
         rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        bringBack();
+        bringBack(ticket);
         waitTest();
         lifeCycleValidator.expect(
                 LifeCycle.onDestroyView,
@@ -142,11 +142,11 @@ public class KeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged);
 
-        pressHome();
+        ticket = pressHome();
         waitTest();
 
         rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
-        bringBack();
+        bringBack(ticket);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateViewNull,
                 LifeCycle.onViewCreatedNull,

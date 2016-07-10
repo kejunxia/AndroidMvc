@@ -26,6 +26,8 @@ import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
 import android.util.Log;
 
+import com.shipdream.lib.android.mvc.event.bus.EventBus;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvc.view.LifeCycleValidator;
 import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
@@ -42,6 +44,10 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 
@@ -66,6 +72,10 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
     protected LifeCycleValidator lifeCycleValidatorC;
     protected LifeCycleMonitorD lifeCycleMonitorMockD;
     protected LifeCycleValidator lifeCycleValidatorD;
+
+    @Inject
+    @EventBusV
+    private EventBus eventBusV;
 
     private static class Waiter {
         boolean skip = false;
@@ -97,7 +107,7 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
                     break;
                 }
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -205,8 +215,10 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
             @Override
             public void run() {
                 Mvc.graph().inject(BaseTestCase.this);
+                eventBusV.register(BaseTestCase.this);
             }
         });
+
         instrumentation.waitForIdleSync();
     }
 
@@ -238,6 +250,8 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
             }
         });
         super.tearDown();
+
+        eventBusV.unregister(this);
     }
 
     protected void navTo(final Class cls) {
@@ -270,7 +284,10 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
         waiter.waitNow();
     }
 
-    protected void pressHome() {
+    protected String pressHome() {
+        String ticket = "PressHome: " + UUID.randomUUID();
+        TestActivity.ticket = ticket;
+
         final Intent startMain = new Intent(Intent.ACTION_MAIN);
         startMain.addCategory(Intent.CATEGORY_HOME);
         startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -299,10 +316,22 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
         activity.removeProxy(proxy);
 
         Log.v("TrackLifeSync:Home", "Finish");
+
+        return ticket;
     }
 
-    protected void bringBack() {
-        Intent i = new Intent(activity.getApplicationContext(), activity.getClass());
+    private Map<String, Waiter> bringBackWaiters = new ConcurrentHashMap<>();
+    private void onEvent(TestActivity.Event.OnFragmentsResumed event) {
+        Waiter waiter = bringBackWaiters.get(event.sender);
+        if (waiter != null) {
+            waiter.skip();
+            Log.v("TrackLifeSync:BringBack", "Skip waiting bringBack " + event.sender);
+            bringBackWaiters.remove(event.sender);
+        }
+    }
+
+    protected void bringBack(String ticket) {
+        final Intent i = new Intent(activity, activity.getClass());
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 
         boolean kill = false;
@@ -314,9 +343,13 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
 
         if (kill) {
             final Waiter waiter = new Waiter("BringBack", 1200);
-            activity.startActivity(i);
+            bringBackWaiters.put(ticket, waiter);
+            Log.v("TrackLifeSync:BringBack", "Ticket: " + ticket);
 
+            activity.startActivity(i);
             waiter.waitNow();
+
+            bringBackWaiters.remove(ticket);
         } else {
             final Waiter waiter = new Waiter("BringBack");
             TestActivity.Proxy proxy = new TestActivity.Proxy() {
@@ -355,12 +388,10 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
 
     protected void startActivity(Intent intent) {
         activity.startActivity(intent);
-        synchronized (this) {
-            try {
-                wait(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

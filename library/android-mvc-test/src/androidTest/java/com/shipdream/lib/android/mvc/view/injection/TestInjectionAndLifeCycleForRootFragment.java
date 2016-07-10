@@ -53,8 +53,7 @@ public class TestInjectionAndLifeCycleForRootFragment extends BaseTestCase<Injec
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        pressHome();
-        bringBack();
+        bringBack(pressHome());
 
         Thread.sleep(1500);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\nAdded by FragmentA\nOK")));

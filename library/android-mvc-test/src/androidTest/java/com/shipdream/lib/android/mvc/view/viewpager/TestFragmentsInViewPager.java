@@ -81,9 +81,8 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorB.expect(LifeCycle.onPushToBackStack,LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect();
 
-        pressHome();
+        bringBack(pressHome());
 
-        bringBack();
         lifeCycleValidator.expect();
 
         lifeCycleValidatorA.expect();
@@ -157,9 +156,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorB.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect();
 
-        pressHome();
-
-        bringBack();
+        bringBack(pressHome());
 
         lifeCycleValidator.expect(
                 LifeCycle.onDestroy,
