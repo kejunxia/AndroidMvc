@@ -94,11 +94,6 @@ public abstract class TestActivity extends MvcActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (bringBackSender != null) {
-            Log.v("TrackLifeSync:BringBack", "Send skip event for: " + bringBackSender);
-            eventBusV.post(new Event.OnFragmentsResumed(bringBackSender));
-            bringBackSender = null;
-        }
 
         state = State.RESUME;
         for (Proxy proxy : proxies) {
@@ -109,9 +104,16 @@ public abstract class TestActivity extends MvcActivity {
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
+
         state = State.RESUME_FRAGMENTS;
         for (Proxy proxy : proxies) {
             proxy.onResumeFragments();
+        }
+
+        if (bringBackSender != null) {
+            Log.v("TrackLifeSync:BringBack", "Send skip event for: " + bringBackSender);
+            eventBusV.post(new Event.OnFragmentsResumed(bringBackSender));
+            bringBackSender = null;
         }
     }
 
