@@ -3,7 +3,10 @@ package com.shipdream.lib.android.mvc.samples.simple.view;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Reason;
@@ -12,12 +15,16 @@ import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicContr
 
 import javax.inject.Inject;
 
-public class CounterBasicView extends AbstractFragment<CounterBasicController> {
+public class CounterBasicView extends AbstractFragment<CounterBasicController>
+        implements CounterBasicController.View{
 
     @Inject
     private NavigationManager navigationManager;
 
     private TextView display;
+    private TextView ipValue;
+    private ProgressBar ipProgress;
+    private ImageView ipRefresh;
     private Button increment;
     private Button decrement;
     private Button buttonShowAdvancedView;
@@ -32,7 +39,7 @@ public class CounterBasicView extends AbstractFragment<CounterBasicController> {
      */
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_counter_entry;
+        return R.layout.fragment_counter_basic;
     }
 
     /**
@@ -49,6 +56,9 @@ public class CounterBasicView extends AbstractFragment<CounterBasicController> {
         super.onViewReady(view, savedInstanceState, reason);
 
         display = (TextView) view.findViewById(R.id.fragment_a_counterDisplay);
+        ipValue = (TextView) view.findViewById(R.id.fragment_a_ipValue);
+        ipProgress = (ProgressBar) view.findViewById(R.id.fragment_a_ipProgress);
+        ipRefresh = (ImageView) view.findViewById(R.id.fragment_a_ipRefresh);
         increment = (Button) view.findViewById(R.id.fragment_a_buttonIncrement);
         decrement = (Button) view.findViewById(R.id.fragment_a_buttonDecrement);
         buttonShowAdvancedView = (Button) view.findViewById(R.id.fragment_a_buttonShowAdvancedView);
@@ -80,11 +90,18 @@ public class CounterBasicView extends AbstractFragment<CounterBasicController> {
         });
 
         if (reason.isFirstTime()) {
-            CounterBasicEmbbedView f = new CounterBasicEmbbedView();
+            CounterBasicSubView f = new CounterBasicSubView();
 
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();
         }
+
+        ipRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                controller.refreshIp();
+            }
+        });
     }
 
 
@@ -93,4 +110,24 @@ public class CounterBasicView extends AbstractFragment<CounterBasicController> {
         display.setText(controller.getModel().getCount());
     }
 
+    @Override
+    public void showProgress() {
+        ipProgress.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void hideProgress() {
+        ipProgress.setVisibility(View.INVISIBLE);
+    }
+
+    @Override
+    public void updateIpValue(String ip) {
+        ipValue.setVisibility(View.VISIBLE);
+        ipValue.setText(ip);
+    }
+
+    @Override
+    public void showErrorMessageToFetchIp() {
+        Toast.makeText(getContext(), "Error to get your IP", Toast.LENGTH_SHORT).show();
+    }
 }

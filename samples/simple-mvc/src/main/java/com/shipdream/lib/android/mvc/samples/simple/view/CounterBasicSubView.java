@@ -6,14 +6,14 @@ import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.R;
-import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicEmbeddedController;
+import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicSubController;
 
-public class CounterBasicEmbbedView extends AbstractFragment<CounterBasicEmbeddedController> {
+public class CounterBasicSubView extends AbstractFragment<CounterBasicSubController> {
     private TextView txtCountInEnglish;
 
     @Override
-    protected Class<CounterBasicEmbeddedController> getControllerClass() {
-        return CounterBasicEmbeddedController.class;
+    protected Class<CounterBasicSubController> getControllerClass() {
+        return CounterBasicSubController.class;
     }
 
     @Override

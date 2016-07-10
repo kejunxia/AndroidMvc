@@ -4,7 +4,7 @@ import com.shipdream.lib.android.mvc.NavigationManager;
 
 import javax.inject.Inject;
 
-public class EntryController extends AbstractController {
+public class AppDelegateController extends AbstractController {
     @Inject
     private NavigationManager navigationManager;
 

@@ -3,7 +3,7 @@ package com.shipdream.lib.android.mvc.samples.simple;
 import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
-import com.shipdream.lib.android.mvc.samples.simple.controller.EntryController;
+import com.shipdream.lib.android.mvc.samples.simple.controller.AppDelegateController;
 
 public class MainActivity extends MvcActivity {
 
@@ -35,7 +35,7 @@ public class MainActivity extends MvcActivity {
      * Container fragment extends DelegateFragment would be the root container fragments to swap
      * full screen fragments inside it on navigation.
      */
-    public static class ContainerFragment extends MvcActivity.DelegateFragment<EntryController> {
+    public static class ContainerFragment extends MvcActivity.DelegateFragment<AppDelegateController> {
         /**
          * What to do when app starts for the first time
          */
@@ -46,7 +46,7 @@ public class MainActivity extends MvcActivity {
 
         @Override
         protected Class getControllerClass() {
-            return EntryController.class;
+            return AppDelegateController.class;
         }
 
         @Override

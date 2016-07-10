@@ -21,9 +21,9 @@ dependencies {
     compile rootProject.lib.logbackAndroidCore
     compile rootProject.lib.logbackAndroidClassic
 
-    compile 'com.squareup.okhttp:okhttp:2.4.0'
-
-    compile 'io.reactivex:rxjava:1.1.5'
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0' +
+            ''
 
     testCompile rootProject.ext.lib.junit
     testCompile rootProject.ext.lib.mokito
