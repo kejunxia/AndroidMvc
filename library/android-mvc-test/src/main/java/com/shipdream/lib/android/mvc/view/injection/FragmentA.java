@@ -27,10 +27,7 @@ import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 
 import javax.inject.Inject;
 
-public class FragmentA extends FragmentInjection {
-    @Inject
-    private ControllerA presenterA;
-
+public class FragmentA extends FragmentInjection<ControllerA> {
     //TODO: should be removed if designed correctly
     @Inject
     private ControllerB presenterB;
@@ -40,7 +37,7 @@ public class FragmentA extends FragmentInjection {
 
     @Override
     protected void setUpData() {
-        presenterA.addTag("Added by " + getClass().getSimpleName());
+        controller.addTag("Added by " + getClass().getSimpleName());
         presenterB.addTag("Added by " + getClass().getSimpleName());
     }
 
@@ -51,18 +48,18 @@ public class FragmentA extends FragmentInjection {
 
     @Override
     protected Class getControllerClass() {
-        return null;
+        return ControllerA.class;
     }
 
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-        displayTags(textViewA, presenterA.getTags());
-        displayTags(textViewB, presenterB.getTags());
+
     }
 
     @Override
     public void update() {
-
+        displayTags(textViewA, controller.getTags());
+        displayTags(textViewB, presenterB.getTags());
     }
 }

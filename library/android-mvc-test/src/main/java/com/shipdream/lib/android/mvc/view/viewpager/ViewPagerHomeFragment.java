@@ -57,10 +57,8 @@ public class ViewPagerHomeFragment extends MvcFragment<FirstFragmentController> 
         lifeCycleMonitor.onViewReady(view, savedInstanceState, reason);
 
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        if (reason.isNewInstance()) {
-            pagerAdapter = new PagerAdapter(getChildFragmentManager());
-            viewPager.setAdapter(pagerAdapter);
-        }
+        pagerAdapter = new PagerAdapter(getChildFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
     }
 
     @Override

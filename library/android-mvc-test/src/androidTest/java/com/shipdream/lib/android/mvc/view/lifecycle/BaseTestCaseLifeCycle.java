@@ -23,9 +23,4 @@ public abstract class BaseTestCaseLifeCycle extends BaseTestCase <MvcTestActivit
     public BaseTestCaseLifeCycle() {
         super(MvcTestActivity.class);
     }
-
-    @Override
-    protected void waitTest() throws InterruptedException {
-        waitTest(1500);
-    }
 }

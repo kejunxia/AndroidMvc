@@ -20,18 +20,18 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.Controller;
-import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Navigator;
+import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
-import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 
 import javax.inject.Inject;
 
-public class MvcTestActivityNavigation extends MvcActivity {
+public class MvcTestActivityNavigation extends TestActivity {
     int fragAInjectCount = 0;
     int fragBInjectCount = 0;
     int fragCInjectCount = 0;
@@ -88,7 +88,7 @@ public class MvcTestActivityNavigation extends MvcActivity {
         @Override
         protected void onStartUp() {
             Log.d("MvcTesting", "navigate");
-            navigationManager.navigate(this).to(ControllerA.class);
+//            navigationManager.navigate(this).to(ControllerA.class);
         }
 
         @Override

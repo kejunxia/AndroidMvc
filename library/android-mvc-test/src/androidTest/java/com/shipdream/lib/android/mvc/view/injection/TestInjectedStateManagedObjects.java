@@ -35,12 +35,6 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
         super(InjectionTestActivityStateManagedObjects.class);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        waitTest();
-    }
-
     @Test
     public void test_should_manage_state_of_nested_stateManagedObjects() throws Throwable {
         if (!isDontKeepActivities()) {
@@ -59,10 +53,8 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
         onView(withId(R.id.textA)).check(matches(withText("2:B")));
 
         pressHome();
-        waitTest(1000);
 
         bringBack();
-        waitTest(1000);
 
         onView(withId(R.id.fragment_injection_root)).perform(click());
         onView(withId(R.id.textA)).check(matches(withText("3:C")));

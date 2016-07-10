@@ -18,15 +18,16 @@ package com.shipdream.lib.android.mvc;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Build;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.ActivityInstrumentationTestCase2;
 import android.test.suitebuilder.annotation.LargeTest;
+import android.util.Log;
 
 import com.shipdream.lib.android.mvc.view.LifeCycleValidator;
+import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
@@ -53,7 +54,7 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class BaseTestCase<T extends MvcActivity> extends ActivityInstrumentationTestCase2<T> {
+public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentationTestCase2<T> {
     protected LifeCycleValidator lifeCycleValidator;
     protected LifeCycleMonitor lifeCycleMonitorMock;
 
@@ -65,6 +66,44 @@ public class BaseTestCase<T extends MvcActivity> extends ActivityInstrumentation
     protected LifeCycleValidator lifeCycleValidatorC;
     protected LifeCycleMonitorD lifeCycleMonitorMockD;
     protected LifeCycleValidator lifeCycleValidatorD;
+
+    private static class Waiter {
+        boolean skip = false;
+        private String name;
+        private long timeout;
+
+        public Waiter(String name) {
+            this (name, 1000);
+        }
+
+        public Waiter(String name, long timeout) {
+            this.name = name;
+            this.timeout = timeout;
+        }
+
+        private void skip() {
+            skip = true;
+        }
+
+        private void waitNow() {
+            long start = System.currentTimeMillis();
+            while (true) {
+                long elapsed = System.currentTimeMillis() - start;
+                if (elapsed > timeout) {
+                    Log.w("TrackLifeSync", name + " times out by " + timeout + "ms");
+                    break;
+                }
+                if (skip) {
+                    break;
+                }
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
     @Inject
     protected NavigationManager navigationManager;
@@ -176,38 +215,168 @@ public class BaseTestCase<T extends MvcActivity> extends ActivityInstrumentation
 
     @After
     public void tearDown() throws Exception {
-        if (activity == null || navigationManager == null) {
-            return;
-        }
-
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
-        navigationManager.navigate(this).back(null);
-        navigationManager.navigate(this).back();
-
-        activity.runOnUiThread(new Runnable() {
+        instrumentation.runOnMainSync(new Runnable() {
             @Override
             public void run() {
+                if (navigationManager != null) {
+                    navigationManager.navigate(this).back(null);
+                    navigationManager.navigate(this).back();
+                }
+
+                if (activity != null) {
+                    activity.finish();
+                }
+
+
                 Mvc.graph().release(BaseTestCase.this);
                 try {
                     Mvc.graph().getRootComponent().detach(component);
                 } catch (Component.MismatchDetachException e) {
                     e.printStackTrace();
                 }
+
             }
         });
         super.tearDown();
     }
 
+    protected void navTo(final Class cls) {
+        navTo(cls, null);
+    }
+
+    protected void navTo(final Class cls, final Forwarder forwarder) {
+        final Waiter waiter = new Waiter("NavTo " + cls.getSimpleName() + " ", 200);
+        navigationManager.navigate(this).onSettled(new Navigator.OnSettled() {
+            @Override
+            public void run() {
+                waiter.skip();
+                Log.v("TrackLifeSync:NavTo", "skip");
+            }
+        }).to(cls, forwarder);
+
+        waiter.waitNow();
+        Log.v("TrackLifeSync:NavTo", "finish");
+    }
+
+    protected void navigateBackByFragment() throws InterruptedException {
+        final Waiter waiter = new Waiter("NavBack");
+        navigationManager.navigate(this).onSettled(new Navigator.OnSettled() {
+            @Override
+            public void run() {
+                waiter.skip();
+            }
+        }).back();
+
+        waiter.waitNow();
+    }
+
     protected void pressHome() {
-        Intent startMain = new Intent(Intent.ACTION_MAIN);
+        final Intent startMain = new Intent(Intent.ACTION_MAIN);
         startMain.addCategory(Intent.CATEGORY_HOME);
+        startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        final Waiter waiter = new Waiter("PressHome", 500);
+        TestActivity.Proxy proxy = new TestActivity.Proxy() {
+            @Override
+            protected void onPause() {
+                waiter.skip();
+                Log.v("TrackLifeSync:Home", "Pause and skip");
+                activity.removeProxy(this);
+            }
+        };
+        activity.addProxy(proxy);
+
         activity.startActivity(startMain);
+        Log.v("TrackLifeSync:Home", "Start home activity");
+
+        TestActivity.State state = activity.getState();
+        if (state != null && state.ordinal() >= TestActivity.State.PAUSE.ordinal()) {
+            //ready
+        } else {
+            Log.v("TrackLifeSync:Home", "Start wait");
+            waiter.waitNow();
+        }
+        activity.removeProxy(proxy);
+
+        Log.v("TrackLifeSync:Home", "Finish");
     }
 
     protected void bringBack() {
         Intent i = new Intent(activity.getApplicationContext(), activity.getClass());
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-        activity.startActivity(i);
+
+        boolean kill = false;
+        try {
+            kill = isDontKeepActivities();
+        } catch (Settings.SettingNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        if (kill) {
+            final Waiter waiter = new Waiter("BringBack", 1200);
+            activity.startActivity(i);
+
+            waiter.waitNow();
+        } else {
+            final Waiter waiter = new Waiter("BringBack");
+            TestActivity.Proxy proxy = new TestActivity.Proxy() {
+                @Override
+                protected void onResumeFragments() {
+                    waiter.skip();
+                    activity.removeProxy(this);
+                }
+            };
+            activity.addProxy(proxy);
+
+            activity.startActivity(i);
+
+            TestActivity.State state = activity.getState();
+            if (state != null && state.ordinal() >= TestActivity.State.RESUME_FRAGMENTS.ordinal()) {
+                //ready
+                activity.removeProxy(proxy);
+            } else {
+                waiter.waitNow();
+            }
+        }
+    }
+
+    protected void waitActivityResume(final TestActivity activity) {
+        final Waiter waiter = new Waiter("ActivityResume");
+        TestActivity.Proxy proxy = new TestActivity.Proxy() {
+            @Override
+            protected void onResume() {
+                waiter.skip();
+            }
+        };
+        activity.addProxy(proxy);
+        waiter.waitNow();
+        activity.removeProxy(proxy);
+    }
+
+    protected void startActivity(Intent intent) {
+        activity.startActivity(intent);
+        synchronized (this) {
+            try {
+                wait(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void rotateMainActivity(final int orientation) {
+        final Waiter waiter = new Waiter("Rotate", 500);
+        activity.delegateFragment.registerOnViewReadyListener(new Runnable() {
+            @Override
+            public void run() {
+                waiter.skip();
+                activity.delegateFragment.unregisterOnViewReadyListener(this);
+            }
+        });
+
+        activity.setRequestedOrientation(orientation);
+
+        waiter.waitNow();
     }
 
     @SuppressLint("NewApi")
@@ -232,16 +401,6 @@ public class BaseTestCase<T extends MvcActivity> extends ActivityInstrumentation
      * @throws InterruptedException
      */
     protected void waitTest() throws InterruptedException {
-        waitTest(0);
-    }
-
-    /**
-     * Thread sleeps for given ms
-     *
-     * @param duration how long to wait
-     * @throws InterruptedException
-     */
-    protected void waitTest(long duration) throws InterruptedException {
-        Thread.sleep(duration);
+        getInstrumentation().waitForIdleSync();
     }
 }

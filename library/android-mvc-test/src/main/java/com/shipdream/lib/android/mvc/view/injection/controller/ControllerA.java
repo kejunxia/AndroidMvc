@@ -16,13 +16,14 @@
 
 package com.shipdream.lib.android.mvc.view.injection.controller;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.UiView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControllerA extends Controller<ControllerA.Model, UiView> {
+public class ControllerA extends FragmentController<ControllerA.Model, UiView> {
     public static class Model {
         private List<String> tags;
 
@@ -44,6 +45,15 @@ public class ControllerA extends Controller<ControllerA.Model, UiView> {
     public void onCreated() {
         super.onCreated();
         getModel().setTags(new ArrayList<String>());
+    }
+
+    @Override
+    public void onViewReady(Reason reason) {
+        super.onViewReady(reason);
+        if (reason.isRestored()) {
+            addTag("OK");
+            view.update();
+        }
     }
 
     public void addTag(String tag) {

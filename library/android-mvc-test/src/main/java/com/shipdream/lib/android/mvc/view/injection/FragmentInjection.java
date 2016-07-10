@@ -25,6 +25,7 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.NavigationManager;
@@ -40,7 +41,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public abstract class FragmentInjection extends MvcFragment {
+public abstract class FragmentInjection<C extends FragmentController> extends MvcFragment<C> {
     private Spinner spinner;
     private Button buttonGo;
     private Toolbar toolbar;

@@ -19,14 +19,14 @@ package com.shipdream.lib.android.mvc.view.lifecycle;
 import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.FragmentController;
-import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 
 import javax.inject.Inject;
 
-public class MvcTestActivity extends MvcActivity {
+public class MvcTestActivity extends TestActivity {
     @Override
     protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
         return MvcTestFragment.class;

@@ -17,11 +17,10 @@
 package com.shipdream.lib.android.mvc.view.injection;
 
 import com.shipdream.lib.android.mvc.Controller;
-import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.FragmentController;
-import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
@@ -29,7 +28,7 @@ import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 
 import javax.inject.Inject;
 
-public class InjectionTestActivity extends MvcActivity {
+public class InjectionTestActivity extends TestActivity {
     @Override
     protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
         if (presenterClass == ControllerA.class) {
@@ -72,7 +71,6 @@ public class InjectionTestActivity extends MvcActivity {
 
         @Override
         protected void onStartUp() {
-            navigationManager.navigate(this).to(ControllerA.class, new Forwarder().clearAll());
         }
     }
 

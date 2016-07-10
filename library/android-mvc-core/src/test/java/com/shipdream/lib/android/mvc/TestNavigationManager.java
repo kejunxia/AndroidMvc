@@ -150,7 +150,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         prepareLocationHistory();
 
         reset(backListener);
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         ArgumentCaptor<NavigationManager.Event.OnLocationBack> event
                 = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
@@ -164,7 +164,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         event = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId3.getName());
@@ -176,7 +176,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         event = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId2.getName());
@@ -187,7 +187,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         Assert.assertFalse(event.getValue().isFastRewind());
 
         reset(backListener);
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         event = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId1.getName());
@@ -198,7 +198,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         //has already reached the start of the navigation, should not be able to navigate back any more
         reset(backListener);
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         event = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationBack.class);
         verify(backListener, times(0)).onEvent(event.capture());
     }
@@ -265,16 +265,16 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         prepareLocationHistory();
 
         reset(exitListener);
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         verify(exitListener, times(1)).onEvent(event.capture());
     }
 
@@ -298,7 +298,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.navigate(this).back(null);
         verify(exitListener, times(0)).onEvent(event.capture());
 
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         verify(exitListener, times(1)).onEvent(event.capture());
     }
 
@@ -378,7 +378,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         reset(logger);
 
         // Act
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
@@ -421,7 +421,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         reset(logger);
 
         // Act
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
 
         // Verify
         verify(logger, atLeast(0)).trace(anyString());

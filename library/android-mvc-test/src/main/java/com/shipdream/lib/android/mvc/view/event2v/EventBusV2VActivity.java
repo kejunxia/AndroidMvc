@@ -21,17 +21,17 @@ import android.view.View;
 
 import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
-import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Navigator;
 import com.shipdream.lib.android.mvc.Reason;
+import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.event2v.controller.V2VHomeController;
 import com.shipdream.lib.android.mvc.view.event2v.controller.V2VTestController;
 
 import javax.inject.Inject;
 
-public class EventBusV2VActivity extends MvcActivity {
+public class EventBusV2VActivity extends TestActivity {
 
     /**
      * Map a presenter class type to fragment class type. This is used for navigation. When the

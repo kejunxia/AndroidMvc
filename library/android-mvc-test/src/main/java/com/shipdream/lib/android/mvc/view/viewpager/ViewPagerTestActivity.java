@@ -19,17 +19,17 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 import android.content.Intent;
 
 import com.shipdream.lib.android.mvc.Controller;
-import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Forwarder;
-import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.viewpager.controller.FirstFragmentController;
 import com.shipdream.lib.android.mvc.view.viewpager.controller.HomeController;
 import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
 
 import javax.inject.Inject;
 
-public class ViewPagerTestActivity extends MvcActivity {
+public class ViewPagerTestActivity extends TestActivity {
     @Override
     protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> controllerClass) {
         if (controllerClass == FirstFragmentController.class) {
@@ -65,8 +65,8 @@ public class ViewPagerTestActivity extends MvcActivity {
         }
     }
 
-    void launchAnotherActivity() {
+    Intent launchAnotherActivity() {
         Intent intent = new Intent(this, ViewPagerTestActivityTop.class);
-        startActivity(intent);
+        return intent;
     }
 }

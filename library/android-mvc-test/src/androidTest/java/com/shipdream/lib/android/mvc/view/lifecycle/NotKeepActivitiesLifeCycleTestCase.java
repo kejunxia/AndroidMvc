@@ -46,7 +46,6 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
         pressHome();
-        waitTest(1200);
         lifeCycleValidator.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
         bringBack();
@@ -89,7 +88,7 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         //If not on portrait mode rotate it to portrait
         int currentOrientation = activity.getResources().getConfiguration().orientation;
         if(currentOrientation != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             waitTest();
 
             lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
@@ -98,42 +97,41 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                     LifeCycle.onDestroyView);
         }
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged,
                 LifeCycle.onDestroyView);
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
+                LifeCycle.onViewReadyRotate,
+                LifeCycle.onOrientationChanged,
+                LifeCycle.onDestroyView);
+
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged,
                 LifeCycle.onDestroyView);
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged,
                 LifeCycle.onDestroyView);
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyRotate,
                 LifeCycle.onOrientationChanged,
                 LifeCycle.onDestroyView);
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        waitTest();
-        lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
-                LifeCycle.onViewReadyRotate,
-                LifeCycle.onOrientationChanged,
-                LifeCycle.onDestroyView);
-
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
                 LifeCycle.onViewReadyRotate,
@@ -144,9 +142,8 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
         waitTest();
         lifeCycleValidator.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         bringBack();
-        waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyNewInstance,
@@ -155,12 +152,10 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
                 LifeCycle.onOrientationChanged);
 
         pressHome();
-        waitTest(500);
         lifeCycleValidator.expect(LifeCycle.onDestroyView, LifeCycle.onDestroy);
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT);
         bringBack();
-        waitTest();
         lifeCycleValidator.expect(LifeCycle.onCreateNotNull, LifeCycle.onCreateViewNotNull,
                 LifeCycle.onViewCreatedNotNull,
                 LifeCycle.onViewReadyNewInstance,
@@ -170,11 +165,11 @@ public class NotKeepActivitiesLifeCycleTestCase extends BaseTestCaseLifeCycle {
 
         onView(withText(R.string.mvc_fragment_text)).check(matches(isDisplayed()));
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         waitTest();
 
         onView(withText(R.string.mvc_fragment_text)).check(matches(isDisplayed()));
 
-        activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 }

@@ -19,7 +19,9 @@ package com.shipdream.lib.android.mvc.view.injection;
 import android.util.Log;
 
 import com.shipdream.lib.android.mvc.BaseTestCase;
+import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
 import com.shipdream.lib.android.mvc.view.test.R;
@@ -32,12 +34,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivity> {
-
-    @Override
-    protected void waitTest() throws InterruptedException {
-        waitTest(1000);
-    }
-
     public TestInjectionAndLifeCycle() {
         super(InjectionTestActivity.class);
     }
@@ -45,11 +41,16 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        waitTest();
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        navTo(ControllerA.class, new Forwarder().clearAll());
     }
 
     @Test
-    public void testShouldRetainInjectionsOfFragmentAAfterNavigatedToFragmentB() throws Throwable {
+    public void test_shouldRetainInjectionsOfFragmentAAfterNavigatedToFragmentB() throws Throwable {
         //=============================> At A
         lifeCycleValidatorA.expect(LifeCycle.onCreateNull,
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
@@ -86,8 +87,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             "Added by FragmentC")));
         onView(withId(R.id.textC)).check(matches(withText("Added by FragmentC")));
 
-        navigationManager.navigate(this).back();
-        waitTest(1000);
+        navigateBackByFragment();
+        waitTest();
         //=============================> At B
         lifeCycleValidatorC.expect(LifeCycle.onPopAway, LifeCycle.onDestroyView, LifeCycle.onDestroy);
         //View is newly created again
@@ -106,8 +107,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             "Added by FragmentB")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        navigationManager.navigate(this).back();
-        waitTest(1000);
+        navigateBackByFragment();
+        waitTest();
         //=============================> At A
         //onDestroy of previous Fragment(FragmentB) is not called until it's removed out from back stack
         lifeCycleValidatorB.expect(LifeCycle.onPopAway, LifeCycle.onDestroyView, LifeCycle.onDestroy);
@@ -152,10 +153,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textC)).check(matches(withText("")));
 
         pressHome();
-        waitTest(1200);
 
         bringBack();
-        waitTest(1200);
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
             "Added by FragmentB\nAdded by FragmentB")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\n" +
@@ -164,7 +163,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
     }
 
     @Test
-    public void should_not_set_first_time_flag_for_creating_view_reason_on_back_nav_without_kill() throws Throwable {
+    public void test_should_not_set_first_time_flag_for_creating_view_reason_on_back_nav_without_kill() throws Throwable {
         if (isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "should_not_set_first_time_flag_for_creating_view_reason_on_back_nav not tested as Don't Keep Activities setting is enabled");
             return;
@@ -184,7 +183,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
             LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         waitTest();
 
         lifeCycleValidatorB.expect(LifeCycle.onPopAway, LifeCycle.onDestroyView, LifeCycle.onDestroy);
@@ -196,7 +195,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
     }
 
     @Test
-    public void should_not_set_first_time_flag_for_creating_view_reason_on_back_nav_with_kill() throws Throwable {
+    public void test_should_not_set_first_time_flag_for_creating_view_reason_on_back_nav_with_kill() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "should_not_set_first_time_flag_for_creating_view_reason_on_back_nav not tested as Don't Keep Activities setting is disabled");
             return;
@@ -217,7 +216,6 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onViewReadyNewInstance, LifeCycle.onViewReadyFirstTime);
 
         pressHome();
-        waitTest(1200);
 
         lifeCycleValidatorA.expect(LifeCycle.onDestroy);
 
@@ -226,7 +224,6 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
             LifeCycle.onDestroy);
 
         bringBack();
-        waitTest(1200);
 
         lifeCycleValidatorB.expect(LifeCycle.onCreateNotNull,
             LifeCycle.onCreateViewNotNull,
@@ -237,7 +234,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         //Fragment itself is recreated
         lifeCycleValidatorA.expect(LifeCycle.onCreateNotNull);
 
-        navigationManager.navigate(this).back();
+        navigateBackByFragment();
         waitTest();
 
         lifeCycleValidatorA.expect(

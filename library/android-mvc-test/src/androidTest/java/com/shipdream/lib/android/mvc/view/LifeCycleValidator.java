@@ -24,6 +24,7 @@ import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
+import org.mockito.exceptions.base.MockitoAssertionError;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -59,7 +60,32 @@ public class LifeCycleValidator {
     protected int onDestroyViewCount;
     protected int onDestroyCount;
 
-    public void expect(LifeCycle... lifeCycles) {
+    private final static long wait_span = 5000;
+    public void expect(LifeCycle... lifeCycles){
+        long start = System.currentTimeMillis();
+        while(true) {
+            long elapse = System.currentTimeMillis() - start;
+            try {
+                doExpect(lifeCycles);
+            } catch (MockitoAssertionError mockitoAssertionError) {
+                if (elapse > wait_span) {
+                    throw mockitoAssertionError;
+                } else {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            //Pass
+            break;
+        }
+    }
+
+    private void doExpect(LifeCycle... lifeCycles) {
         if (lifeCycles != null) {
             for (int i = 0; i < lifeCycles.length; i++) {
                 LifeCycle lifeCycle = lifeCycles[i];
