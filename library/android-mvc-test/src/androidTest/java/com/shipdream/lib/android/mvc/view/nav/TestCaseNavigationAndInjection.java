@@ -354,7 +354,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
 
         resetGraphMonitorCounts();
         bringBack(pressHome());
-
+        waitTest();
         Thread.sleep(1000);
 
         Assert.assertEquals(activity.fragAInjectCount, 1);
@@ -429,10 +429,10 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         prepareAndCheckStack();
         //->A->B->C->D
 
-        waitTest();
         resetGraphMonitorCounts();
         bringBack(pressHome());
-        Thread.sleep(500);
+        waitTest();
+        Thread.sleep(1000);
 
         Assert.assertEquals(activity.fragAInjectCount, 1);
         Assert.assertEquals(activity.fragAReleaseCount, 1);
@@ -445,7 +445,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
 
         resetGraphMonitorCounts();
         navigationManager.navigate(this).back(null);
-        Thread.sleep(500);
+        Thread.sleep(800);
         //->A
         waitTest();
         Assert.assertEquals(activity.fragAInjectCount, 0);
@@ -460,6 +460,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         resetGraphMonitorCounts();
         navigateBackByFragment();
         //quit
+        waitTest();
         Thread.sleep(500);
 
         Assert.assertEquals(activity.fragAInjectCount, 0);
@@ -484,6 +485,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         waitTest();
         resetGraphMonitorCounts();
         bringBack(pressHome());
+        Thread.sleep(1000);
 
         Assert.assertEquals(activity.fragAInjectCount, 1);
         Assert.assertEquals(activity.fragAReleaseCount, 1);
@@ -497,7 +499,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         resetGraphMonitorCounts();
         navTo(ControllerA.class, new Forwarder().clearTo(ControllerB.class));
         //->A->B->A
-        waitTest();
+
         Assert.assertEquals(activity.fragAInjectCount, 1);
         Assert.assertEquals(activity.fragAReleaseCount, 0);
         Assert.assertEquals(activity.fragBInjectCount, 0);
