@@ -47,3 +47,5 @@ env:
 
 # Add this
 sudo: required
+
+- GRADLE_OPTS="-Xmx512m -XX:MaxPermSize=512m"
