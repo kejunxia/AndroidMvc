@@ -1,21 +1,7 @@
-/*
- * Copyright 2016 Kejun Xia
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 
-package com.shipdream.lib.android.mvc;
-
+import com.shipdream.lib.android.mvc.Mvc;
+import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
@@ -26,24 +12,25 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+/**
+ * Created by kejun on 12/07/2016.
+ */
 
 public class BaseTest {
-    protected EventBus eventBusC;
-    protected EventBus eventBusV;
-    protected ExecutorService executorService;
-
-    protected MvcGraph graph;
-
     @BeforeClass
     public static void beforeClass() {
         ConsoleAppender console = new ConsoleAppender(); //create appender
@@ -56,23 +43,34 @@ public class BaseTest {
         Logger.getRootLogger().addAppender(console);
     }
 
+    protected EventBus eventBusC;
+    protected EventBus eventBusV;
+    protected ExecutorService executorService;
+    private MvcComponent testComponent;
+
+    protected void prepareGraph(MvcComponent testComponent) throws Exception {
+    }
+
     @Before
     public void setUp() throws Exception {
-        graph = new MvcGraph();
-
         eventBusC = new EventBusImpl();
         eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
+
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Runnable runnable = (Runnable) invocation.getArguments()[0];
                 runnable.run();
-                return null;
+                Future future = mock(Future.class);
+                when(future.isDone()).thenReturn(true); //by default execute immediately succeed.
+                when(future.isCancelled()).thenReturn(false);
+                return future;
             }
         }).when(executorService).submit(any(Runnable.class));
 
-        graph.setRootComponent((MvcComponent) new MvcComponent("TestRootComponent").register(new Object(){
+        testComponent = new MvcComponent("TestOverrideComponent");
+        testComponent.register(new Object(){
             @Provides
             @EventBusC
             public EventBus createEventBusC() {
@@ -86,29 +84,20 @@ public class BaseTest {
             }
 
             @Provides
-            public ExecutorService executorService() {
+            public ExecutorService createExecutorService() {
                 return executorService;
             }
+        });
 
-            @Provides
-            public UiThreadRunner uiThreadRunner() {
-                return new UiThreadRunner() {
-                    @Override
-                    public boolean isOnUiThread() {
-                        return true;
-                    }
+        Mvc.graph().getRootComponent().attach(testComponent, true);
 
-                    @Override
-                    public void post(Runnable runnable) {
-                        runnable.run();
-                    }
+        prepareGraph(testComponent);
 
-                    @Override
-                    public void postDelayed(Runnable runnable, long delayMs) {
-                        runnable.run();
-                    }
-                };
-            }
-        }));
+        Mvc.graph().inject(this);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        Mvc.graph().getRootComponent().detach(testComponent);
     }
 }

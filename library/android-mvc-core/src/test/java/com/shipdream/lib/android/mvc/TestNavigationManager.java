@@ -77,6 +77,11 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
     private Class<? extends Controller> locId4 = Controller4.class;
     private Class<? extends Controller> locId5 = Controller5.class;
 
+
+    protected void navigateBackByFragment() {
+        navigationManager.navigate(this).back();
+    }
+
     @Test
     public void shouldClearNavigationHistoryUpToSpecified() throws Exception {
         ForwardListener forwardListener = prepareLocationHistory();
@@ -88,7 +93,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         //loc1 -> loc2 -> loc3 -> loc4 -> loc2 -> loc4 -> loc1
 
         reset(forwardListener);
-        navigationManager.navigate(this).to(locId5, new com.shipdream.lib.android.mvc.Forwarder().clearTo(locId3));
+        navigationManager.navigate(this).to(locId5, new Forwarder().clearTo(locId3));
         //loc1 -> loc2 -> loc3 -> loc5
         ArgumentCaptor<NavigationManager.Event.OnLocationForward> event
                 = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationForward.class);
@@ -98,8 +103,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         assertEquals(event.getValue().getLocationWhereHistoryClearedUpTo().getLocationId(), locId3.getName());
         assertEquals(event.getValue().isClearHistory(), true);
 
-        com.shipdream.lib.android.mvc.NavigationManager.Model model = navigationManager.getModel();
-        com.shipdream.lib.android.mvc.NavLocation curLoc = model.getCurrentLocation();
+        NavigationManager.Model model = navigationManager.getModel();
+        NavLocation curLoc = model.getCurrentLocation();
         assertEquals(curLoc.getLocationId(), locId5.getName());
         curLoc = curLoc.getPreviousLocation();
         assertEquals(curLoc.getLocationId(), locId3.getName());
@@ -111,7 +116,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         assertEquals(curLoc, null);
 
         //loc1 -> loc2 -> loc3 -> loc5
-        com.shipdream.lib.android.mvc.NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId5.getName());
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId3.getName());
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation().getLocationId(), locId2.getName());
@@ -124,7 +129,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         ForwardListener forwardListener = prepareLocationHistory();
 
         reset(forwardListener);
-        navigationManager.navigate(this).to(locId5, new com.shipdream.lib.android.mvc.Forwarder().clearAll());
+        navigationManager.navigate(this).to(locId5, new Forwarder().clearAll());
 
         ArgumentCaptor<NavigationManager.Event.OnLocationForward> event
                 = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationForward.class);
@@ -136,7 +141,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         assertEquals(event.getValue().isClearHistory(), true);
 
         //Now the history should be loc1->loc2->loc5
-        com.shipdream.lib.android.mvc.NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId5.getName());
         assertEquals(currentLoc.getPreviousLocation(), null);
     }
@@ -156,7 +161,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4.getName());
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId3.getName());
-        com.shipdream.lib.android.mvc.NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId3.getName());
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId2.getName());
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation().getLocationId(), locId1.getName());
@@ -218,7 +223,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         verify(backListener).onEvent(event.capture());
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4.getName());
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId2.getName());
-        com.shipdream.lib.android.mvc.NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId2.getName());
         assertEquals(currentLoc.getPreviousLocation().getLocationId(), locId1.getName());
         assertEquals(currentLoc.getPreviousLocation().getPreviousLocation(), null);
@@ -360,7 +365,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.logger = logger;
 
         // Act
-        navigationManager.navigate(this).to(Controller1.class, new com.shipdream.lib.android.mvc.Forwarder().clearTo(Controller.class));
+        navigationManager.navigate(this).to(Controller1.class, new Forwarder().clearTo(Controller.class));
 
         // Verify
         verify(logger, atLeast(1)).trace(anyString());
@@ -403,7 +408,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.logger = logger;
 
         // Act
-        navigationManager.navigate(this).to(Controller1.class, new com.shipdream.lib.android.mvc.Forwarder().clearTo(Controller.class));
+        navigationManager.navigate(this).to(Controller1.class, new Forwarder().clearTo(Controller.class));
 
         // Verify
         verify(logger, atLeast(0)).trace(anyString());
@@ -556,7 +561,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         });
 
         // Act
-        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, slower2Qualifier, new com.shipdream.lib.android.mvc.Preparer<TimerController>() {
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, slower2Qualifier, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -592,7 +597,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
             }
         });
 
-        navigator = navigationManager.navigate(this).with(TimerController.class, slower3Qualifier, new com.shipdream.lib.android.mvc.Preparer<TimerController>() {
+        navigator = navigationManager.navigate(this).with(TimerController.class, slower3Qualifier, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -633,7 +638,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         final long fiveMinutes = 60 * 5;
 
         // Act
-        com.shipdream.lib.android.mvc.Navigator navigator = navigationManager.navigate(this).with(TimerController.class, new com.shipdream.lib.android.mvc.Preparer<TimerController>() {
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class, new Preparer<TimerController>() {
             @Override
             public void prepare(TimerController instance) {
                 instance.setInitialValue(fiveMinutes);
@@ -663,20 +668,20 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
     @Test
     public void should_invoke_singular_argument_with_method_of_navigator_correct() throws Exception {
-        com.shipdream.lib.android.mvc.Navigator navigator = navigationManager.navigate(this);
-        com.shipdream.lib.android.mvc.Navigator spiedNavigator = spy(navigator);
+        Navigator navigator = navigationManager.navigate(this);
+        Navigator spiedNavigator = spy(navigator);
 
-        verify(spiedNavigator, times(0)).with(eq(com.shipdream.lib.android.mvc.NavigationManager.class), isNull(Annotation.class), isNull(com.shipdream.lib.android.mvc.Preparer.class));
+        verify(spiedNavigator, times(0)).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(Preparer.class));
 
-        spiedNavigator.with(com.shipdream.lib.android.mvc.NavigationManager.class);
+        spiedNavigator.with(NavigationManager.class);
 
-        verify(spiedNavigator).with(eq(com.shipdream.lib.android.mvc.NavigationManager.class), isNull(Annotation.class), isNull(com.shipdream.lib.android.mvc.Preparer.class));
+        verify(spiedNavigator).with(eq(NavigationManager.class), isNull(Annotation.class), isNull(Preparer.class));
     }
 
     @Test
     public void should_return_correct_sender_by_navigator() throws Exception {
         // Act
-        com.shipdream.lib.android.mvc.Navigator navigator = navigationManager.navigate(this);
+        Navigator navigator = navigationManager.navigate(this);
 
         Assert.assertTrue(this == navigator.getSender());
     }
@@ -684,10 +689,10 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
     @Test
     public void should_invoke_on_settled_when_navigation_is_done() throws Exception {
         // Arrange
-        com.shipdream.lib.android.mvc.Navigator.OnSettled onSettled = mock(com.shipdream.lib.android.mvc.Navigator.OnSettled.class);
+        Navigator.OnSettled onSettled = mock(Navigator.OnSettled.class);
 
         // Act
-        com.shipdream.lib.android.mvc.Navigator navigator = navigationManager.navigate(this).with(TimerController.class)
+        Navigator navigator = navigationManager.navigate(this).with(TimerController.class)
                 .onSettled(onSettled);
         navigator.to(TimerController.class);
 
@@ -706,7 +711,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         // Act
         Navigator navigator = navigationManager.navigate(this);
-        com.shipdream.lib.android.mvc.Forwarder forwarder = new Forwarder();
+        Forwarder forwarder = new Forwarder();
 
         Assert.assertFalse(forwarder.isInterim());
 

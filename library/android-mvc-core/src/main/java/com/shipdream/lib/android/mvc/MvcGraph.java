@@ -4,9 +4,11 @@ import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.Provider;
+import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.slf4j.Logger;
@@ -53,8 +55,18 @@ public class MvcGraph {
         graph = new Graph();
         try {
             graph.setRootComponent(new MvcComponent("MvcRootComponent"));
+            graph.getRootComponent().register(new Object() {
+                @Provides
+                public UiThreadRunner uiThreadRunner() {
+                    return uiThreadRunner;
+                }
+            });
         } catch (Graph.IllegalRootComponentException e) {
-            //ignore
+            throw new RuntimeException(e);
+        } catch (ProvideException e) {
+            throw new RuntimeException(e);
+        } catch (ProviderConflictException e) {
+            throw new RuntimeException(e);
         }
         graph.registerDisposeListener(new Provider.DisposeListener() {
             @Override

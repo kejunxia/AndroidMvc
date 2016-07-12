@@ -24,4 +24,5 @@ include ':extension:service-mediastore'
 
 include 'samples:benchmark'
 
-include 'samples:simple-mvc'
+include 'samples:simple-mvc:app'
+include 'samples:simple-mvc:core'

@@ -76,17 +76,6 @@ public class TestRunAsyncTask extends BaseTest {
     }
 
     @Test
-    public void should_log_error_without_error_handler() throws Exception {
-        Logger logger = mock(Logger.class);
-        controller.setLogger(logger);
-        controller.loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(this);
-
-        Thread.sleep(WAIT_DURATION);
-
-        verify(logger, times(1)).warn(anyString(), any(Exception.class));
-    }
-
-    @Test
     public void shouldBeAbleToRunAsyncTaskSuccessfully() throws Exception {
         Task.Monitor asyncTask = controller.loadHeavyResourceSuccessfullyWithErrorHandler(this);
 

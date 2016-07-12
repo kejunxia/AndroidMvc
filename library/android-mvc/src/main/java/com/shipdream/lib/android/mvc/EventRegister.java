@@ -21,6 +21,7 @@ import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ class EventRegister {
          * is set in this class static block.
          */
         try {
+            Mvc.graph().getRootComponent().unregister(UiThreadRunner.class);
             Mvc.graph().getRootComponent().register(new Object() {
                 @Provides
                 public UiThreadRunner uiThreadRunner() {
@@ -52,6 +54,8 @@ class EventRegister {
         } catch (ProvideException e) {
             LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
         } catch (ProviderConflictException e) {
+            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+        } catch (ProviderMissingException e) {
             LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
         }
     }
