@@ -81,6 +81,20 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * default it runs tasks on separate threads by {@link ExecutorService} injected from AndroidMvc
      * framework. A simple {@link ExecutorService} that runs tasks on the same thread in test cases
      * to make the test easier.
+     *
+     * <p><b>
+     * User the protected property {@link UiThreadRunner} to post action back to main UI thread
+     * in the method block of {@link Task#execute(Task.Monitor)}.
+     * </b></p>
+     * <pre>
+     *      uiThreadRunner.post(new Runnable() {
+     *          @Override
+     *          public void run() {
+     *              view.update();
+     *          }
+     *      });
+     * </pre>
+     *
      * @param task            The task
      * @return The monitor to track the state of the execution of the task. It also can cancel the
      * task.
@@ -95,6 +109,22 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * on separate threads by {@link ExecutorService} injected from AndroidMvc framework. A simple
      * {@link ExecutorService} that runs tasks on the same thread in test cases to make the test
      * easier.
+     *
+     * <p>The methods of callback will be guaranteed to be run Android's UI thread</p>
+     *
+     * <p><b>
+     * User the protected property {@link UiThreadRunner} to post action back to main UI thread
+     * in the method block of {@link Task#execute(Task.Monitor)}.
+     * </b></p>
+     * <pre>
+     *      uiThreadRunner.post(new Runnable() {
+     *          @Override
+     *          public void run() {
+     *              view.update();
+     *          }
+     *      });
+     * </pre>
+     *
      * @param task            The task
      * @param callback        The callback
      * @return The monitor to track the state of the execution of the task. It also can cancel the
@@ -109,7 +139,20 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * Run a task on the threads supplied by the given {@link ExecutorService}. The task could be
      * run either asynchronously or synchronously depending on the given executorService.
      *
-     * <p>The callback will be guaranteed to be run Android's UI thread</p>
+     * <p>The methods of callback will be guaranteed to be run Android's UI thread</p>
+     *
+     * <p><b>
+     * User the protected property {@link UiThreadRunner} to post action back to main UI thread
+     * in the method block of {@link Task#execute(Task.Monitor)}.
+     * </b></p>
+     * <pre>
+     *      uiThreadRunner.post(new Runnable() {
+     *          @Override
+     *          public void run() {
+     *              view.update();
+     *          }
+     *      });
+     * </pre>
      *
      * @param executorService The executor service managing how the task will be run
      * @param task            The task
