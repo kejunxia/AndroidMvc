@@ -44,7 +44,7 @@ class EventRegister {
          * is set in this class static block.
          */
         try {
-            Mvc.graph().getRootComponent().unregister(UiThreadRunner.class);
+            Mvc.graph().getRootComponent().unregister(UiThreadRunner.class, null);
             Mvc.graph().getRootComponent().register(new Object() {
                 @Provides
                 public UiThreadRunner uiThreadRunner() {
@@ -52,11 +52,11 @@ class EventRegister {
                 }
             });
         } catch (ProvideException e) {
-            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+            throw new RuntimeException(e);
         } catch (ProviderConflictException e) {
-            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+            throw new RuntimeException(e);
         } catch (ProviderMissingException e) {
-            LoggerFactory.getLogger(EventRegister.class).error(e.getMessage(), e);
+            throw new RuntimeException(e);
         }
     }
 
