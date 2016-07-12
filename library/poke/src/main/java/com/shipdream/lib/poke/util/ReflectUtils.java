@@ -17,7 +17,9 @@
 package com.shipdream.lib.poke.util;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.inject.Qualifier;
 
@@ -34,8 +36,17 @@ public class ReflectUtils {
             clazz = cls;
         }
 
-        public T newInstance() throws IllegalAccessException, InstantiationException {
-            return clazz.newInstance();
+        /**
+         * @return The new instance.
+         * @throws NoSuchMethodException The class doesn't have a default constructor
+         * @throws IllegalAccessException Unable to access the instance default constructor
+         * @throws InvocationTargetException if the underlying constructor throws an exception.
+         * @throws InstantiationException if the class that declares the underlying constructor represents an abstract class.
+         */
+        public T newInstance() throws NoSuchMethodException, IllegalAccessException,
+                InvocationTargetException, InstantiationException {
+            Constructor<T> constructor = clazz.getConstructor();
+            return constructor.newInstance();
         }
     }
 
@@ -45,21 +56,21 @@ public class ReflectUtils {
      * @param field The field
      * @return Null if no qualifier is found otherwise the first qualifier
      */
-    public static Annotation findFirstQualifier(Field field) {
-        return findFirstQualifier(field.getAnnotations());
+    public static Annotation findFirstQualifierInAnnotations(Field field) {
+        return findFirstQualifierInAnnotations(field.getAnnotations());
     }
 
     /**
-     * Find the first qualifier of the given class
+     * Find the first qualifier annotation of the given class
      *
      * @param clazz The class of which we are look for qualifier
      * @return Null if given clazz is null or no qualifier found, otherwise the first qualifier found
      */
-    public static Annotation findFirstQualifier(Class clazz) {
-        return findFirstQualifier(clazz.getAnnotations());
+    public static Annotation findFirstQualifierInAnnotations(Class clazz) {
+        return findFirstQualifierInAnnotations(clazz.getAnnotations());
     }
 
-    private static Annotation findFirstQualifier(Annotation[] annotations) {
+    private static Annotation findFirstQualifierInAnnotations(Annotation[] annotations) {
         if (annotations != null) {
             for (Annotation a : annotations) {
                 if (a.annotationType().isAnnotationPresent(Qualifier.class)) {

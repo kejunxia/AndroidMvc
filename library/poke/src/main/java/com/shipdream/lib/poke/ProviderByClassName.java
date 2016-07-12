@@ -16,19 +16,23 @@
 
 package com.shipdream.lib.poke;
 
+import javax.inject.Qualifier;
+
 /**
  * This provider uses default/empty constructor by provided class name to get dependencies. So
  * make sure the implementation has default public constructor
  */
 public class ProviderByClassName<T> extends ProviderByClassType<T> {
     /**
-     * Construct a {@link ProviderByClassName} with {@link javax.inject.Qualifier}
-     *
-     * @param type
-     * @param implementationClassName
-     * @throws ClassNotFoundException
+     * Construct a provider binding the type and the implementation class type. The found
+     * implementation class may be annotated by {@link Qualifier}.
+     * @param type The contract of the implementation
+     * @param implementationClassName The name of the implementation class. It must have a default
+     *                            public constructor
+     * @throws ClassNotFoundException Thrown if the class with the given name cannot be found
      */
-    public ProviderByClassName(Class type, String implementationClassName) throws ClassNotFoundException {
-        super(type, implementationClassName);
+    public ProviderByClassName(Class type, String implementationClassName)
+            throws ClassNotFoundException {
+        super(type, (Class<? extends T>) Class.forName(implementationClassName));
     }
 }

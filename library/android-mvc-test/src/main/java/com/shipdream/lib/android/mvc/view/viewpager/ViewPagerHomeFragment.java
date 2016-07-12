@@ -23,18 +23,27 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcApp;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.FirstFragmentController;
 
-public class ViewPagerHomeFragment extends MvcFragment {
+import javax.inject.Inject;
+
+public class ViewPagerHomeFragment extends MvcFragment<FirstFragmentController> {
     ViewPager viewPager;
 
     private PagerAdapter pagerAdapter;
 
-    private LifeCycleMonitor lifeCycleMonitor = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitor();
-    
+    @Inject
+    private LifeCycleMonitor lifeCycleMonitor;
+
+    @Override
+    protected Class<FirstFragmentController> getControllerClass() {
+        return FirstFragmentController.class;
+    }
+
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_view_pager_home;
@@ -48,10 +57,8 @@ public class ViewPagerHomeFragment extends MvcFragment {
         lifeCycleMonitor.onViewReady(view, savedInstanceState, reason);
 
         viewPager = (ViewPager) view.findViewById(R.id.viewpager);
-        if (reason.isNewInstance()) {
-            pagerAdapter = new PagerAdapter(getChildFragmentManager());
-            viewPager.setAdapter(pagerAdapter);
-        }
+        pagerAdapter = new PagerAdapter(getChildFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
     }
 
     @Override
@@ -73,9 +80,15 @@ public class ViewPagerHomeFragment extends MvcFragment {
     }
 
     @Override
-    protected void onPushingToBackStack() {
-        super.onPushingToBackStack();
-        lifeCycleMonitor.onPushingToBackStack();
+    protected void onPushToBackStack() {
+        super.onPushToBackStack();
+        lifeCycleMonitor.onPushToBackStack();
+    }
+
+    @Override
+    protected void onPopAway() {
+        super.onPopAway();
+        lifeCycleMonitor.onPopAway();
     }
 
     @Override
@@ -100,6 +113,11 @@ public class ViewPagerHomeFragment extends MvcFragment {
     public void onDestroy() {
         lifeCycleMonitor.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {

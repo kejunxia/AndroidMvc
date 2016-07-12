@@ -16,35 +16,35 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.exception.CircularDependenciesException;
-import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
-import com.shipdream.lib.poke.exception.ProviderMissingException;
+import com.shipdream.lib.poke.exception.PokeException;
 
 import org.junit.Assert;
-
+import org.junit.Before;
 import org.junit.Test;
 
 public class TestInjectionScope extends BaseTestCases {
+    private Graph graph;
+    private Component component;
+    @Before
+    public void setUp() throws Exception {
+        component = new Component("AppSingleton");
+        graph = new Graph();
+        graph.setRootComponent(component);
+    }
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInjectSingleton() throws ProvideException, ProviderMissingException, CircularDependenciesException, ProviderConflictException {
+    public void testInjectSingleton() throws PokeException {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection scope - singleton\n");
 
-        ScopeCache scopeManagerSingleton = new ScopeCache();
-
         //Provider is scoped as singleton so all instances are be the same shared one
-        SimpleGraph graph = new SimpleGraph();
         Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider.setScopeCache(scopeManagerSingleton);
-        graph.register(powerSupplyProvider);
 
-        SimpleGraph graph2 = new SimpleGraph();
-        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider2.setScopeCache(scopeManagerSingleton);
-        graph2.register(powerSupplyProvider2);
+        component.register(powerSupplyProvider);
+
+        Graph graph2 = new Graph();
+        graph2.setRootComponent(component);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();
@@ -72,23 +72,15 @@ public class TestInjectionScope extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInjectSingletonWitchDifferentScopes() throws ProvideException, ProviderMissingException, CircularDependenciesException, ProviderConflictException {
+    public void testInjectSingletonWithDifferentScopes() throws PokeException {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection scope - singleton\n");
 
-        ScopeCache scopeManagerSingleton = new ScopeCache();
-
-        //Provider is scoped as singleton but with different scopes, so they should have different
-        //injections
-        SimpleGraph graph = new SimpleGraph();
         Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider.setScopeCache(scopeManagerSingleton);
-        graph.register(powerSupplyProvider);
+        component.register(powerSupplyProvider);
 
-        SimpleGraph graph2 = new SimpleGraph();
-        Provider<PowerSupply> powerSupplyProvider2 = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        powerSupplyProvider2.setScopeCache(scopeManagerSingleton);
-        graph2.register(powerSupplyProvider2);
+        Graph graph2 = new Graph();
+        graph2.setRootComponent(component);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();
@@ -116,14 +108,15 @@ public class TestInjectionScope extends BaseTestCases {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void testInjectUnScoped() throws ProvideException, ProviderMissingException, CircularDependenciesException, ProviderConflictException {
+    public void testInjectUnScoped() throws PokeException {
         System.out.println("----------------------------------------------");
         System.out.println("Test injection scope - unscoped\n");
 
         //Provider is not scoped so all instances are separated
-        SimpleGraph graph = new SimpleGraph();
         Provider<PowerSupply> powerSupplyProvider = new ProviderByClassType<>(PowerSupply.class, Generator.class);
-        graph.register(powerSupplyProvider);
+        Component c = new Component(false);
+        c.register(powerSupplyProvider);
+        graph.setRootComponent(c);
 
         Pipeline p1 = new Pipeline();
         Pipeline p2 = new Pipeline();

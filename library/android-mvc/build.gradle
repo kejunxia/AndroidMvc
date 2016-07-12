@@ -22,7 +22,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 dependencies {
-    compile project(':library:android-mvc-controller')
+    compile project(':library:android-mvc-core')
     compile rootProject.lib.androidSupportLib
 }
 
@@ -64,7 +64,7 @@ install {
 
                 // Add your description here
                 name archivesBaseName
-                description 'Android MVC framework'
+                description 'Android Mvc framework'
                 url rootProject.ext.siteUrl
 
                 // Set your license

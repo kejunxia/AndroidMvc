@@ -19,14 +19,16 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
-public abstract class BaseTabFragment extends MvcFragment {
+public abstract class BaseTabFragment<C extends FragmentController> extends MvcFragment<C> {
     protected abstract LifeCycleMonitor getLifeCycleMonitor();
 
     @Override
-    public void onViewReady(View view, Bundle savedInstanceState, MvcFragment.Reason reason) {
+    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         getLifeCycleMonitor().onCreateView(view, savedInstanceState);
         getLifeCycleMonitor().onViewCreated(view, savedInstanceState);
         super.onViewReady(view, savedInstanceState, reason);
@@ -52,9 +54,15 @@ public abstract class BaseTabFragment extends MvcFragment {
     }
 
     @Override
-    protected void onPushingToBackStack() {
-        super.onPushingToBackStack();
-        getLifeCycleMonitor().onPushingToBackStack();
+    protected void onPushToBackStack() {
+        super.onPushToBackStack();
+        getLifeCycleMonitor().onPushToBackStack();
+    }
+
+    @Override
+    protected void onPopAway() {
+        super.onPopAway();
+        getLifeCycleMonitor().onPopAway();
     }
 
     @Override

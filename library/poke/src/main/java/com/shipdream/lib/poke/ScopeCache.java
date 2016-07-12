@@ -24,78 +24,59 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The cache controls how the provider associated should generate new instances.
+ * The instances controls how the provider associated should generate new instances.
  */
 public class ScopeCache {
-
-    public static class CachedItem<T> {
-        Class<T> type;
-        T instance;
-        Annotation qualifier;
-        Provider<T> provider;
-
-        public Class<T> getType() {
-            return type;
-        }
-
-        public T getInstance() {
-            return instance;
-        }
-
-        public Annotation getQualifier() {
-            return qualifier;
-        }
-
-        public Provider<T> getProvider() {
-            return provider;
-        }
-    }
-
-    protected Map<String, CachedItem> cache = new HashMap<>();
+    protected Map<String, Object> instances = new HashMap<>();
 
     @SuppressWarnings("unchecked")
     <T> T get(Provider<T> provider) throws ProvideException {
         String key = PokeHelper.makeProviderKey(provider.type(), provider.getQualifier());
-        CachedItem<T> item = cache.get(key);
-        if (item == null) {
-            item = new CachedItem<>();
-            item.type = provider.type();
-            item.instance = provider.createInstance();
-            item.provider = provider;
-            if(item.instance == null) {
+        T instance = (T) instances.get(key);
+        if (instance == null) {
+            instance = provider.createInstance();
+            if(instance == null) {
                 String qualifierName = (provider.getQualifier() == null) ? "null" : provider.getQualifier().getClass().getName();
                 throw new ProvideException(String.format("Provider (type: %s, qualifier: " +
                                 "%s) should not provide NULL as instance",
                         provider.type().getName(), qualifierName));
             }
-            item.qualifier = provider.getQualifier();
-            cache.put(key, item);
+            instances.put(key, instance);
+
+            provider.newlyCreatedInstance = instance;
         }
 
-        return item.instance;
-    }
-
-    @SuppressWarnings("unchecked")
-    <T> CachedItem<T> findCacheItem(Class<T> type, Annotation qualifier) {
-        return cache.get(PokeHelper.makeProviderKey(type, qualifier));
+        return instance;
     }
 
     @SuppressWarnings("unchecked")
     /**
-     * Remove the cached instance from the scope cache.
-     * @param type The type of the provider is providing
-     * @param qualifier The annotation of the qualifier. When null is given, this method will
-     *                  specifically look for provider without qualifier
+     * Get the cached instance
+     * @param cacheKey result of {@link PokeHelper#makeProviderKey(Class, Annotation)}
      */
-    public <T> void removeCache(Class<T> type, Annotation qualifier) {
-        cache.remove(PokeHelper.makeProviderKey(type, qualifier));
+    Object findInstance(String cacheKey) {
+        return instances.get(cacheKey);
+    }
+
+    @SuppressWarnings("unchecked")
+    <T> T findInstance(Class<T> type, Annotation qualifier) {
+        return (T) this.findInstance(PokeHelper.makeProviderKey(type, qualifier));
+    }
+
+    @SuppressWarnings("unchecked")
+    /**
+     * Remove the cached instance from the scope instances.
+     * @param cacheKey result of {@link PokeHelper#makeProviderKey(Class, Annotation)}
+     */
+    <T> void removeInstance(String key) {
+        instances.remove(key);
     }
 
     /**
-     * Gets all cached items this cache still manages
+     * Gets all cached instances this instances still manages
      * @return The collection of cached times
      */
-    public Collection<CachedItem> getCachedItems() {
-        return cache.values();
+    public Collection<Object> getCachedInstances() {
+        return instances.values();
     }
 }

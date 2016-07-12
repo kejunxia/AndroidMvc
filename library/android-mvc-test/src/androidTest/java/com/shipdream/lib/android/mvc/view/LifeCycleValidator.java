@@ -19,10 +19,12 @@ package com.shipdream.lib.android.mvc.view;
 import android.os.Bundle;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
+import org.mockito.exceptions.base.MockitoAssertionError;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
@@ -50,14 +52,40 @@ public class LifeCycleValidator {
     protected int onViewReadyRotation;
     protected int onViewReadyRestore;
     protected int onViewReadyPopOut;
-    protected int onPushingToBackStackCount;
+    protected int onPushToBackStackCount;
+    protected int onPopAwayCount;
     protected int onPoppedOutToFrontCount;
     protected int onReturnForegroundCount;
     protected int onOrientationChangedCount;
     protected int onDestroyViewCount;
     protected int onDestroyCount;
 
-    public void expect(LifeCycle... lifeCycles) {
+    private final static long wait_span = 5000;
+    public void expect(LifeCycle... lifeCycles){
+        long start = System.currentTimeMillis();
+        while(true) {
+            long elapse = System.currentTimeMillis() - start;
+            try {
+                doExpect(lifeCycles);
+            } catch (MockitoAssertionError mockitoAssertionError) {
+                if (elapse > wait_span) {
+                    throw mockitoAssertionError;
+                } else {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            //Pass
+            break;
+        }
+    }
+
+    private void doExpect(LifeCycle... lifeCycles) {
         if (lifeCycles != null) {
             for (int i = 0; i < lifeCycles.length; i++) {
                 LifeCycle lifeCycle = lifeCycles[i];
@@ -95,8 +123,11 @@ public class LifeCycleValidator {
                     case onViewReadyPopOut:
                         onViewReadyPopOut++;
                         break;
-                    case onPushingToBackStack:
-                        onPushingToBackStackCount++;
+                    case onPushToBackStack:
+                        onPushToBackStackCount++;
+                        break;
+                    case onPopAway:
+                        onPopAwayCount++;
                         break;
                     case onPoppedOutToFront:
                         onPoppedOutToFrontCount++;
@@ -140,7 +171,8 @@ public class LifeCycleValidator {
                 any(Bundle.class), argThat(new PopOutMatcher()));
 
         verify(lifeCycleMonitorMock, times(onViewCreatedCountNotNull)).onViewCreated(any(View.class), isNotNull(Bundle.class));
-        verify(lifeCycleMonitorMock, times(onPushingToBackStackCount)).onPushingToBackStack();
+        verify(lifeCycleMonitorMock, times(onPushToBackStackCount)).onPushToBackStack();
+        verify(lifeCycleMonitorMock, times(onPopAwayCount)).onPopAway();
         verify(lifeCycleMonitorMock, times(onPoppedOutToFrontCount)).onPoppedOutToFront();
         verify(lifeCycleMonitorMock, times(onReturnForegroundCount)).onReturnForeground();
         verify(lifeCycleMonitorMock, times(onOrientationChangedCount)).onOrientationChanged(anyInt(), anyInt());
@@ -150,11 +182,11 @@ public class LifeCycleValidator {
         reset();
     }
 
-    private class NewInstanceMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class NewInstanceMatcher extends ArgumentMatcher<Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isNewInstance()) {
+            if (argument instanceof Reason) {
+                if (((Reason) argument).isNewInstance()) {
                     return true;
                 }
             }
@@ -162,11 +194,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class FirstTimeMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class FirstTimeMatcher extends ArgumentMatcher<Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isFirstTime()) {
+            if (argument instanceof Reason) {
+                if (((Reason) argument).isFirstTime()) {
                     return true;
                 }
             }
@@ -174,11 +206,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class RestoreMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class RestoreMatcher extends ArgumentMatcher<Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isRestored()) {
+            if (argument instanceof Reason) {
+                if (((Reason) argument).isRestored()) {
                     return true;
                 }
             }
@@ -186,11 +218,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class RotateMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class RotateMatcher extends ArgumentMatcher<Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isRotated()) {
+            if (argument instanceof Reason) {
+                if (((Reason) argument).isRotated()) {
                     return true;
                 }
             }
@@ -198,11 +230,11 @@ public class LifeCycleValidator {
         }
     }
 
-    private class PopOutMatcher extends ArgumentMatcher<MvcFragment.Reason> {
+    private class PopOutMatcher extends ArgumentMatcher<Reason> {
         @Override
         public boolean matches(Object argument) {
-            if (argument instanceof MvcFragment.Reason) {
-                if (((MvcFragment.Reason) argument).isPoppedOut()) {
+            if (argument instanceof Reason) {
+                if (((Reason) argument).isPoppedOut()) {
                     return true;
                 }
             }
@@ -222,7 +254,8 @@ public class LifeCycleValidator {
         onViewReadyRotation = 0;
         onViewReadyRestore = 0;
         onViewReadyPopOut = 0;
-        onPushingToBackStackCount = 0;
+        onPushToBackStackCount = 0;
+        onPopAwayCount = 0;
         onPoppedOutToFrontCount = 0;
         onReturnForegroundCount = 0;
         onOrientationChangedCount = 0;

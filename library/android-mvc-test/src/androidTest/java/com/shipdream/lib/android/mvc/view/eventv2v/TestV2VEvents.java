@@ -16,8 +16,9 @@
 
 package com.shipdream.lib.android.mvc.view.eventv2v;
 
-import com.shipdream.lib.android.mvc.view.BaseTestCase;
-import com.shipdream.lib.android.mvc.view.eventv2v.controller.V2VTestController;
+import com.shipdream.lib.android.mvc.view.event2v.EventBusV2VActivity;
+import com.shipdream.lib.android.mvc.BaseTestCase;
+import com.shipdream.lib.android.mvc.view.event2v.controller.V2VTestController;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
@@ -32,7 +33,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 public class TestV2VEvents extends BaseTestCase<EventBusV2VActivity> {
     @Inject
-    private V2VTestController v2VTestController;
+    private V2VTestController v2VTestPresenter;
 
     public TestV2VEvents() {
         super(EventBusV2VActivity.class);
@@ -41,12 +42,6 @@ public class TestV2VEvents extends BaseTestCase<EventBusV2VActivity> {
     @Override
     public void setUp() throws Exception {
         super.setUp();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        waitTest();
     }
 
     @Test
@@ -61,7 +56,7 @@ public class TestV2VEvents extends BaseTestCase<EventBusV2VActivity> {
 
         onView(withId(R.id.fragment_mvc_v2v_dialog_text)).check(matches(withText("Initial Dialog Text")));
 
-        v2VTestController.updateDialogButton(this, "Updated By Under Fragment via V2V event");
+        v2VTestPresenter.updateDialogButton("Updated By Under Fragment via V2V event");
 
         onView(withId(R.id.fragment_mvc_v2v_dialog_text)).check(matches(withText("Updated By Under Fragment via V2V event")));
 

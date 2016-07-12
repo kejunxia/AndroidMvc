@@ -16,12 +16,14 @@
 
 package com.shipdream.lib.android.mvc.view.injection.controller;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public interface ControllerB extends BaseController<ControllerB.Model> {
-    class Model {
+public class ControllerB extends Controller<ControllerB.Model, UiView> {
+    public static class Model {
         private List<String> tags;
 
         public List<String> getTags() {
@@ -33,6 +35,22 @@ public interface ControllerB extends BaseController<ControllerB.Model> {
         }
     }
 
-    void addTag(String tag);
-    List<String> getTags();
+    @Override
+    public Class<Model> modelType() {
+        return Model.class;
+    }
+
+    @Override
+    public void onCreated() {
+        super.onCreated();
+        getModel().setTags(new ArrayList<String>());
+    }
+
+    public void addTag(String tag) {
+        getModel().getTags().add(tag);
+    }
+
+    public List<String> getTags() {
+        return getModel().getTags();
+    }
 }

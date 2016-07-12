@@ -18,7 +18,9 @@ package com.shipdream.lib.android.mvc.view.injection;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.BaseTestCase;
+import com.shipdream.lib.android.mvc.BaseTestCase;
+import com.shipdream.lib.android.mvc.Forwarder;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
@@ -29,20 +31,14 @@ import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
 public class TestInjectionAndLifeCycleForRootFragment extends BaseTestCase<InjectionTestActivityTestRootFragment> {
-
-    @Override
-    protected void waitTest() throws InterruptedException {
-        waitTest(1000);
-    }
-
     public TestInjectionAndLifeCycleForRootFragment() {
         super(InjectionTestActivityTestRootFragment.class);
     }
 
     @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        waitTest();
+    public void setUp() throws Exception {
+        super.setUp();
+        navTo(ControllerA.class, new Forwarder().clearAll());
     }
 
     @Test
@@ -57,12 +53,9 @@ public class TestInjectionAndLifeCycleForRootFragment extends BaseTestCase<Injec
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA")));
         onView(withId(R.id.textC)).check(matches(withText("")));
 
-        pressHome();
-        waitTest();
+        bringBack(pressHome());
 
-        bringBack();
-        waitTest();
-        onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\nOK\nAdded by FragmentA")));
+        onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\nAdded by FragmentA\nOK")));
         onView(withId(R.id.textB)).check(matches(withText("Added by FragmentA\nAdded by FragmentA")));
     }
 

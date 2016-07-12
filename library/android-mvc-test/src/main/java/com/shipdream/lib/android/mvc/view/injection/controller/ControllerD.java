@@ -16,13 +16,16 @@
 
 package com.shipdream.lib.android.mvc.view.injection.controller;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
 
 import java.util.List;
 
-public interface ControllerD extends BaseController<ControllerD.Model> {
-    class Model {
+import javax.inject.Inject;
+
+public class ControllerD extends Controller<ControllerD.Model, UiView> {
+    public static class Model {
         private List<String> tags;
 
         public List<String> getTags() {
@@ -34,9 +37,23 @@ public interface ControllerD extends BaseController<ControllerD.Model> {
         }
     }
 
-    AccountManager getAccountManager();
+    @Inject
+    private AccountManager accountManager;
 
-    void setUserId(long userId);
+    @Override
+    public Class<ControllerD.Model> modelType() {
+        return Model.class;
+    }
 
-    void setStorage(String content);
+    public AccountManager getAccountManager() {
+        return accountManager;
+    }
+
+    public void setUserId(long userId) {
+        accountManager.setUserId(userId);
+    }
+
+    public void setStorage(String content) {
+        accountManager.setContent(content);
+    }
 }

@@ -16,11 +16,13 @@
 
 package com.shipdream.lib.android.mvc.view.viewpager;
 
+import android.content.pm.ActivityInfo;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.BaseTestCase;
+import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.LifeCycle;
 import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
 
 import org.junit.Test;
 
@@ -37,11 +39,6 @@ import static org.hamcrest.core.IsNot.not;
 public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivity> {
     public TestFragmentsInViewPager() {
         super(ViewPagerTestActivity.class);
-    }
-
-    @Override
-    protected void waitTest() throws InterruptedException {
-        super.waitTest(200);
     }
 
     @Test
@@ -76,19 +73,16 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubFragment.class.getSimpleName());
-        waitTest(1200);
+        navigationManager.navigate(this).to(SecondFragmentController.class);
+        waitTest();
 
-        lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
-        lifeCycleValidatorB.expect(LifeCycle.onDestroyView);
+        lifeCycleValidator.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onPushToBackStack,LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onPushToBackStack,LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect();
 
-        pressHome();
-        waitTest(1200);
+        bringBack(pressHome());
 
-        bringBack();
-        waitTest(1200);
         lifeCycleValidator.expect();
 
         lifeCycleValidatorA.expect();
@@ -98,8 +92,9 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At A
-        navigationManager.navigate(this).back();
-        waitTest(1200);
+        navigateBackByFragment();
+        waitTest();
+
         lifeCycleValidator.expect(
                 LifeCycle.onCreateViewNull,
                 LifeCycle.onViewCreatedNull,
@@ -153,19 +148,16 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubFragment.class.getSimpleName());
-        waitTest(1200);
+        navigationManager.navigate(this).to(SecondFragmentController.class);
+        waitTest();
 
-        lifeCycleValidator.expect(LifeCycle.onPushingToBackStack, LifeCycle.onDestroyView);
-        lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
-        lifeCycleValidatorB.expect(LifeCycle.onDestroyView);
+        lifeCycleValidator.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorA.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
+        lifeCycleValidatorB.expect(LifeCycle.onPushToBackStack, LifeCycle.onDestroyView);
         lifeCycleValidatorC.expect();
 
-        pressHome();
-        waitTest(1200);
+        bringBack(pressHome());
 
-        bringBack();
-        waitTest(1200);
         lifeCycleValidator.expect(
                 LifeCycle.onDestroy,
                 LifeCycle.onCreateNotNull);
@@ -181,8 +173,8 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         //=============================> Back to home
-        navigationManager.navigate(this).back();
-        waitTest(1200);
+        navigateBackByFragment();
+        waitTest();
 
         lifeCycleValidator.expect(
                 LifeCycle.onCreateViewNotNull,
@@ -211,8 +203,8 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         lifeCycleValidatorC.expect();
 
         navigationManager.navigate(this).back(null);
-        navigationManager.navigate(this).back();
-        waitTest(1000);
+        navigateBackByFragment();
+        waitTest();
     }
 
     @Test
@@ -253,16 +245,18 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withText("Tab B")).check(matches(isDisplayed()));
 
         //=============================> At Sub Fragment
-        getActivity().launchAnotherActivity();
-        waitTest();
+        startActivity(getActivity().launchAnotherActivity());
+
         pressBack();
         waitTest();
         lifeCycleValidatorA.expect(LifeCycle.onReturnForeground);
 
         onView(withId(R.id.viewpager)).perform(swipeLeft());
+        synchronized (this) {
+            wait(1000);
+        }
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText("Tab C")).check(matches(isDisplayed()));
-        waitTest(1000);
         lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
@@ -317,10 +311,11 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withText("Tab B")).check(matches(isDisplayed()));
 
         //=============================> At Sub Fragment
-        getActivity().launchAnotherActivity();
-        waitTest(1200);
+        startActivity(getActivity().launchAnotherActivity());
+
+        waitActivityResume(getActivity());
         pressBack();
-        waitTest(1200);
+
         lifeCycleValidatorA.expect(
                 LifeCycle.onDestroyView,
                 LifeCycle.onDestroy,
@@ -333,7 +328,6 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withId(R.id.viewpager)).perform(swipeLeft());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
         onView(withText("Tab C")).check(matches(isDisplayed()));
-        waitTest(1000);
         lifeCycleValidatorA.expect(LifeCycle.onDestroyView);
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
@@ -353,14 +347,13 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
     @Test
     public void test_should_call_onViewReady_with_pops_out_on_home_page_on_back_navigation() throws Throwable {
         //=============================> At Sub Fragment
-        navigationManager.navigate(this).to(SubFragment.class.getSimpleName());
-        waitTest(1200);
+        navigationManager.navigate(this).to(SecondFragmentController.class);
+        waitTest();
 
         lifeCycleValidator.reset();
 
         //=============================> At A
-        navigationManager.navigate(this).back();
-        waitTest(1200);
+        navigateBackByFragment();
 
         lifeCycleValidator.expect(
                 LifeCycle.onCreateViewNull,
@@ -369,4 +362,26 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
                 LifeCycle.onPoppedOutToFront);
     }
 
+    @Test
+    public void test_call_tab_controller_update_on_rotation() throws Throwable {
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_call_tab_controller_update_on_swipe() throws Throwable {
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+    }
 }

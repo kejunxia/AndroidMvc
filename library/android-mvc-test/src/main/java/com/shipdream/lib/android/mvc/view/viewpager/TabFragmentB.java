@@ -20,21 +20,32 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
 import com.shipdream.lib.android.mvc.view.test.R;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.TabControllerB;
 
-public class TabFragmentB extends BaseTabFragment {
+import javax.inject.Inject;
+
+public class TabFragmentB extends BaseTabFragment<TabControllerB> {
     private TextView textView;
+
+    @Override
+    protected Class<TabControllerB> getControllerClass() {
+        return TabControllerB.class;
+    }
 
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_view_pager_tab;
     }
 
+    @Inject
+    private LifeCycleMonitorB lifeCycleMonitorB;
     @Override
     protected LifeCycleMonitor getLifeCycleMonitor() {
-        return MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorB();
+        return lifeCycleMonitorB;
     }
 
     @Override
@@ -42,6 +53,11 @@ public class TabFragmentB extends BaseTabFragment {
         super.onViewReady(view, savedInstanceState, reason);
 
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
+
+    }
+
+    @Override
+    public void update() {
         textView.setText("Tab B");
     }
 }

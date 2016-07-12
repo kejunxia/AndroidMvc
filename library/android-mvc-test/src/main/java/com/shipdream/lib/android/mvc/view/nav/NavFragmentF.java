@@ -20,19 +20,25 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
 
 public class NavFragmentF extends MvcFragment {
     @Inject
-    private ControllerF controllerF;
+    private ControllerF presenterF;
 
     @Inject
-    private ControllerG controllerG;
+    private ControllerG presenterG;
 
     private TextView textView;
+
+    @Override
+    protected Class getControllerClass() {
+        return null;
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -44,7 +50,11 @@ public class NavFragmentF extends MvcFragment {
         super.onViewReady(view, savedInstanceState, reason);
         textView = (TextView) view.findViewById(R.id.nav_frag_e_text);
 
-        textView.setText(controllerF.getValue());
+        textView.setText(presenterF.getValue());
     }
 
+    @Override
+    public void update() {
+
+    }
 }

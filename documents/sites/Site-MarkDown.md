@@ -10,7 +10,7 @@ First of all, let's look at some problems of the Android development below:
 
 
 - **Flawed lifecycle of Activity/Fragment**. Take a news app as an example. Think about this scenario, when the app resumes from background and needs to call services to get latest content to refresh the page. Which lifecycle callback should the refresh logic sit in? onResume? OK, the page would be refreshed on each rotation as well which is definitely NOT what we want. This is just one example of many, you might have seen more conflicting scenarios with the lifecycle that we have to write dodgy code to work around.
-- **Tedious to manage app instance state**. App is likely to crash when relaunch an activity that has been killed by OS. This doesn't have to happen if all state the activity is referencing is carefully saved and restored. But it is painful as it requires a lot of boilerplate code in onSaveInstanceState and onCreate and still easy to break if anything is missing.
+- **Tedious to manage app instance state**. App is likely to crash when relaunch an activity that has been killed by OS. This doesn't have to happen if all state the activity is referencing is carefully saved and restored. But it is painful as it requires a lot of boilerplate code in onSaveInstanceState and onCreated and still easy to break if anything is missing.
 - **Not easy to share state during navigation.** When navigate from one activity to another, if the app needs to share data the data has to be put into Bundle. If the data is not primitive, it needs to be serialised or parceled. Furthermore, this is not fun and mistake prone because it's all key-value pair based which loses the compile time strong type check.
 - **Large memory consumption with deep fragments back stack** Android doesn't call onDestroy of fragments if they are pushed into back stack and will hold the memory they used. If we have a deep fragment back stack, it will be a huge waste of memory and the worst to cause out of memory crash! So when a fragment is pushed into back stack, the instances of its holding members could be released as long as it's saved by onSaveInstanceState and restored properly when the fragment is resuming after popped out from the back stack.
 
@@ -79,7 +79,7 @@ Note that, in this MVC design, all controllers are **SINGLETON** application wid
 #### Model
 Models in AndroidMVC design encapsulate and represent the state of views. So each controller has only one model object to represent the state of the specific business logic. When the controllers are requested to process data, they will manage the model and box and format part of or entire model into an event subscribed by view and notify the views to update themselves by the data conveyed by the event. Alternatively, the views can also directly read the model from the controllers injected into them as long as their is no much formatting requirement. But make sure, views should NOT change the value of models directly which should be only done by controllers.
 
-In addition, to reduce boiler plate code, AndroidMvc framework will automatically save and restore the instance state of the controller models. So we don't need to always manually write code manually to use saveInstanceState and restore them in onCreate.
+In addition, to reduce boiler plate code, AndroidMvc framework will automatically save and restore the instance state of the controller models. So we don't need to always manually write code manually to use saveInstanceState and restore them in onCreated.
 
 #### Events
 With the builtin EventBus, events are defined as Java classes. It's also recommended to define them in controller interfaces to namespace them, so that we know what do the events do with more context. In addition, in a complex application with thousands of different events, the events won't be scattered everywhere. Events defined as Java classes instead of strings like Android messages has many benefits such as 1. extra data can be self-contained in them, 2. they are strong typed which avoids typo that can make debugging like a disaster, 3. strong typed events are also easier to track through inside IDEs (Android Studio, Eclipse and etc).
@@ -547,7 +547,7 @@ the graph will automatically save and restore injected objects implementing Stat
 AndroidMvc.graph().release(ObjectBeenInjected)
 ````
 to dereference them. Fortunately, all MvcFragment will do the injection and releasing in their
-Android lifecycle - onCreate and onDestroy. So we don't need to do this manually for fragments.
+Android lifecycle - onCreated and onDestroy. So we don't need to do this manually for fragments.
 
 **But why do we release? Isn't Java managing garbage collection automatically?
 
@@ -748,15 +748,15 @@ public void shouldRaiseFailEventForNetworkErrorToUpdateWeathers() throws IOExcep
 ### 3. Custom mechanism to automatically save/restore models of controllers
 By default, AndroidMvc uses GSON to serialize and deserialize models of controllers automatically. In general uses the performance is acceptable. For example, on rotation, as long as the models are not very large, the frozen time of the rotation would be between 200ms and 300ms.
 
-If we need to provide more optimized mechanism to do so in case there are large models taking long to be serialized and deserialized by GSON, custom StateKeeper can be set to provide alternative save/restore implementation. For Android, Parcelable is the best performed mechanism to save/restore state but it is not fun and error prone. Fortunately, there a handy library [Parceler](https://github.com/johncarl81/parceler) from another developer does this automatically. In the example below, we tried this library to implement custom StateKeeper to save/restore state by Parcelables automatically. The best place to set the custom StateKeeper is the Application#onCreate().
+If we need to provide more optimized mechanism to do so in case there are large models taking long to be serialized and deserialized by GSON, custom StateKeeper can be set to provide alternative save/restore implementation. For Android, Parcelable is the best performed mechanism to save/restore state but it is not fun and error prone. Fortunately, there a handy library [Parceler](https://github.com/johncarl81/parceler) from another developer does this automatically. In the example below, we tried this library to implement custom StateKeeper to save/restore state by Parcelables automatically. The best place to set the custom StateKeeper is the Application#onCreated().
 
 Check out more details in the sample code - Note
 
 ````java
 public class NoteApp extends Application {
     @Override
-    public void onCreate() {
-        super.onCreate();
+    public void onCreated() {
+        super.onCreated();
 
         AndroidMvc.setCustomStateKeeper(new AndroidStateKeeper() {
             @SuppressWarnings("unchecked")

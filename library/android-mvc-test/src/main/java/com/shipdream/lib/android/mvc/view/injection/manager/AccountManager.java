@@ -16,8 +16,13 @@
 
 package com.shipdream.lib.android.mvc.view.injection.manager;
 
-public interface AccountManager {
-    class Session {
+import com.shipdream.lib.android.mvc.Manager;
+import com.shipdream.lib.android.mvc.view.injection.service.StorageService;
+
+import javax.inject.Inject;
+
+public class AccountManager extends Manager<AccountManager.Session> {
+    public static class Session {
         private long userId;
 
         public long getUserId() {
@@ -29,11 +34,27 @@ public interface AccountManager {
         }
     }
 
-    void setUserId(long id);
+    @Inject
+    private StorageService storageService;
 
-    long getUserId();
+    public void setUserId(long id) {
+        getModel().setUserId(id);
+    }
 
-    String getContent();
+    public long getUserId() {
+        return getModel().getUserId();
+    }
 
-    void setContent(String content);
+    public String getContent() {
+        return storageService.getContent();
+    }
+
+    public void setContent(String content) {
+        storageService.setContent(content);
+    }
+
+    @Override
+    public Class<Session> modelType() {
+        return Session.class;
+    }
 }

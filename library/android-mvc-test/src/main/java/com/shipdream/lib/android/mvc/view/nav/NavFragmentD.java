@@ -18,6 +18,8 @@ package com.shipdream.lib.android.mvc.view.nav;
 
 import android.os.Bundle;
 
+import com.shipdream.lib.android.mvc.Controller;
+
 import javax.inject.Inject;
 
 public class NavFragmentD extends NavFragment{
@@ -25,7 +27,12 @@ public class NavFragmentD extends NavFragment{
     private DisposeCheckerD disposeCheckerD;
 
     @Override
-    protected String getNextFragmentLocId() {
+    protected Class<? extends Controller> getNextFragmentLocId() {
+        return null;
+    }
+
+    @Override
+    protected Class getControllerClass() {
         return null;
     }
 
@@ -37,5 +44,10 @@ public class NavFragmentD extends NavFragment{
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 }

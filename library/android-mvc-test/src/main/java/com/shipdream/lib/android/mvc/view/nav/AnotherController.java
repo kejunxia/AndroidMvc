@@ -16,10 +16,11 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
 
-public interface AnotherController extends BaseController<AnotherController.Model>{
-    class Model {
+public class AnotherController extends Controller<AnotherController.Model, UiView> {
+    public static class Model {
         private String name;
         private String address;
 
@@ -40,5 +41,13 @@ public interface AnotherController extends BaseController<AnotherController.Mode
         }
     }
 
-    void populateData();
+    @Override
+    public Class<Model> modelType() {
+        return AnotherController.Model.class;
+    }
+
+    public void populateData() {
+        getModel().setName("James");
+        getModel().setAddress("London");
+    }
 }

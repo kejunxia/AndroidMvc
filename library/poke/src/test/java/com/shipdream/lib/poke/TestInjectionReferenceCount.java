@@ -17,12 +17,14 @@
 package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
-import com.shipdream.lib.poke.Provider.OnFreedListener;
+import com.shipdream.lib.poke.Provider.DereferenceListener;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.inject.Singleton;
@@ -55,26 +57,40 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         private Container container;
     }
 
-    static class TestComp extends Component {
-        @Provides
-        public Fruit providesFruit() {
-            return new Apple();
-        }
+    private Graph graph;
+    private Component component;
 
-        @Provides
-        public Container providesContainer() {
-            return new Fridge();
-        }
+    @Before
+    public void setUp() throws Exception {
+        graph = new Graph();
+        component = new Component("AppSingleton");
+        component.register(new TestModule());
+        graph.setRootComponent(component);
     }
 
     @Test
-    public void unscopedProvidesShouldHaveDifferentInstances() throws ProvideException, ProviderConflictException,
-            CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        graph.register(new TestComp());
+    public void unscopedProvidesShouldHaveDifferentInstances() throws PokeException {
+
+        class Module1 {
+            @Provides
+            public Fruit providesFruit() {
+                return new Apple();
+            }
+
+            @Provides
+            public Container providesContainer() {
+                return new Fridge();
+            }
+        }
+
+        Graph g = new Graph();
+        Component c;
+        c = new Component(false);
+        c.register(new Module1());
+        g.setRootComponent(c);
 
         House house = new House();
-        graph.inject(house, MyInject.class);
+        g.inject(house, MyInject.class);
 
         Assert.assertNotNull(house.container);
         Assert.assertNotNull(((Fridge) house.container).a);
@@ -82,7 +98,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertTrue(((Fridge) house.container).a != ((Fridge) house.container).b);
     }
 
-    static class TestComp2 extends Component {
+    static class TestModule {
         @Singleton
         @Provides
         public Fruit providesFruit() {
@@ -99,10 +115,6 @@ public class TestInjectionReferenceCount extends BaseTestCases {
     @Test
     public void referenceCountCanReduceCascadinglyFromRoot() throws ProvideException, ProviderConflictException,
             CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         House house = new House();
         graph.inject(house, MyInject.class);
 
@@ -111,14 +123,14 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertNotNull(((Fridge) house.container).b);
         Assert.assertTrue(((Fridge) house.container).a == ((Fridge) house.container).b);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         Assert.assertTrue(containerProvider.getReferenceCount() == 1);
         Assert.assertTrue(fruitProvider.getReferenceCount() == 2);
 
         graph.release(house, MyInject.class);
-        Assert.assertTrue(component.getScopeCache().cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
     }
 
     static class Mansion extends House {
@@ -129,10 +141,6 @@ public class TestInjectionReferenceCount extends BaseTestCases {
     @Test
     public void should_be_able_to_release_inherited_fields_with_same_name() throws ProvideException, ProviderConflictException,
             CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         Mansion mansion = new Mansion();
         graph.inject(mansion, MyInject.class);
 
@@ -141,15 +149,15 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertNotNull(((Fridge) mansion.container).b);
         Assert.assertTrue(((Fridge) mansion.container).a == ((Fridge) mansion.container).b);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         //container has been referenced twice by the fields Mansion.container and Mansion.House.container
         Assert.assertEquals(2, containerProvider.getReferenceCount());
         Assert.assertEquals(4, fruitProvider.getReferenceCount());
 
         graph.release(mansion, MyInject.class);
-        Assert.assertTrue(component.getScopeCache().cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
     }
 
     static class Kitchen {
@@ -166,10 +174,6 @@ public class TestInjectionReferenceCount extends BaseTestCases {
     @Test
     public void referenceCountCanReduceCascadinglyFromSubNode() throws ProvideException, ProviderConflictException,
             CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         Kitchen kitchen = new Kitchen();
         graph.inject(kitchen, MyInject.class);
 
@@ -181,8 +185,8 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         Assert.assertTrue((fridge).a == fridge.b);
         Assert.assertTrue(kitchen.aOnFloor == kitchen.bOnFloor);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         Assert.assertEquals(1, containerProvider.getReferenceCount());
         Assert.assertEquals(4, fruitProvider.getReferenceCount());
@@ -206,15 +210,12 @@ public class TestInjectionReferenceCount extends BaseTestCases {
     @Test
     public void releaseInjectedFieldsShouldSetThemNull() throws ProvideException, ProviderConflictException,
             CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
 
         Kitchen kitchen = new Kitchen();
         graph.inject(kitchen, MyInject.class);
 
-        Provider<Container> containerProvider = graph.getProvider(Container.class, null);
-        Provider<Fruit> fruitProvider = graph.getProvider(Fruit.class, null);
+        Provider<Container> containerProvider = component.findProvider(Container.class, null);
+        Provider<Fruit> fruitProvider = component.findProvider(Fruit.class, null);
 
         graph.release(kitchen.container, MyInject.class);
         Assert.assertEquals(1, containerProvider.getReferenceCount());
@@ -230,7 +231,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
 
         graph.release(kitchen, MyInject.class);
 
-        Assert.assertTrue(component.getScopeCache().cache.isEmpty());
+        Assert.assertTrue(component.scopeCache.getCachedInstances().isEmpty());
     }
 
     @Test
@@ -241,21 +242,19 @@ public class TestInjectionReferenceCount extends BaseTestCases {
             public void onFreed(Class<?> type) {}
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         Kitchen kitchen = new Kitchen();
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        Provider.DereferenceListener onFreed = new DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
-                proxy.onFreed(provider.type());
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
         //Assert
 
@@ -283,21 +282,19 @@ public class TestInjectionReferenceCount extends BaseTestCases {
             public void onFreed(Class<?> type) {}
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         Kitchen kitchen = new Kitchen();
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
-                proxy.onFreed(provider.type());
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
         //Assert
         //Releasing root should free providers and invoke callbacks
@@ -314,23 +311,21 @@ public class TestInjectionReferenceCount extends BaseTestCases {
             public void onFreed(Class<?> type) {}
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         Kitchen kitchen = new Kitchen();
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
-                proxy.onFreed(provider.type());
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
-        graph.unregisterProviderFreedListener(onFreed);
+        graph.unregisterDereferencedListener(onFreed);
 
         //Assert
         graph.release(kitchen, MyInject.class);
@@ -346,23 +341,21 @@ public class TestInjectionReferenceCount extends BaseTestCases {
             public void onFreed(Class<?> type) {}
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         Kitchen kitchen = new Kitchen();
         graph.inject(kitchen, MyInject.class);
 
         final OnCacheFreedProxy proxy = mock(OnCacheFreedProxy.class);
-        OnFreedListener onFreed = new OnFreedListener() {
+        DereferenceListener onFreed = new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
-                proxy.onFreed(provider.type());
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
+                if (provider.getReferenceCount() == 0) {
+                    proxy.onFreed(provider.type());
+                }
             }
         };
-        graph.registerProviderFreedListener(onFreed);
+        graph.registerDereferencedListener(onFreed);
 
-        graph.clearOnProviderFreedListeners();
+        graph.clearDereferencedListeners();
 
         //Assert
         graph.release(kitchen, MyInject.class);
@@ -378,10 +371,6 @@ public class TestInjectionReferenceCount extends BaseTestCases {
             public void onInject(Object target) {}
             public void onRelease(Object target) {}
         }
-
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
 
         final MonitorProxy proxy = mock(MonitorProxy.class);
         Graph.Monitor monitor = new Graph.Monitor() {
@@ -420,10 +409,6 @@ public class TestInjectionReferenceCount extends BaseTestCases {
             public void onInject(Object target) {}
             public void onRelease(Object target) {}
         }
-
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
 
         final MonitorProxy proxy = mock(MonitorProxy.class);
         Graph.Monitor monitor = new Graph.Monitor() {
@@ -465,10 +450,6 @@ public class TestInjectionReferenceCount extends BaseTestCases {
             public void onRelease(Object target) {}
         }
 
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp2();
-        graph.register(component);
-
         final MonitorProxy proxy = mock(MonitorProxy.class);
         Graph.Monitor monitor = new Graph.Monitor() {
             @Override
@@ -505,7 +486,7 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         private Container container;
     }
 
-    static class TestComp3 extends Component {
+    static class TestComp3 {
         @Singleton
         @Provides
         public Fruit providesFruit() {
@@ -522,9 +503,6 @@ public class TestInjectionReferenceCount extends BaseTestCases {
     @Test
     public void should_hold_provider_until_no_objects_is_referencing_to_it()
             throws ProvideException, ProviderConflictException, CircularDependenciesException, ProviderMissingException {
-        SimpleGraph graph = new SimpleGraph();
-        Component component = new TestComp3();
-        graph.register(component);
 
         Kitchen kitchen1 = new Kitchen();
         graph.inject(kitchen1, MyInject.class);

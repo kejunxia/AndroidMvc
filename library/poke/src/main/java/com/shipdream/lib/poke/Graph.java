@@ -16,16 +16,14 @@
 
 package com.shipdream.lib.poke;
 
-import com.shipdream.lib.poke.Provider.OnFreedListener;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 import com.shipdream.lib.poke.util.ReflectUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -37,54 +35,23 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import javax.inject.Inject;
 
 /**
- * Abstract graph manages how to inject dependencies to target objects.
+ * A graph manages how to inject dependencies to target objects.
  */
-public abstract class Graph {
-    private List<ProviderFinder> providerFinders;
-    private Map<Class, ProviderFinder> finderCache = new HashMap<>();
-    private List<OnFreedListener> onProviderFreedListeners;
+public class Graph {
+    public static class IllegalRootComponentException extends PokeException {
+        public IllegalRootComponentException(String message) {
+            super(message);
+        }
+    }
+
     private List<Monitor> monitors;
     private String revisitedNode = null;
     private Set<String> visitedInjectNodes = new LinkedHashSet<>();
     private Map<Object, Map<String, Set<String>>> visitedFields = new HashMap<>();
+    private List<Provider.DereferenceListener> dereferenceListeners;
+    private List<Provider.DisposeListener> disposeListeners;
 
-    /**
-     * Register {@link OnFreedListener} which will be called when the provider
-     *
-     * @param onProviderFreedListener The listener
-     */
-    public void registerProviderFreedListener(OnFreedListener onProviderFreedListener) {
-        if (onProviderFreedListeners == null) {
-            onProviderFreedListeners = new CopyOnWriteArrayList<>();
-        }
-        onProviderFreedListeners.add(onProviderFreedListener);
-    }
-
-    /**
-     * Unregister {@link OnFreedListener} which will be called when the last cached
-     * instance of an injected contract is freed.
-     *
-     * @param onProviderFreedListener The listener
-     */
-    public void unregisterProviderFreedListener(OnFreedListener onProviderFreedListener) {
-        if (onProviderFreedListeners != null) {
-            onProviderFreedListeners.remove(onProviderFreedListener);
-            if (onProviderFreedListeners.isEmpty()) {
-                onProviderFreedListeners = null;
-            }
-        }
-    }
-
-    /**
-     * Clear {@link OnFreedListener}s which will be called when the last cached
-     * instance of an injected contract is freed.
-     */
-    public void clearOnProviderFreedListeners() {
-        if (onProviderFreedListeners != null) {
-            onProviderFreedListeners.clear();
-            onProviderFreedListeners = null;
-        }
-    }
+    private Component rootComponent;
 
     /**
      * Register {@link Monitor} which will be called the graph is about to inject or release an object
@@ -123,19 +90,106 @@ public abstract class Graph {
     }
 
     /**
-     * Add {@link ProviderFinder} to the graph directly. Eg. if manual provider registration
-     * is needed, a {@link com.shipdream.lib.poke.ProviderFinderByRegistry} can be added.
-     * <p/>
-     * <p>Note that, when there are multiple {@link ProviderFinder}s able to inject an instance the
-     * later merged graph wins.</p>
+     * Add {@link Component} to the graph.
      *
-     * @param providerFinders The {@link ProviderFinder}s to add
+     * @param component The root {@link Component} of this graph.
      */
-    protected void addProviderFinders(ProviderFinder... providerFinders) {
-        if (this.providerFinders == null) {
-            this.providerFinders = new ArrayList<>();
+    public void setRootComponent(Component component) throws IllegalRootComponentException {
+        if (component != null && component.getParent() != null) {
+            throw new IllegalRootComponentException("A component with parent cannot be set as a graph's root component. Make sure the component doesn't parent.");
         }
-        this.providerFinders.addAll(Arrays.asList(providerFinders));
+        this.rootComponent = component;
+    }
+
+    public Component getRootComponent() {
+        return rootComponent;
+    }
+
+    /**
+     * Register {@link Provider.DisposeListener} which will be called when either
+     * <ul>
+     *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
+     * </ul>
+     * @param disposeListener The listener
+     */
+    public void registerDisposeListener(Provider.DisposeListener disposeListener) {
+        if (disposeListeners == null) {
+            disposeListeners = new CopyOnWriteArrayList<>();
+        }
+        disposeListeners.add(disposeListener);
+    }
+
+    /**
+     * Unregister {@link Provider.DisposeListener} which will be called when either
+     * <ul>
+     *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
+     * </ul>
+     *
+     * @param disposeListener The listener
+     */
+    public void unregisterDisposeListener(Provider.DisposeListener disposeListener) {
+        if (disposeListeners != null) {
+            disposeListeners.remove(disposeListener);
+
+            if (disposeListeners.isEmpty()) {
+                disposeListeners = null;
+            }
+        }
+    }
+
+    /**
+     * Clear {@link Provider.DisposeListener}s which will be called when when either
+     * <ul>
+     *     <li>The provider doesn't have a scope instances and a provided instance is dereferenced</li>
+     *     <li>The provider has a scope instances and the provider is dereferenced with 0 reference count</li>
+     * </ul>
+     */
+    public void clearDisposeListeners() {
+        if (disposeListeners != null) {
+            disposeListeners.clear();
+            disposeListeners = null;
+        }
+    }
+
+    /**
+     * Register {@link Provider.DereferenceListener} which will be called when the provider's
+     * instance is dereferenced.
+     *
+     * @param dereferenceListener The listener
+     */
+    public void registerDereferencedListener(Provider.DereferenceListener dereferenceListener) {
+        if (dereferenceListeners == null) {
+            dereferenceListeners = new CopyOnWriteArrayList<>();
+        }
+        dereferenceListeners.add(dereferenceListener);
+    }
+
+    /**
+     * Unregister {@link Provider.DereferenceListener} which will be called when the provider's
+     * instance is dereferenced.
+     *
+     * @param dereferenceListener The listener
+     */
+    public void unregisterDereferencedListener(Provider.DereferenceListener dereferenceListener) {
+        if (dereferenceListeners != null) {
+            dereferenceListeners.remove(dereferenceListener);
+            if (dereferenceListeners.isEmpty()) {
+                dereferenceListeners = null;
+            }
+        }
+    }
+
+    /**
+     * Clear {@link Provider.DereferenceListener}s which will be called when the provider's
+     * instance is dereferenced.
+     */
+    public void clearDereferencedListeners() {
+        if (dereferenceListeners != null) {
+            dereferenceListeners.clear();
+            dereferenceListeners = null;
+        }
     }
 
     /**
@@ -161,12 +215,13 @@ public abstract class Graph {
 
     /**
      * Same as {@link #use(Class, Annotation, Class, Consumer)} except using un-qualified injectable type.
-     * @param type The type of the injectable instance
+     *
+     * @param type             The type of the injectable instance
      * @param injectAnnotation injectAnnotation
-     * @param consumer Consume to use the instance
-     * @throws ProvideException ProvideException
+     * @param consumer         Consume to use the instance
+     * @throws ProvideException              ProvideException
      * @throws CircularDependenciesException CircularDependenciesException
-     * @throws ProviderMissingException ProviderMissingException
+     * @throws ProviderMissingException      ProviderMissingException
      */
     public <T> void use(Class<T> type, Class<? extends Annotation> injectAnnotation, Consumer<T> consumer)
             throws ProvideException, CircularDependenciesException, ProviderMissingException {
@@ -182,92 +237,93 @@ public abstract class Graph {
      * scope of {@link Consumer#consume(Object)} the instance will be held.
      * <p>For example,</p>
      * <pre>
-        private static class Device {
-            @MyInject
-            private Os os;
-        }
-
-        final SimpleGraph graph = new SimpleGraph();
-        ScopeCache scopeCache = new ScopeCache();
-
-        graph.register(Os.class, Android.class, scopeCache);
-
-        //OsReferenceCount = 0
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-              //First time to create the instance.
-              //OsReferenceCount = 1
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 0
-
-        Device device = new Device();
-        graph.inject(device, MyInject.class);  //OsReferenceCount = 1
-        //New instance created and cached
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-              //Since reference count is greater than 0, cached instance will be reused
-              //OsReferenceCount = 2
-              Assert.assertTrue(device.os == instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 1
-
-        graph.release(device, MyInject.class);  //OsReferenceCount = 0
-        //Last instance released, so next time a new instance will be created
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-              //OsReferenceCount = 1
-              //Since the cached instance is cleared, the new instance is a newly created one.
-              Assert.assertTrue(device.os != instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 0
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-                //OsReferenceCount = 1
-                //Since the cached instance is cleared, the new instance is a newly created one.
-                Assert.assertTrue(device.os != instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 0
-        //Cached instance cleared again
-
-        graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
-            @Override
-            public void consume(Os instance) {
-                //OsReferenceCount = 1
-                graph.inject(device, MyInject.class);  
-                //Injection will reuse the cached instance and increment the reference count
-                //OsReferenceCount = 2
-
-                //Since the cached instance is cleared, the new instance is a newly created one.
-                Assert.assertTrue(device.os == instance);
-            }
-        });
-        //Reference count decremented by use method automatically
-        //OsReferenceCount = 1
-
-        graph.release(device, MyInject.class);  //OsReferenceCount = 0      
+     * private static class Device {
+     * @MyInject
+     * private Os os;
+     * }
+     *
+     * final SimpleGraph graph = new SimpleGraph();
+     * ScopeCache scopeCache = new ScopeCache();
+     *
+     * graph.register(Os.class, Android.class, scopeCache);
+     *
+     * //OsReferenceCount = 0
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //First time to create the instance.
+     * //OsReferenceCount = 1
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 0
+     *
+     * Device device = new Device();
+     * graph.inject(device, MyInject.class);  //OsReferenceCount = 1
+     * //New instance created and cached
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //Since reference count is greater than 0, cached instance will be reused
+     * //OsReferenceCount = 2
+     * Assert.assertTrue(device.os == instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 1
+     *
+     * graph.release(device, MyInject.class);  //OsReferenceCount = 0
+     * //Last instance released, so next time a new instance will be created
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //OsReferenceCount = 1
+     * //Since the cached instance is cleared, the new instance is a newly created one.
+     * Assert.assertTrue(device.os != instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 0
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //OsReferenceCount = 1
+     * //Since the cached instance is cleared, the new instance is a newly created one.
+     * Assert.assertTrue(device.os != instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 0
+     * //Cached instance cleared again
+     *
+     * graph.use(Os.class, null, Inject.class, new Consumer<Os>() {
+     * @Override
+     * public void consume(Os instance) {
+     * //OsReferenceCount = 1
+     * graph.inject(device, MyInject.class);
+     * //Injection will reuse the cached instance and increment the reference count
+     * //OsReferenceCount = 2
+     *
+     * //Since the cached instance is cleared, the new instance is a newly created one.
+     * Assert.assertTrue(device.os == instance);
+     * }
+     * });
+     * //Reference count decremented by use method automatically
+     * //OsReferenceCount = 1
+     *
+     * graph.release(device, MyInject.class);  //OsReferenceCount = 0
      * </pre>
-     * @param type The type of the injectable instance
-     * @param qualifier Qualifier for the injectable instance
+     *
+     * @param type             The type of the injectable instance
+     * @param qualifier        Qualifier for the injectable instance
      * @param injectAnnotation injectAnnotation
-     * @param consumer Consume to use the instance
-     * @throws ProvideException ProvideException
+     * @param consumer         Consume to use the instance
+     * @throws ProvideException              ProvideException
      * @throws CircularDependenciesException CircularDependenciesException
-     * @throws ProviderMissingException ProviderMissingException
+     * @throws ProviderMissingException      ProviderMissingException
      */
     public <T> void use(Class<T> type, Annotation qualifier,
                         Class<? extends Annotation> injectAnnotation, Consumer<T> consumer)
@@ -277,24 +333,28 @@ public abstract class Graph {
         dereference(instance, type, qualifier, injectAnnotation);
     }
 
+    private <T> Provider<T> findProvider(Class<T> type, Annotation qualifier) throws ProviderMissingException {
+        Provider<T> provider = rootComponent.findProvider(type, qualifier);
+        return provider;
+    }
+
     /**
      * Reference an injectable object and retain it. Use
      * {@link #dereference(Object, Class, Annotation, Class)} to dereference it when it's not used
      * any more.
-     * @param type the type of the object
-     * @param qualifier the qualifier
+     *
+     * @param type             the type of the object
+     * @param qualifier        the qualifier
      * @param injectAnnotation the inject annotation
      * @return
      */
     public <T> T reference(Class<T> type, Annotation qualifier, Class<? extends Annotation> injectAnnotation)
             throws ProviderMissingException, ProvideException, CircularDependenciesException {
-         Provider<T> provider = getProvider(type, qualifier);
+        Provider<T> provider = findProvider(type, qualifier);
         T instance = provider.get();
         doInject(instance, null, type, qualifier, injectAnnotation);
         provider.retain();
-        if (provider.getReferenceCount() == 1) {
-            provider.notifyInjected(instance);
-        }
+        provider.notifyReferenced(provider, instance);
 
         //Clear visiting records
         visitedFields.clear();
@@ -306,17 +366,19 @@ public abstract class Graph {
     /**
      * Dereference an injectable object. When it's not referenced by anything else after this
      * dereferencing, release its cached instance if possible.
-     * @param type the type of the object
-     * @param qualifier the qualifier
+     *
+     * @param instance         the instance is to release
+     * @param type             the type of the object
+     * @param qualifier        the qualifier
      * @param injectAnnotation the inject annotation
      */
     public <T> void dereference(T instance, Class<T> type, Annotation qualifier,
                                 Class<? extends Annotation> injectAnnotation) throws ProviderMissingException {
         doRelease(instance, null, type, qualifier, injectAnnotation);
 
-        Provider<T> provider = getProvider(type, qualifier);
+        Provider<T> provider = findProvider(type, qualifier);
         provider.release();
-        checkToFreeProvider(provider);
+        dereferenceProvider(provider, instance);
     }
 
     @SuppressWarnings("unchecked")
@@ -325,17 +387,14 @@ public abstract class Graph {
             throws ProvideException, ProviderMissingException, CircularDependenciesException {
         boolean circularDetected = false;
         Provider targetProvider;
-        ScopeCache.CachedItem cachedTargetItem = null;
         if (targetType != null) {
             //Nested injection
             circularDetected = recordVisit(targetType, targetQualifier);
-            targetProvider = getProvider(targetType, targetQualifier);
-            if (targetProvider.scopeCache != null) {
-                cachedTargetItem = targetProvider.scopeCache.findCacheItem(targetType, targetQualifier);
-            }
+            targetProvider = findProvider(targetType, targetQualifier);
+            Object cachedInstance = targetProvider.getCachedInstance();
             boolean infiniteCircularInjection = true;
             if (circularDetected) {
-                if (cachedTargetItem != null) {
+                if (cachedInstance != null) {
                     infiniteCircularInjection = false;
                 }
 
@@ -352,23 +411,19 @@ public abstract class Graph {
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(injectAnnotation)) {
                         Class fieldType = field.getType();
-                        Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
-                        Provider provider = getProvider(fieldType, fieldQualifier);
+                        Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
+                        Provider provider = findProvider(fieldType, fieldQualifier);
 
                         Object impl = provider.get();
-                        provider.retain(target, field);
-
                         ReflectUtils.setField(target, field, impl);
 
-                        boolean firstTimeInject = provider.getReferenceCount() == 1;
                         boolean visited = isFieldVisited(target, targetField, field);
                         if (!visited) {
                             doInject(impl, field, fieldType, fieldQualifier, injectAnnotation);
                         }
 
-                        if (firstTimeInject) {
-                            provider.notifyInjected(impl);
-                        }
+                        provider.retain(target, field);
+                        provider.notifyReferenced(provider, impl);
 
                         recordVisitField(target, targetField, field);
                     }
@@ -383,9 +438,9 @@ public abstract class Graph {
     }
 
     /**
-     * Release cached instances held by fields of target object. References of cache of the
+     * Release cached instances held by fields of target object. References of instances of the
      * instances will be decremented. Once the reference count of a controller reaches 0, it will
-     * be removed from the cache and raise {@link OnFreedListener}.
+     * be removed from the instances and raise {@link Provider.DereferenceListener}.
      *
      * @param target           Whose fields will be injected
      * @param injectAnnotation Annotated which a field will be recognize
@@ -419,10 +474,10 @@ public abstract class Graph {
                 for (Field field : fields) {
                     if (field.isAnnotationPresent(injectAnnotation)) {
                         Object fieldValue = ReflectUtils.getFieldValue(target, field);
-                        if(fieldValue != null) {
+                        if (fieldValue != null) {
                             final Class<?> fieldType = field.getType();
-                            Annotation fieldQualifier = ReflectUtils.findFirstQualifier(field);
-                            Provider provider = getProvider(fieldType, fieldQualifier);
+                            Annotation fieldQualifier = ReflectUtils.findFirstQualifierInAnnotations(field);
+                            Provider provider = findProvider(fieldType, fieldQualifier);
 
                             boolean stillReferenced = provider.getReferenceCount(target, field) > 0;
                             boolean fieldVisited = isFieldVisited(target, targetField, field);
@@ -432,7 +487,7 @@ public abstract class Graph {
 
                                 provider.release(target, field);
 
-                                checkToFreeProvider(provider);
+                                dereferenceProvider(provider, fieldValue);
                             }
                         }
                     }
@@ -446,24 +501,35 @@ public abstract class Graph {
         }
     }
 
-    private void checkToFreeProvider(Provider provider) {
-        if (provider.getReferenceCount() == 0) {
-            if (onProviderFreedListeners != null) {
-                int listenerSize = onProviderFreedListeners.size();
-                for (int k = 0; k < listenerSize; k++) {
-                    onProviderFreedListeners.get(k).onFreed(provider);
+    private <T> void dereferenceProvider(Provider<T> provider, T instance) {
+        if (dereferenceListeners != null) {
+            int listenerSize = dereferenceListeners.size();
+            for (int i = 0; i < listenerSize; i++) {
+                dereferenceListeners.get(i).onDereferenced(provider, instance);
+            }
+        }
+        if (disposeListeners != null) {
+            boolean disposing = false;
+            if (provider.getScopeCache() == null) {
+                disposing = true;
+            } else if (provider.getReferenceCount() == 0) {
+                disposing = true;
+            }
+            if (disposing) {
+                int listenerSize = disposeListeners.size();
+                for (int i = 0; i < listenerSize; i++) {
+                    disposeListeners.get(i).onDisposed(provider, instance);
                 }
             }
-
-            provider.freeCache();
         }
     }
 
     /**
      * Records the field of a target object is visited
-     * @param object The field holder
+     *
+     * @param object      The field holder
      * @param objectField The field which holds the object in its parent
-     * @param field The field of the holder
+     * @param field       The field of the holder
      */
     private void recordVisitField(Object object, Field objectField, Field field) {
         Map<String, Set<String>> bag = visitedFields.get(object);
@@ -475,7 +541,7 @@ public abstract class Graph {
 
         String objectFiledKey = objectField == null ? "" : objectField.toGenericString();
 
-        if(fields == null) {
+        if (fields == null) {
             fields = new HashSet<>();
             bag.put(objectFiledKey, fields);
         }
@@ -484,9 +550,10 @@ public abstract class Graph {
 
     /**
      * Indicates whether the field of a target object is visited
-     * @param object The field holder
+     *
+     * @param object      The field holder
      * @param objectField The field which holds the object in its parent
-     * @param field The field of the holder
+     * @param field       The field of the holder
      */
     private boolean isFieldVisited(Object object, Field objectField, Field field) {
         Map<String, Set<String>> bag = visitedFields.get(object);
@@ -500,7 +567,7 @@ public abstract class Graph {
     }
 
     private boolean recordVisit(Class classType, Annotation qualifier) {
-        String key = makeCircularRecordKey(classType, qualifier);
+        String key = PokeHelper.makeProviderKey(classType, qualifier);
         boolean circularVisitDetected = visitedInjectNodes.contains(key);
         if (!circularVisitDetected) {
             visitedInjectNodes.add(key);
@@ -511,41 +578,13 @@ public abstract class Graph {
     }
 
     private void unrecordVisit(Class classType, Annotation qualifier) {
-        String key = makeCircularRecordKey(classType, qualifier);
+        String key = PokeHelper.makeProviderKey(classType, qualifier);
         visitedInjectNodes.remove(key);
-    }
-
-    private String makeCircularRecordKey(Class classType, Annotation qualifier) {
-        return classType.getName() + "@" + ((qualifier == null) ? "NoQualifier" : qualifier.toString());
-    }
-
-    Provider getProvider(Class type, Annotation qualifier) throws ProviderMissingException {
-        //Try finder cache first. If not found try to cache it.
-        Provider provider = null;
-        ProviderFinder providerFinder = finderCache.get(type);
-        if (providerFinder == null) {
-            int count = providerFinders.size();
-            for (int i = 0; i < count; i++) {
-                providerFinder = providerFinders.get(i);
-                provider = providerFinder.findProvider(type, qualifier);
-                if (provider != null) {
-                    finderCache.put(type, providerFinder);
-                    return provider;
-                }
-            }
-        } else {
-            provider = providerFinder.findProvider(type, qualifier);
-        }
-
-        if (provider == null) {
-            throw new ProviderMissingException(type, qualifier);
-        }
-
-        return provider;
     }
 
     /**
      * Print readable circular graph
+     *
      * @throws CircularDependenciesException
      */
     private void throwCircularDependenciesException()
@@ -571,12 +610,14 @@ public abstract class Graph {
     public interface Monitor {
         /**
          * Called when the graph is about to inject dependencies into the given object
+         *
          * @param target The object to inject into
          */
         void onInject(Object target);
 
         /**
          * Called when the graph is about to release dependencies from the given object
+         *
          * @param target The object to release
          */
         void onRelease(Object target);

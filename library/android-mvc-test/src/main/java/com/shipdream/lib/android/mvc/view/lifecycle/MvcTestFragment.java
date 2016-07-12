@@ -19,13 +19,29 @@ package com.shipdream.lib.android.mvc.view.lifecycle;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcApp;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.test.R;
 
-public class MvcTestFragment extends MvcFragment {
-    private LifeCycleMonitor lifeCycleMonitor = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitor();
+import javax.inject.Inject;
+
+public class MvcTestFragment extends MvcFragment<MvcTestFragment.Controller> {
+    public static class Controller extends FragmentController{
+        @Override
+        public Class modelType() {
+            return null;
+        }
+    }
+
+    @Inject
+    private LifeCycleMonitor lifeCycleMonitor;
+
+    @Override
+    protected Class<Controller> getControllerClass() {
+        return Controller.class;
+    }
 
     @Override
     protected int getLayoutResId() {
@@ -59,9 +75,15 @@ public class MvcTestFragment extends MvcFragment {
     }
 
     @Override
-    protected void onPushingToBackStack() {
-        super.onPushingToBackStack();
-        lifeCycleMonitor.onPushingToBackStack();
+    protected void onPushToBackStack() {
+        super.onPushToBackStack();
+        lifeCycleMonitor.onPushToBackStack();
+    }
+
+    @Override
+    protected void onPopAway() {
+        super.onPopAway();
+        lifeCycleMonitor.onPopAway();
     }
 
     @Override
@@ -86,5 +108,10 @@ public class MvcTestFragment extends MvcFragment {
     public void onDestroy() {
         lifeCycleMonitor.onDestroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 }

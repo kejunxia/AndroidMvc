@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.view.injection;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
@@ -27,19 +27,18 @@ import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
 
 import javax.inject.Inject;
 
-public class FragmentA extends FragmentInjection {
+public class FragmentA extends FragmentInjection<ControllerA> {
+    //TODO: should be removed if designed correctly
     @Inject
-    private ControllerA controllerA;
+    private ControllerB presenterB;
 
     @Inject
-    private ControllerB controllerB;
-
-    private LifeCycleMonitorA lifeCycleMonitorA = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorA();
+    private LifeCycleMonitorA lifeCycleMonitorA;
 
     @Override
     protected void setUpData() {
-        controllerA.addTag("Added by " + getClass().getSimpleName());
-        controllerB.addTag("Added by " + getClass().getSimpleName());
+        controller.addTag("Added by " + getClass().getSimpleName());
+        presenterB.addTag("Added by " + getClass().getSimpleName());
     }
 
     @Override
@@ -48,9 +47,18 @@ public class FragmentA extends FragmentInjection {
     }
 
     @Override
+    protected Class getControllerClass() {
+        return ControllerA.class;
+    }
+
+    @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-        displayTags(textViewA, controllerA.getTags());
-        displayTags(textViewB, controllerB.getTags());
+    }
+
+    @Override
+    public void update() {
+        displayTags(textViewA, controller.getTags());
+        displayTags(textViewB, presenterB.getTags());
     }
 }

@@ -22,6 +22,8 @@ import com.shipdream.lib.poke.util.ReflectUtils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.inject.Qualifier;
+
 /**
  * This provider uses default/empty constructor by provided class type to get dependencies. So
  * make sure the implementation has default public constructor
@@ -31,24 +33,14 @@ public class ProviderByClassType<T> extends Provider<T> {
     private final String implClassName;
 
     /**
-     * Construct a {@link ProviderByClassType} with {@link javax.inject.Qualifier}
-     *
-     * @param type
-     * @param implementationClassName
-     * @throws ClassNotFoundException
-     */
-    protected ProviderByClassType(Class<T> type, String implementationClassName) throws ClassNotFoundException {
-        this(type, (Class<? extends T>) Class.forName(implementationClassName));
-    }
-
-    /**
-     * Construct a {@link ProviderByClassType} with {@link javax.inject.Qualifier}
+     * Construct a provider binding the type and the implementation class type. The found
+     * implementation class may be annotated by {@link Qualifier}
      * @param type The contract of the implementation
-     * @param implementationClass The class type of the implementation. It has to have a default
+     * @param implementationClass The class type of the implementation. It must have a default
      *                            public constructor
      */
     public ProviderByClassType(Class<T> type, Class<? extends T> implementationClass) {
-        super(type, ReflectUtils.findFirstQualifier(implementationClass));
+        super(type, ReflectUtils.findFirstQualifierInAnnotations(implementationClass));
         this.implClassName = implementationClass.getName();
         this.clazz = implementationClass;
     }

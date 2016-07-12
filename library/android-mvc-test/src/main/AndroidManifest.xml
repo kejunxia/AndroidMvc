@@ -46,7 +46,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name="com.shipdream.lib.android.mvc.view.eventv2v.EventBusV2VActivity"
+        <activity android:name="com.shipdream.lib.android.mvc.view.event2v.EventBusV2VActivity"
                   android:theme="@style/Theme.AppCompat.Light.NoActionBar">
         </activity>
 
@@ -56,7 +56,7 @@
         <activity android:name="com.shipdream.lib.android.mvc.view.injection.InjectionTestActivityTestRootFragment"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
-        <service android:name="com.shipdream.lib.android.mvc.view.eventv2v.EventBusV2VService"/>
+        <service android:name="com.shipdream.lib.android.mvc.view.event2v.EventBusV2VService"/>
     </application>
 
 </manifest>

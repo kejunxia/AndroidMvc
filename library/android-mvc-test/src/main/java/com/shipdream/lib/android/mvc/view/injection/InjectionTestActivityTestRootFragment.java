@@ -17,26 +17,29 @@
 package com.shipdream.lib.android.mvc.view.injection;
 
 import android.os.Bundle;
-import android.view.View;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.manager.internal.Forwarder;
-import com.shipdream.lib.android.mvc.view.MvcActivity;
-import com.shipdream.lib.android.mvc.view.MvcFragment;
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.MvcFragment;
+import com.shipdream.lib.android.mvc.TestActivity;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
-import com.shipdream.lib.android.mvc.view.nav.MvcTestActivityNavigation;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 
-import javax.inject.Inject;
-
-public class InjectionTestActivityTestRootFragment extends MvcActivity {
+public class InjectionTestActivityTestRootFragment extends TestActivity {
     @Override
-    protected Class<? extends MvcFragment> mapNavigationFragment(String locationId) {
-        switch (locationId) {
-            case MvcTestActivityNavigation.Loc.A:
-                return FragmentA.class;
-            default:
-                return null;
+    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
+        if (presenterClass == ControllerA.class) {
+            return FragmentA.class;
+        } else if (presenterClass == ControllerB.class) {
+            return FragmentB.class;
+        } else if (presenterClass == ControllerC.class) {
+            return FragmentC.class;
+        } else if (presenterClass == ControllerD.class) {
+            return FragmentD.class;
         }
+        return null;
     }
 
     @Override
@@ -45,24 +48,25 @@ public class InjectionTestActivityTestRootFragment extends MvcActivity {
     }
 
     public static class HomeFragment extends DelegateFragment {
-        @Inject
-        private NavigationManager navigationManager;
-
-        @Inject
-        private ControllerA controllerA;
-
-        @Override
-        protected void onStartUp() {
-            navigationManager.navigate(this).to(MvcTestActivityNavigation.Loc.A, new Forwarder().clearAll());
+        static class HomeController extends FragmentController {
+            @Override
+            public Class modelType() {
+                return null;
+            }
         }
 
         @Override
-        public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
-            super.onViewReady(view, savedInstanceState, reason);
+        protected Class<HomeFragment.HomeController> getControllerClass() {
+            return HomeFragment.HomeController.class;
+        }
 
-            if (savedInstanceState != null) {
-                controllerA.addTag("OK");
-            }
+        @Override
+        public void update() {
+
+        }
+
+        @Override
+        protected void onStartUp() {
         }
 
         @Override

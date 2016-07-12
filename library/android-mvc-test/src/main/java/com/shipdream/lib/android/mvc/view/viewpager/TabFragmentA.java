@@ -20,20 +20,19 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.manager.NavigationManager;
-import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.test.R;
-import com.shipdream.lib.android.mvc.view.viewpager.controller.TabController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.SecondFragmentController;
+import com.shipdream.lib.android.mvc.view.viewpager.controller.TabControllerA;
 
 import javax.inject.Inject;
 
-public class TabFragmentA extends BaseTabFragment {
+public class TabFragmentA extends BaseTabFragment<TabControllerA> {
     static final String INIT_TEXT = "Tab A";
     static final String RESTORE_TEXT = "Restored TabA";
-
-    @Inject
-    TabController tabController;
 
     private TextView textView;
 
@@ -41,13 +40,20 @@ public class TabFragmentA extends BaseTabFragment {
     private NavigationManager navigationManager;
 
     @Override
+    protected Class getControllerClass() {
+        return TabControllerA.class;
+    }
+
+    @Override
     protected int getLayoutResId() {
         return R.layout.fragment_view_pager_tab;
     }
 
+    @Inject
+    private LifeCycleMonitorA lifeCycleMonitorA;
     @Override
     protected LifeCycleMonitor getLifeCycleMonitor() {
-        return MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorA();
+        return lifeCycleMonitorA;
     }
 
     @Override
@@ -57,15 +63,15 @@ public class TabFragmentA extends BaseTabFragment {
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
         if (reason.isFirstTime()) {
             textView.setText(INIT_TEXT);
-            tabController.setName(RESTORE_TEXT);
+            controller.setName(RESTORE_TEXT);
         } else if (reason.isRestored()) {
-            textView.setText(tabController.getModel().getName());
+            textView.setText(controller.getModel().getName());
         }
 
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationManager.navigate(v).to(SubFragment.class.getSimpleName());
+                navigationManager.navigate(v).to(SecondFragmentController.class);
             }
         });
     }
@@ -73,5 +79,20 @@ public class TabFragmentA extends BaseTabFragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
+    @Override
+    public void update() {
+
     }
 }

@@ -19,9 +19,9 @@ package com.shipdream.lib.android.mvc.view.injection;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.view.MvcApp;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
-import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorC;
+import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorD;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.android.mvc.view.test.R;
 
@@ -29,9 +29,10 @@ import javax.inject.Inject;
 
 public class FragmentD extends FragmentInjection {
     @Inject
-    private ControllerD controllerD;
+    private ControllerD presenterD;
 
-    private LifeCycleMonitorC lifeCycleMonitorC = MvcApp.lifeCycleMonitorFactory.provideLifeCycleMonitorC();
+    @Inject
+    private LifeCycleMonitorD lifeCycleMonitorD;
 
     @Override
     protected void setUpData() {
@@ -39,7 +40,7 @@ public class FragmentD extends FragmentInjection {
 
     @Override
     protected LifeCycleMonitor getLifeCycleMonitor() {
-        return lifeCycleMonitorC;
+        return lifeCycleMonitorD;
     }
 
     View root;
@@ -52,7 +53,7 @@ public class FragmentD extends FragmentInjection {
         root.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                update();
+                refresh();
             }
         });
     }
@@ -61,13 +62,23 @@ public class FragmentD extends FragmentInjection {
             "A", "B", "C"
     };
 
-    private void update() {
-        long i = controllerD.getAccountManager().getUserId();
-        controllerD.setUserId(i + 1);
-        controllerD.setStorage(contents[((int) (i)) % contents.length]);
+    private void refresh() {
+        long i = presenterD.getAccountManager().getUserId();
+        presenterD.setUserId(i + 1);
+        presenterD.setStorage(contents[((int) (i)) % contents.length]);
 
-        String msg = String.format("%d:%s", controllerD.getAccountManager().getUserId(),
-                controllerD.getAccountManager().getContent());
+        String msg = String.format("%d:%s", presenterD.getAccountManager().getUserId(),
+                presenterD.getAccountManager().getContent());
         textViewA.setText(msg);
+    }
+
+    @Override
+    protected Class getControllerClass() {
+        return null;
+    }
+
+    @Override
+    public void update() {
+
     }
 }

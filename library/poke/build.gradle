@@ -21,6 +21,8 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'maven'
 
+version = '3.0.0'
+
 task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
     classifier = 'sources'
@@ -50,6 +52,8 @@ sourceSets {
 }
 
 dependencies {
+    compile rootProject.lib.intelljAnnoatations
+
     compile 'javax.inject:javax.inject:1'
 
     testCompile rootProject.ext.lib.junit

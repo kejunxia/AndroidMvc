@@ -16,13 +16,36 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
-import com.shipdream.lib.android.mvc.controller.BaseController;
+import android.util.Log;
 
-public interface ControllerF extends BaseController<ControllerF.Model> {
-    class Model {
+import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.UiView;
+
+import javax.inject.Inject;
+
+public class ControllerF extends Controller<ControllerF.Model, UiView> {
+    public static class Model {
         public String value;
     }
 
-    void setValue(String value);
-    String getValue();
+    @Inject
+    private DisposeCheckerF disposeCheckerF;
+
+    @Override
+    public void onDestroy() {
+        Log.i("DisposeCheck", "Controller F disposed");
+    }
+
+    @Override
+    public Class<Model> modelType() {
+        return Model.class;
+    }
+
+    public void setValue(String value) {
+        getModel().value = value;
+    }
+
+    public String getValue() {
+        return getModel().value;
+    }
 }

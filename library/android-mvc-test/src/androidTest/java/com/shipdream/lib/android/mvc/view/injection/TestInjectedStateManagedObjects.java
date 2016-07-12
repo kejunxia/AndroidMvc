@@ -18,7 +18,7 @@ package com.shipdream.lib.android.mvc.view.injection;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.view.BaseTestCase;
+import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.view.test.R;
 
 import org.junit.Test;
@@ -33,12 +33,6 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
 
     public TestInjectedStateManagedObjects() {
         super(InjectionTestActivityStateManagedObjects.class);
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        waitTest();
     }
 
     @Test
@@ -58,11 +52,7 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
 
         onView(withId(R.id.textA)).check(matches(withText("2:B")));
 
-        pressHome();
-        waitTest(1000);
-
-        bringBack();
-        waitTest(1000);
+        bringBack(pressHome());
 
         onView(withId(R.id.fragment_injection_root)).perform(click());
         onView(withId(R.id.textA)).check(matches(withText("3:C")));

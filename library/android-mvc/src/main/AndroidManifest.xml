@@ -15,5 +15,5 @@
   -->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.shipdream.lib.android.mvc.view">
+    package="com.shipdream.lib.android.mvc">
 </manifest>

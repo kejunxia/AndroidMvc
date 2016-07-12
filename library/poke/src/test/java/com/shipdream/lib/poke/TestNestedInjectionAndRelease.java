@@ -42,7 +42,7 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
         void onFreed() {}
     }
 
-    Component component;
+    Object module;
 
     class ControllerImpl implements Controller {
         @MyInject
@@ -67,16 +67,16 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
     private OnFree serviceOnFreed;
     private OnFree controllerOnFreed;
     private Service serviceMock;
-    private SimpleGraph graph;
-    private ScopeCache cache;
+    private Graph graph;
+    private Component component;
 
     @Before
     public void setUp() throws Exception {
         serviceOnFreed = mock(OnFree.class);
         controllerOnFreed = mock(OnFree.class);
         serviceMock = mock(Service.class);
-        graph = new SimpleGraph();
-        component = new Component() {
+        graph = new Graph();
+        module = new Object() {
             @Provides
             @Singleton
             public Controller provideController() {
@@ -89,18 +89,25 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
                 return serviceMock;
             }
         };
-        graph.register(component);
-        cache = component.getScopeCache();
-        graph.registerProviderFreedListener(new Provider.OnFreedListener() {
+
+        component = new Component("AppSignleton");
+        component.register(module);
+        graph.registerDereferencedListener(new Provider.DereferenceListener() {
             @Override
-            public void onFreed(Provider provider) {
+            public <T> void onDereferenced(Provider<T> provider, T instance) {
                 if (provider.type() == Service.class) {
-                    serviceOnFreed.onFreed();
+                    if (provider.getReferenceCount() == 0) {
+                        serviceOnFreed.onFreed();
+                    }
                 } else if (provider.type() == Controller.class) {
-                    controllerOnFreed.onFreed();
+                    if (provider.getReferenceCount() == 0) {
+                        controllerOnFreed.onFreed();
+                    }
                 }
             }
         });
+
+        graph.setRootComponent(component);
     }
 
     @Test
@@ -126,14 +133,14 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         //Simulate to navigate to ViewC
         graph.inject(viewC, MyInject.class);
@@ -143,16 +150,16 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInC);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInC);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInC);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInC);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         Assert.assertTrue(controllerInA == controllerInB);
         Assert.assertTrue(controllerInB == controllerInC);
@@ -165,14 +172,14 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         //Simulate to navigate back to ViewA
         graph.inject(viewA, MyInject.class);
@@ -182,24 +189,24 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         //Simulate to navigate back to exit
         graph.release(viewA, MyInject.class);
 
         verify(controllerOnFreed, times(1)).onFreed();
         verify(serviceOnFreed, times(1)).onFreed();
-        Assert.assertNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNull(cache.findCacheItem(Service.class, null));
-        Assert.assertEquals(0, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(0, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertEquals(0, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(0, component.findProvider(Service.class, null).getReferenceCount());
     }
 
     @Test
@@ -210,36 +217,36 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         //Simulate to navigate to ViewA
         graph.reference(Controller.class, null, MyInject.class);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         graph.inject(viewA, MyInject.class);
-        Assert.assertEquals(2, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(2, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertEquals(2, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(2, component.findProvider(Service.class, null).getReferenceCount());
 
         graph.dereference(viewA.controller, Controller.class, null, MyInject.class);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         verify(serviceOnFreed, times(0)).onFreed();
         verify(controllerOnFreed, times(0)).onFreed();
 
         //Simulate to navigate to ViewB
         graph.reference(Controller.class, null, MyInject.class);
-        Assert.assertEquals(2, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(2, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertEquals(2, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(2, component.findProvider(Service.class, null).getReferenceCount());
 
         graph.inject(viewB, MyInject.class);
-        Assert.assertEquals(3, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(3, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertEquals(3, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(3, component.findProvider(Service.class, null).getReferenceCount());
 
         graph.release(viewA, MyInject.class);
-        Assert.assertEquals(2, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(2, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertEquals(2, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(2, component.findProvider(Service.class, null).getReferenceCount());
 
         graph.dereference(viewB.controller, Controller.class, null, MyInject.class);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
     }
 
     @Test
@@ -269,14 +276,14 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         //Simulate to navigate to ViewC
         graph.reference(Controller.class, null, MyInject.class);
@@ -288,16 +295,16 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInC);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInC);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInC);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInC);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         Assert.assertTrue(controllerInA == controllerInB);
         Assert.assertTrue(controllerInB == controllerInC);
@@ -312,14 +319,14 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         //Simulate to navigate back to ViewA
         graph.reference(Controller.class, null, MyInject.class);
@@ -331,23 +338,23 @@ public class TestNestedInjectionAndRelease extends BaseTestCases {
 
         verify(controllerOnFreed, times(0)).onFreed();
         verify(serviceOnFreed, times(0)).onFreed();
-        Assert.assertNotNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNotNull(cache.findCacheItem(Service.class, null));
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInA);
-        Assert.assertTrue(graph.getProvider(Controller.class, null).get() == controllerInB);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInA);
-        Assert.assertTrue(graph.getProvider(Service.class, null).get() == serviceInB);
-        Assert.assertEquals(1, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(1, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNotNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNotNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInA);
+        Assert.assertTrue(component.findProvider(Controller.class, null).get() == controllerInB);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInA);
+        Assert.assertTrue(component.findProvider(Service.class, null).get() == serviceInB);
+        Assert.assertEquals(1, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(1, component.findProvider(Service.class, null).getReferenceCount());
 
         //Simulate to navigate back to exit
         graph.release(viewA, MyInject.class);
 
         verify(controllerOnFreed, times(1)).onFreed();
         verify(serviceOnFreed, times(1)).onFreed();
-        Assert.assertNull(cache.findCacheItem(Controller.class, null));
-        Assert.assertNull(cache.findCacheItem(Service.class, null));
-        Assert.assertEquals(0, graph.getProvider(Controller.class, null).getReferenceCount());
-        Assert.assertEquals(0, graph.getProvider(Service.class, null).getReferenceCount());
+        Assert.assertNull(component.scopeCache.findInstance(Controller.class, null));
+        Assert.assertNull(component.scopeCache.findInstance(Service.class, null));
+        Assert.assertEquals(0, component.findProvider(Controller.class, null).getReferenceCount());
+        Assert.assertEquals(0, component.findProvider(Service.class, null).getReferenceCount());
     }
 }
