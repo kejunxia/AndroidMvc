@@ -102,18 +102,18 @@ public abstract class MvcActivity extends AppCompatActivity {
     }
 
     /**
-     * Map a presenter class type to fragment class type. This is used for navigation. When the
-     * {@link Navigator} navigates to a presenter, in view layer, it loads the mapped fragment.
+     * Map a controller class type to fragment class type. This is used for navigation. When the
+     * {@link Navigator} navigates to a controller, in view layer, it loads the mapped fragment.
      *
      * <p>
      *     To make the mapping generic, consider to use {@link Class#forName(String)}.
      * </p>
      *
-     * @param presenterClass The presenter class type
-     * @return The class type of the {@link MvcFragment} mapped to the presenter
+     * @param controllerClass The controller class type
+     * @return The class type of the {@link MvcFragment} mapped to the controller
      */
     protected abstract Class<? extends MvcFragment> mapControllerFragment(
-            Class<? extends Controller> presenterClass);
+            Class<? extends Controller> controllerClass);
 
     /**
      * Provides the class type of the delegate fragment which is the root fragment holding fragments
@@ -205,7 +205,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         private List<Runnable> pendingOnViewReadyActions = new ArrayList<>();
 
         @Inject
-        private MvcActivity.DelegateFragmentController delegateFragmentPresenter;
+        private MvcActivity.DelegateFragmentController delegateFragmentController;
 
         /**
          * Hack to fix this <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a>
@@ -361,7 +361,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         public boolean onBackButtonPressed() {
             MvcFragment topFragment = null;
             //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-            NavLocation curLoc = delegateFragmentPresenter.getCurrentLocation();
+            NavLocation curLoc = delegateFragmentController.getCurrentLocation();
             if (curLoc != null && curLoc.getLocationId() != null) {
                 topFragment = (MvcFragment) childFragmentManager().findFragmentByTag(
                         getFragmentTag(curLoc.getLocationId()));
@@ -372,7 +372,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 navigateBack = !topFragment.onBackButtonPressed();
             }
             if (navigateBack) {
-                delegateFragmentPresenter.navigateBack(this);
+                delegateFragmentController.navigateBack(this);
             }
             return true;
         }
@@ -395,7 +395,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 notifyAllSubMvcFragmentsTheirStateIsManagedByMe(this, true);
             }
 
-            delegateFragmentPresenter.delegateFragment = this;
+            delegateFragmentController.delegateFragment = this;
         }
 
         private boolean firstTimeRun = false;
