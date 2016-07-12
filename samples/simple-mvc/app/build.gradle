@@ -56,7 +56,7 @@ android {
 
     signingConfigs {
         DefaultConfig {
-            storeFile file("AndroidMvcKeyStore.jks")
+            storeFile file("../../AndroidMvcKeyStore.jks")
             storePassword "AndroidMvc"
             keyAlias "AndroidMvc"
             keyPassword "AndroidMvc"
