@@ -55,7 +55,7 @@ public class CounterBasicController extends AbstractController<CounterBasicContr
 
     public void refreshIp() {
         view.showProgress();
-        runTask(this, new Task<Response<IpPayload>>() {
+        runTask(new Task<Response<IpPayload>>() {
             @Override
             public Response<IpPayload> execute(Monitor<Response<IpPayload>> monitor) throws Exception {
                 return serviceFactory.createService(IpService.class)

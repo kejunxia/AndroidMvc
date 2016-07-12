@@ -57,7 +57,7 @@ public class MyController extends Controller {
     }
 
     public Task.Monitor<Void> loadHeavyResourceSuccessfullyWithoutErrorHandlerWithDefaultExecutorService(final Object sender) {
-        return runTask(this, new Task() {
+        return runTask(new Task() {
             @Override
             public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
@@ -78,7 +78,7 @@ public class MyController extends Controller {
             }
         }).when(executorService).submit(any(Callable.class));
 
-        return runTask(this, executorService, new Task<Void>() {
+        return runTask(executorService, new Task<Void>() {
             @Override
             public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
@@ -89,7 +89,7 @@ public class MyController extends Controller {
     }
 
     public Task.Monitor<Void> loadHeavyResourceSuccessfullyWithErrorHandler(final Object sender) {
-        return runTask(this, new Task<Void>() {
+        return runTask(new Task<Void>() {
             @Override
             public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
@@ -105,7 +105,7 @@ public class MyController extends Controller {
     }
 
     public Task.Monitor<Void> loadHeavyResourceWithExceptionButWithoutCustomErrorHandler(final Object sender) {
-        return runTask(this, new Task<Void>() {
+        return runTask(new Task<Void>() {
             @Override
             public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
@@ -115,7 +115,7 @@ public class MyController extends Controller {
     }
 
     public Task.Monitor<Void> loadHeavyResourceWithException(final Object sender) {
-        return runTask(this, new Task() {
+        return runTask(new Task() {
             @Override
             public Void execute(Monitor monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
@@ -144,7 +144,7 @@ public class MyController extends Controller {
             }
         };
 
-        return runTask(this, asyncTask,
+        return runTask(asyncTask,
                 new Task.Callback() {
                     @Override
                     public void onException(Exception e) {

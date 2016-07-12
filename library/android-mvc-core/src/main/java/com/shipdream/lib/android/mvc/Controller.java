@@ -81,14 +81,13 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * default it runs tasks on separate threads by {@link ExecutorService} injected from AndroidMvc
      * framework. A simple {@link ExecutorService} that runs tasks on the same thread in test cases
      * to make the test easier.
-     * @param sender          Who wants run the task
      * @param task            The task
      * @return The monitor to track the state of the execution of the task. It also can cancel the
      * task.
      *
      */
-    protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, final Task<RESULT> task) {
-        return runTask(sender, executorService, task, null);
+    protected <RESULT> Task.Monitor<RESULT> runTask(final Task<RESULT> task) {
+        return runTask(executorService, task, null);
     }
 
     /**
@@ -96,15 +95,14 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * on separate threads by {@link ExecutorService} injected from AndroidMvc framework. A simple
      * {@link ExecutorService} that runs tasks on the same thread in test cases to make the test
      * easier.
-     * @param sender          Who wants run the task
      * @param task            The task
      * @param callback        The callback
      * @return The monitor to track the state of the execution of the task. It also can cancel the
      * task.
      */
-    protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, final Task<RESULT> task,
+    protected <RESULT> Task.Monitor<RESULT> runTask(final Task<RESULT> task,
                                                     final Task.Callback<RESULT> callback) {
-        return runTask(sender, executorService, task, callback);
+        return runTask(executorService, task, callback);
     }
 
     /**
@@ -113,7 +111,6 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      *
      * <p>The callback will be guaranteed to be run Android's UI thread</p>
      *
-     * @param sender          Who wants run the task
      * @param executorService The executor service managing how the task will be run
      * @param task            The task
      * @param callback        The callback
@@ -121,7 +118,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * task.
      *
      */
-    protected <RESULT> Task.Monitor<RESULT> runTask(Object sender, ExecutorService executorService,
+    protected <RESULT> Task.Monitor<RESULT> runTask(ExecutorService executorService,
                                    final Task<RESULT> task, final Task.Callback<RESULT> callback) {
         final Task.Monitor<RESULT> monitor = new Task.Monitor(task, uiThreadRunner, callback);
 
