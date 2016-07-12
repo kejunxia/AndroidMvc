@@ -38,7 +38,7 @@ public class MvcTestActivity extends TestActivity {
     }
 
     public static class HomeFragment extends DelegateFragment<HomeFragment.HomeController> {
-        static class HomeController extends FragmentController {
+        public static class HomeController extends FragmentController {
             @Override
             public Class modelType() {
                 return null;

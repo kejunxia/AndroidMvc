@@ -19,6 +19,7 @@ package com.shipdream.lib.android.mvc.view.lifecycle;
 import android.os.Bundle;
 import android.view.View;
 
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
@@ -26,13 +27,20 @@ import com.shipdream.lib.android.mvc.view.test.R;
 
 import javax.inject.Inject;
 
-public class MvcTestFragment extends MvcFragment {
+public class MvcTestFragment extends MvcFragment<MvcTestFragment.Controller> {
+    public static class Controller extends FragmentController{
+        @Override
+        public Class modelType() {
+            return null;
+        }
+    }
+
     @Inject
     private LifeCycleMonitor lifeCycleMonitor;
 
     @Override
-    protected Class getControllerClass() {
-        return null;
+    protected Class<Controller> getControllerClass() {
+        return Controller.class;
     }
 
     @Override

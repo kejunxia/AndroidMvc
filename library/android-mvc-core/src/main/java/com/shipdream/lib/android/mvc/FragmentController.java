@@ -62,4 +62,13 @@ public abstract class FragmentController<MODEL, VIEW extends UiView> extends Con
     public void onPause() {
     }
 
+    /**
+     * Called when corresponding fragment's onBackButtonPressed is called. This happens when the
+     * device back button is pressed.
+     * @return True to consume the back button pressed event, otherwise returns false which will
+     * forward the back button pressed event to OS
+     */
+    public boolean onBackButtonPressed() {
+        return false;
+    }
 }

@@ -462,11 +462,18 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * dismissed, otherwise only the logic in this method will be executed but the fragment remains
      * in the front.
      *
+     * <p>By default, if this fragment has a corresponding controller it delegates the call to
+     * {@link FragmentController#onBackButtonPressed()} otherwise returns false.</p>
+     *
      * @return True to consume the back button pressed event, otherwise returns false which will
      * forward the back button pressed event to other views
      */
     public boolean onBackButtonPressed() {
-        return false;
+        if (controller != null) {
+            return controller.onBackButtonPressed();
+        } else {
+            return false;
+        }
     }
 
     /**
