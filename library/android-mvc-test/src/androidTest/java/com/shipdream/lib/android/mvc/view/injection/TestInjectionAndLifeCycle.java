@@ -51,6 +51,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
 
     @Test
     public void test_shouldRetainInjectionsOfFragmentAAfterNavigatedToFragmentB() throws Throwable {
+        waitTest();
+
         //=============================> At A
         lifeCycleValidatorA.expect(LifeCycle.onCreateNull,
             LifeCycle.onCreateViewNull, LifeCycle.onViewCreatedNull,
@@ -153,6 +155,8 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
         onView(withId(R.id.textC)).check(matches(withText("")));
 
         bringBack(pressHome());
+
+        Thread.sleep(300);
 
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
             "Added by FragmentB\nAdded by FragmentB")));

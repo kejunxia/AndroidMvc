@@ -54,7 +54,6 @@ public class FragmentA extends FragmentInjection<ControllerA> {
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-
     }
 
     @Override

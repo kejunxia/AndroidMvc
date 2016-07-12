@@ -29,7 +29,6 @@ import android.util.Log;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvc.view.LifeCycleValidator;
-import com.shipdream.lib.android.mvc.view.TestActivity;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitor;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorA;
 import com.shipdream.lib.android.mvc.view.help.LifeCycleMonitorB;
@@ -227,19 +226,18 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
 
     @After
     public void tearDown() throws Exception {
+        if (navigationManager != null) {
+            navigationManager.navigate(this).back(null);
+            navigationManager.navigate(this).back();
+        }
+
+        if (activity != null) {
+            activity.finish();
+        }
+
         instrumentation.runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                if (navigationManager != null) {
-                    navigationManager.navigate(this).back(null);
-                    navigationManager.navigate(this).back();
-                }
-
-                if (activity != null) {
-                    activity.finish();
-                }
-
-
                 Mvc.graph().release(BaseTestCase.this);
                 try {
                     Mvc.graph().getRootComponent().detach(component);
@@ -250,6 +248,8 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
             }
         });
         super.tearDown();
+
+        Mvc.graph().getRootComponent().getCache().clear();
 
         eventBusV.unregister(this);
     }
@@ -282,6 +282,7 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
         }).back();
 
         waiter.waitNow();
+        waitTest();
     }
 
     protected String pressHome() {
@@ -316,6 +317,12 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
         activity.removeProxy(proxy);
 
         Log.v("TrackLifeSync:Home", "Finish");
+
+        try {
+            waitTest();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         return ticket;
     }
@@ -370,6 +377,11 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
             } else {
                 waiter.waitNow();
             }
+        }
+        try {
+            waitTest();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 

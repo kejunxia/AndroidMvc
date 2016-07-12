@@ -1,10 +1,8 @@
-package com.shipdream.lib.android.mvc.view;
+package com.shipdream.lib.android.mvc;
 
 import android.os.Bundle;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.Mvc;
-import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 
