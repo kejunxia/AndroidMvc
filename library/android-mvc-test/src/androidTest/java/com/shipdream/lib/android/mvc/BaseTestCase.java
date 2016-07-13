@@ -59,7 +59,7 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentationTestCase2<T> {
+public abstract class BaseTestCase<T extends TestActivity> extends ActivityInstrumentationTestCase2<T> {
     protected LifeCycleValidator lifeCycleValidator;
     protected LifeCycleMonitor lifeCycleMonitorMock;
 
@@ -75,6 +75,8 @@ public class BaseTestCase<T extends TestActivity> extends ActivityInstrumentatio
     @Inject
     @EventBusV
     private EventBus eventBusV;
+
+    protected abstract Class<T> getActivityClass();
 
     private static class Waiter {
         boolean skip = false;

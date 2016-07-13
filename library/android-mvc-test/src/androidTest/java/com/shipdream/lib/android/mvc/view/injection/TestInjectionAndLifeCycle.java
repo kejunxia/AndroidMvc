@@ -39,6 +39,11 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
     }
 
     @Override
+    protected Class<InjectionTestActivity> getActivityClass() {
+        return InjectionTestActivity.class;
+    }
+
+    @Override
     public void tearDown() throws Exception {
         super.tearDown();
     }

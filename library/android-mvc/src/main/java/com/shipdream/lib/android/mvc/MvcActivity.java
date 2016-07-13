@@ -16,10 +16,8 @@
 
 package com.shipdream.lib.android.mvc;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentHostCallback;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -30,7 +28,6 @@ import com.shipdream.lib.poke.util.ReflectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -74,7 +71,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             }
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
             trans.replace(R.id.activity_mvc_root, delegateFragment, getDelegateFragmentTag());
-            trans.commit();
+            trans.commitNow();
         }
     }
 
@@ -208,114 +205,6 @@ public abstract class MvcActivity extends AppCompatActivity {
         private MvcActivity.DelegateFragmentController delegateFragmentController;
 
         /**
-         * Hack to fix this <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a>
-         * with this <a href='http://ideaventure.blogspot.com.au/2014/10/nested-retained-fragment-lost-state.html'>solution</a>
-         * FIXME: ChildFragmentManager hack - remove this method when the bug is fixed in future android support library
-         */
-        private FragmentManager retainedChildFragmentManager;
-        private FragmentHostCallback currentHost;
-        private Class fragmentImplClass;
-        private Field mHostField;
-
-        {
-            try {
-                fragmentImplClass = Class.forName("android.support.v4.app.FragmentManagerImpl");
-                mHostField = fragmentImplClass.getDeclaredField("mHost");
-                mHostField.setAccessible(true);
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException("FragmentManagerImpl is renamed due to the " +
-                        "change of Android SDK, this workaround doesn't work any more. " +
-                        "See the issue at " +
-                        "https://code.google.com/p/android/issues/detail?id=74222", e);
-            } catch (NoSuchFieldException e) {
-                throw new RuntimeException("FragmentManagerImpl.mHost is found due to the " +
-                        "change of Android SDK, this workaround doesn't work any more. " +
-                        "See the issue at " +
-                        "https://code.google.com/p/android/issues/detail?id=74222", e);
-            }
-        }
-
-        /**
-         * Get child fragment manager with android support lib rev20/rev21 which has a the
-         * <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a> to retain child
-         * fragment manager in nested fragments. See this <a href='http://ideaventure.blogspot.com.au/2014/10/nested-retained-fragment-lost-state.html'>solution</a>
-         * FIXME: ChildFragmentManager hack - remove this method when the bug is fixed in future android support library
-         */
-        protected FragmentManager childFragmentManager() {
-            if (retainedChildFragmentManager == null) {
-                retainedChildFragmentManager = getChildFragmentManager();
-            }
-            return retainedChildFragmentManager;
-        }
-
-        /**
-         * Hack to fix this <a href='https://code.google.com/p/android/issues/detail?id=74222'>bug</a>
-         * with this <a href='http://ideaventure.blogspot.com.au/2014/10/nested-retained-fragment-lost-state.html'>solution</a>
-         * FIXME: ChildFragmentManager hack - remove this method when the bug is fixed in future android support library
-         */
-        @Override
-        public void onAttach(Context context) {
-            super.onAttach(context);
-            if (retainedChildFragmentManager != null) {
-                //restore the last retained child fragment manager to the new
-                //created fragment
-                try {
-                    //Copy the mHost(Activity) to retainedChildFragmentManager
-                    currentHost = (FragmentHostCallback) mHostField.get(getFragmentManager());
-
-                    Field childFMField = Fragment.class.getDeclaredField("mChildFragmentManager");
-                    childFMField.setAccessible(true);
-                    childFMField.set(this, retainedChildFragmentManager);
-
-                    refreshHosts(getFragmentManager());
-                } catch (Exception e) {
-                    logger.warn(e.getMessage(), e);
-                }
-                //Refresh children fragment's hosts
-            } else {
-                //If the child fragment manager has not been retained yet, let it hold the internal
-                //child fragment manager as early as possible. This can prevent child fragment
-                //manager from missing to be set and then retained, which could happen when
-                //OS kills activity and restarts it. In this case, the delegate fragment restored
-                //but childFragmentManager() may not be called so mRetainedChildFragmentManager is
-                //yet set. If the fragment is rotated, the state of child fragment manager will be
-                //lost since mRetainedChildFragmentManager hasn't set to be retained by the OS.
-                retainedChildFragmentManager = getChildFragmentManager();
-            }
-        }
-
-        private void refreshHosts(FragmentManager fragmentManager) throws IllegalAccessException {
-            if (fragmentManager != null) {
-                replaceFragmentManagerHost(fragmentManager);
-            }
-
-            List<Fragment> frags = fragmentManager.getFragments();
-            if (frags != null) {
-                for (Fragment f : frags) {
-                    if (f != null) {
-                        try {
-                            //Copy the mHost(Activity) to retainedChildFragmentManager
-                            Field mHostField = Fragment.class.getDeclaredField("mHost");
-                            mHostField.setAccessible(true);
-                            mHostField.set(f, currentHost);
-                        } catch (Exception e) {
-                            logger.warn(e.getMessage(), e);
-                        }
-                        if (f.getChildFragmentManager() != null) {
-                            refreshHosts(f.getChildFragmentManager());
-                        }
-                    }
-                }
-            }
-        }
-
-        private void replaceFragmentManagerHost(FragmentManager fragmentManager) throws IllegalAccessException {
-            if (currentHost != null) {
-                mHostField.set(fragmentManager, currentHost);
-            }
-        }
-
-        /**
          * Gets the id of activity layout resource. By default it's a single
          * {@link android.widget.FrameLayout} into which new fragment will be injected into during
          * navigation. Eg. During navigation, FragmentA, FragmentB and etc will replace the current
@@ -360,10 +249,10 @@ public abstract class MvcActivity extends AppCompatActivity {
         @Override
         public boolean onBackButtonPressed() {
             MvcFragment topFragment = null;
-            //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
+
             NavLocation curLoc = delegateFragmentController.getCurrentLocation();
             if (curLoc != null && curLoc.getLocationId() != null) {
-                topFragment = (MvcFragment) childFragmentManager().findFragmentByTag(
+                topFragment = (MvcFragment) getChildFragmentManager().findFragmentByTag(
                         getFragmentTag(curLoc.getLocationId()));
             }
 
@@ -545,8 +434,7 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         @SuppressWarnings("unchecked")
         private void performForwardNav(final NavigationManager.Event.OnLocationForward event) {
-            //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-            FragmentManager fm = childFragmentManager();
+            FragmentManager fm = getChildFragmentManager();
 
             MvcActivity activity = ((MvcActivity) getActivity());
 
@@ -657,8 +545,7 @@ public abstract class MvcActivity extends AppCompatActivity {
         }
 
         private void performBackNav(final NavigationManager.Event.OnLocationBack event) {
-            //FIXME: ChildFragmentManager hack - use getChildFragmentManager when bug is fixed
-            FragmentManager fm = childFragmentManager();
+            FragmentManager fm = getChildFragmentManager();
 
             NavLocation lastLoc = event.getLastValue();
             if (lastLoc != null) {
