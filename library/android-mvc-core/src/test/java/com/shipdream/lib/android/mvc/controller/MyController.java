@@ -129,15 +129,12 @@ public class MyController extends Controller {
         });
     }
 
-
     public Task.Monitor<Void> loadHeavyResourceAndCancel(final Object sender) {
         Task asyncTask = new Task<Void>() {
             @Override
             public Void execute(Monitor<Void> monitor) throws Exception {
                 Thread.sleep(LONG_TASK_DURATION);
-                if (monitor.getState() == Monitor.State.CANCELED) {
-                    view.onResourceCancelled();
-                } else {
+                if (monitor.getState() != Monitor.State.CANCELED) {
                     view.onResourceLoaded();
                 }
                 return null;
@@ -153,8 +150,14 @@ public class MyController extends Controller {
 
                     @Override
                     public void onCancelled(boolean interrupted) {
+                        super.onCancelled(interrupted);
                         view.onResourceCancelled();
                     }
                 });
+    }
+
+    public Task.Monitor<Void> loadHeavyResource(final Object sender, Task task, Task.Callback callback) {
+        return runTask(task,
+                callback);
     }
 }
