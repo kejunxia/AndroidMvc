@@ -18,6 +18,7 @@ package com.shipdream.lib.poke;
 
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.ProvideException;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -120,7 +121,7 @@ public class TestCircularDependencies extends BaseTestCases {
     }
 
     @Test
-    public void shouldNotifyInjectedCallbackWhenObjectFullyInjectedWithCircularDependencies() throws PokeException {
+    public void shouldNotifyReferencedCallbackWhenObjectFullyInjectedWithCircularDependencies() throws PokeException {
         final Factory factory = new Factory();
 
         ProviderByClassType powerProvider = new ProviderByClassType(Power.class, PowerImpl.class);
@@ -130,6 +131,8 @@ public class TestCircularDependencies extends BaseTestCases {
                 Assert.assertNotNull(((PowerImpl) instance).robot);
             }
         });
+
+        Assert.assertEquals(1, powerProvider.getReferencedListeners().size());
 
         ProviderByClassType driverProvider = new ProviderByClassType(Driver.class, DriverImpl.class);
         driverProvider.registerOnReferencedListener(new Provider.ReferencedListener<Driver>() {
@@ -152,6 +155,73 @@ public class TestCircularDependencies extends BaseTestCases {
         component.register(driverProvider);
 
         graph.inject(factory, MyInject.class);
+
+        powerProvider.clearOnReferencedListener();
+        Assert.assertEquals(null, powerProvider.getReferencedListeners());
+    }
+
+    @Test
+    public void shouldNotifyCreatedCallbackWhenObjectFullyInjectedWithCircularDependencies() throws PokeException {
+        class Plant {
+            @MyInject
+            private Power power;
+        }
+
+        Provider powerProvider = new Provider<Power>(Power.class, new ScopeCache()) {
+            @Override
+            protected Power createInstance() throws ProvideException {
+                return new Power() {
+                };
+            }
+        };
+        component.register(powerProvider);
+
+        Provider.CreationListener creationListener = mock(Provider.CreationListener.class);
+        powerProvider.registerCreationListener(creationListener);
+        Assert.assertEquals(1, powerProvider.getCreationListeners().size());
+
+        Plant plant = new Plant();
+        graph.getRootComponent().scopeCache = null;
+        graph.inject(plant, MyInject.class);
+
+        verify(creationListener, times(1)).onCreated(eq(powerProvider), eq(plant.power));
+
+        powerProvider.unregisterCreationListener(creationListener);
+        Assert.assertEquals(null, powerProvider.getCreationListeners());
+        graph.inject(plant, MyInject.class);
+        verify(creationListener, times(1)).onCreated(eq(powerProvider), any(Power.class));
+
+        powerProvider.registerCreationListener(creationListener);
+        graph.inject(plant, MyInject.class);
+        verify(creationListener, times(2)).onCreated(eq(powerProvider), any(Power.class));
+
+        powerProvider.clearCreationListeners();
+        graph.inject(plant, MyInject.class);
+        verify(creationListener, times(2)).onCreated(eq(powerProvider), any(Power.class));
+    }
+
+    @Test
+    public void component_cache_should_override_provider_cache() throws PokeException {
+        class Plant {
+            @MyInject
+            private Power power;
+        }
+
+        ScopeCache scopeCache = new ScopeCache();
+        Provider powerProvider = new Provider<Power>(Power.class, scopeCache) {
+            @Override
+            protected Power createInstance() throws ProvideException {
+                return new Power() {
+                };
+            }
+        };
+
+        Assert.assertTrue(scopeCache == powerProvider.getScopeCache());
+
+        component.register(powerProvider);
+
+        Assert.assertTrue(scopeCache != powerProvider.getScopeCache());
+        Assert.assertTrue(powerProvider.getScopeCache() == component.scopeCache);
     }
 
     @Test

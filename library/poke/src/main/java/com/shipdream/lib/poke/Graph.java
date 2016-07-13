@@ -367,7 +367,7 @@ public class Graph {
      * Dereference an injectable object. When it's not referenced by anything else after this
      * dereferencing, release its cached instance if possible.
      *
-     * @param instance         the instance is to release
+     * @param instance         the instance is to dereference
      * @param type             the type of the object
      * @param qualifier        the qualifier
      * @param injectAnnotation the inject annotation
