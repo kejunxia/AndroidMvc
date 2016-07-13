@@ -74,13 +74,13 @@ public class Navigator {
     /**
      * Prepare the instance subject to being injected with no qualifier for the fragment being
      * navigated to. This instance will be not be released until the navigation is settled. To
-     * config the instance try {@link #with(Class, com.shipdream.lib.android.mvc.Preparer)} or {@link #with(Class, Annotation, com.shipdream.lib.android.mvc.Preparer)}
+     * config the instance try {@link #with(Class, Preparer)} or {@link #with(Class, Annotation, Preparer)}
      *
      * @param type The class type of the instance needs to be prepared
      * @return This navigator
-     * @throws MvcGraph.Exception Raised when the required injectable object cannot be injected
+     * @throws MvcGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type) throws MvcGraph.Exception {
+    public <T> Navigator with(Class<T> type) throws MvcGraphException {
         with(type, null, null);
         return this;
     }
@@ -121,9 +121,9 @@ public class Navigator {
      * @param type     The class type of the instance needs to be prepared
      * @param preparer The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws MvcGraph.Exception Raised when the required injectable object cannot be injected
+     * @throws MvcGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, com.shipdream.lib.android.mvc.Preparer<T> preparer) throws MvcGraph.Exception {
+    public <T> Navigator with(Class<T> type, Preparer<T> preparer) throws MvcGraphException {
         with(type, null, preparer);
         return this;
     }
@@ -164,27 +164,29 @@ public class Navigator {
      * @param qualifier The qualifier
      * @param preparer  The preparer in which the injected instance will be prepared
      * @return This navigator
-     * @throws MvcGraph.Exception Raised when the required injectable object cannot be injected
+     * @throws MvcGraphException Raised when the required injectable object cannot be injected
      */
-    public <T> Navigator with(Class<T> type, Annotation qualifier, com.shipdream.lib.android.mvc.Preparer<T> preparer) throws MvcGraph.Exception {
+    public <T> Navigator with(Class<T> type, Annotation qualifier, Preparer<T> preparer) throws MvcGraphException {
+        T instance;
         try {
-            T instance = Mvc.graph().reference(type, qualifier);
-
-            if (preparer != null) {
-                preparer.prepare(instance);
-            }
-
-            if (pendingReleaseInstances == null) {
-                pendingReleaseInstances = new ArrayList<>();
-            }
-            PendingReleaseInstance pendingReleaseInstance = new PendingReleaseInstance();
-            pendingReleaseInstance.instance = instance;
-            pendingReleaseInstance.type = type;
-            pendingReleaseInstance.qualifier = qualifier;
-            pendingReleaseInstances.add(pendingReleaseInstance);
+            instance = Mvc.graph().reference(type, qualifier);
         } catch (PokeException e) {
-            throw new MvcGraph.Exception(e.getMessage(), e);
+            throw new MvcGraphException(e.getMessage(), e);
         }
+
+        if (preparer != null) {
+            preparer.prepare(instance);
+        }
+
+        if (pendingReleaseInstances == null) {
+            pendingReleaseInstances = new ArrayList<>();
+        }
+        PendingReleaseInstance pendingReleaseInstance = new PendingReleaseInstance();
+        pendingReleaseInstance.instance = instance;
+        pendingReleaseInstance.type = type;
+        pendingReleaseInstance.qualifier = qualifier;
+        pendingReleaseInstances.add(pendingReleaseInstance);
+
         return this;
     }
 
@@ -193,7 +195,7 @@ public class Navigator {
      * given locationId is different from the current location and raises {@link NavigationManager.Event.OnLocationForward}
      * <p/>
      * <p>
-     * To set argument for the next location navigating to, use {@link #with(Class, Annotation, com.shipdream.lib.android.mvc.Preparer)}
+     * To set argument for the next location navigating to, use {@link #with(Class, Annotation, Preparer)}
      * to prepare the controller injecting into the next fragment.
      * </p>
      *
@@ -209,12 +211,12 @@ public class Navigator {
      * given locationId is different from the current location and raises {@link NavigationManager.Event.OnLocationForward}
      * <p/>
      * <p>
-     * To set argument for the next location navigating to, use {@link #with(Class, Annotation, com.shipdream.lib.android.mvc.Preparer)}
+     * To set argument for the next location navigating to, use {@link #with(Class, Annotation, Preparer)}
      * to prepare the controller injecting into the next fragment.
      * </p>
      *
      * @param controllerClass The controller class type.
-     * @param forwarder      The configuration by {@link Forwarder} of the forward navigation.
+     * @param forwarder       The configuration by {@link Forwarder} of the forward navigation.
      */
     public void to(@NotNull Class<? extends Controller> controllerClass,
                    @NotNull Forwarder forwarder) {

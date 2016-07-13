@@ -17,7 +17,7 @@
 package com.shipdream.lib.android.mvc.controller;
 
 import com.shipdream.lib.android.mvc.BaseTest;
-import com.shipdream.lib.android.mvc.MvcGraph;
+import com.shipdream.lib.android.mvc.MvcGraphException;
 import com.shipdream.lib.android.mvc.Task;
 
 import org.junit.Assert;
@@ -83,7 +83,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(1)).onResourceLoaded();
 
-        verify(view, times(0)).onResourceFailed(any(MvcGraph.Exception.class));
+        verify(view, times(0)).onResourceFailed(any(MvcGraphException.class));
 
         verify(view, times(0)).onResourceCancelled();
 
@@ -98,7 +98,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(0)).onResourceLoaded();
 
-        verify(view, times(1)).onResourceFailed(any(MvcGraph.Exception.class));
+        verify(view, times(1)).onResourceFailed(any(MvcGraphException.class));
 
         verify(view, times(0)).onResourceCancelled();
 
@@ -115,7 +115,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(0)).onResourceLoaded();
 
-        verify(view, times(0)).onResourceFailed(any(MvcGraph.Exception.class));
+        verify(view, times(0)).onResourceFailed(any(MvcGraphException.class));
 
         verify(view, times(1)).onResourceCancelled();
 
@@ -132,7 +132,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         verify(view, times(0)).onResourceLoaded();
 
-        verify(view, times(0)).onResourceFailed(any(MvcGraph.Exception.class));
+        verify(view, times(0)).onResourceFailed(any(MvcGraphException.class));
 
         verify(view, times(1)).onResourceCancelled();
 

@@ -19,10 +19,14 @@ package com.shipdream.lib.android.mvc;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.concurrent.ExecutorService;
+
+import javax.inject.Inject;
+
 public class TestMvcBean {
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_when_bind_null_to_a_mvcBean() {
-        com.shipdream.lib.android.mvc.Bean bean = new com.shipdream.lib.android.mvc.Bean() {
+        Bean bean = new Bean() {
             @Override
             public Class modelType() {
                 return String.class;
@@ -33,8 +37,36 @@ public class TestMvcBean {
     }
 
     @Test
+    public void should_be_able_to_inject_background_executor_service() throws InterruptedException {
+        class Worker {
+            Thread thread = Thread.currentThread();
+            @Inject
+            ExecutorService executorService;
+        }
+        final Worker worker = new Worker();
+        Mvc.graph().inject(worker);
+
+
+        worker.executorService.submit(new Runnable() {
+            @Override
+            public void run() {
+                synchronized (worker) {
+                    worker.thread = Thread.currentThread();
+                    worker.notify();
+                }
+            }
+        });
+
+        synchronized (worker) {
+            worker.wait();
+        }
+
+        Assert.assertTrue(worker.thread != Thread.currentThread());
+    }
+
+    @Test
     public void should_rebind_state_after_restoring_mvcBean() {
-        com.shipdream.lib.android.mvc.Bean<String> bean = new com.shipdream.lib.android.mvc.Bean() {
+        Bean<String> bean = new Bean() {
 
             @Override
             public Class modelType() {
@@ -51,7 +83,7 @@ public class TestMvcBean {
 
     @Test
     public void should_call_on_restore_call_back_after_a_stateful_mvcBean_is_restored() {
-        class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
+        class MyBean extends Bean<String> {
             private boolean called = false;
 
             @Override
@@ -77,7 +109,7 @@ public class TestMvcBean {
 
     @Test
     public void should_not_call_on_restore_call_back_after_a_non_stateful_mvcBean_is_restored() {
-        class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
+        class MyBean extends Bean<String> {
             private boolean called = false;
 
             @Override
@@ -102,7 +134,7 @@ public class TestMvcBean {
     }
 
     public void should_create_state_instance_on_construct_when_the_state_type_is_specified_for_a_mvcBean() {
-        class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
+        class MyBean extends Bean<String> {
             @Override
             public Class modelType() {
                 return String.class;
@@ -118,7 +150,7 @@ public class TestMvcBean {
     }
 
     public void should_NOT_create_state_instance_on_construct_when_the_state_type_is_null_for_a_mvcBean() {
-        class MyBean extends com.shipdream.lib.android.mvc.Bean {
+        class MyBean extends Bean {
             @Override
             public Class modelType() {
                 return null;
@@ -139,7 +171,7 @@ public class TestMvcBean {
             {int x = 1 / 0;}
         }
 
-        class MyBean extends com.shipdream.lib.android.mvc.Bean<BadClass> {
+        class MyBean extends Bean<BadClass> {
             @Override
             public Class<BadClass> modelType() {
                 return BadClass.class;
@@ -153,7 +185,7 @@ public class TestMvcBean {
 
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_when_binding_null_to_stateful_mvcBean() {
-        class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
+        class MyBean extends Bean<String> {
             @Override
             public Class<String> modelType() {
                 return String.class;
@@ -167,7 +199,7 @@ public class TestMvcBean {
 
     @Test
     public void should_be_able_to_successfully_bind_state_to_stateful_mvcBean() {
-        class MyBean extends com.shipdream.lib.android.mvc.Bean<String> {
+        class MyBean extends Bean<String> {
             @Override
             public Class<String> modelType() {
                 return String.class;

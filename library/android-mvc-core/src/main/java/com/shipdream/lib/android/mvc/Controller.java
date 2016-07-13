@@ -200,13 +200,13 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                         }
                     }
                 } catch (final Exception e) {
-                    if (e instanceof MvcGraph.Exception) {
+                    if (e instanceof MvcGraphException) {
                         //Injection exception will always be thrown out since it's a development
                         //time error
                         uiThreadRunner.post(new Runnable() {
                             @Override
                             public void run() {
-                                throw new IllegalStateException(e);
+                                throw new RuntimeException(e);
                             }
                         });
                     }

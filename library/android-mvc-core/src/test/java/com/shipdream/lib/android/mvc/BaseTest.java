@@ -31,6 +31,7 @@ import org.junit.BeforeClass;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
 import static org.mockito.Matchers.any;
@@ -71,6 +72,14 @@ public class BaseTest {
                 return null;
             }
         }).when(executorService).submit(any(Runnable.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Callable runnable = (Callable) invocation.getArguments()[0];
+                return runnable.call();
+            }
+        }).when(executorService).submit(any(Callable.class));
 
         graph.setRootComponent((MvcComponent) new MvcComponent("TestRootComponent").register(new Object(){
             @Provides
