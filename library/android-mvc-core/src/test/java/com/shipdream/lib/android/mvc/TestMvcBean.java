@@ -58,7 +58,7 @@ public class TestMvcBean {
         });
 
         synchronized (worker) {
-            worker.wait();
+            worker.wait(1000);
         }
 
         Assert.assertTrue(worker.thread != Thread.currentThread());
