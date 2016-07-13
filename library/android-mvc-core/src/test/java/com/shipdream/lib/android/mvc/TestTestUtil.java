@@ -7,6 +7,11 @@ import static org.mockito.Mockito.mock;
 
 public class TestTestUtil {
     @Test
+    public void can_construct_testUtil() {
+        new TestUtil();
+    }
+
+    @Test
     public void should_assign_controller_view_correctly() {
         Controller controller = new Controller() {
             @Override
