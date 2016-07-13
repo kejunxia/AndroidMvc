@@ -28,8 +28,8 @@ dependencies {
 
 android {
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_7
-        targetCompatibility JavaVersion.VERSION_1_7
+        sourceCompatibility 1.7
+        targetCompatibility 1.7
     }
 
     compileSdkVersion rootProject.ext.androidCompileSdkVersion
