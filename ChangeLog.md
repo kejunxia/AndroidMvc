@@ -1,4 +1,8 @@
-Version: 3.0
+Version: 3.0.1
+* Fix issue that interim navigation pages are not popped out on back navgation correctly
+* Uplift target compile SDK to 24.
+
+Version: 3.0.0
 * View and Controller are one to one mapped
 * FragmentController introduced that is bound with the same lifecycle as MvcFragment. It is easier to act as a presenter of fragment
 * Able to post actions to ui thread from controllers by protected uiThreadRunner field

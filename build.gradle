@@ -81,7 +81,7 @@ ext {
     shouldPublish = false
 
     androidMinSdkVersion = 14
-    androidCompileSdkVersion = 23
+    androidCompileSdkVersion = 24
     androidBuildToolVersion = "23.0.3"
     supportLibVersion = "24.0.0"
     androidTargetSdkVersion = androidCompileSdkVersion

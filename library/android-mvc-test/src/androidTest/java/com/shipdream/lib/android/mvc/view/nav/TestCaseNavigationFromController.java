@@ -16,13 +16,21 @@
 
 package com.shipdream.lib.android.mvc.view.nav;
 
+import android.support.v4.app.FragmentManager;
+
 import com.shipdream.lib.android.mvc.BaseTestCase;
+import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Preparer;
 import com.shipdream.lib.android.mvc.view.injection.controller.ControllerA;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerB;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerC;
+import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import com.shipdream.lib.poke.Provides;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -36,6 +44,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -124,10 +133,99 @@ public class TestCaseNavigationFromController extends BaseTestCase<MvcTestActivi
         navTo(ControllerA.class);
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        Mvc.graph().getRootComponent().unregister(comp);
-        super.tearDown();
+    @Test
+    public void test_back_navigation_should_skip_interim_location() throws Throwable {
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(1);
+
+        navigationManager.navigate(this).to(ControllerB.class, new Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(2);
+
+        navigationManager.navigate(this).to(ControllerC.class, new Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(3);
+
+        navigationManager.navigate(this).to(ControllerD.class);
+        waitTest();
+        onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(4);
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+        onView(withText(NavFragmentB.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentC.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentD.class.getSimpleName())).check(doesNotExist());
+        assertFragmentsCount(1);
+
+        navigationManager.navigate(this).to(ControllerB.class, new Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(2);
+
+        navigationManager.navigate(this).to(ControllerC.class, new Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(3);
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+        onView(withText(NavFragmentB.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentC.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentD.class.getSimpleName())).check(doesNotExist());
+        assertFragmentsCount(1);
+
+        navigationManager.navigate(this).to(ControllerB.class);
+        waitTest();
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(2);
+
+        navigationManager.navigate(this).to(ControllerC.class, new Forwarder().setInterim(true));
+        waitTest();
+        onView(withText(NavFragmentC.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(3);
+
+        navigationManager.navigate(this).to(ControllerD.class);
+        waitTest();
+        onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
+        assertFragmentsCount(4);
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
+        onView(withText(NavFragmentC.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentD.class.getSimpleName())).check(doesNotExist());
+        assertFragmentsCount(2);
+
+        navigationManager.navigate(this).back();
+        waitTest();
+        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+        onView(withText(NavFragmentB.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentC.class.getSimpleName())).check(doesNotExist());
+        onView(withText(NavFragmentD.class.getSimpleName())).check(doesNotExist());
+        assertFragmentsCount(1);
+    }
+
+    private void assertFragmentsCount(int count) {
+        int actualFrags = 0;
+        int actualStackCount = 0;
+        FragmentManager fm = activity.getDelegateFragment().getChildFragmentManager();
+        if (fm.getFragments() != null) {
+            for (int i = 0; i < fm.getFragments().size(); ++i) {
+                if (fm.getFragments().get(i) != null) {
+                    ++actualFrags;
+                }
+            }
+
+            actualStackCount = fm.getBackStackEntryCount();
+        }
+        Assert.assertEquals(count, actualFrags);
+        Assert.assertEquals(count, actualStackCount);
     }
 
     @Test

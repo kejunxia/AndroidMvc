@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
@@ -33,6 +34,8 @@ import javax.inject.Inject;
 public abstract class NavFragment extends MvcFragment {
     private Button next;
     private Button clear;
+    private TextView textView;
+
 
     @Inject
     private NavigationManager navigationManager;
@@ -48,6 +51,9 @@ public abstract class NavFragment extends MvcFragment {
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
+
+        textView = (TextView) view.findViewById(R.id.text);
+        textView.setText(getClass().getSimpleName());
 
         next = (Button) view.findViewById(R.id.button_next);
         next.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +79,7 @@ public abstract class NavFragment extends MvcFragment {
     public void onResume() {
         super.onResume();
         Toolbar toolbar = (Toolbar) getView().findViewById(R.id.toolbar);
-        toolbar.setTitle(getClass().getSimpleName());
+        toolbar.setTitle("Page: " + getClass().getSimpleName());
     }
 
     @Override

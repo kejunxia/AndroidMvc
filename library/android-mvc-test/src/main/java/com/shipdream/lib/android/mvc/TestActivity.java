@@ -57,6 +57,10 @@ public abstract class TestActivity extends MvcActivity {
 
     private List<Proxy> proxies = new CopyOnWriteArrayList<>();;
 
+    public DelegateFragment getDelegateFragment() {
+        return delegateFragment;
+    }
+
     public void addProxy(Proxy proxy) {
         synchronized (proxies) {
             proxies.add(proxy);

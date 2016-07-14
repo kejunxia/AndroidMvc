@@ -242,6 +242,7 @@ public abstract class BaseTestCase<T extends TestActivity> extends ActivityInstr
             public void run() {
                 Mvc.graph().release(BaseTestCase.this);
                 try {
+                    Mvc.graph().getRootComponent().getCache().clear();
                     Mvc.graph().getRootComponent().detach(component);
                 } catch (Component.MismatchDetachException e) {
                     e.printStackTrace();
@@ -250,8 +251,6 @@ public abstract class BaseTestCase<T extends TestActivity> extends ActivityInstr
             }
         });
         super.tearDown();
-
-        Mvc.graph().getRootComponent().getCache().clear();
 
         eventBusV.unregister(this);
     }

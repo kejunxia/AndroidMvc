@@ -309,14 +309,20 @@ public class Navigator {
         }
 
         NavLocation previousLoc = currentLoc.getPreviousLocation();
+
+        boolean needFastRewind = false;
         while (previousLoc != null && previousLoc.isInterim()) {
             previousLoc = previousLoc.getPreviousLocation();
+            needFastRewind = true;
         }
 
-        navigationManager.getModel().setCurrentLocation(previousLoc);
-
-        navigateEvent = new NavigationManager.Event.OnLocationBack(sender, currentLoc, previousLoc, false, this);
-        go();
+        if (needFastRewind) {
+            navigateBackToLoc(previousLoc == null ? null : previousLoc.getLocationId());
+        } else {
+            navigationManager.getModel().setCurrentLocation(previousLoc);
+            navigateEvent = new NavigationManager.Event.OnLocationBack(sender, currentLoc, previousLoc, false, this);
+            go();
+        }
     }
 
     /**
@@ -328,6 +334,11 @@ public class Navigator {
      * @param controllerClass the controller class type
      */
     public void back(Class<? extends Controller> controllerClass) {
+        String toLocationId = controllerClass == null ? null : controllerClass.getName();
+        navigateBackToLoc(toLocationId);
+    }
+
+    private void navigateBackToLoc(String toLocationId) {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationManager.logger.warn("Current location should never be null before navigating backwards.");
@@ -341,8 +352,6 @@ public class Navigator {
 
         boolean success = false;
         NavLocation previousLoc = currentLoc;
-
-        String toLocationId = controllerClass == null ? null : controllerClass.getName();
 
         if (toLocationId == null) {
             success = true;
