@@ -16,6 +16,8 @@
 
 package com.shipdream.lib.android.mvc.event.bus.annotation;
 
+import com.shipdream.lib.android.mvc.event.bus.EventBus;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -23,8 +25,10 @@ import java.lang.annotation.RetentionPolicy;
 import javax.inject.Qualifier;
 
 /**
- * Indicates the annotated event bus is for events to controllers. Events through the event bus
- * annotated by this annotation will be received on the same thread as the caller who posts them.
+ * Indicates the annotated event bus is for events to core components such as controllers, managers
+ * or core services. To receive or send events to Android views use {@link EventBusV} to qualify the
+ * injecting {@link EventBus}. Events through the event bus annotated by this annotation will be
+ * received on the same thread as the caller who posts them.
  */
 @Qualifier
 @Documented
