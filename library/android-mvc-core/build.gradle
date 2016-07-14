@@ -59,7 +59,7 @@ dependencies {
     compile project(':library:poke')
 
     compile rootProject.lib.slf4jApi
-    compile 'com.google.code.gson:gson:2.3.1'
+    compile 'com.google.code.gson:gson:2.7'
 
     testCompile rootProject.ext.lib.junit
     testCompile rootProject.ext.lib.mokito
