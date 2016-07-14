@@ -20,8 +20,8 @@ import com.shipdream.lib.android.mvc.Controller;
 
 public class LifeCycleTestController extends Controller {
     public interface Proxy {
-        void onConstructCalled();
-        void disposeCalled();
+        void onCreated();
+        void onDestroy();
     }
 
     public Proxy proxy;
@@ -32,11 +32,11 @@ public class LifeCycleTestController extends Controller {
 
     public void onCreated() {
         super.onCreated();
-        proxy.onConstructCalled();
+        proxy.onCreated();
     }
 
     public void onDestroy() {
         super.onDestroy();
-        proxy.disposeCalled();
+        proxy.onDestroy();
     }
 }

@@ -112,22 +112,22 @@ public class TestControllerSimpleInject extends BaseTest {
         graph.getRootComponent().register(new LifeCycleTestControllerModule(lifeCycleProxy));
 
         TestLifCycleView testView = new TestLifCycleView();
-        verify(lifeCycleProxy, times(0)).onConstructCalled();
+        verify(lifeCycleProxy, times(0)).onCreated();
         graph.inject(testView);
-        verify(lifeCycleProxy, times(1)).onConstructCalled();
-        verify(lifeCycleProxy, times(0)).disposeCalled();
+        verify(lifeCycleProxy, times(1)).onCreated();
+        verify(lifeCycleProxy, times(0)).onDestroy();
 
         TestLifCycleView testView1 = new TestLifCycleView();
         graph.inject(testView1);
         //Should be 1 still since a cached instance will be reused.
-        verify(lifeCycleProxy, times(1)).onConstructCalled();
-        verify(lifeCycleProxy, times(0)).disposeCalled();
+        verify(lifeCycleProxy, times(1)).onCreated();
+        verify(lifeCycleProxy, times(0)).onDestroy();
 
         graph.release(testView1);
-        verify(lifeCycleProxy, times(0)).disposeCalled();
+        verify(lifeCycleProxy, times(0)).onDestroy();
 
         graph.release(testView);
-        verify(lifeCycleProxy, times(1)).disposeCalled();
+        verify(lifeCycleProxy, times(1)).onDestroy();
     }
 
     public static class Car {

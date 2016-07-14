@@ -58,4 +58,8 @@ public class TestInjectedStateManagedObjects extends BaseTestCase<InjectionTestA
         onView(withId(R.id.textA)).check(matches(withText("3:C")));
     }
 
+    @Override
+    protected Class<InjectionTestActivityStateManagedObjects> getActivityClass() {
+        return InjectionTestActivityStateManagedObjects.class;
+    }
 }

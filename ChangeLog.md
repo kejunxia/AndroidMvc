@@ -10,6 +10,7 @@ injection. A concrete class can be injected straight away.
 * Register providers to Graph's root component rather than to graph itself.
 * Managers listen to eventBusC
 * New lifecycle MvcFragment.onPopAway
+* Uplift support library to 24.0.0 and remove all hack for issue reported https://code.google.com/p/android/issues/detail?id=197271
 
 Version:2.3
 * New navigation method that allow configuring the location not pushed to back stack

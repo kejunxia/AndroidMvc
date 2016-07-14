@@ -40,6 +40,11 @@ public class TestV2VEvents extends BaseTestCase<EventBusV2VActivity> {
     }
 
     @Override
+    protected Class<EventBusV2VActivity> getActivityClass() {
+        return EventBusV2VActivity.class;
+    }
+
+    @Override
     public void setUp() throws Exception {
         super.setUp();
     }

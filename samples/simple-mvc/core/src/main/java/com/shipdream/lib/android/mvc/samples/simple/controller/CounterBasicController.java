@@ -75,7 +75,6 @@ public class CounterBasicController extends AbstractController<CounterBasicContr
 
             @Override
             public void onException(Exception e) {
-                super.onException(e);
                 view.showErrorMessageToFetchIp();
                 logger.warn(e.getMessage(), e);
             }

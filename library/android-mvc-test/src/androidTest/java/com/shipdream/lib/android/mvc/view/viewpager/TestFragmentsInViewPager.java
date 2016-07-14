@@ -384,4 +384,9 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withId(R.id.viewpager)).perform(swipeLeft());
         onView(withText("Tab C")).check(matches(isDisplayed()));
     }
+
+    @Override
+    protected Class<ViewPagerTestActivity> getActivityClass() {
+        return ViewPagerTestActivity.class;
+    }
 }

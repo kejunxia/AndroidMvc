@@ -94,14 +94,6 @@ public interface Task<RESULT> {
         }
 
         /**
-         * The task this monitor is monitoring
-         * @return The task
-         */
-        public Task getTask() {
-            return task;
-        }
-
-        /**
          * Attempts to cancel execution of this task.  This attempt will
          * fail if the task has already completed, has already been cancelled,
          * or could not be cancelled for some other reason. If successful,
@@ -133,26 +125,25 @@ public interface Task<RESULT> {
                     }
                     return true;
                 case STARTED:
-                    if (future != null) {
-                        boolean cancelled = future.cancel(mayInterruptIfRunning);
-                        if (mayInterruptIfRunning && cancelled) {
+                    boolean cancelled = future.cancel(mayInterruptIfRunning);
+                    if (cancelled) {
+                        if (mayInterruptIfRunning) {
                             state = State.INTERRUPTED;
                         } else {
                             state = State.CANCELED;
                         }
-                        if (callback != null) {
-                            uiThreadRunner.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    callback.onCancelled(mayInterruptIfRunning);
-                                    callback.onFinally();
-                                }
-                            });
-                        }
-                        return cancelled;
-                    } else {
-                        return false;
                     }
+
+                    if (callback != null) {
+                        uiThreadRunner.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callback.onCancelled(mayInterruptIfRunning);
+                                callback.onFinally();
+                            }
+                        });
+                    }
+                    return cancelled;
                 case DONE:
                 case ERRED:
                 case CANCELED:
@@ -188,9 +179,13 @@ public interface Task<RESULT> {
          * Called when the execution of the task encounters exceptions. Note that an
          * {@link InterruptedException} caused by cancelling won't trigger this callback but
          * {@link #onCancelled(boolean)} with argument equals true
-         * @param e The exception
+         * @param e The exception to handle
+         * @throws Exception The exception by default will be thrown out otherwise override this
+         * method to handle it and <b>DO NOT call super.onException(e)</b>
          */
-        public void onException(Exception e){}
+        public void onException(Exception e) throws Exception {
+            throw e;
+        }
 
         /**
          * Called when the task has started and runs into {@link #onSuccess(Object)} ()},

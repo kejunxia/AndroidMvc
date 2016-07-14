@@ -165,19 +165,24 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                                    final Task<RESULT> task, final Task.Callback<RESULT> callback) {
         final Task.Monitor<RESULT> monitor = new Task.Monitor(task, uiThreadRunner, callback);
 
-        if (monitor.getState() == Task.Monitor.State.CANCELED) {
-            return null;
-        }
-
-        monitor.setState(Task.Monitor.State.STARTED);
-
-        if (callback != null) {
-            callback.onStarted();
-        }
-
         Future<Void> future = executorService.submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
+                if (monitor.getState() == Task.Monitor.State.CANCELED) {
+                    return null;
+                }
+
+                monitor.setState(Task.Monitor.State.STARTED);
+
+                if (callback != null) {
+                    uiThreadRunner.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.onStarted();
+                        }
+                    });
+                }
+
                 try {
                     final RESULT result = task.execute(monitor);
 
@@ -195,13 +200,13 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                         }
                     }
                 } catch (final Exception e) {
-                    if (e instanceof MvcGraph.Exception) {
+                    if (e instanceof MvcGraphException) {
                         //Injection exception will always be thrown out since it's a development
                         //time error
                         uiThreadRunner.post(new Runnable() {
                             @Override
                             public void run() {
-                                throw new IllegalStateException(e);
+                                throw new RuntimeException(e);
                             }
                         });
                     }
@@ -219,8 +224,13 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                             uiThreadRunner.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onException(e);
-                                    callback.onFinally();
+                                    try {
+                                        callback.onException(e);
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    } finally {
+                                        callback.onFinally();
+                                    }
                                 }
                             });
                         } else {

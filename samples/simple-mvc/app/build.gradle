@@ -42,6 +42,8 @@ android {
         targetSdkVersion rootProject.ext.androidTargetSdkVersion
         versionCode 1
         versionName "1.0.0"
+
+        multiDexEnabled false
     }
 
     sourceSets {

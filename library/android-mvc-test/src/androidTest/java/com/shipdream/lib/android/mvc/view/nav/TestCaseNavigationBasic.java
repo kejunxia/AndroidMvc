@@ -61,6 +61,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
     @Inject
     private AnotherController anotherPresenter;
 
+
     private Comp comp;
     private DisposeCheckerA disposeCheckerAMock;
     private DisposeCheckerB disposeCheckerBMock;
@@ -122,6 +123,11 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
             e.printStackTrace();
         }
         Mvc.graph().getRootComponent().register(comp);
+    }
+
+    @Override
+    protected Class<MvcTestActivityNavigation> getActivityClass() {
+        return MvcTestActivityNavigation.class;
     }
 
     @Override

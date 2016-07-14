@@ -1,0 +1,12 @@
+package com.shipdream.lib.android.mvc.inject.test;
+
+import java.lang.annotation.Retention;
+
+import javax.inject.Qualifier;
+
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Qualifier
+@Retention(RUNTIME)
+public @interface Smart {
+}

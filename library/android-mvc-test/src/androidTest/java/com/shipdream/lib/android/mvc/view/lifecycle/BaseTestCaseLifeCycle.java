@@ -23,4 +23,9 @@ public abstract class BaseTestCaseLifeCycle extends BaseTestCase <MvcTestActivit
     public BaseTestCaseLifeCycle() {
         super(MvcTestActivity.class);
     }
+
+    @Override
+    protected Class<MvcTestActivity> getActivityClass() {
+        return MvcTestActivity.class;
+    }
 }

@@ -43,6 +43,11 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
     }
 
     @Override
+    protected Class<MvcTestActivityNavigation> getActivityClass() {
+        return MvcTestActivityNavigation.class;
+    }
+
+    @Override
     protected void prepareDependencies(MvcComponent testComponent) throws Exception {
         super.prepareDependencies(testComponent);
 

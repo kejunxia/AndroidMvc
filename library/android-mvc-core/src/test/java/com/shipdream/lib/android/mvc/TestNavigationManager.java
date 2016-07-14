@@ -20,6 +20,9 @@ import com.shipdream.lib.android.mvc.inject.testNameMapping.controller.TimerCont
 import com.shipdream.lib.android.mvc.manager.internal.BaseNavigationManagerTest;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.ProvideException;
+import com.shipdream.lib.poke.exception.ProviderConflictException;
+import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,6 +83,48 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
     protected void navigateBackByFragment() {
         navigationManager.navigate(this).back();
+    }
+
+    @Test
+    public void should_not_fail_when_logger_is_set_trace() {
+        navigationManager.logger = mock(Logger.class);
+        when(navigationManager.logger.isTraceEnabled()).thenReturn(true);
+
+        prepareLocationHistory();
+        navigationManager.navigate(this).back();
+    }
+
+    interface X{
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_throw_MvcGraphException_when_mvcGraph_with_method_encounters_PokeException() {
+        navigationManager.navigate(this).with(X.class);
+    }
+
+    class X_1 implements X {
+
+    }
+
+    @Test
+    public void should_throw_MvcGraphException_when_mvcGraph_destroy_method_encounters_PokeException() throws ProvideException, ProviderConflictException, ProviderMissingException {
+        navigationManager.logger = mock(Logger.class);
+        Navigator navigator = navigationManager.navigate(this);
+
+        Mvc.graph().getRootComponent().register(new Object(){
+            @Provides
+            public X x() {
+                return new X_1();
+            }
+        });
+
+        navigator.with(X.class);
+
+        Mvc.graph().getRootComponent().unregister(X.class, null);
+
+        navigator.destroy();
+
+        verify(navigationManager.logger).warn(anyString(), anyString());
     }
 
     @Test
@@ -240,10 +285,14 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         prepareLocationHistory();
 
         reset(backListener);
-        navigationManager.navigate(this).back(null);
+        Navigator navigator = navigationManager.navigate(this);
+        navigator.back(null);
         ArgumentCaptor<NavigationManager.Event.OnLocationBack> event
                 = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationBack.class);
         verify(backListener).onEvent(event.capture());
+        Assert.assertTrue(this == event.getValue().getSender());
+        Assert.assertTrue(navigator == event.getValue().getNavigator());
+
         assertEquals(event.getValue().getLastValue().getLocationId(), locId4.getName());
         assertEquals(event.getValue().getCurrentValue().getLocationId(), locId1.getName());
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
@@ -251,6 +300,31 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         assertEquals(currentLoc.getPreviousLocation(), null);
 
         Assert.assertTrue(event.getValue().isFastRewind());
+    }
+
+    @Test
+    public void should_skip_interim_location_on_back_navigation() throws Exception {
+        //mock the subscriber
+        BackListener backListener = mock(BackListener.class);
+        eventBusC.register(backListener);
+
+        prepareLocationHistory();
+
+        reset(backListener);
+        navigationManager.navigate(this).to(locId1, new Forwarder().setInterim(true));
+        navigationManager.navigate(this).to(locId2, new Forwarder().setInterim(true));
+        navigationManager.navigate(this).back();
+
+        ArgumentCaptor<NavigationManager.Event.OnLocationBack> event
+                = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationBack.class);
+        verify(backListener).onEvent(event.capture());
+
+        assertEquals(event.getValue().getLastValue().getLocationId(), locId2.getName());
+        assertEquals(event.getValue().getCurrentValue().getLocationId(), locId4.getName());
+        NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
+        assertEquals(currentLoc.getLocationId(), locId4.getName());
+
+        Assert.assertFalse(event.getValue().isFastRewind());
     }
 
     @Test
@@ -305,6 +379,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         navigateBackByFragment();
         verify(exitListener, times(1)).onEvent(event.capture());
+
+        Assert.assertTrue(this == event.getValue().getSender());
     }
 
     @Test
@@ -316,7 +392,8 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         navigationManager.navigate(this).to(locId1);
 
         // Arrange
-        navigationManager.navigate(this).back(null);
+        Navigator navigator = navigationManager.navigate(this);
+        navigator.back(null);
 
         // Verify
         ArgumentCaptor<NavigationManager.Event.OnLocationBack> event
@@ -470,7 +547,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
     }
 
-    @Test(expected = MvcGraph.Exception.class)
+    @Test(expected = MvcGraphException.class)
     public void should_catch_invocation_exception_when_NPE_detected_on_injection() throws Exception {
         Object com = new Object() {
             @Provides
@@ -722,9 +799,12 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
 
         ArgumentCaptor<NavigationManager.Event.OnLocationForward> event
                 = ArgumentCaptor.forClass(NavigationManager.Event.OnLocationForward.class);
+
         verify(forwardListener).onEvent(event.capture());
         assertEquals(event.getValue().getCurrentValue().getLocationId(), TimerController.class.getName());
         assertTrue(event.getValue().getCurrentValue().isInterim());
+        Assert.assertTrue(this == event.getValue().getSender());
+        Assert.assertTrue(navigator == event.getValue().getNavigator());
     }
 
     /**

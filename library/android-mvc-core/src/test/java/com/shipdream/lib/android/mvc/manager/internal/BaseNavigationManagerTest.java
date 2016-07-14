@@ -22,6 +22,7 @@ import com.shipdream.lib.android.mvc.BaseTest;
 import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 
+import org.junit.After;
 import org.junit.Before;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -59,5 +60,10 @@ public class BaseNavigationManagerTest extends BaseTest {
         navigationManager = new NavigationManager();
         graph.inject(navigationManager);
         navigationManager.onCreated();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        navigationManager.onDestroy();
     }
 }

@@ -13,7 +13,17 @@ import org.slf4j.LoggerFactory;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
 
-//TODO: documents
+/**
+ * A component manages injectable objects. It is able to locate implementation class automatically by
+ * <ul>
+ *     <ui>The injecting class is a concrete class and has empty constructor</ui>
+ *     <ui>The injecting class is an interface or abstract class and there is concrete class is named
+ *     with suffix "impl" and sitting in the subpackage "internal" which is at the
+ *     same level of the interface or abstract. For instance, the interface is
+ *     a.b.c.Car and there is an concrete class at a.b.c.internal.CarImpl</ui>
+ *     <ui>The injecting class is registered by {@link #register(Object)} or {@link #register(Provider)}</ui>
+ * </ul>
+ */
 public class MvcComponent extends Component {
     private Logger logger = LoggerFactory.getLogger(getClass());
     public MvcComponent(String name) {
@@ -51,11 +61,11 @@ public class MvcComponent extends Component {
                     || provider.getQualifier() != null) {
                 String msg;
                 if (qualifier == null) {
-                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists, or its implementation is registered to graph's root component",
-                            type.getName(), getClassName(type));
+                    msg = String.format("Can't find implementation class for %s. Make sure class %s without qualifier %s exists, or its implementation is registered to graph's root component.",
+                            type.getName(), getClassName(type), provider.getQualifier().toString());
                 } else {
-                    msg = String.format("Can't find implementation class for %s. Make sure class %s exists, or its implementation is registered to graph's root component",
-                            type.getName(), getClassName(type) + "@" + qualifier.toString());
+                    msg = String.format("Can't find implementation class for %s. Make sure class %s with qualifier %s exists, or its implementation is registered to graph's root component.",
+                            type.getName(), getClassName(type), qualifier.toString());
                 }
                 throw new ProviderMissingException(msg);
             }

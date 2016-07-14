@@ -114,6 +114,11 @@ public class TestCaseNavigationFromController extends BaseTestCase<MvcTestActivi
     }
 
     @Override
+    protected Class<MvcTestActivityNavigation> getActivityClass() {
+        return MvcTestActivityNavigation.class;
+    }
+
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         navTo(ControllerA.class);

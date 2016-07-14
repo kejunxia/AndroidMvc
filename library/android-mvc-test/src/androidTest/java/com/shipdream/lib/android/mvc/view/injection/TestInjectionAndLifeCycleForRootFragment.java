@@ -36,6 +36,11 @@ public class TestInjectionAndLifeCycleForRootFragment extends BaseTestCase<Injec
     }
 
     @Override
+    protected Class<InjectionTestActivityTestRootFragment> getActivityClass() {
+        return InjectionTestActivityTestRootFragment.class;
+    }
+
+    @Override
     public void setUp() throws Exception {
         super.setUp();
         navTo(ControllerA.class, new Forwarder().clearAll());
