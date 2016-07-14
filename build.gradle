@@ -20,7 +20,7 @@ apply plugin: 'jacoco'
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 def log4jVersion = '1.7.6'
-def logbackAndroidVersion = '1.1.1-4'
+def logbackAndroidVersion = '1.1.1-5'
 
 buildscript {
     repositories {
