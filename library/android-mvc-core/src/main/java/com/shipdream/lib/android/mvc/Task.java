@@ -179,9 +179,13 @@ public interface Task<RESULT> {
          * Called when the execution of the task encounters exceptions. Note that an
          * {@link InterruptedException} caused by cancelling won't trigger this callback but
          * {@link #onCancelled(boolean)} with argument equals true
-         * @param e The exception
+         * @param e The exception to handle
+         * @throws Exception The exception by default will be thrown out otherwise override this
+         * method to handle it and <b>DO NOT call super.onException(e)</b>
          */
-        public void onException(Exception e){}
+        public void onException(Exception e) throws Exception {
+            throw e;
+        }
 
         /**
          * Called when the task has started and runs into {@link #onSuccess(Object)} ()},

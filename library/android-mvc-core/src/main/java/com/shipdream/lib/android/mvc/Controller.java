@@ -224,8 +224,13 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
                             uiThreadRunner.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.onException(e);
-                                    callback.onFinally();
+                                    try {
+                                        callback.onException(e);
+                                    } catch (Exception e) {
+                                        throw new RuntimeException(e);
+                                    } finally {
+                                        callback.onFinally();
+                                    }
                                 }
                             });
                         } else {

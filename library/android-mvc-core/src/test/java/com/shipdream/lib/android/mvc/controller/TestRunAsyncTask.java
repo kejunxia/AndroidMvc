@@ -140,7 +140,7 @@ public class TestRunAsyncTask extends BaseTest {
     }
 
     @Test
-    public void should_catch_exception_during_running_async_task() throws InterruptedException {
+    public void should_catch_exception_during_running_async_task() throws Exception {
         final Task.Callback callback = mock(Task.Callback.class);
         Task.Monitor monitor1 = controller.loadHeavyResource(this, new Task() {
             @Override
@@ -168,8 +168,7 @@ public class TestRunAsyncTask extends BaseTest {
             }
 
             @Override
-            public void onException(Exception e) {
-                super.onException(e);
+            public void onException(Exception e) throws Exception {
                 callback.onException(e);
             }
 

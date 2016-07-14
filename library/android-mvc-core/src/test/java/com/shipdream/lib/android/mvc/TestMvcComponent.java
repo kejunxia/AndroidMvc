@@ -8,7 +8,7 @@ import org.junit.Test;
 
 import javax.inject.Inject;
 
-public class TestMvcComponent {
+public class TestMvcComponent extends BaseTest {
     @Test(expected = MvcGraphException.class)
     public void should_throw_provider_missing_exception_when_locate_an_qualified_class() {
         class Shop {

@@ -19,11 +19,9 @@ package com.shipdream.lib.android.mvc;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import javax.inject.Inject;
-
-public class TestMvcBean {
+public class TestMvcBean extends BaseTest {
     @Test(expected = IllegalArgumentException.class)
     public void should_throw_exception_when_bind_null_to_a_mvcBean() {
         Bean bean = new Bean() {
@@ -40,14 +38,10 @@ public class TestMvcBean {
     public void should_be_able_to_inject_background_executor_service() throws InterruptedException {
         class Worker {
             Thread thread = Thread.currentThread();
-            @Inject
-            ExecutorService executorService;
         }
         final Worker worker = new Worker();
-        Mvc.graph().inject(worker);
 
-
-        worker.executorService.submit(new Runnable() {
+        Executors.newSingleThreadExecutor().submit(new Runnable() {
             @Override
             public void run() {
                 synchronized (worker) {
