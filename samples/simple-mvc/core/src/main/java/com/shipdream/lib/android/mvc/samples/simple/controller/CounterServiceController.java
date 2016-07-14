@@ -3,7 +3,6 @@ package com.shipdream.lib.android.mvc.samples.simple.controller;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.samples.simple.manager.CounterManager;
-import com.shipdream.lib.android.mvc.samples.simple.service.Poster;
 
 import javax.inject.Inject;
 
@@ -27,7 +26,7 @@ public class CounterServiceController extends AbstractController<Void, CounterSe
                 if (count ++ <= AUTO_FINISH_COUNT) {
                     counterManager.setCount(this, counterManager.getModel().getCount() + 1);
 
-                    poster.postDelayed(this, 1000);
+                    uiThreadRunner.postDelayed(this, 1000);
                 } else {
                     view.counterFinished();
                 }
@@ -41,9 +40,6 @@ public class CounterServiceController extends AbstractController<Void, CounterSe
 
     private static final int AUTO_FINISH_COUNT = 10;
     private AutoCounter autoCounter;
-
-    @Inject
-    private Poster poster;
 
     @Inject
     private NavigationManager navigationManager;

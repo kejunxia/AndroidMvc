@@ -13,7 +13,7 @@ public class MainActivity extends MvcActivity {
         String presenterPkgName = presenterClass.getPackage().getName();
         String viewPkgName = presenterPkgName.substring(0, presenterPkgName.lastIndexOf(".")) + ".view";
         String fragmentClassName = viewPkgName + "."
-                + presenterClass.getSimpleName().replace("Controller", "View");
+                + presenterClass.getSimpleName().replace("Controller", "Screen");
         try {
             return (Class<? extends MvcFragment>) Class.forName(fragmentClassName);
         } catch (ClassNotFoundException e) {

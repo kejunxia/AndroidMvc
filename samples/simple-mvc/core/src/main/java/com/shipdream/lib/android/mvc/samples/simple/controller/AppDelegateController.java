@@ -9,7 +9,7 @@ public class AppDelegateController extends AbstractController {
     private NavigationManager navigationManager;
 
     public void startApp(Object sender) {
-        navigationManager.navigate(sender).to(CounterBasicController.class);
+        navigationManager.navigate(sender).to(CounterMasterController.class);
     }
 
     @Override

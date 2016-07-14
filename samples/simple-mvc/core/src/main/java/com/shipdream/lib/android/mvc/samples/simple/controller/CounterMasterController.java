@@ -12,8 +12,8 @@ import javax.inject.Inject;
 
 import retrofit2.Response;
 
-public class CounterBasicController extends AbstractController<CounterBasicController.Model,
-        CounterBasicController.View> {
+public class CounterMasterController extends AbstractController<CounterMasterController.Model,
+        CounterMasterController.View> {
     @Override
     public Class<Model> modelType() {
         return Model.class;

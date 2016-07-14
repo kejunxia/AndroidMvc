@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.samples.simple.controller.internal;
 import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.TestUtil;
-import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicController;
+import com.shipdream.lib.android.mvc.samples.simple.controller.CounterMasterController;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.manager.CounterManager;
 
@@ -41,13 +41,13 @@ public class TestCounterBasicController extends BaseTest {
     @Inject
     private NavigationManager navigationManager;
 
-    private CounterBasicController controller;
+    private CounterMasterController controller;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        controller = new CounterBasicController();
+        controller = new CounterMasterController();
         Mvc.graph().inject(controller);
         controller.onCreated();
     }
@@ -56,7 +56,7 @@ public class TestCounterBasicController extends BaseTest {
     public void increment_should_post_counter_update_event_with_incremented_value() {
         //1. Prepare
         //prepare event monitor
-        CounterBasicController.View view = mock(CounterBasicController.View.class);
+        CounterMasterController.View view = mock(CounterMasterController.View.class);
         TestUtil.assignControllerView(controller, view);
 
         //mock controller model for count value
@@ -79,9 +79,9 @@ public class TestCounterBasicController extends BaseTest {
     public void should_navigate_to_locationB_when_go_to_advance_view_and_back_to_locationA_after_go_to_basic_view() {
         //Prepare
         //Simulate navigating to location
-        navigationManager.navigate(this).to(CounterBasicController.class);
+        navigationManager.navigate(this).to(CounterMasterController.class);
         //Verify: location should be changed to LocationA
-        Assert.assertEquals(CounterBasicController.class.getName(),
+        Assert.assertEquals(CounterMasterController.class.getName(),
                 navigationManager.getModel().getCurrentLocation().getLocationId());
 
         //Act: CounterController now goes to advanced view underlining logic is navigating to locationB

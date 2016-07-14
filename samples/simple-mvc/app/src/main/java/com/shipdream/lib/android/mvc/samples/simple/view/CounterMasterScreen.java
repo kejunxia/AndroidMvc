@@ -11,12 +11,12 @@ import android.widget.Toast;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.R;
-import com.shipdream.lib.android.mvc.samples.simple.controller.CounterBasicController;
+import com.shipdream.lib.android.mvc.samples.simple.controller.CounterMasterController;
 
 import javax.inject.Inject;
 
-public class CounterBasicView extends AbstractFragment<CounterBasicController>
-        implements CounterBasicController.View{
+public class CounterMasterScreen extends AbstractFragment<CounterMasterController>
+        implements CounterMasterController.View{
 
     @Inject
     private NavigationManager navigationManager;
@@ -30,8 +30,8 @@ public class CounterBasicView extends AbstractFragment<CounterBasicController>
     private Button buttonShowAdvancedView;
 
     @Override
-    protected Class<CounterBasicController> getControllerClass() {
-        return CounterBasicController.class;
+    protected Class<CounterMasterController> getControllerClass() {
+        return CounterMasterController.class;
     }
 
     /**
@@ -90,7 +90,7 @@ public class CounterBasicView extends AbstractFragment<CounterBasicController>
         });
 
         if (reason.isFirstTime()) {
-            CounterBasicSubView f = new CounterBasicSubView();
+            CounterMasterInsideView f = new CounterMasterInsideView();
 
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();

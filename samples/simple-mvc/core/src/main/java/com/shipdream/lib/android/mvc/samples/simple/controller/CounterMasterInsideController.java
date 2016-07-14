@@ -4,7 +4,7 @@ import com.shipdream.lib.android.mvc.samples.simple.manager.CounterManager;
 
 import javax.inject.Inject;
 
-public class CounterBasicSubController extends AbstractController {
+public class CounterMasterInsideController extends AbstractController {
     @Override
     public Class modelType() {
         return null;
