@@ -1,19 +1,14 @@
 package com.shipdream.lib.android.mvc.samples.simple.controller;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
-import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.samples.simple.manager.CounterManager;
 
 import javax.inject.Inject;
 
-public class CounterDetailController extends AbstractController<Void, CounterDetailController.View> {
+public class CounterDetailController extends AbstractController {
     @Override
     public Class modelType() {
         return null;
-    }
-
-    public interface View extends UiView{
-        void onCounterUpdated(String count);
     }
 
     @Inject
@@ -41,6 +36,6 @@ public class CounterDetailController extends AbstractController<Void, CounterDet
     }
 
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {
-        view.onCounterUpdated(String.valueOf(event.getCount()));
+        view.update();
     }
 }

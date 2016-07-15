@@ -88,7 +88,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/fragment_a_buttonShowAdvancedViewExplanation"
+        android:layout_above="@+id/fragment_a_buttonShowDetailScreenExplanation"
         android:layout_centerHorizontal="true"
         android:gravity="center">
 
@@ -130,16 +130,16 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/fragment_a_buttonShowAdvancedViewExplanation"
+        android:id="@+id/fragment_a_buttonShowDetailScreenExplanation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/fragment_a_buttonShowAdvancedView"
+        android:layout_above="@+id/fragment_a_buttonShowDetailScreen"
         android:padding="10dp"
         android:text="Go to AdvancedView in new fragment that keep count value in sync"
         android:textSize="18sp" />
 
     <Button
-        android:id="@+id/fragment_a_buttonShowAdvancedView"
+        android:id="@+id/fragment_a_buttonShowDetailScreen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

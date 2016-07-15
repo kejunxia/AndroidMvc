@@ -26,6 +26,11 @@ import java.lang.reflect.Modifier;
  */
 public class MvcComponent extends Component {
     private Logger logger = LoggerFactory.getLogger(getClass());
+
+    /**
+     * Name of the component
+     * @param name
+     */
     public MvcComponent(String name) {
         super(name);
     }

@@ -37,18 +37,44 @@ import java.util.Set;
 import javax.inject.Qualifier;
 
 /**
- * //TODO: document, component has a default scope instances
- * {@link Component} that registers providers manually.
+ * <p>
+ * A component is used to group {@link Provider}s. A {@link Provider} can be {@link #register(Provider)}ed
+ * to a component to provide injection candidate. Component can also {@link #register(Object)}
+ * multiple providers by methods provider annotated by {@link Provides} in the object.
+ * </p>
+ *
+ * <p>
+ * A component can have a cache to manage created injection candidates. If the cache is enabled,
+ * the injection candidates are singleton in the scope of the component. When the cache is disabled,
+ * the component will always create new instances from its managed providers.
+ * </p>
+ *
+ * <p>
+ * Components can be group in a tree structure by attaching a child component to a parent component.
+ * In a component tree, injection candidates are unique by the combination of class type and qualifier.
+ * When duplicate providers for the same class type and qualifier are found, a {@link ProviderConflictException}
+ * will be thrown.
+ * </p>
+ *
+ * <p>
+ * To override a provider to the graph the component or its component tree is attaching to, use
+ * {@link #attach(Component, boolean)} with true as the second parameter. Then the last attached
+ * component will a conflicting class type and qualifier will be used until it's {@link #detach(Component)}
+ * </p>
  */
 public class Component {
-    //TODO: document
+    /**
+     * Thrown when detach a component from a parent it doesn't belong to.
+     */
     public static class MismatchDetachException extends PokeException {
         public MismatchDetachException(String message) {
             super(message);
         }
     }
 
-    //TODO document
+    /**
+     * Thrown when assigning parent to an attached component already has a parent component.
+     */
     public static class MultiParentException extends PokeException {
         public MultiParentException(String message) {
             super(message);
@@ -64,18 +90,42 @@ public class Component {
     private Component parentComponent;
     private List<Component> childrenComponents;
 
+    /**
+     * Construct an unnamed component with a cache. See {@link #Component(String, boolean)}
+     */
     public Component() {
         this(null, true);
     }
 
+    /**
+     * Construct a component with instance cache and the given name. See {@link #Component(String, boolean)}
+     * @param name The name of the component.
+     */
     public Component(String name) {
         this(name, true);
     }
 
+    /**
+     * Construct a component without a name.
+     * @param enableCache indicates whether this component cache created instances. When the component
+     *                    has a cache, all instances created by the providers managed by this component
+     *                    will be singleton until the component is destroyed or replaced in the
+     *                    component tree. Otherwise, the component always generates new instances
+     *                    for injections.
+     */
     public Component(boolean enableCache) {
         this(null, enableCache);
     }
 
+    /**
+     * Construct a component.
+     * @param name name of the component used to identify the component.
+     * @param enableCache indicates whether this component cache created instances. When the component
+     *                    has a cache, all instances created by the providers managed by this component
+     *                    will be singleton until the component is destroyed or replaced in the
+     *                    component tree. Otherwise, the component always generates new instances
+     *                    for injections.
+     */
     public Component(String name, boolean enableCache) {
         if (enableCache) {
             scopeCache = new ScopeCache();
@@ -85,6 +135,9 @@ public class Component {
         this.name = name;
     }
 
+    /**
+     * @return The name of the component
+     */
     public String getName() {
         return name;
     }
@@ -97,10 +150,16 @@ public class Component {
         }
     }
 
+    /**
+     * @return The parent component
+     */
     public Component getParent() {
         return parentComponent;
     }
 
+    /**
+     * @return The list of the children components
+     */
     public List<Component> getChildrenComponents() {
         return childrenComponents;
     }
@@ -168,10 +227,22 @@ public class Component {
     }
 
     /**
+     * <p>
      * Register component where methods annotated by {@link Provides} will be registered as
      * injection providers. When allowOverride = false, it allows to register overriding
      * binding against the same type and {@link Qualifier} and <b>last wins</b>, otherwise
      * {@link ProviderConflictException} will be thrown.
+     * </p>
+     *
+     * <pre>
+     *     component.register(new Object(){
+                @ Provides
+                @ EventBusV
+                public EventBus createEventBusV() {
+                    return eventBusV;
+                }
+            });
+     * </pre>
      *
      * @param providerHolder The object with methods marked by {@link Provides} to provide injectable
      *                       instances
@@ -224,6 +295,14 @@ public class Component {
         return this;
     }
 
+    /**
+     * Attach a component to this component. The root of the component tree this component belongs
+     * to will be able to find all providers registered to the child component.
+     * @param childComponent The component to be added as a child component
+     * @throws MultiParentException Thrown when the child component has had a parent already.
+     * @throws ProviderConflictException Thrown when the child component has provider has been
+     * registered to component tree this component belongs to.
+     */
     public void attach(@NotNull Component childComponent) throws MultiParentException, ProviderConflictException {
         attach(childComponent, false);
     }
@@ -322,6 +401,13 @@ public class Component {
         }
     }
 
+    /**
+     * Detach the child component from this component. Once a component is detached the component
+     * tree won't use this component to locate suitable injection candidates and all its cached
+     * instances will be removed
+     * @param childComponent The child component to detach
+     * @throws MismatchDetachException thrown when the child component was not attached to this component
+     */
     public void detach(@NotNull Component childComponent) throws MismatchDetachException {
         if (childComponent.parentComponent != this) {
             String msg = String.format("The child component(%s) doesn't belong to component(%s)",

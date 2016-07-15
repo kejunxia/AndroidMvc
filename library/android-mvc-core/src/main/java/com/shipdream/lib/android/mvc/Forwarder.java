@@ -5,8 +5,10 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Configuration of forwarding navigation by setting
  * <ul>
- *     <li>{@link #setInterim(boolean)}</li>
- *     <li>{@link #clearTo(String)}</li>
+ *     <li>{@link #setInterim(boolean)} indicating whether the location currently navigating to will
+ *     be an interim in the navigation history, which means when {@link Navigator#back()} is called
+ *     the interim locations will be skipped.</li>
+ *     <li>{@link #clearTo(Class)} </li>
  *     <li>{@link #clearAll()}</li>
  * </ul>
  */

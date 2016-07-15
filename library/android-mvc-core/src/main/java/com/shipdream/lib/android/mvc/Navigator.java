@@ -297,9 +297,21 @@ public class Navigator {
     }
 
     /**
-     * Navigates one step back. If current location is null it doesn't take any effect otherwise
+     * <p>
+     * Navigates one step back. However, if the previous location is an interim location, it keeps
+     * seeking backward to the first non-interim navigation location. Interim locations are set when
+     * forward navigate to them by
+     *
+     * <pre>
+     * navigationManager.navigate(this).to(SomeController.class, new Forwarder().setInterim(true));
+     * </pre>
+     * </p>
+     *
+     * <p>
+     * If current location is null it doesn't take any effect otherwise
      * raises a {@link NavigationManager.Event.OnLocationBack} event when there is a previous
      * location.
+     * </p>
      */
     public void back() {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();

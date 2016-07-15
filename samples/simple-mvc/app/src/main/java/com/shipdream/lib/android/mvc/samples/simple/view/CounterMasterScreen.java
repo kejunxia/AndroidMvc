@@ -27,7 +27,7 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
     private ImageView ipRefresh;
     private Button increment;
     private Button decrement;
-    private Button buttonShowAdvancedView;
+    private Button buttonGoToDetailScreen;
 
     @Override
     protected Class<CounterMasterController> getControllerClass() {
@@ -61,7 +61,7 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
         ipRefresh = (ImageView) view.findViewById(R.id.fragment_a_ipRefresh);
         increment = (Button) view.findViewById(R.id.fragment_a_buttonIncrement);
         decrement = (Button) view.findViewById(R.id.fragment_a_buttonDecrement);
-        buttonShowAdvancedView = (Button) view.findViewById(R.id.fragment_a_buttonShowAdvancedView);
+        buttonGoToDetailScreen = (Button) view.findViewById(R.id.fragment_a_buttonShowDetailScreen);
 
         increment.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,15 +77,11 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
             }
         });
 
-        buttonShowAdvancedView.setOnClickListener(new View.OnClickListener() {
+        buttonGoToDetailScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Use counterController to manage navigation to make navigation testable
                 controller.goToDetailView(v);
-                //Or we can use NavigationManager directly though it's harder to unit test on
-                //controller level.
-                //example:
-                //navigationManager.navigateTo(v, "LocationB");
             }
         });
 

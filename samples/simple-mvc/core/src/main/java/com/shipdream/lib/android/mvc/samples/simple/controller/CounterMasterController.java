@@ -19,6 +19,9 @@ public class CounterMasterController extends AbstractController<CounterMasterCon
         return Model.class;
     }
 
+    /**
+     * The view model of the CounterMasterScreen
+     */
     public static class Model {
         private String count;
 
@@ -87,7 +90,12 @@ public class CounterMasterController extends AbstractController<CounterMasterCon
         });
     }
 
+    /**
+     * Go to detail view.
+     * @param sender
+     */
     public void goToDetailView(Object sender) {
+        //Navigate to CounterDetailController which is paired by CounterDetailScreen
         navigationManager.navigate(sender).to(CounterDetailController.class);
     }
 

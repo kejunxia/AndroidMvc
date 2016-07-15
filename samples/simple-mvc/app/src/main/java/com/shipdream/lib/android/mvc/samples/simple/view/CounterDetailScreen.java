@@ -29,8 +29,7 @@ import com.shipdream.lib.android.mvc.samples.simple.R;
 import com.shipdream.lib.android.mvc.samples.simple.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.view.service.CountService;
 
-public class CounterDetailScreen extends AbstractFragment<CounterDetailController>
-        implements CounterDetailController.View{
+public class CounterDetailScreen extends AbstractFragment<CounterDetailController> {
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;
@@ -130,8 +129,6 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
                 getActivity().startService(intent);
             }
         });
-
-        updateCountDisplay(controller.getCount());
     }
 
     @Override
@@ -147,7 +144,12 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
 
     @Override
     public void update() {
-        updateCountDisplay(controller.getCount());
+        /**
+         * Controller will call update() whenever the controller thinks the state of the screen
+         * changes. So just bind the state of the controller to this screen then the screen is always
+         * reflecting the latest state/model of the controller
+         */
+        display.setText(controller.getCount());
     }
 
     private void startContinuousIncrement() {
@@ -174,12 +176,4 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
         }
     }
 
-    @Override
-    public void onCounterUpdated(String count) {
-        updateCountDisplay(count);
-    }
-
-    private void updateCountDisplay(String count) {
-        display.setText(count);
-    }
 }
