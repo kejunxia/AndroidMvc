@@ -14,15 +14,22 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc'
-include ':library:android-mvc-test'
-include ':library:android-mvc-core'
-include ':library:poke'
+package com.shipdream.lib.android.mvc.samples.simple.mvp.controller;
 
-include ':extension:service-core'
-include ':extension:service-mediastore'
+import com.shipdream.lib.android.mvc.NavigationManager;
 
-include 'samples:benchmark'
+import javax.inject.Inject;
 
-include 'samples:simple-mvp:app'
-include 'samples:simple-mvp:core'
+public class AppDelegateController extends AbstractController {
+    @Inject
+    private NavigationManager navigationManager;
+
+    public void startApp(Object sender) {
+        navigationManager.navigate(sender).to(CounterMasterController.class);
+    }
+
+    @Override
+    public Class modelType() {
+        return null;
+    }
+}

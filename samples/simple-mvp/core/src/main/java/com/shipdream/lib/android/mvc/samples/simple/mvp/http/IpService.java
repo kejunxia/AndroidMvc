@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc'
-include ':library:android-mvc-test'
-include ':library:android-mvc-core'
-include ':library:poke'
+package com.shipdream.lib.android.mvc.samples.simple.mvp.http;
 
-include ':extension:service-core'
-include ':extension:service-mediastore'
+import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
 
-include 'samples:benchmark'
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 
-include 'samples:simple-mvp:app'
-include 'samples:simple-mvp:core'
+public interface IpService {
+    //https://api.ipify.org/?format=json
+    @GET("/")
+    Call<IpPayload> getIp(@Query("format") String format);
+}
