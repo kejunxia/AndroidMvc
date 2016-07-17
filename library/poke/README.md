@@ -5,15 +5,37 @@
 
 Why reinvent the wheel?
 * The main reason is to incorporate with [AndroidMvc](http://kejunxia.github.io/AndroidMvc/) framework, it needs to do **reference count**. Since [AndroidMvc](http://kejunxia.github.io/AndroidMvc/) automatically saves and restores state of controllers, when a controller is not used its state won't need to be managed any more. So [AndroidMvc](http://kejunxia.github.io/AndroidMvc/) needs to know when a controller is not referenced.
-* Another reason: Dagger requires to register implementations manually to satisfy all injectable objects. The reason behind this is that Android apps need to scan through the whole dex file to find out implementations. This is expensive and slows down the startup of Android apps. To avoid scanning the whole dex file, manual registration is more efficient for runtime.
- 
-  But it is a little tedious. To find the balance between simpler code and runtime performance, **Poke** can use naming convention to automatically locate implementations. So we don't need to register implementations one by one in **real** application. However, **Poke** still allows registering implementation manually. This is helpful either for dynamical replacement of implementations or mocking injectable dependencies in unit tests.
+* Another reason: In Dagger, a lot of boiler plate code still needs to be done. This definitely minimized run time overhead for injection but there are just two much codes. And you need to remember to declare you injection. It's almost like writting a setter or inject method for each injectable class and then we need to mannually set or inject objects.
+
+To find the balance between simpler code and runtime performance, **Poke** can use naming convention to automatically locate implementations. So we don't need to repeatedly declare implementations by writing in **real** application with. However, **Poke** also allows registering implementation manually. This is helpful either for dynamical replacement of implementations or mocking injectable dependencies in unit tests.
 
 
 ## How to inject
-As mentioned, Poke allows bind the contract and its implementations automatically and manually. Let's have a look how to achieve them with the examples below.
+In tradition depencency injection libraries, they need to scan code for find injectable object's implementation candindates. But for Android, scanning code is exensive because all classes will be wrapped into dex file(s). To unpack dex files are costly.
+
+To avoid scanning but also avoid manual registering implementation candindates, Poke can bind the contract and its implementations automatically and also manually if needed. Let's have a look how to do it with the examples below.
+
 ### 1. Automatically locate implementation by naming convention
-By default, **Poke** is trying to locate implementations by naming convention. The rule is, to find the concrete class of an interface, it looks for the implementation class with the same as the interface but with a suffix "Impl" under the "internal" sub package which locates on the same level as the interface.
+By default, **Poke** is trying to locate implementations by naming convention. The rule is,
+
+- For **Concrete Class**. It just the class straight away. For example, you have a car class and a engine class. Just simpliy inject engine into a car class. Yes, private field is allowed.
+```java
+    public class Car {
+        @Inject
+        private Engine engine;
+
+        public void pullOutKey() {
+            engine.stop();
+        }
+    }
+
+    public class Engine {
+        public void stop() {
+            System.out.println("engine stopped");
+        }
+    }
+```
+- For **Interfaces or Abstract Classess**, the library will try to locate the concrete class automatically, it looks for the implementation class with the same as the interface but with a suffix "Impl" under the "internal" sub package which locates on the same level as the interface.
 
 For example, when we have an interface called Robot under package com.xyz. To let Poke find its implementation automatically, the concrete class should call Robot**Impl** and resides under com.xyz.**internal***. See the file structure below
 
@@ -23,7 +45,7 @@ For example, when we have an interface called Robot under package com.xyz. To le
     Robot.java
     --internal
       RobotImpl.java
-  
+
 ```
 
 Example to inject a Robot into a Factory
@@ -51,7 +73,7 @@ public class RobotImpl implements Robot {
 }
 ```
 
-Poke allows us to use any annotations to mark injectable class fields. Here we define an annotation called @MyInject. Of course the standard @Inject is also working. 
+Poke allows us to use any annotations to mark injectable class fields. Here we define an annotation called @MyInject. Of course the standard @Inject is also working.
 
 Not hard coding the annotation could help us handle different kinds of injection specifically. For example, @InjectView and @InjectController may need to do different things besides basic injection. How to spice up for different inject annoations is up to the implementation.
 
@@ -88,13 +110,13 @@ public class Main {
     public static void main(String[] args) {
         Factory factory = new Factory();
 
-        //Create an instance of SimpleGraph and make sure it's singleton for the entire app.
+        //Create an instance of MvcGraph and make sure it's singleton for the entire app.
         //Best place to instantiate is at the app's entry point
-        SimpleGraph graph = new SimpleGraph();
+        MvcGraph graph = new MvcGraph();
 
         //Inject dependencies into factory from graph. Graph will find RobotImpl as the implementation of Robot based on the naming convention mentioned above
         //Note we are using the custom annotation @MyInject here
-        graph.inject(factory, MyInject.class);		
+        graph.inject(factory, MyInject.class);
 
         //Now factory has its robot instance injected and ready to use
         factory.getRobot().work();  // Print "Assemble a car." in console
@@ -107,11 +129,11 @@ If automatic implementation binding is not enough, Poke also allows manually reg
 
 ##### 2.1. Direct registration the binding of interface and implementation class
 ```java
-SimpleGraph.register(Class<T>type, String implementationClassName)
+Graph.register(Class<T>type, String implementationClassName)
 ```
 Or
 ```java
-SimpleGraph.register(Class<T> type, Class<S extends T> implementationClass)
+Graph.register(Class<T> type, Class<S extends T> implementationClass)
 ```
 
 But as you can see non of the methods above including the naming convention solution doesn't allow us to config the instance to be injected. To target this issue, there is another more flexible way to register the binding between interface and its implementation.
