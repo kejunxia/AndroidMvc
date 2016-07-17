@@ -81,7 +81,7 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
             @Override
             public void onClick(View v) {
                 //Use counterController to manage navigation to make navigation testable
-                controller.goToDetailView(v);
+                controller.goToDetailScreen(v);
             }
         });
 

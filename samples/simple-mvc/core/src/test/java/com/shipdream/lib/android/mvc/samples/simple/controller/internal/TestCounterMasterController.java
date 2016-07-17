@@ -102,7 +102,7 @@ public class TestCounterMasterController extends BaseTest {
                 navigationManager.getModel().getCurrentLocation().getLocationId());
 
         //Act: navigate to DetailScreen
-        controller.goToDetailView(this);
+        controller.goToDetailScreen(this);
 
         //Verify: Current location should be at the view paired with CounterDetailController
         Assert.assertEquals(CounterDetailController.class.getName(),

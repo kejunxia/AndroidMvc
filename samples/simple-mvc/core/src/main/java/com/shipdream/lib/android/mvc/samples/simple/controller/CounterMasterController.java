@@ -94,7 +94,7 @@ public class CounterMasterController extends AbstractController<CounterMasterCon
      * Go to detail view.
      * @param sender
      */
-    public void goToDetailView(Object sender) {
+    public void goToDetailScreen(Object sender) {
         //Navigate to CounterDetailController which is paired by CounterDetailScreen
         navigationManager.navigate(sender).to(CounterDetailController.class);
     }
