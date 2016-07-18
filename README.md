@@ -6,17 +6,13 @@
 ## Features
 
   - Easy to implement MVC/MVP/MVVM pattern for Android development
-  - Enhanced Android life cycles - e.g. when view needs to refresh when being brought back to 
-  foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. 
-  Android mvc framework provides more granular life cycles
+  - Enhanced Android life cycles - e.g. when view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. Android mvc framework provides more granular life cycles
   - All fragment life cycles are mapped into controllers thus logic in life cycles are testable on JVM
-  - Easy unit test on JVM since controllers don't depend on any Android APIs
   - Easy navigation between pages. Navigation is done in controllers instead of views so navigation can be unit tested on JVM
+  - Easy unit test on JVM since controllers don't depend on any Android APIs
   - Built in event bus. Event bus also automatically guarantees post event view events on the UI thread
-  - Automatically save and restore instance state. You don't have to touch onSaveInstance and 
-  onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.
+  - Automatically save and restore instance state. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.
   - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
-
 
 ## Code quick glance
 
