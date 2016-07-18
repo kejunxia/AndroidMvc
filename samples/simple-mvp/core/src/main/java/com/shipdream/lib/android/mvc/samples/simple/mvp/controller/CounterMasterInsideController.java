@@ -21,6 +21,7 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 import javax.inject.Inject;
 
 public class CounterMasterInsideController extends AbstractController {
+
     @Override
     public Class modelType() {
         return null;
@@ -38,6 +39,9 @@ public class CounterMasterInsideController extends AbstractController {
     }
 
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {
-        view.update();
+        if (view != null) {
+            view.update();
+        }
     }
+
 }

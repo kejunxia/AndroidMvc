@@ -20,4 +20,12 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
+
+    <!-- ToolBar -->
+    <style name="ToolBarStyle" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@color/palette_white</item>
+        <item name="android:textColorSecondary">@color/palette_white87p</item>
+        <item name="actionMenuTextColor">@color/palette_white</item>
+    </style>
+
 </resources>

@@ -25,7 +25,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.samples.simple.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.service.CountService;
 

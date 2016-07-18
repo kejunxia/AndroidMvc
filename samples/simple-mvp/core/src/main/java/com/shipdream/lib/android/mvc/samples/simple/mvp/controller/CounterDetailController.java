@@ -17,11 +17,12 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.controller;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 
 import javax.inject.Inject;
 
-public class CounterDetailController extends AbstractController {
+public class CounterDetailController extends AbstractScreenController {
     @Override
     public Class modelType() {
         return null;
@@ -32,6 +33,12 @@ public class CounterDetailController extends AbstractController {
 
     @Inject
     private CounterManager counterManager;
+
+    @Override
+    public void onViewReady(Reason reason) {
+        super.onViewReady(reason);
+        view.update();
+    }
 
     public String getCount() {
         return String.valueOf(counterManager.getModel().getCount());

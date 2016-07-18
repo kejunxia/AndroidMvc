@@ -28,7 +28,7 @@ import javax.inject.Inject;
 
 import retrofit2.Response;
 
-public class CounterMasterController extends AbstractController<CounterMasterController.Model,
+public class CounterMasterController extends AbstractScreenController<CounterMasterController.Model,
         CounterMasterController.View> {
     @Override
     public Class<Model> modelType() {
@@ -121,7 +121,10 @@ public class CounterMasterController extends AbstractController<CounterMasterCon
      */
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {
         getModel().count = String.valueOf(event.getCount());
-        view.update();
+
+        if (view != null) {
+            view.update();
+        }
     }
 
 }

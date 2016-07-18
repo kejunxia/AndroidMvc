@@ -16,7 +16,8 @@
   -->
 
 <resources>
-    <string name="app_name">AndMvp-Simple</string>
-    <string name="title_master_screen">Master Screen</string>
-    <string name="title_detail_screen">Detail Screen</string>
+    <color name="colorPrimary">@color/palette_red_500</color>
+    <color name="colorPrimaryDark">@color/palette_red_700</color>
+    <color name="colorPrimaryLight">@color/palette_red_300</color>
+    <color name="colorAccent">@color/palette_orange_500</color>
 </resources>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright 2016 Kejun Xia
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<resources>
+    <color name="palette_white">#FFFFFF</color>
+    <color name="palette_white12p">#1FFFFFFF</color>
+    <color name="palette_white26p">#42FFFFFF</color>
+    <color name="palette_white54p">#8AFFFFFF</color>
+    <color name="palette_white87p">#DEFFFFFF</color>
+
+    <color name="palette_black">#000000</color>
+    <color name="palette_black12p">#1F000000</color>
+    <color name="palette_black26p">#42000000</color>
+    <color name="palette_black54p">#8A000000</color>
+    <color name="palette_black87p">#DE000000</color>
+
+    <color name="palette_green_50">#E8F5E9</color>
+    <color name="palette_green_100">#C8E6C9</color>
+    <color name="palette_green_200">#A5D6A7</color>
+    <color name="palette_green_300">#81C784</color>
+    <color name="palette_green_400">#66BB6A</color>
+    <color name="palette_green_500">#4CAF50</color>
+    <color name="palette_green_600">#43A047</color>
+    <color name="palette_green_700">#388E3C</color>
+    <color name="palette_green_800">#2E7D32</color>
+    <color name="palette_green_900">#1B5E20</color>
+    <color name="palette_green_a100">#B9F6CA</color>
+    <color name="palette_green_a200">#69F0AE</color>
+    <color name="palette_green_a400">#00E676</color>
+    <color name="palette_green_a700">#00C853</color>
+    <color name="palette_green26p">#424CAF50</color>
+    <color name="palette_green54p">#8A4CAF50</color>
+    <color name="palette_green87p">#DE4CAF50</color>
+
+    <color name="palette_blue_50">#E3F2FD</color>
+    <color name="palette_blue_100">#BBDEFB</color>
+    <color name="palette_blue_200">#90CAF9</color>
+    <color name="palette_blue_300">#64B5F6</color>
+    <color name="palette_blue_400">#42A5F5</color>
+    <color name="palette_blue_500">#2196F3</color>
+    <color name="palette_blue_600">#1E88E5</color>
+    <color name="palette_blue_700">#1976D2</color>
+    <color name="palette_blue_800">#1565C0</color>
+    <color name="palette_blue_900">#0D47A1</color>
+    <color name="palette_blue_a100">#82B1FF</color>
+    <color name="palette_blue_a200">#448AFF</color>
+    <color name="palette_blue_a400">#2979FF</color>
+    <color name="palette_blue_a700">#2962FF</color>
+    <color name="palette_blue26p">#422196F3</color>
+    <color name="palette_blue54p">#8A2196F3</color>
+    <color name="palette_blue87p">#DE2196F3</color>
+
+    <color name="palette_orange_50">#FFF3E0</color>
+    <color name="palette_orange_100">#FFE0B2</color>
+    <color name="palette_orange_200">#FFCC80</color>
+    <color name="palette_orange_300">#FFB74D</color>
+    <color name="palette_orange_400">#FFA726</color>
+    <color name="palette_orange_500">#FF9800</color>
+    <color name="palette_orange_600">#FB8C00</color>
+    <color name="palette_orange_700">#F57C00</color>
+    <color name="palette_orange_800">#EF6C00</color>
+    <color name="palette_orange_900">#E65100</color>
+    <color name="palette_orange_a100">#FFD180</color>
+    <color name="palette_orange_a200">#FFAB40</color>
+    <color name="palette_orange_a400">#FF9100</color>
+    <color name="palette_orange_a700">#FF6D00</color>
+
+    <color name="palette_red_50">#FFEBEE</color>
+    <color name="palette_red_100">#FFCDD2</color>
+    <color name="palette_red_200">#EF9A9A</color>
+    <color name="palette_red_300">#E57373</color>
+    <color name="palette_red_400">#EF5350</color>
+    <color name="palette_red_500">#F44336</color>
+    <color name="palette_red_600">#E53935</color>
+    <color name="palette_red_700">#D32F2F</color>
+    <color name="palette_red_800">#C62828</color>
+    <color name="palette_red_900">#B71C1C</color>
+    <color name="palette_red_a100">#FF8A80</color>
+    <color name="palette_red_a200">#FF5252</color>
+    <color name="palette_red_a400">#FF1744</color>
+    <color name="palette_red_a700">#D50000</color>
+
+    <color name="palette_grey_50">#FAFAFA</color>
+    <color name="palette_grey_100">#F5F5F5</color>
+    <color name="palette_grey_200">#EEEEEE</color>
+    <color name="palette_grey_300">#E0E0E0</color>
+    <color name="palette_grey_400">#BDBDBD</color>
+    <color name="palette_grey_500">#9E9E9E</color>
+    <color name="palette_grey_600">#757575</color>
+    <color name="palette_grey_700">#616161</color>
+    <color name="palette_grey_800">#424242</color>
+    <color name="palette_grey_900">#212121</color>
+    <color name="palette_grey12p">#1F9E9E9E</color>
+    <color name="palette_grey26p">#429E9E9E</color>
+    <color name="palette_grey54p">#8A9E9E9E</color>
+    <color name="palette_grey87p">#DE9E9E9E</color>
+</resources>

@@ -21,7 +21,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.samples.simple.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterMasterInsideController;
 
 public class CounterMasterInsideView extends AbstractFragment<CounterMasterInsideController> {
