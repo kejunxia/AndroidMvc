@@ -23,6 +23,33 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 import javax.inject.Inject;
 
 public class CounterDetailController extends AbstractScreenController {
+    private class ContinuousCounter implements Runnable {
+        private final boolean incrementing;
+        private boolean canceled = false;
+        private static final long INTERVAL = 200;
+
+        public ContinuousCounter(boolean incrementing) {
+            this.incrementing = incrementing;
+        }
+
+        @Override
+        public void run() {
+            if (!canceled) {
+                if (incrementing) {
+                    increment(this);
+                } else {
+                    decrement(this);
+                }
+
+                uiThreadRunner.postDelayed(this, INTERVAL);
+            }
+        }
+
+        private void cancel() {
+            canceled = true;
+        }
+    }
+
     @Override
     public Class modelType() {
         return null;
@@ -34,10 +61,37 @@ public class CounterDetailController extends AbstractScreenController {
     @Inject
     private CounterManager counterManager;
 
+    private ContinuousCounter incrementer;
+    private ContinuousCounter decrementer;
+
     @Override
     public void onViewReady(Reason reason) {
         super.onViewReady(reason);
         view.update();
+    }
+
+    public void startContinuousIncrement() {
+        stopContinuousIncrement();
+        incrementer = new ContinuousCounter(true);
+        incrementer.run();
+    }
+
+    public void stopContinuousIncrement() {
+        if (incrementer != null) {
+            incrementer.cancel();
+        }
+    }
+
+    public void startContinuousDecrement() {
+        stopContinuousDecrement();
+        decrementer = new ContinuousCounter(false);
+        decrementer.run();
+    }
+
+    public void stopContinuousDecrement() {
+        if (decrementer != null) {
+            decrementer.cancel();
+        }
     }
 
     public String getCount() {
