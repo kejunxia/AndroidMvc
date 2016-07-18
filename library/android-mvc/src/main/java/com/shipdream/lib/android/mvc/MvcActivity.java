@@ -57,7 +57,6 @@ public abstract class MvcActivity extends AppCompatActivity {
 
         eventRegister.registerEventBuses();
 
-        setContentView(R.layout.activity_mvc);
         delegateFragment = (DelegateFragment) getSupportFragmentManager().findFragmentByTag(
                 getDelegateFragmentTag());
 
@@ -70,7 +69,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 throw new RuntimeException("Failed to instantiate delegate fragment.", e);
             }
             FragmentTransaction trans = getSupportFragmentManager().beginTransaction();
-            trans.replace(R.id.activity_mvc_root, delegateFragment, getDelegateFragmentTag());
+            trans.replace(android.R.id.content, delegateFragment, getDelegateFragmentTag());
             trans.commitNow();
         }
     }
