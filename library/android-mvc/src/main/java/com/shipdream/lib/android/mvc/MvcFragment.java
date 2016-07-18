@@ -285,7 +285,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      *                           rotation
      * @param reason             Indicates the {@link Reason} why the onViewReady is called.
      */
-    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
+    protected void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
     }
 
     @Override
@@ -326,22 +326,45 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
-     * Called when the fragment was the top most fragment and is about to be removed by
-     * fragment popping out from back stack
-     */
-    protected void onPopAway() {
-        if (controller != null) {
-            controller.onPopAway();
-        }
-    }
-
-    /**
+     * <p>
      * Called when this fragment is popped out from fragment back stack and will become the top most
-     * fragment. This callback will be invoked after {@link #onViewReady(View, Bundle, Reason)}.
+     * fragment and present to user. This callback will be invoked after {@link #onViewReady(View, Bundle, Reason)}.
+     * </p>
+     *
+     * <p>
+     * For example, current navigation history is A->B->C, when navigate back. The C will be popped
+     * out. At this moment,
+     * <ul>
+     *     <li>C.onPopAway() will be called</li>
+     *     <li>B.onPoppedOutToFront will be called</li>
+     * </ul>
+     * </p>
      */
     protected void onPoppedOutToFront() {
         if (controller != null) {
             controller.onPoppedOutToFront();
+        }
+    }
+
+    /**
+     *
+     * <p>
+     * Called when the fragment was the top most presenting fragment and will be removed from the
+     * fragment back stack and replaced by the fragment under it from the back stack.
+     * </p>
+     *
+     * <p>
+     * For example, current navigation history is A->B->C, when navigate back. The C will be popped
+     * out. At this moment,
+     * <ul>
+     *     <li>C.onPopAway() will be called</li>
+     *     <li>B.onPoppedOutToFront will be called</li>
+     * </ul>
+     * </p>
+     */
+    protected void onPopAway() {
+        if (controller != null) {
+            controller.onPopAway();
         }
     }
 
