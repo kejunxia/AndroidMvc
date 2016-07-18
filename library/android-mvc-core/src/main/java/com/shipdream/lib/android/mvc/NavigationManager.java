@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc;
 import com.shipdream.lib.android.mvc.event.ValueChangeEvent;
 
 /**
- * Controller to navigate among different fragments in the SAME activity.
+ * The manager to navigate among different screen fragments in the SAME activity.
  */
 public class NavigationManager extends Manager<NavigationManager.Model> {
     /**

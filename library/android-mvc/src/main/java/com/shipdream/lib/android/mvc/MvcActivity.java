@@ -98,18 +98,24 @@ public abstract class MvcActivity extends AppCompatActivity {
     }
 
     /**
-     * Map a controller class type to fragment class type. This is used for navigation. When the
-     * {@link Navigator} navigates to a controller, in view layer, it loads the mapped fragment.
+     * Specify the routing rule between a screen controller and the fragment class of the screen.
+     * When navigate with {@link NavigationManager}, this method will be used to find out which
+     * fragment as a screen will be launched in the activity.
      *
      * <p>
-     *     To make the mapping generic, consider to use {@link Class#forName(String)}.
+     * The mapping between controller class and fragment class can be listed one by one here. However,
+     * it needs to keep modifying this method to add new mapping when a new screen is add. To make
+     * the mapping generic, consider to use {@link Class#forName(String)}. In most cases, the
+     * performance reflection is negligible for navigation and this is one off invocation for every
+     * single navigation.
+     *
      * </p>
      *
      * @param controllerClass The controller class type
-     * @return The class type of the {@link MvcFragment} mapped to the controller
+     * @return The class type of the controller's corresponding {@link MvcFragment}
      */
     protected abstract Class<? extends MvcFragment> mapControllerFragment(
-            Class<? extends Controller> controllerClass);
+            Class<? extends FragmentController> controllerClass);
 
     /**
      * Provides the class type of the delegate fragment which is the root fragment holding fragments
@@ -440,7 +446,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             Class<? extends MvcFragment> fragmentClass = null;
             try {
                 fragmentClass = activity.mapControllerFragment(
-                        (Class<? extends Controller>) Class.forName(event.getCurrentValue().getLocationId()));
+                        (Class<? extends FragmentController>) Class.forName(event.getCurrentValue().getLocationId()));
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
