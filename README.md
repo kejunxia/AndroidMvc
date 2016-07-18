@@ -135,13 +135,13 @@ See the chart below as an example of how to separate the modules. Also check out
 ![Project structure](http://i.imgur.com/Nx1vtyz.png)
 
 ## Download
----
 Here is the the latest version number in jCenter
 
 [![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
 
 **Maven:**
 - lib **android-mvc**
+
     ```xml
     <dependency>
         <groupId>com.shipdream</groupId>
@@ -150,6 +150,7 @@ Here is the the latest version number in jCenter
     </dependency>
     ```
 - lib **android-mvc-core**
+
     ```xml
     <dependency>
         <groupId>com.shipdream</groupId>
@@ -160,10 +161,12 @@ Here is the the latest version number in jCenter
 
 **Gradle:**
 - lib **android-mvc**
+
     ```groovy
     compile "com.shipdream:android-mvc:[LatestVersion]"
     ```
 - lib **android-mvc-core**
+
     ```groovy
     compile "com.shipdream:android-mvc-core:[LatestVersion]"
     ```
