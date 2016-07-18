@@ -16,24 +16,44 @@
 
 package com.shipdream.lib.android.mvc.samples.simple.mvp;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcActivity;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.AppDelegateFragment;
 
 public class MainActivity extends MvcActivity {
+        //Manually map MvcFragment and FragmentController
+//    @Override
+//    protected Class<? extends MvcFragment> mapControllerFragment(
+//            Class<? extends Controller> controllerClass) {
+//        if (controllerClass == CounterMasterController.class) {
+//            return CounterMasterScreen.class;
+//        } else if (controllerClass == CounterDetailController.class) {
+//            return CounterDetailScreen.class;
+//        } else {
+//            return null;
+//        }
+//    }
+
     @Override
     protected Class<? extends MvcFragment> mapControllerFragment(
-            Class<? extends Controller> presenterClass) {
-        String presenterPkgName = presenterClass.getPackage().getName();
-        String viewPkgName = presenterPkgName.substring(0, presenterPkgName.lastIndexOf(".")) + ".view";
+            Class<? extends FragmentController> controllerClass) {
+        String controllerPackage = controllerClass.getPackage().getName();
+
+        //Find the classes of fragment under package .view and named in form of xxxScreen
+        //For example
+
+        //a.b.c.CounterMasterController -> a.b.c.view.CounterMasterScreen
+
+        String viewPkgName = controllerPackage.substring(0, controllerPackage.lastIndexOf(".")) + ".view";
         String fragmentClassName = viewPkgName + "."
-                + presenterClass.getSimpleName().replace("Controller", "Screen");
+                + controllerClass.getSimpleName().replace("Controller", "Screen");
+
         try {
             return (Class<? extends MvcFragment>) Class.forName(fragmentClassName);
         } catch (ClassNotFoundException e) {
             String msg = String.format("Fragment class(%s) for controller(%s) can not be found",
-                    fragmentClassName, presenterClass.getName());
+                    fragmentClassName, controllerClass.getName());
             throw new RuntimeException(msg, e);
         }
     }
