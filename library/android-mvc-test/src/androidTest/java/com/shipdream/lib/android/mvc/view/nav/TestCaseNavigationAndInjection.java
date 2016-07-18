@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -414,6 +414,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         navigateBackByFragment();
         //quit
         waitTest();
+        Thread.sleep(500);
         Assert.assertEquals(activity.fragAInjectCount, 0);
         Assert.assertEquals(activity.fragAReleaseCount, 1);
         Assert.assertEquals(activity.fragBInjectCount, 0);

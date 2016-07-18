@@ -494,22 +494,15 @@ public abstract class MvcActivity extends AppCompatActivity {
                 String fragmentTag = getFragmentTag(event.getCurrentValue().getLocationId());
                 transaction.replace(getContentLayoutResId(), currentFragment, fragmentTag);
 
-                boolean interim = false;
-                NavLocation lastLocation = event.getLastValue();
-                if (lastLocation != null && lastLocation.isInterim()) {
-                    interim = true;
-                }
-                if (!interim) {
-                    transaction.addToBackStack(fragmentTag);
-                    traverseFragmentAndSubFragments(lastFragment, new FragmentManipulator() {
-                        @Override
-                        public void manipulate(Fragment fragment) {
-                            if (fragment != null && fragment instanceof MvcFragment) {
-                                ((MvcFragment)fragment).onPushToBackStack();
-                            }
+                transaction.addToBackStack(fragmentTag);
+                traverseFragmentAndSubFragments(lastFragment, new FragmentManipulator() {
+                    @Override
+                    public void manipulate(Fragment fragment) {
+                        if (fragment != null && fragment instanceof MvcFragment) {
+                            ((MvcFragment)fragment).onPushToBackStack();
                         }
-                    });
-                }
+                    }
+                });
 
                 if (lastFragment != null) {
                     //Invoke OnPreTransactionCommit for fragment and its child fragments recursively
@@ -592,8 +585,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                             }
                         }
                     });
-
-
                 }
 
                 if (event.isFastRewind()) {

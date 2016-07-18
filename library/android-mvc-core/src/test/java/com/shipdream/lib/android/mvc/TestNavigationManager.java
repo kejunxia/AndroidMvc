@@ -324,7 +324,7 @@ public class TestNavigationManager extends BaseNavigationManagerTest {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         assertEquals(currentLoc.getLocationId(), locId4.getName());
 
-        Assert.assertFalse(event.getValue().isFastRewind());
+        Assert.assertTrue(event.getValue().isFastRewind());
     }
 
     @Test

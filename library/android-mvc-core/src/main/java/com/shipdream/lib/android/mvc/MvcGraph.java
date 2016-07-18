@@ -1,3 +1,19 @@
+/*
+ * Copyright 2016 Kejun Xia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.poke.Component;
@@ -79,9 +95,6 @@ public class MvcGraph {
      * @param monitor The monitor
      */
     public void registerMonitor(Graph.Monitor monitor) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot register mvc graph monitor from Non-UiThread");
-        }
         graph.registerMonitor(monitor);
     }
 
@@ -91,9 +104,6 @@ public class MvcGraph {
      * @param monitor The monitor
      */
     public void unregisterMonitor(Graph.Monitor monitor) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot unregister mvc graph monitor from Non-UiThread");
-        }
         graph.unregisterMonitor(monitor);
     }
 
@@ -101,9 +111,6 @@ public class MvcGraph {
      * Clear {@link Graph.Monitor} which will be called the graph is about to inject or release an object
      */
     public void clearMonitors() {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot clear mvc graph monitors from Non-UiThread");
-        }
         graph.clearMonitors();
     }
 
@@ -317,16 +324,10 @@ public class MvcGraph {
      * @param component The root {@link Component} of this graph.
      */
     public void setRootComponent(MvcComponent component) throws Graph.IllegalRootComponentException {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot set root component from Non-UiThread");
-        }
         graph.setRootComponent(component);
     }
 
     public MvcComponent getRootComponent() {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot getRootComponent() from Non-UiThread");
-        }
         return (MvcComponent) graph.getRootComponent();
     }
 
@@ -336,9 +337,6 @@ public class MvcGraph {
      * @param onProviderFreedListener The listener
      */
     public void registerDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot register dereference listener from Non-UiThread");
-        }
         graph.registerDereferencedListener(onProviderFreedListener);
     }
 
@@ -349,9 +347,6 @@ public class MvcGraph {
      * @param onProviderFreedListener The listener
      */
     public void unregisterDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot unregister dereference listener from Non-UiThread");
-        }
         graph.unregisterDereferencedListener(onProviderFreedListener);
     }
 
@@ -360,9 +355,6 @@ public class MvcGraph {
      * instance of an injected contract is freed.
      */
     public void clearDereferencedListeners() {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot clear dereference listeners from Non-UiThread");
-        }
         graph.clearDereferencedListeners();
     }
 }

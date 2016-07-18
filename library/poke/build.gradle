@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id "com.jfrog.bintray" version "1.4"
+    id "com.jfrog.bintray" version "1.7"
 }
 
 apply plugin: 'java'
@@ -103,6 +103,7 @@ bintray {
         apply plugin: 'java'
     }
     configurations = ['archives']
+    override = true //[Default: false] Whether to override version artifacts already published
     pkg {
         repo = "maven"
         name = "poke"

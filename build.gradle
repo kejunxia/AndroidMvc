@@ -74,14 +74,14 @@ ext {
     version = [
         major: 3,
         minor: 0,
-        patch : 0
+        patch : 1
     ]
     libGroup = 'com.shipdream'
     libVersion = "${version.major}.${version.minor}.${version.patch}"
     shouldPublish = false
 
     androidMinSdkVersion = 14
-    androidCompileSdkVersion = 23
+    androidCompileSdkVersion = 24
     androidBuildToolVersion = "23.0.3"
     supportLibVersion = "24.0.0"
     androidTargetSdkVersion = androidCompileSdkVersion

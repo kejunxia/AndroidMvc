@@ -297,9 +297,21 @@ public class Navigator {
     }
 
     /**
-     * Navigates one step back. If current location is null it doesn't take any effect otherwise
+     * <p>
+     * Navigates one step back. However, if the previous location is an interim location, it keeps
+     * seeking backward to the first non-interim navigation location. Interim locations are set when
+     * forward navigate to them by
+     *
+     * <pre>
+     * navigationManager.navigate(this).to(SomeController.class, new Forwarder().setInterim(true));
+     * </pre>
+     * </p>
+     *
+     * <p>
+     * If current location is null it doesn't take any effect otherwise
      * raises a {@link NavigationManager.Event.OnLocationBack} event when there is a previous
      * location.
+     * </p>
      */
     public void back() {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
@@ -309,14 +321,20 @@ public class Navigator {
         }
 
         NavLocation previousLoc = currentLoc.getPreviousLocation();
+
+        boolean needFastRewind = false;
         while (previousLoc != null && previousLoc.isInterim()) {
             previousLoc = previousLoc.getPreviousLocation();
+            needFastRewind = true;
         }
 
-        navigationManager.getModel().setCurrentLocation(previousLoc);
-
-        navigateEvent = new NavigationManager.Event.OnLocationBack(sender, currentLoc, previousLoc, false, this);
-        go();
+        if (needFastRewind) {
+            navigateBackToLoc(previousLoc == null ? null : previousLoc.getLocationId());
+        } else {
+            navigationManager.getModel().setCurrentLocation(previousLoc);
+            navigateEvent = new NavigationManager.Event.OnLocationBack(sender, currentLoc, previousLoc, false, this);
+            go();
+        }
     }
 
     /**
@@ -328,6 +346,11 @@ public class Navigator {
      * @param controllerClass the controller class type
      */
     public void back(Class<? extends Controller> controllerClass) {
+        String toLocationId = controllerClass == null ? null : controllerClass.getName();
+        navigateBackToLoc(toLocationId);
+    }
+
+    private void navigateBackToLoc(String toLocationId) {
         NavLocation currentLoc = navigationManager.getModel().getCurrentLocation();
         if (currentLoc == null) {
             navigationManager.logger.warn("Current location should never be null before navigating backwards.");
@@ -341,8 +364,6 @@ public class Navigator {
 
         boolean success = false;
         NavLocation previousLoc = currentLoc;
-
-        String toLocationId = controllerClass == null ? null : controllerClass.getName();
 
         if (toLocationId == null) {
             success = true;

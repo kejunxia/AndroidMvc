@@ -15,7 +15,7 @@
  */
 
 plugins {
-    id "com.jfrog.bintray" version "1.4"
+    id "com.jfrog.bintray" version "1.7"
 }
 
 apply plugin: 'java'

@@ -10,7 +10,7 @@ android:
     - build-tools-23.0.3
 
     # The SDK version used to compile your project
-    - android-23
+    - android-24
 
     # Additional components
     - extra-google-m2repository
@@ -31,7 +31,7 @@ android:
 script: "./gradlew build"
 
 jdk:
-  - oraclejdk7
+  - oraclejdk8
 
 env:
 - TERM=dumb

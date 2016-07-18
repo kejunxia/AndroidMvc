@@ -1,198 +1,169 @@
 # AndroidMvc Framework
 [![Build Status](https://travis-ci.org/kejunxia/AndroidMvc.svg?branch=ci-travis)](https://travis-ci.org/kejunxia/AndroidMvc)
 [![Coverage Status](https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg)](https://coveralls.io/r/kejunxia/AndroidMvc)
-[![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc)
+[![jCenter](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
 
-## Overview
-- **View**: Fragments that to caputre user interaction and reflect view model managed by controller. More broadyly it can be anything included in Android SDK including notification, activity, services etc that users can see and touch.
-- **Controller**: The abstraction of a view/fragment. Define methods to be consumered by the view and then fire events back to the view to notify it update its UI. So views and controllers are one to one relation. Every view has and only has one controller.
-- **Model**: Represents the state of view. Can be thought as ViewModel in MVVM pattern. Each controller has a model. So model-controller is one to one relation so does model-controller-view.
-- **Service**: Data access layer below controller. Provides interface for controllers/managers to access data from database/clound api/sharedPreferences etc. It hides details of data tansportation so it can be easiy swapped by different data source as well as easily mocked in unit tests.
-- **Manager**: What about controllers have shared logic? Break shared code out into managers. If managers need to access data. Inject services into managers.
+## Features
+
+  - Easy to implement MVC/MVP/MVVM pattern for Android development
+  - Enhanced Android life cycles - e.g. when view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. Android mvc framework provides more granular life cycles
+  - All fragment life cycles are mapped into controllers thus logic in life cycles are testable on JVM
+  - Easy navigation between pages. Navigation is done in controllers instead of views so navigation can be unit tested on JVM
+  - Easy unit test on JVM since controllers don't depend on any Android APIs
+  - Built in event bus. Event bus also automatically guarantees post event view events on the UI thread
+  - Automatically save and restore instance state. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.
+  - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
+  - Well tested - non-Android components are tested as the test coverage shown above (over 90%). For Android dependent module "android-mvc", it's tested by real emulator with [this UI test module](https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test), even with  "Don't Keep Activities" turned on in dev options to guarantee your app doesn't crash due to loss of instance state after it's killed by OS in the background!
+
+## Code quick glance
+
+Let's take a quick glance how to use the framework to **navigate** between screens first, more details will be discussed later.
+
+The sample code can be found in [Here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvc). 
+It is a simple counter app that has a master page and detail page. This 2 pages are represented by two fragments
+
+- CounterMasterScreen paired with CounterMasterController
+- CounterDetailScreen paired with CounterDetailController
+
+#### Controller
+In CounterMasterController, to navigate simply call
+```java
+public void goToDetailView(Object sender) {
+    //Navigate to CounterDetailController which is paired by CounterDetailScreen
+    navigationManager.navigate(sender).to(CounterDetailController.class);
+}
+```
+
+#### View
+In CounterMasterScreen call the navigation method wrapped by the controller
+```java
+buttonGoToDetailScreen.setOnClickListener(
+    new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            //Use counterController to manage navigation to make navigation testable
+            controller.goToDetailView(v);
+        }
+    });
+```
+
+In CounterDetailScreen
+```java
+@Override
+public void update() {
+    /**
+     * Controller will call update() whenever the controller thinks the state of the screen
+     * changes. So just bind the state of the controller to this screen then the screen is always
+     * reflecting the latest state/model of the controller
+     */
+    display.setText(controller.getCount());
+}
+```
+
+#### Unit test
+
+```java
+//Act: navigate to MasterScreen
+navigationManager.navigate(this).to(CounterMasterController.class);
+
+//Verify: location should be changed to MasterScreen
+Assert.assertEquals(CounterMasterController.class.getName(),
+        navigationManager.getModel().getCurrentLocation().getLocationId());
+
+//Act: navigate to DetailScreen
+controller.goToDetailScreen(this);
+
+//Verify: Current location should be at the view paired with CounterDetailController
+Assert.assertEquals(CounterDetailController.class.getName(),
+        navigationManager.getModel().getCurrentLocation().getLocationId());
+```
+
+
+## Division between Views and Controllers
+
+- **View**: Mainly fragments that bind user interactions to controllers such as tap, long press and etc. 
+Views reflect the model managed by their controllers.
+- **Controller**: Controllers expose methods to its view peer to capture user inputs. Once the state 
+of the controller changes, the controller needs to notify its view the update. Usually by calling 
+view.update() or post an event to its view.
+- **Model**: Represents the state of view and managed by the controller. It can be accessed by 
+controller.getModel(). But only read it to bind the model to views but don't modify the model from 
+views. Modification of model should only be done by controller.
+- **Manager**: What about controllers have shared logic? Break shared code out into managers. 
+If managers need to access data. Inject services into managers. Managers can be thought as partial 
+controllers serve multiple views through the controllers depending on them.
+- **Service**: Services are below controller used to access data such as SharedPreferences, 
+database, cloud API, files and etc. It provides abstraction for controllers or managers that can be 
+easily mocked in unit tests for controllers. They the data access layer can be replaced quickly. 
+For example, when some resources are removed from local data to remote data, just simply replace 
+the services implementation to access web api instead of database or sharedPreferences.
 
 See the illustration below
 
 ![AndroidMvc Layers](http://i.imgur.com/dfW8TLM.png)
 
-## Features
-  - Easy to apply MVC/MVVM pattern for Android development
-  - Event driven
-  - Easy testing for controllers running directly on JVM without Android dependency
-  - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
-  - Manage navigation by NavigationController which is also testable
-  - Improved Fragment life cycles - e.g. Differentiate why view is created: 1. Reason.isNewInstance(), 2. Reason.isFirstTime(), 3. Reason.isRestored(), 4 Reason.isRotated()
-  - Automatically save restore instance state
+## How to use
 
-## Samples
- - **[Counter](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
-         
-   See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)
-   
-   
- - **[Note](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)** - A more complex sample to make notes and query weathers with slide menu and also demonstrates how consume network resources ([public weather API](http://openweathermap.org/api)) and test the async task without depending on Android SDK on pure JVM.
+To enforce you don't write Android dependent functions into controllers to make unit tests harder, 
+you can separate your Android project into 2 modules:
 
-   See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/note) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)
+- **app**: View layer - a lean module depending on Android API only bind model to Android UI and 
+pass user interactions to core module. This module should include lib **"android-mvc"** explained 
+in download section below. This module includes:
+  - Activities, Fragments, Views, Android Services and anything as views depending on Android API
+  - Implementations of abstract contract defined in core module that depending on Android API. 
+  For example, a SharedPreferenceImpl that depends on Android context object.
+- **core**: Controller layer - also includes model, managers and services. It's a module doesn't 
+have any Android dependency so can be tested straight away on JVM. This module should include lib 
+**"android-mvc-core"** explained in download section below. This module includes:
+  - Controllers
+  - Models
+  - Managers - shared by controllers
+  - Data services. When a service needs Android API it can be defined as an interface and 
+  implemented in app module. For example, define an interface SharedPreference to save and get data 
+  from Android preference. So in core module, the interface can be easily to be mocked for 
+  controllers or managers to provide mocked shared preference in unit tests.
+
+However, separating the android project into two modules as above is not necessary. They for sure 
+can be merged into one module and just depend on lib **"android-mvc"**, which has already included 
+**"android-mvc-core"**. But in this way, you may accidentally write android dependent functions into 
+controller to make mocking harder in controller unit tests.
+
+See the chart below as an example of how to separate the modules. Also check out the 
+**[Sample Code](https://github.com/kejunxia/AndroidMvc/tree/SampleWithInterimFragment/samples/simple)**
+
+![Project structure](http://i.imgur.com/Nx1vtyz.png)
 
 ## Download
-The library is currently released to both
-* jCenter [![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
-* Maven Central [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc)
+---
+Here is the the latest version number in jCenter
+
+[![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
 
 **Maven:**
-```xml
-<dependency>
-    <groupId>com.shipdream</groupId>
-    <artifactId>android-mvc</artifactId>
-    <version>[LatestVersion]</version>
-</dependency>
-```
+- lib **android-mvc**
+    ```xml
+    <dependency>
+        <groupId>com.shipdream</groupId>
+        <artifactId>android-mvc</artifactId>
+        <version>[LatestVersion]</version>
+    </dependency>
+    ```
+- lib **android-mvc-core**
+    ```xml
+    <dependency>
+        <groupId>com.shipdream</groupId>
+        <artifactId>android-mvc-core</artifactId>
+        <version>[LatestVersion]</version>
+    </dependency>
+    ```
 
 **Gradle:**
-```groovy
-compile "com.shipdream:android-mvc:[LatestVersion]"
-```
-
-## Dependency injection with reference count
-[See the documentation of Poke](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
-
-#### Code snippets:
-- **View**:
-```java
-public class WeatherListFragment extends BaseFragment {
-    private Button buttonRefresh;
-    private ProgressDialog progressDialog;
-
-    @Inject
-    private WeatherController weatherController;
-    
-    @Override
-    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
-        super.onViewReady(view, savedInstanceState, reason);
-
-        buttonRefresh = (Button) view.findViewById(R.id.fragment_weather_list_buttonRefresh);
-        buttonRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                weatherController.updateAllCities(view);
-            }
-        });
-        
-        //Automatically update weathers of all cities on first creation.
-        if (reason.isFirstTime()) {
-            weatherController.updateAllCities(this);
-        }
-    }
-    
-    public void onEvent(WeatherController.EventC2V.OnWeathersUpdateBegan event) {
-        ...
-        progressDialog.show();
-    }
-    
-    public void onEvent(WeatherController.EventC2V.OnWeathersUpdated event) {
-        updateList();
-        if (progressDialog != null) {
-            progressDialog.dismiss();
-        }
-    }
-}
-```
-- **Controller**:
-```java
-public class WeatherControllerImpl extends BaseControllerImpl <WeatherModel> implements
-        WeatherController{
-    static final String PREF_KEY_WEATHER_CITIES = "PrefKey:Weather:Cities";
-    private Gson gson = new Gson();
-
-    @Inject
-    private WeatherService weatherService;
-
-    @Inject
-    private PreferenceService preferenceService;
-
-    @Override
-    public Class<WeatherModel> modelType() {
-        return WeatherModel.class;
-    }
-
-    @Override
-    public void updateAllCities(final Object sender) {
-        if(getModel().getWeatherWatchlist().size() == 0) {
-            String cities = gson.toJson(getModel().getWeatherWatchlist());
-            preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
-            postEvent2V(new EventC2V.OnWeathersUpdated(sender));
-        } else {
-            postEvent2V(new EventC2V.OnWeathersUpdateBegan(sender));
-
-            runAsyncTask(sender, new AsyncTask() {
-                @Override
-                public void execute() throws Exception {
-                    List<Integer> ids = new ArrayList<>();
-                    for(WeatherModel.City city : getModel().getWeatherWatchlist().keySet()) {
-                        ids.add(city.id());
-                    }
-                    for (WeatherInfo weatherInfo : weatherService.getWeathers(ids).getList()) {
-                        getModel().getWeatherWatchlist().put(findCityById(weatherInfo.getId()), weatherInfo);
-                    }
-
-                    String cities = gson.toJson(getModel().getWeatherWatchlist());
-                    preferenceService.edit().putString(PREF_KEY_WEATHER_CITIES, cities).apply();
-                    //Weather updated, post successful event
-                    postEvent2V(new EventC2V.OnWeathersUpdated(sender));
-                }
-            }, new AsyncExceptionHandler() {
-                @Override
-                public void handleException(Exception exception) {
-                    //Weather failed, post error event
-                    postEvent2V(new EventC2V.OnWeathersUpdateFailed(sender, exception));
-                }
-            });
-        }
-    }
-
-    private WeatherModel.City findCityById(int id) {
-        for(int i = 0; i < WeatherModel.City.values().length; i++) {
-            if (WeatherModel.City.values()[i].id() == id) {
-                return WeatherModel.City.values()[i];
-            }
-        }
-        return null;
-    }
-}
-```
-- **Service**:
-```java
-//Just a sample, you can use anything to access cloud api e.g. Retrofit
-public class WeatherServiceImpl implements WeatherService{
-    private final static String APPKEY = "123213123123213213123213";
-    private OkHttpClient httpClient;
-    private Gson gson;
-    private Logger logger = LoggerFactory.getLogger(getClass());
-
-    public WeatherServiceImpl() {
-        httpClient = new OkHttpClient();
-        gson = new Gson();
-    }
-
-    @Override
-    public WeatherListResponse getWeathers(List<Integer> ids) throws IOException {
-        String idsStr = "";
-        for (Integer id : ids) {
-            if (!idsStr.isEmpty()) {
-                idsStr += ", ";
-            }
-            idsStr += String.valueOf(id);
-        }
-        String url = String.format("http://api.openweathermap.org/data/2.5/group?id=%s&appId=%s",
-                URLEncoder.encode(idsStr, "UTF-8"), APPKEY);
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
-        Response resp = httpClient.newCall(request).execute();
-        String responseStr = resp.body().string();
-        logger.debug("Weather Service Response: {}", responseStr);
-        return gson.fromJson(responseStr, WeatherListResponse.class);
-    }
-}
-```
+- lib **android-mvc**
+    ```groovy
+    compile "com.shipdream:android-mvc:[LatestVersion]"
+    ```
+- lib **android-mvc-core**
+    ```groovy
+    compile "com.shipdream:android-mvc-core:[LatestVersion]"
+    ```

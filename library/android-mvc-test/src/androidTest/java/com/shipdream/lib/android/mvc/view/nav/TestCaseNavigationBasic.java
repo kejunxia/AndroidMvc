@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 Kejun Xia
+ * Copyright 2016 Kejun Xia
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,6 +229,8 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
     @Test
     public void testNavigateAmongFragments() throws Throwable {
+        waitTest();
+
         testNavigateToB();
 
         rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -477,7 +479,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
         navigateBackByFragment();
-        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     @Test
