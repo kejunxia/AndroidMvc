@@ -229,6 +229,8 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
     @Test
     public void testNavigateAmongFragments() throws Throwable {
+        waitTest();
+
         testNavigateToB();
 
         rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
@@ -477,7 +479,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
         onView(withText(NavFragmentD.class.getSimpleName())).check(matches(isDisplayed()));
 
         navigateBackByFragment();
-        onView(withText(NavFragmentA.class.getSimpleName())).check(matches(isDisplayed()));
+        onView(withText(NavFragmentB.class.getSimpleName())).check(matches(isDisplayed()));
     }
 
     @Test

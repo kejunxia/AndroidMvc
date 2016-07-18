@@ -235,24 +235,21 @@ public abstract class BaseTestCase<T extends TestActivity> extends ActivityInstr
 
         if (activity != null) {
             activity.finish();
+            activity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Mvc.graph().release(BaseTestCase.this);
+                    try {
+                        Mvc.graph().getRootComponent().getCache().clear();
+                        Mvc.graph().getRootComponent().detach(component);
+                    } catch (Component.MismatchDetachException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
         }
 
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                Mvc.graph().release(BaseTestCase.this);
-                try {
-                    Mvc.graph().getRootComponent().getCache().clear();
-                    Mvc.graph().getRootComponent().detach(component);
-                } catch (Component.MismatchDetachException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        });
         super.tearDown();
-
-        eventBusV.unregister(this);
     }
 
     protected void navTo(final Class cls) {

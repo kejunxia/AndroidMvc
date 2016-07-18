@@ -414,6 +414,7 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         navigateBackByFragment();
         //quit
         waitTest();
+        Thread.sleep(500);
         Assert.assertEquals(activity.fragAInjectCount, 0);
         Assert.assertEquals(activity.fragAReleaseCount, 1);
         Assert.assertEquals(activity.fragBInjectCount, 0);

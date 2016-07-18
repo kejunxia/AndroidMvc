@@ -20,7 +20,6 @@ import android.support.v4.app.FragmentManager;
 
 import com.shipdream.lib.android.mvc.BaseTestCase;
 import com.shipdream.lib.android.mvc.Forwarder;
-import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Preparer;
@@ -60,7 +59,7 @@ public class TestCaseNavigationFromController extends BaseTestCase<MvcTestActivi
     @Inject
     private NavigationManager navigationManager;
 
-    private Comp comp;
+    private Comp modudle;
     private DisposeCheckerE disposeCheckerEMock;
     private DisposeCheckerF disposeCheckerFMock;
     private DisposeCheckerG disposeCheckerGMock;
@@ -117,9 +116,10 @@ public class TestCaseNavigationFromController extends BaseTestCase<MvcTestActivi
                 return null;
             }
         }).when(disposeCheckerGMock).onDestroy();
-        comp = new Comp();
-        comp.testCaseNavigation = this;
-        Mvc.graph().getRootComponent().register(comp);
+        modudle = new Comp();
+        modudle.testCaseNavigation = this;
+
+        testComponent.register(modudle);
     }
 
     @Override
