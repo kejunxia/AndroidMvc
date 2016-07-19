@@ -138,16 +138,7 @@ public class TestCaseNavigationBasic extends BaseTestCase <MvcTestActivityNaviga
 
     @Override
     public void tearDown() throws Exception {
-        instrumentation.runOnMainSync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    Mvc.graph().getRootComponent().unregister(comp);
-                } catch (ProviderMissingException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        Mvc.graph().getRootComponent().unregister(comp);
         super.tearDown();
     }
 

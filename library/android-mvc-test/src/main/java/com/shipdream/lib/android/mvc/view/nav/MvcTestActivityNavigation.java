@@ -32,15 +32,6 @@ import com.shipdream.lib.android.mvc.view.injection.controller.ControllerD;
 import javax.inject.Inject;
 
 public class MvcTestActivityNavigation extends TestActivity {
-    int fragAInjectCount = 0;
-    int fragBInjectCount = 0;
-    int fragCInjectCount = 0;
-    int fragDInjectCount = 0;
-    int fragAReleaseCount = 0;
-    int fragBReleaseCount = 0;
-    int fragCReleaseCount = 0;
-    int fragDReleaseCount = 0;
-
     /**
      * Map a presenter class type to fragment class type. This is used for navigation. When the
      * {@link Navigator} navigates to a presenter, in view layer, it loads the mapped fragment.

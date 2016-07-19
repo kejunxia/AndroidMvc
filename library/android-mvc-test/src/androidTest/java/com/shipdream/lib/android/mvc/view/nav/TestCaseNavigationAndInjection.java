@@ -39,7 +39,52 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         super(MvcTestActivityNavigation.class);
     }
 
-    abstract class CountMonitor implements Graph.Monitor {
+    class CountMonitor implements Graph.Monitor {
+        boolean valid = true;
+
+        int fragAInjectCount = 0;
+        int fragBInjectCount = 0;
+        int fragCInjectCount = 0;
+        int fragDInjectCount = 0;
+        int fragAReleaseCount = 0;
+        int fragBReleaseCount = 0;
+        int fragCReleaseCount = 0;
+        int fragDReleaseCount = 0;
+
+        @Override
+        public void onInject(Object target) {
+            synchronized (this) {
+                if (valid) {
+                    if (target instanceof NavFragmentA) {
+                        fragAInjectCount++;
+                    } else if (target instanceof NavFragmentB) {
+                        fragBInjectCount++;
+                    } else if (target instanceof NavFragmentC) {
+                        fragCInjectCount++;
+                    } else if (target instanceof NavFragmentD) {
+                        fragDInjectCount++;
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onRelease(Object target) {
+
+            synchronized (this) {
+                if (valid) {
+                    if (target instanceof NavFragmentA) {
+                        fragAReleaseCount++;
+                    } else if (target instanceof NavFragmentB) {
+                        fragBReleaseCount++;
+                    } else if (target instanceof NavFragmentC) {
+                        fragCReleaseCount++;
+                    } else if (target instanceof NavFragmentD) {
+                        fragDReleaseCount++;
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -51,59 +96,20 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
     protected void prepareDependencies(MvcComponent testComponent) throws Exception {
         super.prepareDependencies(testComponent);
 
-        monitor = new CountMonitor() {
-            @Override
-            public void onInject(Object target) {
-                if (target instanceof NavFragment) {
-                    MvcTestActivityNavigation act = activity;
-                    if (activity == null) {
-                        act = ((MvcTestActivityNavigation) ((NavFragment) target).getActivity());
-                    }
-
-                    if (target instanceof NavFragmentA) {
-                        act.fragAInjectCount++;
-                    } else if (target instanceof NavFragmentB) {
-                        act.fragBInjectCount++;
-                    } else if (target instanceof NavFragmentC) {
-                        act.fragCInjectCount++;
-                    } else if (target instanceof NavFragmentD) {
-                        act.fragDInjectCount++;
-                    }
-                }
-            }
-
-            @Override
-            public void onRelease(Object target) {
-                if (target instanceof NavFragment) {
-                    MvcTestActivityNavigation act = activity;
-                    if (activity == null) {
-                        act = ((MvcTestActivityNavigation) ((NavFragment) target).getActivity());
-                    }
-
-                    if (target instanceof NavFragmentA) {
-                        act.fragAReleaseCount++;
-                    } else if (target instanceof NavFragmentB) {
-                        act.fragBReleaseCount++;
-                    } else if (target instanceof NavFragmentC) {
-                        act.fragCReleaseCount++;
-                    } else if (target instanceof NavFragmentD) {
-                        act.fragDReleaseCount++;
-                    }
-                }
-            }
-        };
-
+        monitor = new CountMonitor();
         Mvc.graph().registerMonitor(monitor);
     }
 
     @Override
     public void tearDown() throws Exception {
+        monitor.valid = false;
         Mvc.graph().unregisterMonitor(monitor);
         super.tearDown();
     }
 
     @Test
-    public void test_should_reinject_last_fragment_and_release_top_fragment_on_single_step_back_navigation() throws Throwable {
+    public void test__should_reinject_last_fragment_and_release_top_fragment_on_single_step_back_navigation() throws Throwable {
+        waitTest();
         prepareAndCheckStack(true);
         //->A->B->C->D
         FragmentManager fm = activity.getRootFragmentManager();
@@ -121,14 +127,15 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
         Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(ControllerB.class.getSimpleName()));
         Assert.assertTrue(fm.getBackStackEntryAt(2).getName().contains(ControllerC.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
@@ -142,14 +149,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertEquals(fm.getBackStackEntryCount(), 2);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
         Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(ControllerB.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
@@ -162,16 +169,42 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertNull(fm.getFragments().get(3));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
+
+        class WaitMonitor extends CountMonitor {
+            boolean released = false;
+
+            @Override
+            public void onRelease(Object target) {
+                super.onRelease(target);
+                if (target instanceof NavFragmentA) {
+                    released = true;
+                    synchronized (this) {
+                        notify();
+                    }
+                }
+            }
+        }
+        ;
+        WaitMonitor waitMonitor = new WaitMonitor();
+        Mvc.graph().registerMonitor(waitMonitor);
+
+        if (!waitMonitor.released) {
+            synchronized (waitMonitor) {
+                waitMonitor.wait(2000);
+            }
+        }
+
+        //quit
         navigateBackByFragment();
 
         Assert.assertEquals(fm.getFragments().size(), 4);
@@ -180,14 +213,17 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertNull(fm.getFragments().get(2));
         Assert.assertNull(fm.getFragments().get(3));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+
+        Assert.assertEquals(waitMonitor.fragAInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragAReleaseCount, 1);
+        Assert.assertEquals(waitMonitor.fragBInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragBReleaseCount, 0);
+        Assert.assertEquals(waitMonitor.fragCInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragCReleaseCount, 0);
+        Assert.assertEquals(waitMonitor.fragDInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragDReleaseCount, 0);
+
+        Mvc.graph().unregisterMonitor(waitMonitor);
     }
 
     @Test
@@ -211,14 +247,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertEquals(fm.getBackStackEntryCount(), 2);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
         Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(ControllerC.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 1);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 1);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
     }
 
     @Test
@@ -241,14 +277,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertNull(fm.getFragments().get(3));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerB.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 1);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 1);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
     }
 
     @Test
@@ -271,14 +307,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertEquals(fm.getBackStackEntryCount(), 2);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
         Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(ControllerB.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
     }
 
     @Test
@@ -300,14 +336,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertNull(fm.getFragments().get(3));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
     }
 
     @Test
@@ -337,14 +373,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         Assert.assertNull(fm.getFragments().get(5));
         Assert.assertEquals(fm.getBackStackEntryCount(), 1);
         Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 2);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 2);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
     }
 
     @Test
@@ -360,69 +396,94 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         resetGraphMonitorCounts();
         bringBack(pressHome());
         waitTest();
-        Thread.sleep(1000);
 
-        Assert.assertEquals(activity.fragAInjectCount, 1);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 1);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 1);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 1);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 1);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 1);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 1);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 1);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
         //->A->B->C
         waitTest();
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
         //->A->B
         waitTest();
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
         //->A
         waitTest();
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
-        navigateBackByFragment();
+
+        class WaitMonitor extends CountMonitor {
+            boolean released = false;
+
+            @Override
+            public void onRelease(Object target) {
+                super.onRelease(target);
+                if (target instanceof NavFragmentA) {
+                    released = true;
+                    synchronized (this) {
+                        notify();
+                    }
+                }
+            }
+        }
+        ;
+        WaitMonitor waitMonitor = new WaitMonitor();
+        Mvc.graph().registerMonitor(waitMonitor);
+
+        if (!waitMonitor.released) {
+            synchronized (waitMonitor) {
+                waitMonitor.wait(2000);
+            }
+        }
+
         //quit
-        waitTest();
-        Thread.sleep(500);
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        navigateBackByFragment();
+
+        Assert.assertEquals(waitMonitor.fragAInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragAReleaseCount, 1);
+        Assert.assertEquals(waitMonitor.fragBInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragBReleaseCount, 0);
+        Assert.assertEquals(waitMonitor.fragCInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragCReleaseCount, 0);
+        Assert.assertEquals(waitMonitor.fragDInjectCount, 0);
+        Assert.assertEquals(waitMonitor.fragDReleaseCount, 0);
+
+        Mvc.graph().unregisterMonitor(waitMonitor);
     }
 
     @Test
@@ -440,28 +501,28 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         waitTest();
         Thread.sleep(1000);
 
-        Assert.assertEquals(activity.fragAInjectCount, 1);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 1);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 1);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 1);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 1);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 1);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 1);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 1);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
         navigationManager.navigate(this).back(null);
         Thread.sleep(800);
         //->A
         waitTest();
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
@@ -469,14 +530,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         waitTest();
         Thread.sleep(500);
 
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
     }
 
     @Test
@@ -493,67 +554,67 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         bringBack(pressHome());
         Thread.sleep(1000);
 
-        Assert.assertEquals(activity.fragAInjectCount, 1);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 1);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 1);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 1);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 1);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 1);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 1);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 1);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
         navTo(ControllerA.class, new Forwarder().clearTo(ControllerB.class));
         //->A->B->A
 
-        Assert.assertEquals(activity.fragAInjectCount, 1);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 1);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 1);
+        Assert.assertEquals(monitor.fragAInjectCount, 1);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 1);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 1);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
         //->A->B
         waitTest();
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
         //->A
         waitTest();
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 0);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 1);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 0);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 1);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
 
         resetGraphMonitorCounts();
         navigateBackByFragment();
         //quit
         waitTest();
         Thread.sleep(200);
-        Assert.assertEquals(activity.fragAInjectCount, 0);
-        Assert.assertEquals(activity.fragAReleaseCount, 1);
-        Assert.assertEquals(activity.fragBInjectCount, 0);
-        Assert.assertEquals(activity.fragBReleaseCount, 0);
-        Assert.assertEquals(activity.fragCInjectCount, 0);
-        Assert.assertEquals(activity.fragCReleaseCount, 0);
-        Assert.assertEquals(activity.fragDInjectCount, 0);
-        Assert.assertEquals(activity.fragDReleaseCount, 0);
+        Assert.assertEquals(monitor.fragAInjectCount, 0);
+        Assert.assertEquals(monitor.fragAReleaseCount, 1);
+        Assert.assertEquals(monitor.fragBInjectCount, 0);
+        Assert.assertEquals(monitor.fragBReleaseCount, 0);
+        Assert.assertEquals(monitor.fragCInjectCount, 0);
+        Assert.assertEquals(monitor.fragCReleaseCount, 0);
+        Assert.assertEquals(monitor.fragDInjectCount, 0);
+        Assert.assertEquals(monitor.fragDReleaseCount, 0);
     }
 
     private void prepareAndCheckStack() throws InterruptedException {
@@ -563,14 +624,14 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
     private void prepareAndCheckStack(boolean check) throws InterruptedException {
         if (check) {
             //The activity will navigate to fragment a on launch
-            Assert.assertEquals(activity.fragAInjectCount, 0);
-            Assert.assertEquals(activity.fragAReleaseCount, 0);
-            Assert.assertEquals(activity.fragBInjectCount, 0);
-            Assert.assertEquals(activity.fragBReleaseCount, 0);
-            Assert.assertEquals(activity.fragCInjectCount, 0);
-            Assert.assertEquals(activity.fragCReleaseCount, 0);
-            Assert.assertEquals(activity.fragDInjectCount, 0);
-            Assert.assertEquals(activity.fragDReleaseCount, 0);
+            Assert.assertEquals(monitor.fragAInjectCount, 0);
+            Assert.assertEquals(monitor.fragAReleaseCount, 0);
+            Assert.assertEquals(monitor.fragBInjectCount, 0);
+            Assert.assertEquals(monitor.fragBReleaseCount, 0);
+            Assert.assertEquals(monitor.fragCInjectCount, 0);
+            Assert.assertEquals(monitor.fragCReleaseCount, 0);
+            Assert.assertEquals(monitor.fragDInjectCount, 0);
+            Assert.assertEquals(monitor.fragDReleaseCount, 0);
         }
 
         FragmentManager fm = activity.getRootFragmentManager();
@@ -585,8 +646,8 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
             Assert.assertEquals(fm.getBackStackEntryCount(), 1);
             Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
 
-            Assert.assertEquals(activity.fragAInjectCount, 1);
-            Assert.assertEquals(activity.fragAReleaseCount, 0);
+            Assert.assertEquals(monitor.fragAInjectCount, 1);
+            Assert.assertEquals(monitor.fragAReleaseCount, 0);
         }
 
         navTo(ControllerB.class);
@@ -599,10 +660,10 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
             Assert.assertEquals(fm.getBackStackEntryCount(), 2);
             Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
             Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(ControllerB.class.getSimpleName()));
-            Assert.assertEquals(activity.fragAInjectCount, 1);
-            Assert.assertEquals(activity.fragAReleaseCount, 0);
-            Assert.assertEquals(activity.fragBInjectCount, 1);
-            Assert.assertEquals(activity.fragBReleaseCount, 0);
+            Assert.assertEquals(monitor.fragAInjectCount, 1);
+            Assert.assertEquals(monitor.fragAReleaseCount, 0);
+            Assert.assertEquals(monitor.fragBInjectCount, 1);
+            Assert.assertEquals(monitor.fragBReleaseCount, 0);
         }
 
         navTo(ControllerC.class);
@@ -617,12 +678,12 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
             Assert.assertTrue(fm.getBackStackEntryAt(0).getName().contains(ControllerA.class.getSimpleName()));
             Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(ControllerB.class.getSimpleName()));
             Assert.assertTrue(fm.getBackStackEntryAt(2).getName().contains(ControllerC.class.getSimpleName()));
-            Assert.assertEquals(activity.fragAInjectCount, 1);
-            Assert.assertEquals(activity.fragAReleaseCount, 0);
-            Assert.assertEquals(activity.fragBInjectCount, 1);
-            Assert.assertEquals(activity.fragBReleaseCount, 0);
-            Assert.assertEquals(activity.fragCInjectCount, 1);
-            Assert.assertEquals(activity.fragCReleaseCount, 0);
+            Assert.assertEquals(monitor.fragAInjectCount, 1);
+            Assert.assertEquals(monitor.fragAReleaseCount, 0);
+            Assert.assertEquals(monitor.fragBInjectCount, 1);
+            Assert.assertEquals(monitor.fragBReleaseCount, 0);
+            Assert.assertEquals(monitor.fragCInjectCount, 1);
+            Assert.assertEquals(monitor.fragCReleaseCount, 0);
         }
 
         navTo(ControllerD.class);
@@ -639,26 +700,26 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
             Assert.assertTrue(fm.getBackStackEntryAt(1).getName().contains(ControllerB.class.getSimpleName()));
             Assert.assertTrue(fm.getBackStackEntryAt(2).getName().contains(ControllerC.class.getSimpleName()));
             Assert.assertTrue(fm.getBackStackEntryAt(3).getName().contains(ControllerD.class.getSimpleName()));
-            Assert.assertEquals(activity.fragAInjectCount, 1);
-            Assert.assertEquals(activity.fragAReleaseCount, 0);
-            Assert.assertEquals(activity.fragBInjectCount, 1);
-            Assert.assertEquals(activity.fragBReleaseCount, 0);
-            Assert.assertEquals(activity.fragCInjectCount, 1);
-            Assert.assertEquals(activity.fragCReleaseCount, 0);
-            Assert.assertEquals(activity.fragDInjectCount, 1);
-            Assert.assertEquals(activity.fragDReleaseCount, 0);
+            Assert.assertEquals(monitor.fragAInjectCount, 1);
+            Assert.assertEquals(monitor.fragAReleaseCount, 0);
+            Assert.assertEquals(monitor.fragBInjectCount, 1);
+            Assert.assertEquals(monitor.fragBReleaseCount, 0);
+            Assert.assertEquals(monitor.fragCInjectCount, 1);
+            Assert.assertEquals(monitor.fragCReleaseCount, 0);
+            Assert.assertEquals(monitor.fragDInjectCount, 1);
+            Assert.assertEquals(monitor.fragDReleaseCount, 0);
         }
     }
 
     private void resetGraphMonitorCounts() {
-        activity.fragAInjectCount = 0;
-        activity.fragBInjectCount = 0;
-        activity.fragCInjectCount = 0;
-        activity.fragDInjectCount = 0;
-        activity.fragAReleaseCount = 0;
-        activity.fragBReleaseCount = 0;
-        activity.fragCReleaseCount = 0;
-        activity.fragDReleaseCount = 0;
+        monitor.fragAInjectCount = 0;
+        monitor.fragBInjectCount = 0;
+        monitor.fragCInjectCount = 0;
+        monitor.fragDInjectCount = 0;
+        monitor.fragAReleaseCount = 0;
+        monitor.fragBReleaseCount = 0;
+        monitor.fragCReleaseCount = 0;
+        monitor.fragDReleaseCount = 0;
     }
 
 }
