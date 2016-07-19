@@ -19,8 +19,8 @@ package com.shipdream.lib.android.mvc.view.event2v;
 import android.os.Bundle;
 import android.view.View;
 
-import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Navigator;
@@ -41,11 +41,12 @@ public class EventBusV2VActivity extends TestActivity {
      * To make the mapping generic, consider to use {@link Class#forName(String)}.
      * </p>
      *
-     * @param presenterClass The presenter class type
+     * @param controllerClass The controller class type
      * @return The class type of the {@link MvcFragment} mapped to the presenter
      */
     @Override
-    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
+    protected Class<? extends MvcFragment> mapFragmentRouting(
+            Class<? extends FragmentController> controllerClass) {
         return EventBusV2VFragment.class;
     }
 

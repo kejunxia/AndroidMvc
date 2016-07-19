@@ -18,12 +18,12 @@ package com.shipdream.lib.android.mvc.view.nav;
 
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.UiView;
 
 import javax.inject.Inject;
 
-public class ControllerE extends Controller<ControllerE.Model, UiView> {
+public class ControllerE extends FragmentController<ControllerE.Model, UiView> {
     public static class Model {
         public String value;
     }

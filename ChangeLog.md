@@ -1,5 +1,5 @@
 Latest:
-* Parameter type of MvcActivity.mapControllerFragment changed to Class<? extends FragmentController> from Class<? extends Controller>
+* Rename method MvcActivity.mapControllerFragmentClass<? extends Controller> to MvcActivity.mapFragmentRouting(Class<? extends FragmentController>)
 
 Version: 3.0.1
 * Fix issue that interim navigation pages are not popped out on back navgation correctly

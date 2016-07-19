@@ -24,29 +24,25 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterDetail
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterMasterController;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.service.ResourceService;
+import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
+import com.shipdream.lib.poke.exception.ProvideException;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.io.IOException;
 import java.util.Random;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,6 +56,20 @@ public class TestCounterMasterController extends BaseTest {
     private NavigationManager navigationManager;
 
     private CounterMasterController controller;
+
+    private ResourceService resourceServiceMock;
+
+    @Override
+    protected void prepareGraph(MvcComponent overriddingComponent) throws Exception {
+        super.prepareGraph(overriddingComponent);
+        overriddingComponent.register(new Provider<ResourceService>(ResourceService.class) {
+            @Override
+            protected ResourceService createInstance() throws ProvideException {
+                resourceServiceMock = mock(ResourceService.class);
+                return resourceServiceMock;
+            }
+        });
+    }
 
     @Override
     public void setUp() throws Exception {
@@ -119,29 +129,6 @@ public class TestCounterMasterController extends BaseTest {
 
         MvcComponent component = new MvcComponent("ServiceComponent");
         component.register(new Object(){
-            /**
-             * Prepare executor service to execute http request on the test thread
-             * @return
-             */
-            @Provides
-            public ExecutorService executorService() {
-                ExecutorService sameThreadExecutor = mock(ExecutorService.class);
-
-                doAnswer(new Answer() {
-                    @Override
-                    public Object answer(InvocationOnMock invocation) throws Throwable {
-                        Callable runnable = (Callable) invocation.getArguments()[0];
-                        runnable.call();
-                        Future future = mock(Future.class);
-                        when(future.isDone()).thenReturn(true); //by default execute immediately succeed.
-                        when(future.isCancelled()).thenReturn(false);
-                        return future;
-                    }
-                }).when(sameThreadExecutor).submit(any(Callable.class));
-
-                return sameThreadExecutor;
-            }
-
             /**
              * Prepare http service
              * @return

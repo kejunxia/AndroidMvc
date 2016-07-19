@@ -18,8 +18,8 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 
 import android.content.Intent;
 
-import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.TestActivity;
@@ -31,7 +31,7 @@ import javax.inject.Inject;
 
 public class ViewPagerTestActivity extends TestActivity {
     @Override
-    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> controllerClass) {
+    protected Class<? extends MvcFragment> mapFragmentRouting(Class<? extends FragmentController> controllerClass) {
         if (controllerClass == FirstFragmentController.class) {
             return ViewPagerHomeFragment.class;
         } else if (controllerClass == SecondFragmentController.class) {

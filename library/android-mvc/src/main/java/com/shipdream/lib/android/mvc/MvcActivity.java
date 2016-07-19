@@ -98,23 +98,22 @@ public abstract class MvcActivity extends AppCompatActivity {
     }
 
     /**
-     * Specify the routing rule between a screen controller and the fragment class of the screen.
+     * Specify the routing mapping from a screen controller to the fragment class of the screen.
      * When navigate with {@link NavigationManager}, this method will be used to find out which
-     * fragment as a screen will be launched in the activity.
+     * fragment as a screen will be launched for the controller type in the activity.
      *
      * <p>
      * The mapping between controller class and fragment class can be listed one by one here. However,
      * it needs to keep modifying this method to add new mapping when a new screen is add. To make
      * the mapping generic, consider to use {@link Class#forName(String)}. In most cases, the
      * performance reflection is negligible for navigation and this is one off invocation for every
-     * single navigation.
-     *
+     * single navigation. A couple of milliseconds are not a big deal.
      * </p>
      *
      * @param controllerClass The controller class type
      * @return The class type of the controller's corresponding {@link MvcFragment}
      */
-    protected abstract Class<? extends MvcFragment> mapControllerFragment(
+    protected abstract Class<? extends MvcFragment> mapFragmentRouting(
             Class<? extends FragmentController> controllerClass);
 
     /**
@@ -445,14 +444,14 @@ public abstract class MvcActivity extends AppCompatActivity {
 
             Class<? extends MvcFragment> fragmentClass = null;
             try {
-                fragmentClass = activity.mapControllerFragment(
+                fragmentClass = activity.mapFragmentRouting(
                         (Class<? extends FragmentController>) Class.forName(event.getCurrentValue().getLocationId()));
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
 
             if (fragmentClass == null) {
-                throw new RuntimeException("Cannot find fragment class mapped in MvcActivity.mapControllerFragment(location) for location: "
+                throw new RuntimeException("Cannot find fragment class mapped in MvcActivity.mapFragmentRouting(location) for location: "
                         + event.getCurrentValue().getLocationId());
             } else {
                 MvcFragment lastFragment = null;

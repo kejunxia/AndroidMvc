@@ -22,6 +22,7 @@ import com.shipdream.lib.android.mvc.event.bus.EventBus;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl;
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Provides;
 
 import org.apache.log4j.ConsoleAppender;
@@ -34,6 +35,7 @@ import org.junit.BeforeClass;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -58,9 +60,9 @@ public class BaseTest {
     protected EventBus eventBusC;
     protected EventBus eventBusV;
     protected ExecutorService executorService;
-    private MvcComponent testComponent;
+    private MvcComponent overridingComponent;
 
-    protected void prepareGraph(MvcComponent testComponent) throws Exception {
+    protected void prepareGraph(MvcComponent overridingComponent) throws Exception {
     }
 
     @Before
@@ -81,8 +83,20 @@ public class BaseTest {
             }
         }).when(executorService).submit(any(Runnable.class));
 
-        testComponent = new MvcComponent("TestOverrideComponent");
-        testComponent.register(new Object(){
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Callable runnable = (Callable) invocation.getArguments()[0];
+                runnable.call();
+                Future future = mock(Future.class);
+                when(future.isDone()).thenReturn(true); //by default execute immediately succeed.
+                when(future.isCancelled()).thenReturn(false);
+                return future;
+            }
+        }).when(executorService).submit(any(Callable.class));
+
+        overridingComponent = new MvcComponent("TestOverrideComponent");
+        overridingComponent.register(new Object(){
             @Provides
             @EventBusC
             public EventBus createEventBusC() {
@@ -101,15 +115,16 @@ public class BaseTest {
             }
         });
 
-        Mvc.graph().getRootComponent().attach(testComponent, true);
-
-        prepareGraph(testComponent);
+        Component rootComponent = Mvc.graph().getRootComponent();
+        rootComponent.attach(overridingComponent, true);
+        prepareGraph(overridingComponent);
 
         Mvc.graph().inject(this);
     }
 
     @After
     public void tearDown() throws Exception {
-        Mvc.graph().getRootComponent().detach(testComponent);
+        Component rootComponent = Mvc.graph().getRootComponent();
+        rootComponent.detach(overridingComponent);
     }
 }

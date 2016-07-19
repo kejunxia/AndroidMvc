@@ -24,7 +24,7 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.view.AppDelegateFragment
 public class MainActivity extends MvcActivity {
         //Manually map MvcFragment and FragmentController
 //    @Override
-//    protected Class<? extends MvcFragment> mapControllerFragment(
+//    protected Class<? extends MvcFragment> mapFragmentRouting(
 //            Class<? extends Controller> controllerClass) {
 //        if (controllerClass == CounterMasterController.class) {
 //            return CounterMasterScreen.class;
@@ -36,7 +36,7 @@ public class MainActivity extends MvcActivity {
 //    }
 
     @Override
-    protected Class<? extends MvcFragment> mapControllerFragment(
+    protected Class<? extends MvcFragment> mapFragmentRouting(
             Class<? extends FragmentController> controllerClass) {
         String controllerPackage = controllerClass.getPackage().getName();
 

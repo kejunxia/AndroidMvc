@@ -21,8 +21,8 @@ import com.shipdream.lib.android.mvc.Task;
 import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 
 import javax.inject.Inject;
 
@@ -74,6 +74,7 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
 
     public void refreshIp() {
         view.showProgress();
+
         runTask(new Task<Response<IpPayload>>() {
             @Override
             public Response<IpPayload> execute(Monitor<Response<IpPayload>> monitor) throws Exception {

@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.view.nav;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Navigator;
@@ -49,24 +49,25 @@ public class MvcTestActivityNavigation extends TestActivity {
      * To make the mapping generic, consider to use {@link Class#forName(String)}.
      * </p>
      *
-     * @param presenterClass The presenter class type
+     * @param controllerClass The presenter class type
      * @return The class type of the {@link MvcFragment} mapped to the presenter
      */
     @Override
-    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
-        if (presenterClass == ControllerA.class) {
+    protected Class<? extends MvcFragment> mapFragmentRouting(
+            Class<? extends FragmentController> controllerClass) {
+        if (controllerClass == ControllerA.class) {
             return NavFragmentA.class;
-        } else if (presenterClass == ControllerB.class) {
+        } else if (controllerClass == ControllerB.class) {
             return NavFragmentB.class;
-        } else if (presenterClass == ControllerC.class) {
+        } else if (controllerClass == ControllerC.class) {
             return NavFragmentC.class;
-        } else if (presenterClass == ControllerD.class) {
+        } else if (controllerClass == ControllerD.class) {
             return NavFragmentD.class;
-        } else if (presenterClass == ControllerE.class) {
+        } else if (controllerClass == ControllerE.class) {
             return NavFragmentE.class;
-        } else if (presenterClass == ControllerF.class) {
+        } else if (controllerClass == ControllerF.class) {
             return NavFragmentF.class;
-        } else if (presenterClass == ControllerG.class) {
+        } else if (controllerClass == ControllerG.class) {
             return NavFragmentG.class;
         }
         return null;
