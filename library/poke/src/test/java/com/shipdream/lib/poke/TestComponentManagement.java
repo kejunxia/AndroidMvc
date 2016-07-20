@@ -41,8 +41,20 @@ public class TestComponentManagement extends BaseTestCases {
 
     }
 
+    static class Wheel15Inch implements Wheel {
+    }
     static class Wheel17Inch implements Wheel {
+    }
+    static class Wheel19Inch implements Wheel {
+    }
 
+    interface Engine{
+
+    }
+
+    static class EngineV4 implements Engine{
+    }
+    static class EngineV6 implements Engine {
     }
 
     @Before
@@ -186,6 +198,64 @@ public class TestComponentManagement extends BaseTestCases {
         }
         Assert.assertTrue(hasProviderMissingException);
         Assert.assertNull(car2.wheel);
+    }
+
+    @Test
+    public void should_clear_overriding_providers_from_detached_child_component_correctly() throws PokeException {
+        Graph graph = new Graph();
+        graph.setRootComponent(rootComponent);
+
+        rootComponent.register(new Object(){
+            @Provides
+            public Engine engine(){
+                return new EngineV6();
+            }
+        });
+
+        Component childCom = new Component("MyScope");
+        childCom.register(new Object() {
+            @Provides
+            public Engine engine(){
+                return new EngineV4();
+            }
+
+            @Provides
+            public Wheel wheel() {
+                return new Wheel15Inch();
+            }
+        });
+        rootComponent.attach(childCom, true);
+
+        Car car = new Car();
+        graph.inject(car, MyInject.class);
+        Assert.assertTrue(car.wheel instanceof Wheel15Inch);
+
+        rootComponent.detach(childCom);
+
+        childCom = new Component("MyScope2");
+        rootComponent.attach(childCom, true);
+        childCom.register(new Object() {
+            @Provides
+            public Wheel wheel() {
+                return new Wheel17Inch();
+            }
+        });
+
+        graph.inject(car, MyInject.class);
+        Assert.assertTrue(car.wheel instanceof Wheel17Inch);
+        rootComponent.detach(childCom);
+
+        childCom = new Component("MyScope3");
+        rootComponent.attach(childCom, true);
+        childCom.register(new Object() {
+            @Provides
+            public Wheel wheel() {
+                return new Wheel19Inch();
+            }
+        });
+        car = new Car();
+        graph.inject(car, MyInject.class);
+        Assert.assertTrue(car.wheel instanceof Wheel19Inch);
     }
 
     @Test

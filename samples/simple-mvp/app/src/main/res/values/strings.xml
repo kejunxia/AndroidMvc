@@ -16,5 +16,7 @@
   -->
 
 <resources>
-    <string name="app_name">AndMvc-Simple</string>
+    <string name="app_name">AndMvp-Simple</string>
+    <string name="title_master_screen">Master Screen</string>
+    <string name="title_detail_screen">Detail Screen</string>
 </resources>

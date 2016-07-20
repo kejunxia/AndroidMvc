@@ -24,7 +24,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.shipdream.lib.android.mvc.MvcService;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.MainActivity;
-import com.shipdream.lib.android.mvc.samples.simple.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterServiceController;
 
 public class CountService extends MvcService<CounterServiceController> implements CounterServiceController.View{

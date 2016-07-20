@@ -18,53 +18,21 @@ package com.shipdream.lib.android.mvc.samples.simple.mvp.view;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.samples.simple.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.service.CountService;
 
 public class CounterDetailScreen extends AbstractFragment<CounterDetailController> {
-    private class ContinuousCounter implements Runnable {
-        private final boolean incrementing;
-        private boolean canceled = false;
-        private static final long INTERVAL = 200;
-
-        public ContinuousCounter(boolean incrementing) {
-            this.incrementing = incrementing;
-        }
-
-        @Override
-        public void run() {
-            if (!canceled) {
-                if (incrementing) {
-                    controller.increment(this);
-                } else {
-                    controller.decrement(this);
-                }
-
-                handler.postDelayed(this, INTERVAL);
-            }
-        }
-
-        private void cancel() {
-            canceled = true;
-        }
-    }
-
     private TextView display;
     private Button increment;
     private Button decrement;
     private Button autoIncrement;
-    private Handler handler;
-    private ContinuousCounter incrementCounter;
-    private ContinuousCounter decrementCounter;
-
     @Override
     protected Class<CounterDetailController> getControllerClass() {
         return CounterDetailController.class;
@@ -73,12 +41,6 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_counter_detail;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        handler = new Handler();
     }
 
     @Override
@@ -95,11 +57,11 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
             public boolean onTouch(final View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        startContinuousIncrement();
+                        controller.startContinuousIncrement();
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
-                        stopContinuousIncrement();
+                        controller.stopContinuousIncrement();
                         break;
                 }
                 return false;
@@ -111,11 +73,11 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
             public boolean onTouch(final View v, MotionEvent event) {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        startContinuousDecrement();
+                        controller.startContinuousDecrement();
                         break;
                     case MotionEvent.ACTION_UP:
                     case MotionEvent.ACTION_CANCEL:
-                        stopContinuousDecrement();
+                        controller.stopContinuousDecrement();
                         break;
                 }
                 return false;
@@ -150,30 +112,6 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
          * reflecting the latest state/model of the controller
          */
         display.setText(controller.getCount());
-    }
-
-    private void startContinuousIncrement() {
-        stopContinuousIncrement();
-        incrementCounter = new ContinuousCounter(true);
-        incrementCounter.run();
-    }
-
-    private void stopContinuousIncrement() {
-        if (incrementCounter != null) {
-            incrementCounter.cancel();
-        }
-    }
-
-    private void startContinuousDecrement() {
-        stopContinuousDecrement();
-        decrementCounter = new ContinuousCounter(false);
-        decrementCounter.run();
-    }
-
-    private void stopContinuousDecrement() {
-        if (decrementCounter != null) {
-            decrementCounter.cancel();
-        }
     }
 
 }

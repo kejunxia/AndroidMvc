@@ -43,9 +43,9 @@ import javax.inject.Inject;
  * This fragment uses life cycles slightly different from original Android Fragment.
  * {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)} is sealed to be overridden which will
  * use the layout provided by {@link #getLayoutResId()} to inflate the view of the fragment.
- * {@link #onViewCreated(android.view.View, Bundle)} is sealed too. Instead use {@link #onViewReady(android.view.View, Bundle, Reason)}
+ * {@link #onViewCreated(View, Bundle)} is sealed too. Instead use {@link #onViewReady(View, Bundle, Reason)}
  * with an extra flag to indicate the {@link Reason}  why the onViewReady is called. Override
- * {@link #onViewReady(android.view.View, Bundle, Reason)} to setup views and bind data where all dependencies
+ * {@link #onViewReady(View, Bundle, Reason)} to setup views and bind data where all dependencies
  * and restored state will be guaranteed ready.
  * </p>
  * <p>
@@ -53,7 +53,7 @@ import javax.inject.Inject;
  * If some actions need to be delayed to invoke after the fragment is ready, use {@link #registerOnViewReadyListener(Runnable)}
  * For example, when the fragment is just instantiated before it's inflated and added to view
  * hierarchy, the fragment is not in ready state to be interacted. In this case, register to run the
- * action after the first {@link #onViewReady(android.view.View, Bundle, Reason)} lifecycle of the fragment
+ * action after the first {@link #onViewReady(View, Bundle, Reason)} lifecycle of the fragment
  * </p>
  */
 public abstract class MvcFragment<CONTROLLER extends FragmentController> extends Fragment implements UiView {
@@ -64,7 +64,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     private int lastOrientation;
     private boolean dependenciesInjected = false;
     private Object newInstanceChecker;
-    public boolean isStateManagedByRootDelegateFragment;
+    boolean isStateManagedByRootDelegateFragment;
     protected CONTROLLER controller;
 
     /**
@@ -98,7 +98,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
     /**
      * Assign the layout xml of the <strong>Root View</strong> for this fragment. The layout will be
-     * inflated in {@link #onCreateView(android.view.LayoutInflater, android.view.ViewGroup, android.os.Bundle)}..
+     * inflated in {@link #onCreateView(android.view.LayoutInflater, ViewGroup, android.os.Bundle)}..
      * <p><strong>Also see</strong> {@link #onCreateView(LayoutInflater, ViewGroup, Bundle)}
      * </p>
      *
@@ -169,7 +169,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     /**
      * This Android lifecycle callback is sealed. {@link MvcFragment} will always use the
      * layout returned by {@link #getLayoutResId()} to inflate the view. Instead, do actions to
-     * prepare views in {@link #onViewReady(android.view.View, Bundle, Reason)} where all injected dependencies
+     * prepare views in {@link #onViewReady(View, Bundle, Reason)} where all injected dependencies
      * and all restored state will be ready to use.
      *
      * @param inflater           The inflater
@@ -184,21 +184,21 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
-     * Called when view is created by before {@link #onViewReady(android.view.View, Bundle, Reason)} is called
+     * Called when view is created by before {@link #onViewReady(View, Bundle, Reason)} is called
      */
-    void onPreViewReady(android.view.View view, Bundle savedInstanceState) {
+    void onPreViewReady(View view, Bundle savedInstanceState) {
     }
 
     /**
-     * This Android lifecycle callback is sealed. Use {@link #onViewReady(android.view.View, Bundle, Reason)}
-     * instead which provides a flag to indicate if the creation of the view is caused by rotation.
+     * This Android lifecycle callback is sealed. Use {@link #onViewReady(View, Bundle, Reason)}
+     * instead, which provides a flag to indicate why the view is created.
      *
      * @param view               View of this fragment
      * @param savedInstanceState The savedInstanceState: Null when the view is newly created,
      *                           otherwise the state to restore and recreate the view
      */
     @Override
-    final public void onViewCreated(final android.view.View view, final Bundle savedInstanceState) {
+    final public void onViewCreated(final View view, final Bundle savedInstanceState) {
         fragmentComesBackFromBackground = false;
         eventRegister.registerEventBuses();
 
@@ -217,7 +217,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
         }
     }
 
-    private void doOnViewCreatedCallBack(android.view.View view, Bundle savedInstanceState, boolean restoring) {
+    private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
         int currentOrientation = getResources().getConfiguration().orientation;
         if (controller != null) {
             controller.view = this;
@@ -275,8 +275,9 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
     /**
      * Called when the view of the fragment is ready to use. This also replaces Android lifecycle -
-     * {@link #onViewCreated(android.view.View, Bundle)} and provide an extra flag to indicate the {@link Reason}
-     * why this callback is invoked.
+     * {@link #onViewCreated(View, Bundle)} and provide an extra flag to indicate the {@link Reason}
+     * why this callback is invoked. This callback also ensure all injected instanced are fully
+     * injected which means their own injectable fields are injected as well.
      *
      * @param view               The root view of the fragment
      * @param savedInstanceState The savedInstanceState when the fragment is being recreated after
@@ -284,7 +285,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      *                           rotation
      * @param reason             Indicates the {@link Reason} why the onViewReady is called.
      */
-    public void onViewReady(android.view.View view, Bundle savedInstanceState, Reason reason) {
+    protected void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
     }
 
     @Override
@@ -325,18 +326,19 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
-     * Called when the fragment was the top most fragment and is about to be removed by
-     * fragment popping out from back stack
-     */
-    protected void onPopAway() {
-        if (controller != null) {
-            controller.onPopAway();
-        }
-    }
-
-    /**
+     * <p>
      * Called when this fragment is popped out from fragment back stack and will become the top most
-     * fragment. This callback will be invoked after {@link #onViewReady(android.view.View, Bundle, Reason)}.
+     * fragment and present to user. This callback will be invoked after {@link #onViewReady(View, Bundle, Reason)}.
+     * </p>
+     *
+     * <p>
+     * For example, current navigation history is A->B->C, when navigate back. The C will be popped
+     * out. At this moment,
+     * <ul>
+     *     <li>C.onPopAway() will be called</li>
+     *     <li>B.onPoppedOutToFront will be called</li>
+     * </ul>
+     * </p>
      */
     protected void onPoppedOutToFront() {
         if (controller != null) {
@@ -345,10 +347,32 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
+     *
+     * <p>
+     * Called when the fragment was the top most presenting fragment and will be removed from the
+     * fragment back stack and replaced by the fragment under it from the back stack.
+     * </p>
+     *
+     * <p>
+     * For example, current navigation history is A->B->C, when navigate back. The C will be popped
+     * out. At this moment,
+     * <ul>
+     *     <li>C.onPopAway() will be called</li>
+     *     <li>B.onPoppedOutToFront will be called</li>
+     * </ul>
+     * </p>
+     */
+    protected void onPopAway() {
+        if (controller != null) {
+            controller.onPopAway();
+        }
+    }
+
+    /**
      * Called when {@link NavigationManager#navigate(Object)} is invoked and this fragment is acting
      * as a navigable page. This fragment will be replaced by the nextFragment. This method is called
      * right before the transaction is committed. This is the ideal place to
-     * {@link FragmentTransaction#addSharedElement(android.view.View, String)}.
+     * {@link FragmentTransaction#addSharedElement(View, String)}.
      *
      * @param transaction  The transaction being committing
      * @param nextFragment Next fragment is going to
@@ -359,7 +383,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     boolean aboutToPopOut = false;
 
     /**
-     * Called after {@link #onViewReady(android.view.View, Bundle, Reason)} when orientation changed.
+     * Called after {@link #onViewReady(View, Bundle, Reason)} when orientation changed.
      *
      * @param lastOrientation    Orientation before rotation
      * @param currentOrientation Current orientation
@@ -421,7 +445,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
-     * Register a callback after {@link #onViewReady(android.view.View, Bundle, Reason)} is called. This is useful when an action that
+     * Register a callback after {@link #onViewReady(View, Bundle, Reason)} is called. This is useful when an action that
      * can't be executed after the fragment is instantiated but before the fragment has gone through
      * life cycles and gets created and ready to use. If this is one time action, use
      * {@link #unregisterOnViewReadyListener(Runnable)} (Runnable)}  unregister itself in the given onCreateViewAction.
@@ -436,7 +460,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
-     * Unregister the callback that to be called in {@link #onViewCreated(android.view.View, Bundle)}
+     * Unregister the callback that to be called in {@link #onViewCreated(View, Bundle)}
      *
      * @param onResumeAction The action to run in onResume callback
      */
@@ -447,7 +471,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     }
 
     /**
-     * Unregister callbacks that to be called after {@link #onViewReady(android.view.View, Bundle, Reason)}
+     * Unregister callbacks that to be called after {@link #onViewReady(View, Bundle, Reason)}
      */
     public void clearOnViewReadyListener() {
         if (onViewReadyListeners != null) {
@@ -480,7 +504,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * Handy method to post an event to other views directly. However, when possible, it's
      * recommended to post events from controllers to views.
      *
-     * @param event
+     * @param event The event send to other views
      */
     protected void postEvent2V(Object event) {
         eventRegister.postEvent2V(event);

@@ -433,33 +433,40 @@ public class Component {
             //has c1, c2 overriding a key before detaching only root is aware of them. After detaching
             //childComponent should perform as a root component so it needs to know how to manage them
 
+            List<Component> chain = null;
             if (root.overriddenChain != null) {
-                List<Component> chain = root.overriddenChain.get(key);
+                chain = root.overriddenChain.get(key);
+            }
 
-                if (chain != null && !chain.isEmpty()) {
+            if (chain != null) {
+                if (!chain.isEmpty()) {
                     Component removingItem = null;
-                    for (Component c : chain) {
+                    int size = chain.size();
+                    for (int i = size - 1; i >= 0 ; i--) {
+                        Component c = chain.get(i);
                         if (c == childComponent) {
+                            //Delete the first found
                             removingItem = c;
+                            break;
                         }
                     }
 
                     chain.remove(removingItem);
-                    //notify root component that child component is surrendering managing the key
+                }
 
-                    if (chain.isEmpty()) {
-                        //No overridden any more
-                        if (root.providers.containsKey(key)) {
-                            //Root is managing the key itself
-                            root.componentLocator.put(key, root);
-                        } else {
-                            //Nobody is managing the key
-                            root.componentLocator.remove(key);
-                        }
+                //notify root component that child component is surrendering managing the key
+                if (chain.isEmpty()) {
+                    //No overridden any more
+                    if (root.providers.containsKey(key)) {
+                        //Root is managing the key itself
+                        root.componentLocator.put(key, root);
                     } else {
-                        //Second last overriding component takes over the management of the key
-                        root.componentLocator.put(key, chain.get(chain.size() - 1));
+                        //Nobody is managing the key
+                        root.componentLocator.remove(key);
                     }
+                } else {
+                    //Second last overriding component takes over the management of the key
+                    root.componentLocator.put(key, chain.get(chain.size() - 1));
                 }
             } else {
                 root.componentLocator.remove(key);
@@ -535,8 +542,11 @@ public class Component {
         }
 
         if (root != this && root.componentLocator.keySet().contains(key)) {
-            String msg = String.format("Type %s has already been registered " +
-                    "in root component(%s).", key, getComponentId());
+            String msg = String.format("\nClass type %s cannot be registered to component(%s)\nsince it's  " +
+                    "already been registered in its root component(%s).\n\nYou can prepare a child " +
+                    "component and register providers to it first. Then attach the child component\nto the " +
+                    "component tree with allowOverridden flag set true", key, getComponentId(),
+                    getRootComponent().getComponentId());
             throw new ProviderConflictException(msg);
         }
 

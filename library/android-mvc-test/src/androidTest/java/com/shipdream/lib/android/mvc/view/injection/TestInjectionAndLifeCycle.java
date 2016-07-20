@@ -139,7 +139,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
     }
 
     @Test
-    public void test_should_delay_call_on_view_ready_on_sub_fragments_after_dependencies_injected_when_restore_from_kill() throws Throwable {
+    public void test__should_delay_call_on_view_ready_on_sub_fragments_after_dependencies_injected_when_restore_from_kill() throws Throwable {
         if (!isDontKeepActivities()) {
             Log.i(getClass().getSimpleName(), "testLifeCyclesWhenKeepActivities not tested as Don't Keep Activities setting is disabled");
             return;
@@ -161,7 +161,7 @@ public class TestInjectionAndLifeCycle extends BaseTestCase<InjectionTestActivit
 
         bringBack(pressHome());
 
-        Thread.sleep(300);
+        Thread.sleep(500);
 
         onView(withId(R.id.textA)).check(matches(withText("Added by FragmentA\n" +
             "Added by FragmentB\nAdded by FragmentB")));

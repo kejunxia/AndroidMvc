@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc.view.lifecycle;
 
-import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcFragment;
@@ -28,7 +27,8 @@ import javax.inject.Inject;
 
 public class MvcTestActivity extends TestActivity {
     @Override
-    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
+    protected Class<? extends MvcFragment> mapFragmentRouting(
+            Class<? extends FragmentController> controllerClass) {
         return MvcTestFragment.class;
     }
 

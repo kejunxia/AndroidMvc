@@ -16,7 +16,6 @@
 
 package com.shipdream.lib.android.mvc.view.injection;
 
-import com.shipdream.lib.android.mvc.Controller;
 import com.shipdream.lib.android.mvc.Forwarder;
 import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.MvcFragment;
@@ -31,14 +30,15 @@ import javax.inject.Inject;
 
 public class InjectionTestActivityStateManagedObjects extends TestActivity {
     @Override
-    protected Class<? extends MvcFragment> mapControllerFragment(Class<? extends Controller> presenterClass) {
-        if (presenterClass == ControllerA.class) {
+    protected Class<? extends MvcFragment> mapFragmentRouting(
+            Class<? extends FragmentController> controllerClass) {
+        if (controllerClass == ControllerA.class) {
             return FragmentA.class;
-        } else if (presenterClass == ControllerB.class) {
+        } else if (controllerClass == ControllerB.class) {
             return FragmentB.class;
-        } else if (presenterClass == ControllerC.class) {
+        } else if (controllerClass == ControllerC.class) {
             return FragmentC.class;
-        } else if (presenterClass == ControllerD.class) {
+        } else if (controllerClass == ControllerD.class) {
             return FragmentD.class;
         }
         return null;

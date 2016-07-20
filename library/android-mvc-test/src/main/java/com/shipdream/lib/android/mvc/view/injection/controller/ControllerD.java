@@ -16,7 +16,7 @@
 
 package com.shipdream.lib.android.mvc.view.injection.controller;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.view.injection.manager.AccountManager;
 
@@ -24,7 +24,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ControllerD extends Controller<ControllerD.Model, UiView> {
+public class ControllerD extends FragmentController<ControllerD.Model, UiView> {
     public static class Model {
         private List<String> tags;
 

@@ -16,13 +16,13 @@
 
 package com.shipdream.lib.android.mvc.view.injection.controller;
 
-import com.shipdream.lib.android.mvc.Controller;
+import com.shipdream.lib.android.mvc.FragmentController;
 import com.shipdream.lib.android.mvc.UiView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ControllerC extends Controller<ControllerC.Model, UiView> {
+public class ControllerC extends FragmentController<ControllerC.Model, UiView> {
     public static class Model {
         private List<String> tags;
 

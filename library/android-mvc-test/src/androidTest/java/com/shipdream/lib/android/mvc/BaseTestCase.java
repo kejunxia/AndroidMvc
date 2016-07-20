@@ -205,8 +205,8 @@ public abstract class BaseTestCase<T extends TestActivity> extends ActivityInstr
             }
         });
 
-        Mvc.graph().getRootComponent().attach(component, true);
         prepareDependencies(component);
+        Mvc.graph().getRootComponent().attach(component, true);
 
         instrumentation = InstrumentationRegistry.getInstrumentation();
         injectInstrumentation(instrumentation);
@@ -228,25 +228,11 @@ public abstract class BaseTestCase<T extends TestActivity> extends ActivityInstr
 
     @After
     public void tearDown() throws Exception {
-        if (navigationManager != null) {
-            navigationManager.navigate(this).back(null);
-            navigationManager.navigate(this).back();
-        }
-
-        if (activity != null) {
-            activity.finish();
-            activity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Mvc.graph().release(BaseTestCase.this);
-                    try {
-                        Mvc.graph().getRootComponent().getCache().clear();
-                        Mvc.graph().getRootComponent().detach(component);
-                    } catch (Component.MismatchDetachException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
+        try {
+            Mvc.graph().getRootComponent().getCache().clear();
+            Mvc.graph().getRootComponent().detach(component);
+        } catch (Component.MismatchDetachException e) {
+            e.printStackTrace();
         }
 
         super.tearDown();

@@ -16,20 +16,88 @@
 
 package com.shipdream.lib.android.mvc.samples.simple.mvp.controller;
 
+import com.shipdream.lib.android.mvc.NavLocation;
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Reason;
+import com.shipdream.lib.android.mvc.UiView;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.AppManager;
 
 import javax.inject.Inject;
 
-public class AppDelegateController extends AbstractController {
+public class AppDelegateController extends AbstractController<Void, AppDelegateController.View> {
+    /**
+     * Define the interface of the controller's view
+     */
+    public interface View extends UiView {
+        void updateTitle(String title);
+        void changeNavIcon(boolean showBackArrow);
+    }
+
+    @Inject
+    private AppManager appManager;
+
     @Inject
     private NavigationManager navigationManager;
+
+    @Override
+    public Class modelType() {
+        return null;
+    }
+
+    @Override
+    public void onViewReady(Reason reason) {
+        super.onViewReady(reason);
+        view.updateTitle(appManager.getModel().getTitle());
+        doUpdateNavIcon(navigationManager.getModel().getCurrentLocation());
+
+    }
 
     public void startApp(Object sender) {
         navigationManager.navigate(sender).to(CounterMasterController.class);
     }
 
-    @Override
-    public Class modelType() {
-        return null;
+    public void navigateBack(Object sender) {
+        navigationManager.navigate(sender).back();
+    }
+
+    /**
+     * Subscribe to event when app manager updates current page's title
+     * @param event
+     */
+    private void onEvent(AppManager.Event.OnTitleUpdated event) {
+        view.updateTitle(event.getTitle());
+    }
+
+    /**
+     * Subscribe to forward navigation
+     * @param event
+     */
+    private void onEvent(NavigationManager.Event.OnLocationForward event) {
+        updateToolbar(event.getCurrentValue());
+    }
+
+    /**
+     * Subscribe to backward navigation
+     * @param event
+     */
+    private void onEvent(NavigationManager.Event.OnLocationBack event) {
+        updateToolbar(event.getCurrentValue());
+    }
+
+    private void updateToolbar(final NavLocation location) {
+        uiThreadRunner.post(new Runnable() {
+            @Override
+            public void run() {
+                doUpdateNavIcon(location);
+            }
+        });
+    }
+
+    private void doUpdateNavIcon(NavLocation location) {
+        if (location != null) {
+            view.changeNavIcon(location.getPreviousLocation() != null);
+        } else {
+            view.changeNavIcon(false);
+        }
     }
 }

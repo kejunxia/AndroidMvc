@@ -21,14 +21,14 @@ import com.shipdream.lib.android.mvc.Task;
 import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 
 import javax.inject.Inject;
 
 import retrofit2.Response;
 
-public class CounterMasterController extends AbstractController<CounterMasterController.Model,
+public class CounterMasterController extends AbstractScreenController<CounterMasterController.Model,
         CounterMasterController.View> {
     @Override
     public Class<Model> modelType() {
@@ -74,6 +74,7 @@ public class CounterMasterController extends AbstractController<CounterMasterCon
 
     public void refreshIp() {
         view.showProgress();
+
         runTask(new Task<Response<IpPayload>>() {
             @Override
             public Response<IpPayload> execute(Monitor<Response<IpPayload>> monitor) throws Exception {
@@ -121,7 +122,10 @@ public class CounterMasterController extends AbstractController<CounterMasterCon
      */
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {
         getModel().count = String.valueOf(event.getCount());
-        view.update();
+
+        if (view != null) {
+            view.update();
+        }
     }
 
 }
