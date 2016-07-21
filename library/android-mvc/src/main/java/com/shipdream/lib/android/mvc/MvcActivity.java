@@ -36,8 +36,8 @@ import javax.inject.Inject;
 
 public abstract class MvcActivity extends AppCompatActivity {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    static final String STATE_PREFIX = "$$$mvc:state:";
-    private static final String FRAGMENT_TAG_PREFIX = "__--AndroidMvc:Fragment:";
+    static final String STATE_PREFIX = "$mvc:state:";
+    private static final String FRAGMENT_TAG_PREFIX = "$mvc:fragment:";
     protected DelegateFragment delegateFragment;
     boolean toPrintAppExitMessage = false;
     private List<Runnable> actionsOnDestroy = new CopyOnWriteArrayList<>();

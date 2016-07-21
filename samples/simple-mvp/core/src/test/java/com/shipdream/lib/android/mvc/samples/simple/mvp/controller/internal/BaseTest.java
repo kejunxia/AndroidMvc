@@ -62,6 +62,12 @@ public class BaseTest {
     protected ExecutorService executorService;
     private MvcComponent overridingComponent;
 
+    /**
+     * Prepare the injecting providers for unit test. Register mocking objects to the overriding
+     * component
+     * @param overridingComponent The overriding component used to register mocking objects
+     * @throws Exception Exception may be thrown out
+     */
     protected void prepareGraph(MvcComponent overridingComponent) throws Exception {
     }
 
@@ -70,18 +76,6 @@ public class BaseTest {
         eventBusC = new EventBusImpl();
         eventBusV = new EventBusImpl();
         executorService = mock(ExecutorService.class);
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Runnable runnable = (Runnable) invocation.getArguments()[0];
-                runnable.run();
-                Future future = mock(Future.class);
-                when(future.isDone()).thenReturn(true); //by default execute immediately succeed.
-                when(future.isCancelled()).thenReturn(false);
-                return future;
-            }
-        }).when(executorService).submit(any(Runnable.class));
 
         doAnswer(new Answer() {
             @Override
@@ -95,7 +89,7 @@ public class BaseTest {
             }
         }).when(executorService).submit(any(Callable.class));
 
-        overridingComponent = new MvcComponent("TestOverrideComponent");
+        overridingComponent = new MvcComponent("TestOverridingComponent");
         overridingComponent.register(new Object(){
             @Provides
             @EventBusC
@@ -115,9 +109,15 @@ public class BaseTest {
             }
         });
 
-        Component rootComponent = Mvc.graph().getRootComponent();
-        rootComponent.attach(overridingComponent, true);
+        //For base test class, allow sub test cases to register overriding providers
         prepareGraph(overridingComponent);
+
+        Component rootComponent = Mvc.graph().getRootComponent();
+        //Indicates the if duplicate providers for the same class type and qualifier registered,
+        //providers registered to the overriding component will override the existing providers
+        //until the overridingComponent is detached from the component tree
+        boolean overriding = true;
+        rootComponent.attach(overridingComponent, overriding);
 
         Mvc.graph().inject(this);
     }

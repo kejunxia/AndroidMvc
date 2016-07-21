@@ -21,8 +21,6 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'maven'
 
-version = '3.0.1'
-
 task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
     classifier = 'sources'
@@ -103,7 +101,6 @@ bintray {
         apply plugin: 'java'
     }
     configurations = ['archives']
-    override = true //[Default: false] Whether to override version artifacts already published
     pkg {
         repo = "maven"
         name = "poke"
