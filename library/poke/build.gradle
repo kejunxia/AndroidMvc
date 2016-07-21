@@ -21,8 +21,6 @@ plugins {
 apply plugin: 'java'
 apply plugin: 'maven'
 
-version = '3.0.1'
-
 task sourceJar(type: Jar) {
     from sourceSets.main.java.srcDirs
     classifier = 'sources'
