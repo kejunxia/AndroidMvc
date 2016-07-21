@@ -114,7 +114,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
                 } catch (PokeException e) {
                     throw new IllegalArgumentException("Unable to find controller "
                             + getControllerClass().getName() + ". Either create a controller with " +
-                            "default constructor or register it to Mvc.graph().getRootComponent()");
+                            "default constructor or register it to Mvc.graph().getRootComponent()", e);
                 }
             }
 
