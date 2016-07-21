@@ -74,7 +74,7 @@ ext {
     version = [
         major: 3,
         minor: 0,
-        patch : 2
+        patch : 3
     ]
     libGroup = 'com.shipdream'
     libVersion = "${version.major}.${version.minor}.${version.patch}"
