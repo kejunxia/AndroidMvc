@@ -1,3 +1,6 @@
+Version: 3.0.4
+* Uplift Android Support Library to 24.1.1
+
 Version: 3.0.3:
 * Rename method MvcActivity.mapControllerFragmentClass<? extends Controller> to MvcActivity.mapFragmentRouting(Class<? extends FragmentController>)
 * Add some more detailed info for logging

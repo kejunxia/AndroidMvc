@@ -1,99 +1,486 @@
 # AndroidMvc Framework
-## Introduction
-First of all, let's look at some problems of the Android development below:
-- **No enforced design pattern**. That's why there are many questions online asking about how to implement MVC, MVVM, MVP and etc patterns to Android.
-- **Hard to do unit testing** for Android since the tight coupling of Android components. For example most Android components are heavily depending on "android.Content.Context". Mocking Android components would lead to "Error java.lang.RuntimeException: Stub!".
+Android Mvc framework helps Android developers implement Android projects simpler and cleaner with MVC/MVP/MVVM patterns and make them testable.
 
-  Though there is a great Android test tool - Robolectric makes it much easier, it only shadows core parts of Android framework because there are too many components there. Another issue sometimes Android frameworks got some bugs and even worse only on specific versions of Android SDK or support library. In this case, pass of test with Roboletric doesn't necessarily guarantee the end to end behavior is correct. For an instance, this bug [Nested Fragment doesn't retain instance state as expected since support library v4.rev 20](https://code.google.com/p/android/issues/detail?id=74222) is a serious issue Android team has not targeted for ages. With this bug, if we got a view in a nested fragment, Roboletric may think we can see this view with specific logic. But this view may not show up on real devices.
+## Features
+  - [Easy to implement MVC/MVP/MVVM pattern](#-Implement-MVC/MVP/MVVM-pattern) for Android development
+  - [Enhanced Android life cycles](#Life-cycles) - e.g. when view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. Android mvc framework provides more granular life cycles
+  - [All fragment life cycles are mapped into FragmentController](#FragmentController-Life-cycles) thus more business logic can be moved into controllers including the ones in life cycles. Apps are more testable on JVM!
+  - [Easy and clean navigation](#Navigation). Navigation is done in controllers instead of views. Thus navigation can be unit tested on JVM
+  - [Run async tasks in controllers](#Run-AsyncTask-in-controller) and easy mocking of http requests
+  - Easy unit test on JVM since controllers don't depend on any Android APIs
+  - Built in event bus. Event bus also automatically guarantees post event view events on the UI thread
+  - Automatically save and restore instance state. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.
+  - Dependency injection with Poke to make mock easy
+  - Well tested - non-Android components are tested as the test coverage status [![Coverage Status](https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg)](https://coveralls.io/r/kejunxia/AndroidMvc). For Android dependent module "android-mvc", it's tested by real emulator with [this UI test module](https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test). **It's also tested with "Don't Keep Activities" turned on in dev options** to guarantee your app doesn't crash due to loss of instance state after it's killed by OS in the background!
 
-  Furthermore, if the purpose is to test controller or business logic we don't have to use real or even shadowed Android functions. For example, if we are developing a calculator and we can wrap core math functions in a calculator controller. To test the calculator controller, should the controller care about if the view is Android, a mock, HTML or even iOS? No, the controller itself doesn't need to have anything related to Android. We just want to test if we give 1+1 to the controller as input does it return 2. See the samples below or in the github code to see how AndroidMvc abstract Android components out from controllers.
+## Implement MVC/MVP/MVVM pattern
+As we know MVP and MVVM patterns are just simply derivatives of MVC pattern. All of them are targeting the same goal - Separation. 
 
+Separating Views and Controllers allows moving more business logic away from views into controllers. This makes code cleaner and, more importantly, it makes code more testable since most logical components are not depending on specific views. In the sense of Android, it means more fuctions can be written without depending on Android API therefore not have to be tested on emulators.
 
-- **Flawed lifecycle of Activity/Fragment**. Take a news app as an example. Think about this scenario, when the app resumes from background and needs to call services to get latest content to refresh the page. Which lifecycle callback should the refresh logic sit in? onResume? OK, the page would be refreshed on each rotation as well which is definitely NOT what we want. This is just one example of many, you might have seen more conflicting scenarios with the lifecycle that we have to write dodgy code to work around.
-- **Tedious to manage app instance state**. App is likely to crash when relaunch an activity that has been killed by OS. This doesn't have to happen if all state the activity is referencing is carefully saved and restored. But it is painful as it requires a lot of boilerplate code in onSaveInstanceState and onCreated and still easy to break if anything is missing.
-- **Not easy to share state during navigation.** When navigate from one activity to another, if the app needs to share data the data has to be put into Bundle. If the data is not primitive, it needs to be serialised or parceled. Furthermore, this is not fun and mistake prone because it's all key-value pair based which loses the compile time strong type check.
-- **Large memory consumption with deep fragments back stack** Android doesn't call onDestroy of fragments if they are pushed into back stack and will hold the memory they used. If we have a deep fragment back stack, it will be a huge waste of memory and the worst to cause out of memory crash! So when a fragment is pushed into back stack, the instances of its holding members could be released as long as it's saved by onSaveInstanceState and restored properly when the fragment is resuming after popped out from the back stack.
+Since MVC, MVP and MVVM are similar, in this framework we call both **Prestener** in MVP and **ViewModel** in MVVM just as traditionally **Controller**. 
 
-**AndroidMvc framework comes to tackle the problems above and provides more**
+- **Controller**: A controller is a delegate for business logic of a view. Thus controllers and views have **one-to-one** relationship. A controller provides methods to be invoked by the view to receive user's interactions such as click and long press. Once user's input is processed in controller, the state of view would be changed. And the controller needs to notify the view the change. When the controller needs to update view, it can be done differently in MVP and MVVM pattern
+  - In **MVP**: controller calls the method view.update() of the view it holds to update the entire view. If the needed, the view can define more granular methods to update just a part of the entire view. For example, view.showProgressBar() or view.hideProgressBar().
+  - In **MVVM**: controller post an event to view. View uses methods onEvent([EventClassType] event) to mointore the posted event. In the mothods the view update the UI accordingly.
+  
+- **View**: A view is an Android component that can be either Fragments, Services, Notification, Activity and etc. Every view has a controller to manage its business logic. As metioned, controllers and views have **one-to-one** relationship. Views should not process business logic but delegate all business processes to their corespondingcontrollers.
+  - Note that, AndroidMvc is use a single Activity to host multiple fragments. Navgation is at fragment level and in the same activity.
+- **Model**: A model represents the state of view and managed by controller. It can be accessed by controller.getModel(). The model should be reflected to Android UI in views and modified by controllers. **The model will be automatically searialized and restored in onSaveInstanceState by the framework**. So you don't need to use messy key-value pairs to save and restore view state.
+- **Managers**: Managers are not necessary in MVC/MVP/MVVM model. However as metioned above, views and controllers are one-to-one mapped, when multiple views as well as their controllers share same data or logic managers are a good fit. Shared logic and data of controllers can be broken out into a manager. For example, managing logged in user is common feature of a lot apps. To have a UserManager is a perfect solution that can modify and read current users. The the manager can be used by LoginController and other controllers after login screen.
+- **Services**: We are not taling about [Android Services](https://developer.android.com/guide/components/services.html). Services here are providing a layer between controller controllers and external data such as http apis, database, files, sharedPreferences and etc. Services can be injected into controllers as well as managers since managers can be thought as partial controllers.
+  Services abstract out data access logic so that they can be replaced by different implementations. e.g. Use database to replace sharedPreference when the data structure become complex and query is required. In addition, the controllers can use mocked data provided by mocked services for **unit tests**.
 
-##### AndroidMvc Features
-  - Easy to apply MVC/MVVM pattern for Android development
-  - Easy testing for controllers on JVM without Android dependency
-  - Automatically save restore instance state
-  - Improved Fragment lifecycle
-    - __onViewReady(View view, Bundle savedInstanceState, Reason reason):__ Where reason differentiates the cause of creation of view: 1. Reason.isNewInstance(), 2. Reason.isFirstTime(), 3. Reason.isRestored(), 4 Reason.isRotated()
-    - __onReturnForeground():__ When app resume from background
-    - __onOrientationChanged(int lastOrientation, int currentOrientation):__ When app rotated
-    - __onPushingToBackStack():__ When current page is pushed into back stack and navigate to next page
-    - __onPoppedOutToFront():__ When last page is becomes the top page on backwards navigation
-  - Manage navigation by NavigationManager which is also testable
-  - Event driven views
-  - [Dependency injection to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
-  - Optimized memory consumption. Since most data are abstracted out to models, fragments are much leaner. When fragments are pushed to back stack, AndroidMvc will release controllers the fragments hold. Therefore most of the memory used by the models of the controllers will be freed. When the fragments are popped out of the back stack, AndroidMvc will resume the models of their controllers automatically.
-  - Well tested by jUnit and instrument test with Espresso.
+See the diagram illustrating the relation between components above
 
-## Download
-The library is currently released to both
-* jCenter [![Download](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
-* Maven Central [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.shipdream/android-mvc)
-
-**Maven:**
-```xml
-<dependency>
-    <groupId>com.shipdream</groupId>
-    <artifactId>android-mvc</artifactId>
-    <version>[LatestVersion]</version>
-</dependency>
-```
-
-**Gradle:**
-```groovy
-compile "com.shipdream:android-mvc:[LatestVersion]"
-```
-
-## Samples
- - **[Counter](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)** - A simple sample demonstrates how to use the framework including dependency injection, event bus, unit testing, navigation and etc.
-         
-   See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZRS1pYURMMVRzdHM&export=download)
-   
-   
- - **[Note](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)** - A more complex sample to make notes and query weathers with slide menu and also demonstrates how consume network resources ([public weather API](http://openweathermap.org/api)) and test the async task without depending on Android SDK on pure JVM.
-
-   See [**Source code** here](https://github.com/kejunxia/AndroidMvc/tree/master/samples/note) and download [**Sample APK** here](https://docs.google.com/uc?authuser=0&id=0BwcZml9gnwoZOHcxZFI3Z0ZGUUk&export=download)
-
-## Overview
 ![AndroidMvc Layers](http://i.imgur.com/dfW8TLM.png)
 
-#### View
-All views should be **as lean as possible** because their responsibilities are only to capture user interactions and display data. Then as long as controllers are unit tested properly it's less likely to make mistake on view layer. Therefore, business logic can be maximally abstracted away from views into controllers. As a result, more business logic can be unit tested against controllers directly.
+#### Sample code to implement MVP
+- This sample shosw how a simple view just simply binds the model to the view
+    ```java
+    //Base view interface defined in AndroidMvc framework
+    public interface UiView {
+    	void update();
+    }
+    
+    //Base controller defined in AndroidMvc framework
+    public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL> {
+    	protected VIEW view;
+        ....
+    }
+    
+    //A concrete controller extending Controller
+    public class SomeController extends Controller<SomeController.Model, UiView> {
+        @Override
+        public Class modelType() {
+            return SomeController.class;
+        }
+    
+    	//The model of the controller that represents the state of the view
+        public static class Model {
+            String title;
+            public String getTitle() {
+                return title;
+            }
+        }
+    
+        public void updateTitle(String text) {
+            //Model is updated
+            getModel().title = text;
+            //Notify the view. The implementation of method update() in 
+            //concrete view, the view reads the model of the controller 
+            //and reflect the model to UI
+            view.update();
+        }
+    }
+    
+    //View paired with the controller 
+    public class SomeView implements UiView {
+        private TextView title;
+    
+        @Inject
+        private SomeController someController;
+    
+        @Override
+        public void update() {
+        	//Read the controller's model and bind it to text
+            title.setText(someController.getModel().getTitle());
+        }
+    }
+    ```
+- This sample shosw how a more complicated view defines extract methods to update view partially. However, this can also be done only with binding model appoach. For example, define a flag in the model, when the flag changes the controller call view.update() which show loading UI according to the flag.
+    ```java
+    //Extend UiView to define granular methods to update view partially instead of binding
+    //entire model to the view
+    public interface AsyncView extends UiView {
+        void showLoadingStatus();
+        void hideLoadingStatus();
+    }
 
-At a high level, all components of Android framework could be considered as views including activities, fragments, widgets and even services and etc, because as mentioned above, responsibilities of all Android components are just to capture user interactions and present data to users.
+    //A screen view that extends MvcFragment
+    public static class LoginScreen extends MvcFragment<LoginController> implements AsyncView{
+        private EditText username;
+        private EditText password;
+        private Button button;
 
-An analogy is that we can think Android as a browser. HTML (<!doctype html>) is like an activity, iFrame or a Ajax driven div is like a fragment and a javascript timer running as a polling loop is like a Android service. So as we can see, like what a service oriented web app does, all business logic should not be put on the front end (html/css/javascript) but in controllers on backend such as servlet, php, nodejs, asp.net and etc.
+        //Specify the class type of the paired controller
+        @Override
+        protected Class<LoginController> getControllerClass() {
+            return LoginController.class;
+        }
 
-#### Controller
-Controllers manage business logic including how to retrieve, calculate, format and wrap the data into event sending back to views. Controllers are defined in Java interfaces and injected into views via annotation @Inject. In this way, the controllers would be easy to mocked against the interface definition. Views subscribe to events defined by those controller interfaces. When views receive user interactions, they invoke methods against the injected controller interfaces. The underlining controller implementations will process the request by required business logic and send processed data back to views by events through **EventBusC2V** that views have subscribed on.
+        @Override
+        protected int getLayoutResId() {
+            return R.id.screen_login;
+        }
 
-Note that, in this MVC design, all controllers are **SINGLETON** application wide so that the state of controllers are guaranteed from the same source of truth.
+        //Called when the view is ready. Similar to onViewCreated but this
+        //callback guaranteed all injectable instances depended by this view are ready
+        @Override
+        public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
+            super.onViewReady(view, savedInstanceState, reason);
 
-#### Model
-Models in AndroidMVC design encapsulate and represent the state of views. So each controller has only one model object to represent the state of the specific business logic. When the controllers are requested to process data, they will manage the model and box and format part of or entire model into an event subscribed by view and notify the views to update themselves by the data conveyed by the event. Alternatively, the views can also directly read the model from the controllers injected into them as long as their is no much formatting requirement. But make sure, views should NOT change the value of models directly which should be only done by controllers.
+            //assign view by findViewById
+            //...
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    controller.login(username.getText().toString(),
+                            password.getText().toString());
+                }
+            });
+        }
 
-In addition, to reduce boiler plate code, AndroidMvc framework will automatically save and restore the instance state of the controller models. So we don't need to always manually write code manually to use saveInstanceState and restore them in onCreated.
+        @Override
+        public void showLoadingStatus() {
+            //Show progress dialog or progress bar
+        }
 
-#### Events
-With the builtin EventBus, events are defined as Java classes. It's also recommended to define them in controller interfaces to namespace them, so that we know what do the events do with more context. In addition, in a complex application with thousands of different events, the events won't be scattered everywhere. Events defined as Java classes instead of strings like Android messages has many benefits such as 1. extra data can be self-contained in them, 2. they are strong typed which avoids typo that can make debugging like a disaster, 3. strong typed events are also easier to track through inside IDEs (Android Studio, Eclipse and etc).
+        @Override
+        public void hideLoadingStatus() {
+            //Hide progress dialog or progress bar
+        }
 
-Once a event is defined, it can be broadcast to multiple views who subscribe to them. When events contain data, they can be thought as a partial **ViewModel** that will drive subscribed views to update themselves. So to some extent AndroidMvc could be thought as a variant of **MVVM** pattern as well.
+        @Override
+        public void update() {
+            //Bind model here
+        }
 
-To use it as a traditional **MVVM** or an Ajax like MVVM is totally depending on how the events are designed. For example, we can define only one event for a controller called EventC2V.OnModelUpdate and whenever the controller updates the model it raise this event. In this way, it's exactly the same as the traditional **MVVM** pattern. Also we can divide the update of model into more granular events, then it's like Ajax in web app and the earlier approach is like to refresh the whole page whenever there is a model update.
+    }
 
-AndroidMvc is event driven. To isolate events between different layers, there are 3 event buses pre-setup in the framework:
+    public class LoginController extends FragmentController<Void, AsyncView> {
+        @Override
+        public Class<Void> modelType() {
+            return null;
+        }
 
-- **EventBusC2V** (Controllers to Views): One way event bus routing events from controllers to views. Events sent to views will be guaranteed to be run on Android UI thread by the framework.
-- **EventBusC2C** (Controllers to Controllers): Routes events among controllers. Events will be received on the same thread who send them.
-- **EventBusV2V** (Views to views): Routes events among views. Events will be received on the same thread who send them.
-- 
+        public void login(String username, String password) {
+            runTask(new Task<Void>() {
+                @Override
+                public Void execute(Monitor<Void> monitor) throws Exception {
+                    //Task.execute methods runs on non-UI thread, so we need to
+                    //post the view update logic back to UI thread
+                    uiThreadRunner.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.showLoadingStatus();
+                        }
+                    });
+
+                    //Send a http request to login
+                    //...
+                    //Request returns successfully
+
+                    //Task.execute methods runs on non-UI thread, so we need to
+                    //post the view update logic back to UI thread
+                    uiThreadRunner.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.hideLoadingStatus();
+                        }
+                    });
+                    return null;
+                }
+            }, new Task.Callback<Void>() {
+                @Override
+                public void onException(Exception e) throws Exception {
+                    //Call back is guaranteed to run on UI thread by the framework
+                    //No need to use uiThreadRunner to post action
+                    view.hideLoadingStatus();
+                }
+            });
+        }
+    }
+    ```
+#### Sample code to implement MVVM
+```java
+//A concrete controller as a ViewModel
+    public static class SomeController extends Controller<SomeController.Model, UiView> {
+        interface Event {
+            class OnModelUpdated {
+            }
+
+            class OnTitleChanged {
+                private final String title;
+
+                public OnTitleChanged(String title) {
+                    this.title = title;
+                }
+
+                public String getTitle() {
+                    return title;
+                }
+            }
+        }
+
+        @Override
+        public Class modelType() {
+            return SomeController.class;
+        }
+
+        //The model of the controller that represents the state of the view
+        public class Model {
+            private String title;
+
+            //Update model properties will fire events
+            public void setTitle(String title) {
+                this.title = title;
+                
+                //Post an event
+                //Note postEvent method guarantees the event will be posted to UI thread!!!
+                postEvent(new Event.OnTitleChanged(getModel().getTitle()));
+            }
+
+            public String getTitle() {
+                return title;
+            }
+        }
+
+        //Expose to view to update title
+        public void updateTitle(String text) {
+            //Model is updated
+            getModel().setTitle(text);
+        }
+        
+        public void rebindModel() {
+            //...
+            //code to update model
+            //
+            
+            postEvent(new Event.OnModelUpdated());
+        }
+    }
+
+    //View paired with the controller
+    public class SomeView extends View {
+        private TextView title;
+
+        @Inject
+        private SomeController controller;
+
+        @Inject
+        @EventBusV //Event bus for subscribers as views
+        private EventBus eventBus;
+
+        public SomeView(Context context) {
+            super(context);
+
+            //Register this view to the event bus for views
+            //Since here, when an even in type of SomeController.Event.OnTitleChanged
+            //is posted, method onEvent(SomeController.Event.OnTitleChanged event)
+            //will be called
+            eventBus.register(this);
+        }
+
+        @Override
+        protected void onAttachedToWindow() {
+            super.onAttachedToWindow();
+
+            //Unregister the view from the event bus.
+            //This is working but not ideal because the event bus will be unregistered until
+            //the view is removed from the window not it's parent
+            //You can consider viewGroup.setOnHierarchyChangeListener
+            
+            //but make sub view in fragments extending MvcFragment is recommended since 
+            //MvcFragment register and unregister event bus in onCreate and onDestroy 
+            //lifecycle call backs. 
+            // 
+            //This is just an example of using eventBus manually.
+            eventBus.unregister(this);
+        }
+
+        //Monitor event SomeController.Event.OnTitleChanged
+        //All event subscriber methods should be called onEvent with one argument of the
+        //event's class type
+        private void onEvent(SomeController.Event.OnTitleChanged event) {
+            title.setText(event.getTitle());
+        }
+
+        //Monitor event SomeController.Event.OnModelUpdated
+        private void onEvent(SomeController.Event.OnModelUpdated event) {
+            title.setText(controller.getModel().getTitle());
+            
+            //other views to bind to the controller/ViewModel's model
+            //...
+        }
+    }
+```
+
+## Fragment Life cycles
+Since AndroidMvc framwork is designed to implement apps with a single Activity in most cases. Fragments are playing an important role. In the framework, fragments can be used as a screen which is the what an activity does traditionally. Also it can be used as sub view as well.
+
+Below are life cycle callback of MvcFragment provided by AndroidMvc framework
+- **onCreateView** is final and **SEALED**, use onViewReady described below
+- **onViewCreated** is final and **SEALED**, use onViewReady described below
+- **onViewReady**(View, Bundle, **Reason**) is called when the fragement is ready to bind Android widgets by findViewById and **use controllers**. The argument "Reason" indicates why the view is created or recreated. For example, view is created
+  - first time
+  - on restoration
+  - rotation.
+- **onReturnForeground** called when the app is brought to the front after being pushed to background. It complements onResume since onResume doesn't differentiate foregrounding app, rotation, creation and etc.
+- **onPushToBackStack** called when the fragment is about to be pushed to back stack typically on navigation. It complements onPause since onPause doesn't differentiate pushing to back stack, removing fragment, rotation and etc.
+- **onPoppedOutToFront** called when the fragment is popping out from the fragment backstack to present as the top most fragment.
+- **onPopAway** called when the fragment was the top most presenting fragment but will be popped away and replaced by the fragment will pop out under it.
+- **onPreNavigationTransaction(FragmentTransaction transaction, MvcFragment nextFragment)** called before the fragment transaction is about to commit that will replace current fragment by the next. It's main providing the transaction being committed to configure transaction animation. e.g adding SharedElements
+- **onOrientationChanged** called when orientation changed.
+
+## FragmentController Life cycles
+All fragment life cycles are mapped into [FragmentController](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/FragmentController.java). So fragments are further liberated from handling business logic. For example, if you need to do some stuff in Framgent.onViewReady, you can do it in FragmentController.onViewReady.
+
+Here are the life cycles
+- **onCreate** when the controller is injected into the corresponding fragment
+- **onViewReady(Reason)** is called when the fragement is ready to show. The argument "Reason" indicates why the view is created or recreated. For example, view is created
+  - first time
+  - on restoration
+  - rotation.
+- **onResume** callced when the fragment is calling its own onResume
+- **onPasue** called when the fragment is calling its own onPuase
+- **onDestroy** called when the controller is released from being used by the corresponding fragment and not referenced by anything it was injected to.
+- **onBackButtonPressed()** called when the phycical back button is pressed
+- **onReturnForeground** samed as the corresponding life cycle callback in fragment
+- **onPushToBackStack** samed as the corresponding life cycle callback in fragment
+- **onPoppedOutToFront** samed as the corresponding life cycle callback in fragment
+- **onPopAway** samed as the corresponding life cycle callback in fragment
+- **onOrientationChanged** called when orientation changed.
+
+## Navigation
+As metioned earlier, AndroidMvc framework uses single activity to create Android apps. Therefore navigation in AndroidMvc is to swap full screen fragments. Though fragment transactions involve complexity primarily because they may be committed asynchronously, AndroidMvc aims to wrap all the tricks up. This is another reason why onCreateView and onViewCreated life cycle call back are sealed and replaced by onViewReady() metioned in [FragmentController Life cycles](#FragmentController-Life-cycles) section. 
+
+The navigation functions are tested in instrumentation test cases. If you are interested you can check out the in [instrumentation test project](https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test).
+
+#### Mapping between [MvcFragment](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc/src/main/java/com/shipdream/lib/android/mvc/MvcFragment.java) and [FragmentController](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/FragmentController.java)
+
+- [MvcFragment](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc/src/main/java/com/shipdream/lib/android/mvc/MvcFragment.java) should be extended by fragments in AndroidMvc. It can represents a screen or just a sub view. 
+  - It can represent a full screen
+  - It also can be used for just a sub view
+  - Class extending [MvcFragment](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc/src/main/java/com/shipdream/lib/android/mvc/MvcFragment.java) needs to abstract method **MvcFragment#getResouceId()** to provide the layout resouce id that will be automatically inflated as the root view of the fragment.
+  - Class extending [MvcFragment](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc/src/main/java/com/shipdream/lib/android/mvc/MvcFragment.java) needs to implement the abstract method **MvcFragment#getControllerClass()** to provide the class type of a concrete [FragmentController](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/FragmentController.java). The MvcFragment will automatically create inject the instance of the controller. You don't need to create it, just use MvcFragment.controller straight away. 
+    - Note that, null is allow to returned if the fragment doesn't need a controller or you want to inject your own controller by @Inject manually for a reason. However, beware of that in this case MvcFragment.controller will be **NULL**.
+- [FragmentController](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/FragmentController.java) should be extended by a concrete controller for a [MvcFragment](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc/src/main/java/com/shipdream/lib/android/mvc/MvcFragment.java). 
+  - It can be used by [NavigationManager](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/NavigationManager.java) to navigate to its corresponding MvcFragment. In this case, the corresponding MvcFragment will be treated as a full screen page. See the code snippet in [sample code](https://github.com/kejunxia/AndroidMvc/blob/master/samples/simple-mvp/core/src/main/java/com/shipdream/lib/android/mvc/samples/simple/mvp/controller/CounterMasterController.java) as below
+    ```java
+    public void goToDetailScreen(Object sender) {
+        navigationManager.navigate(sender).to(CounterDetailController.class);
+    }
+    ```
+
+#### Routing
+Routing rules can be defined in you main activity extending [MvcActivity](https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc/src/main/java/com/shipdream/lib/android/mvc/MvcActivity.java). Implement method **MvcActivity#mapControllerFragment()** to map which fragment will be launched as a full screen page for the corresponding controller class type. 
+
+A typical routing rule is as the code below. 
+```java
+@Override
+protected Class<? extends MvcFragment> mapControllerFragment(
+        Class<? extends Controller> controllerClass) {
+    if (controllerClass == CounterMasterController.class) {
+        return CounterMasterScreen.class;
+    } else if (controllerClass == CounterDetailController.class) {
+        return CounterDetailScreen.class;
+    } else {
+        return null;
+    }
+}
+```
+
+If you want more automation, you can choose your own package structure file name pattern to apply a generic routing rule to locate concrete MvcFragment classes like below. See the code in the [sample project](https://github.com/kejunxia/AndroidMvc/blob/master/samples/simple-mvp/app/src/main/java/com/shipdream/lib/android/mvc/samples/simple/mvp/MainActivity.java)
+```java
+@Override
+protected Class<? extends MvcFragment> mapControllerFragment(
+        Class<? extends FragmentController> controllerClass) {
+    String controllerPackage = controllerClass.getPackage().getName();
+    
+    //Find the classes of fragment under package .view and named in form of xxxScreen
+    //For example
+    
+    //a.b.c.CounterMasterController -> a.b.c.view.CounterMasterScreen
+    
+    String viewPkgName = controllerPackage.substring(0, controllerPackage.lastIndexOf(".")) + ".view";
+    String fragmentClassName = viewPkgName + "."
+            + controllerClass.getSimpleName().replace("Controller", "Screen");
+    
+    try {
+        return (Class<? extends MvcFragment>) Class.forName(fragmentClassName);
+    } catch (ClassNotFoundException e) {
+        String msg = String.format("Fragment class(%s) for controller(%s) can not be found",
+                fragmentClassName, controllerClass.getName());
+        throw new RuntimeException(msg, e);
+    }
+}
+```
+
+#### Continuity between screens
+AndroidMvc has 3 different ways to ensure continuity between two consequent screens on navigation transition
+1. Shared injectable instances will be retained through the navigation transition. For example, when 2 controllers have the same type of manager injected the same instance of the manager from the first screen's controller will be retained for the second screen's controller. You can check out the [sample code](https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvp), in the [CounterMasterController](https://github.com/kejunxia/AndroidMvc/blob/master/samples/simple-mvp/core/src/main/java/com/shipdream/lib/android/mvc/samples/simple/mvp/controller/CounterMasterController.java) there is an injected field called counterManager which is injected into [CounterDetailController](https://github.com/kejunxia/AndroidMvc/blob/master/samples/simple-mvp/core/src/main/java/com/shipdream/lib/android/mvc/samples/simple/mvp/controller/CounterDetailController.java) as well. So when master controller navigate to detail controller, the state of the manager retains.
+2. Just prepare the controller of the next screen just before navigation is taking place. In this case, the controller prepared will be injected into the next screen framgment.
+    ```java
+    navigationManager.navigate(this).with(CounterDetailController.class, 
+                new Preparer<CounterDetailController>() {
+            @Override
+            public void prepare(CounterDetailController detailController) {
+                //Set the initial state for the controller of the next screen
+                detailController.setCount(123);
+            }
+        }).to(CounterDetailController.class);
+    ```
+3. Hold an injected instance of the manager depending on the next screen in the controller held by the delegateFragment. DelegateFragment is a long life fragment in the single activity containing all other fragments, so its controller will referenced during the entire lifespan of the app UI comopnent. So the inject managers held by the controller remain during the whole app session. For example, AndroidMvc has already had an internal controller for the delegateFragment holding NavigationManager, so the navigationManager is singleton globally and live through the entire app life span. Another example is, you can have an AccountManager held by delegateFragment's controller so accountManager will span the entire app session to manage the logged in user.
+
+#### Navigation tool bar
+The screen fragment doesn't have to take the entire screen. For example, all screens can share the same toolbar just like the tranditional ActionBar.
+
+More details can be found in the [Sample Code](https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvp)
+
+## Run AsyncTask in controller
+When a http request need to be sent or other long running actions need to be performed, they need to be run off the UI thread. To run an asyncTask in controllers, simply call 
+```java
+//In any controller method you can use below code to run async task
+
+Task.Monitor<Void> monitor = runTask(new Task<Void>() {
+    @Override
+    public Void execute(Monitor<Void> monitor) throws Exception {
+        //Execute on Non-UI thread
+        //When the view need to be updated here, you need use
+        //uiThreadRunner to post it back to UI thread
+
+        return null;
+    }
+}, new Task.Callback<Void>() {
+    @Override
+    public void onException(Exception e) throws Exception {
+        //Handle exception
+        //All callback methods are executed on UI thread
+    }
+});
+
+//If you need to cancel unscheduled or executing task, call
+//cancel against its monitor
+boolean canInterrupt = true;
+monitor.cancel(canInterrupt);
+```
+
+As you see, runTask will give you a monitor which can be used to query the state of the task or cancel it if it has not started or interupt the currently executing task for example a downloading task.
+
+**Tips**:
+- Only run async task in controllers to avoid blocking UI thread. All methods in managers or services should simply be synchrounous. Since managers and services are supposed to be consumed by controllers, when they are in use, controllers can choose invoke methods of managers and services on non-UI thread or not.
+- In the scope the Task.execute() every line is running in sequence. The callback.onScucess will be called until all lines in Task.execute() execute successfully otherwise, callback.onException is called.
+- You can run multiple long running methods in the same Task.execute() method. It's useful if you need to send some consequent http requests each is depending the previous response. So any one of the requests fails, it fails the entire task. See example:
+    ```java
+    Task.Monitor<Void> monitor = runTask(new Task<Void>() {
+        @Override
+        public Void execute(Monitor<Void> monitor) throws Exception {
+            //Send login http request
+            Login loginResponse = loginHttpService.login(username, password);
+    
+            //use the token contained in loginResponse to send another http
+            //request to register device to push notification services
+            Status status = pushNotificationHttpService.register(deviceId, loginResponse.token());
+            return null;
+        }
+    });
+    ```
+
+---
+## Below are old documents for AndroidMvc below 2.3.0. They will be updated.
+---
+
 ## Using AndroidMvc
 
 Let's take a simple app counting number as an example. The counter app has two navigation locations:
@@ -547,7 +934,7 @@ the graph will automatically save and restore injected objects implementing Stat
 AndroidMvc.graph().release(ObjectBeenInjected)
 ````
 to dereference them. Fortunately, all MvcFragment will do the injection and releasing in their
-Android lifecycle - onCreated and onDestroy. So we don't need to do this manually for fragments.
+Android lifecycle - onCreate and onDestroy. So we don't need to do this manually for fragments.
 
 **But why do we release? Isn't Java managing garbage collection automatically?
 
@@ -742,50 +1129,5 @@ public void shouldRaiseFailEventForNetworkErrorToUpdateWeathers() throws IOExcep
 	ArgumentCaptor<WeatherController.EventC2V.OnWeathersUpdateFailed> eventFailure
 			= ArgumentCaptor.forClass(WeatherController.EventC2V.OnWeathersUpdateFailed.class);
 	verify(monitor, times(1)).onEvent(eventFailure.capture());
-}
-````
-
-### 3. Custom mechanism to automatically save/restore models of controllers
-By default, AndroidMvc uses GSON to serialize and deserialize models of controllers automatically. In general uses the performance is acceptable. For example, on rotation, as long as the models are not very large, the frozen time of the rotation would be between 200ms and 300ms.
-
-If we need to provide more optimized mechanism to do so in case there are large models taking long to be serialized and deserialized by GSON, custom StateKeeper can be set to provide alternative save/restore implementation. For Android, Parcelable is the best performed mechanism to save/restore state but it is not fun and error prone. Fortunately, there a handy library [Parceler](https://github.com/johncarl81/parceler) from another developer does this automatically. In the example below, we tried this library to implement custom StateKeeper to save/restore state by Parcelables automatically. The best place to set the custom StateKeeper is the Application#onCreated().
-
-Check out more details in the sample code - Note
-
-````java
-public class NoteApp extends Application {
-    @Override
-    public void onCreated() {
-        super.onCreated();
-
-        AndroidMvc.setCustomStateKeeper(new AndroidStateKeeper() {
-            @SuppressWarnings("unchecked")
-            @Override
-            public Parcelable saveState(Object state, Class type) {
-                /**
-                 * Use parcelable to save all states.
-                 */
-                return Parcels.wrap(state);
-                //type of the state can be used as a filter to handle some state specially
-                //if (type == BlaBlaType) {
-                //    special logic to save state
-                //}
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Object getState(Parcelable parceledState, Class type) {
-                /**
-                 * Use parcelable to restore all states.
-                 */
-                return Parcels.unwrap(parceledState);
-
-                //type of the state can be used as a filter to handle some state specially
-                //if (type == BlaBlaType) {
-                //    special logic to restore state
-                //}
-            }
-        });
-    }
 }
 ````
