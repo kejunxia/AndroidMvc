@@ -33,9 +33,6 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import static android.R.id.message;
-import static java.security.AccessController.getContext;
-
 public class CounterMasterScreen extends AbstractFragment<CounterMasterController>
         implements CounterMasterController.View{
 
