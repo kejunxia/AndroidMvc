@@ -24,6 +24,8 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import retrofit2.Response;
@@ -50,7 +52,8 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
         void showProgress();
         void hideProgress();
         void updateIpValue(String ip);
-        void showErrorMessageToFetchIp();
+        void showHttpError(int statusCode, String message);
+        void showNetworkError(IOException e);
     }
 
     @Inject
@@ -88,14 +91,17 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
                 if (response.isSuccessful()) {
                     view.updateIpValue(response.body().getIp());
                 } else {
-                    view.showErrorMessageToFetchIp();
+                    view.showHttpError(response.code(), response.message());
                     logger.warn("Http error to get ip. error({}): {}", response.code(), response.message());
                 }
             }
 
             @Override
             public void onException(Exception e) {
-                view.showErrorMessageToFetchIp();
+                if (e instanceof IOException) {
+                    view.showNetworkError((IOException) e);
+                }
+
                 logger.warn(e.getMessage(), e);
             }
 

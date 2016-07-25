@@ -27,9 +27,7 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.service.ResourceService;
-import com.shipdream.lib.poke.Provider;
 import com.shipdream.lib.poke.Provides;
-import com.shipdream.lib.poke.exception.ProvideException;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -39,9 +37,12 @@ import java.util.Random;
 
 import javax.inject.Inject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -55,18 +56,43 @@ public class TestCounterMasterController extends BaseTest {
     @Inject
     private NavigationManager navigationManager;
 
+    private CounterMasterController.View view;
     private CounterMasterController controller;
 
     private ResourceService resourceServiceMock;
+    private Call<IpPayload> ipServiceCallMock;
 
+    //Prepare injection graph before calling setup method
     @Override
     protected void prepareGraph(MvcComponent overriddingComponent) throws Exception {
         super.prepareGraph(overriddingComponent);
-        overriddingComponent.register(new Provider<ResourceService>(ResourceService.class) {
-            @Override
-            protected ResourceService createInstance() throws ProvideException {
+
+        overriddingComponent.register(new Object(){
+            /**
+             * Mock resource service
+             * @return
+             */
+            @Provides
+            public ResourceService resourceService() {
                 resourceServiceMock = mock(ResourceService.class);
                 return resourceServiceMock;
+            }
+
+            /**
+             * Prepare objects to mock http calls
+             * @return
+             * @throws IOException
+             */
+            @Provides
+            public ServiceFactory serviceFactory() throws IOException {
+                ipServiceCallMock = mock(Call.class);
+
+                IpService ipServiceMock = mock(IpService.class);
+                when(ipServiceMock.getIp(anyString())).thenReturn(ipServiceCallMock);
+
+                ServiceFactory serviceFactoryMock = mock(ServiceFactory.class);
+                when(serviceFactoryMock.createService(IpService.class)).thenReturn(ipServiceMock);
+                return serviceFactoryMock;
             }
         });
     }
@@ -78,6 +104,9 @@ public class TestCounterMasterController extends BaseTest {
         controller = new CounterMasterController();
         Mvc.graph().inject(controller);
         controller.onCreated();
+
+        view = mock(CounterMasterController.View.class);
+        TestUtil.assignControllerView(controller, view);
     }
 
     @Test
@@ -121,40 +150,14 @@ public class TestCounterMasterController extends BaseTest {
 
     @Test
     public void should_update_view_with_correct_ip_and_show_and_dismiss_progress_bar() throws Exception {
-        //Prepare view
-        CounterMasterController.View view = mock(CounterMasterController.View.class);
-        TestUtil.assignControllerView(controller, view);
-
+        //Prepare mocked http response
         final String fakeIpResult = "abc.123.456.xyz";
 
-        MvcComponent component = new MvcComponent("ServiceComponent");
-        component.register(new Object(){
-            /**
-             * Prepare http service
-             * @return
-             * @throws IOException
-             */
-            @Provides
-            public ServiceFactory serviceFactory() throws IOException {
-                IpPayload payload = mock(IpPayload.class);
-                when(payload.getIp()).thenReturn(fakeIpResult);
+        IpPayload payload = mock(IpPayload.class);
+        when(payload.getIp()).thenReturn(fakeIpResult);
+        when(ipServiceCallMock.execute()).thenReturn(Response.success(payload));
 
-                Call<IpPayload> call = mock(Call.class);
-                when(call.execute()).thenReturn(Response.success(payload));
-
-                IpService ipService = mock(IpService.class);
-                when(ipService.getIp(anyString())).thenReturn(call);
-
-                final ServiceFactory serviceFactory = mock(ServiceFactory.class);
-                when(serviceFactory.createService(IpService.class)).thenReturn(ipService);
-                return serviceFactory;
-            }
-        });
-
-        boolean overrideProvider = true;
-        Mvc.graph().getRootComponent().attach(component, overrideProvider);
-        Mvc.graph().inject(controller);
-
+        //Action
         controller.refreshIp();
 
         //Verify
@@ -168,6 +171,61 @@ public class TestCounterMasterController extends BaseTest {
         verify(view).updateIpValue(fakeIpResult);
 
         //Should not show error message
-        verify(view, times(0)).showErrorMessageToFetchIp();
+        verify(view, times(0)).showHttpError(anyInt(), anyString());
+    }
+
+    @Test
+    public void should_show_error_message_with_httpError_and_show_and_dismiss_progress_bar() throws Exception {
+        //Prepare view
+        int errorStatusCode = 401;
+
+        ResponseBody responseBody = mock(ResponseBody.class);
+        when(ipServiceCallMock.execute()).thenReturn(
+                Response.<IpPayload>error(errorStatusCode, responseBody));
+
+        //Action
+        controller.refreshIp();
+
+        //Verify
+        //Showed loading progress
+        verify(view).showProgress();
+
+        //Dismissed loading progress
+        verify(view).hideProgress();
+
+        //View's ip address text view should not be updated
+        verify(view, times(0)).updateIpValue(anyString());
+
+        //Should show http error message with given mocking data
+        verify(view, times(1)).showHttpError(errorStatusCode, null);
+
+        //Should not show network error message
+        verify(view, times(0)).showNetworkError(any(IOException.class));
+    }
+
+    @Test
+    public void should_show_error_message_with_networkError_and_show_and_dismiss_progress_bar() throws Exception {
+        //Prepare view
+        IOException ioExceptionMock = mock(IOException.class);
+
+        when(ipServiceCallMock.execute()).thenThrow(ioExceptionMock);
+
+        controller.refreshIp();
+
+        //Verify
+        //Showed loading progress
+        verify(view).showProgress();
+
+        //Dismissed loading progress
+        verify(view).hideProgress();
+
+        //View's ip address text view should not be updated
+        verify(view, times(0)).updateIpValue(anyString());
+
+        //Should not show http error message
+        verify(view, times(0)).showHttpError(anyInt(), anyString());
+
+        //Should show network error message with the given mocking exception
+        verify(view, times(1)).showNetworkError(ioExceptionMock);
     }
 }
