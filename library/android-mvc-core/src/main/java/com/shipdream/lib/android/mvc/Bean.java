@@ -18,6 +18,13 @@ package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.poke.util.ReflectUtils;
 
+/**
+ * A bean in AndroidMvc is a basic unit has a model that can be automatically saved and
+ * restored by the framework. Also, all beans have their life cycles. So when they are created on
+ * injection {@link #onCreated()} will be called so do {@link #onDestroy()} when the last object
+ * referencing them is not used any more.
+ * @param <MODEL>
+ */
 public abstract class Bean<MODEL> {
     private MODEL model;
 
