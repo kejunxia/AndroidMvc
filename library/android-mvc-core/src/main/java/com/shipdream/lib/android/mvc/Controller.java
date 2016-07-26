@@ -360,12 +360,7 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      * @param eventV The event
      */
     protected void postEvent(final Object eventV) {
-        uiThreadRunner.post(new Runnable() {
-            @Override
-            public void run() {
-                eventBusV.post(eventV);
-            }
-        });
+        eventBusV.post(eventV);
     }
 
 }

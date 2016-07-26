@@ -101,12 +101,7 @@ class EventRegister {
     }
 
     void postEvent2V(final Object event) {
-        uiThreadRunner.post(new Runnable() {
-            @Override
-            public void run() {
-                eventBusV.post(event);
-            }
-        });
+        eventBusV.post(event);
     }
 
 }
