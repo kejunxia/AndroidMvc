@@ -150,7 +150,8 @@ public class TestCounterMasterController extends BaseTest {
 
     @Test
     public void should_update_view_with_correct_ip_and_show_and_dismiss_progress_bar() throws Exception {
-        //Prepare mocked http response
+        //Prepare
+        //Prepare a good http response
         final String fakeIpResult = "abc.123.456.xyz";
 
         IpPayload payload = mock(IpPayload.class);
@@ -163,22 +164,21 @@ public class TestCounterMasterController extends BaseTest {
         //Verify
         //Showed loading progress
         verify(view).showProgress();
-
         //Dismissed loading progress
         verify(view).hideProgress();
-
         //Updated view's text view by the given fake ip result
         verify(view).updateIpValue(fakeIpResult);
-
         //Should not show error message
         verify(view, times(0)).showHttpError(anyInt(), anyString());
+        //Should not show network error message
+        verify(view, times(0)).showNetworkError(any(IOException.class));
     }
 
     @Test
-    public void should_show_error_message_with_httpError_and_show_and_dismiss_progress_bar() throws Exception {
-        //Prepare view
+    public void should_show_error_message_on_HttpError_and_show_and_dismiss_progress_bar() throws Exception {
+        //Prepare
+        //Return 401 in the http response
         int errorStatusCode = 401;
-
         ResponseBody responseBody = mock(ResponseBody.class);
         when(ipServiceCallMock.execute()).thenReturn(
                 Response.<IpPayload>error(errorStatusCode, responseBody));
@@ -189,42 +189,35 @@ public class TestCounterMasterController extends BaseTest {
         //Verify
         //Showed loading progress
         verify(view).showProgress();
-
         //Dismissed loading progress
         verify(view).hideProgress();
-
         //View's ip address text view should not be updated
         verify(view, times(0)).updateIpValue(anyString());
-
         //Should show http error message with given mocking data
         verify(view, times(1)).showHttpError(errorStatusCode, null);
-
         //Should not show network error message
         verify(view, times(0)).showNetworkError(any(IOException.class));
     }
 
     @Test
-    public void should_show_error_message_with_networkError_and_show_and_dismiss_progress_bar() throws Exception {
-        //Prepare view
+    public void should_show_error_message_on_NetworkError_and_show_and_dismiss_progress_bar() throws Exception {
+        //Prepare
+        //Throw an IOException to simulate an network error
         IOException ioExceptionMock = mock(IOException.class);
-
         when(ipServiceCallMock.execute()).thenThrow(ioExceptionMock);
 
+        //Action
         controller.refreshIp();
 
         //Verify
         //Showed loading progress
         verify(view).showProgress();
-
         //Dismissed loading progress
         verify(view).hideProgress();
-
         //View's ip address text view should not be updated
         verify(view, times(0)).updateIpValue(anyString());
-
         //Should not show http error message
         verify(view, times(0)).showHttpError(anyInt(), anyString());
-
         //Should show network error message with the given mocking exception
         verify(view, times(1)).showNetworkError(ioExceptionMock);
     }
