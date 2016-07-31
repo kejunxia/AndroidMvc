@@ -19,7 +19,7 @@ package com.shipdream.lib.android.mvc.view.viewpager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 
@@ -120,7 +120,7 @@ public class ViewPagerHomeFragment extends MvcFragment<FirstFragmentController> 
 
     }
 
-    private class PagerAdapter extends FragmentPagerAdapter {
+    private class PagerAdapter extends FragmentStatePagerAdapter {
         private Class<? extends MvcFragment>[] tabs = new Class[]{
                 TabFragmentA.class,
                 TabFragmentB.class,

@@ -19,7 +19,9 @@ package com.shipdream.lib.android.mvc;
 import com.shipdream.lib.android.mvc.inject.test.Phone;
 import com.shipdream.lib.android.mvc.inject.test.Robot;
 import com.shipdream.lib.android.mvc.inject.test.Smart;
+import com.shipdream.lib.poke.Provides;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import javax.inject.Inject;
@@ -44,5 +46,61 @@ public class TestMvcComponent extends BaseTest {
         }
 
         Mvc.graph().inject(new Shop());
+    }
+
+    private class Car{
+    }
+
+    public class Tourist {
+        @Inject
+        private Car car;
+    }
+
+    @Test
+    public void test_injection_with_different_component_for_different_scoping() throws Exception{
+        //A component with a cache by default
+        MvcComponent componentWithCache = new MvcComponent("SmallLender");
+        componentWithCache.register(new Object(){
+            @Provides
+            public Car car() {
+                return new Car();
+            }
+        });
+        //Attach the component
+        Mvc.graph().getRootComponent().attach(componentWithCache);
+
+        Tourist tourist1 = new Tourist();
+        Mvc.graph().inject(tourist1);
+
+        Tourist tourist2 = new Tourist();
+        Mvc.graph().inject(tourist2);
+
+        //Tourist1 and tourist2 should borrow the same car
+        //Because the component providing car instances has a scope cache
+        Assert.assertTrue(tourist1.car == tourist2.car);
+
+        //Detach the component
+        Mvc.graph().getRootComponent().detach(componentWithCache);
+
+        boolean useScopeCache = false;
+        MvcComponent componentWithoutCache = new MvcComponent("BigLender", useScopeCache);
+        componentWithoutCache.register(new Object(){
+            @Provides
+            public Car car() {
+                return new Car();
+            }
+        });
+        //Attach the component
+        Mvc.graph().getRootComponent().attach(componentWithoutCache);
+
+        Tourist tourist3 = new Tourist();
+        Mvc.graph().inject(tourist3);
+
+        Tourist tourist4 = new Tourist();
+        Mvc.graph().inject(tourist4);
+
+        //tourist3 and tourist4 should borrow the same car
+        //Because the component providing car instances doesn't use a scope cache
+        Assert.assertTrue(tourist3.car != tourist4.car);
     }
 }

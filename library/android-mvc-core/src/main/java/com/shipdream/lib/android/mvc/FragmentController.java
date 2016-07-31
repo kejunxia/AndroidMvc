@@ -28,7 +28,6 @@ public abstract class FragmentController<MODEL, VIEW extends UiView> extends Con
      * automatically.
      */
     public void onViewReady(Reason reason) {
-        view.update();
     }
 
     /**

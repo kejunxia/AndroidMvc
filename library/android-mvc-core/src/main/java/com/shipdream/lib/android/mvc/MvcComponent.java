@@ -32,23 +32,42 @@ import java.lang.reflect.Modifier;
 /**
  * A component manages injectable objects. It is able to locate implementation class automatically by
  * <ul>
- *     <ui>The injecting class is a concrete class and has empty constructor</ui>
- *     <ui>The injecting class is an interface or abstract class and there is concrete class is named
- *     with suffix "impl" and sitting in the subpackage "internal" which is at the
- *     same level of the interface or abstract. For instance, the interface is
- *     a.b.c.Car and there is an concrete class at a.b.c.internal.CarImpl</ui>
- *     <ui>The injecting class is registered by {@link #register(Object)} or {@link #register(Provider)}</ui>
+ * <ui>The injecting class is a concrete class and has empty constructor</ui>
+ * <ui>The injecting class is an interface or abstract class and there is concrete class is named
+ * with suffix "impl" and sitting in the subpackage "internal" which is at the
+ * same level of the interface or abstract. For instance, the interface is
+ * a.b.c.Car and there is an concrete class at a.b.c.internal.CarImpl</ui>
+ * <ui>The injecting class is registered by {@link #register(Object)} or {@link #register(Provider)}</ui>
  * </ul>
  */
 public class MvcComponent extends Component {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
-     * Name of the component
-     * @param name
+     * Construct a MvcComponent with the give name with a cope cache so that providers registered
+     * to this component will supply an injectable object with the same instance since its first
+     * copy is created for injection until last instance is released.
+     *
+     * @param name Name of the component, can be null. But it's recommended to supply a name in order
+     *             to identify which component supplies an instance
      */
     public MvcComponent(String name) {
         super(name);
+    }
+
+    /**
+     * Construct a MvcComponent with the give name and specify whether this component cache instances
+     * created by providers registered to this component.
+     *
+     * @param name        Name of the component, can be null. But it's recommended to supply a name in order
+     *                    to identify which component supplies an instance
+     * @param enableCache If cache is enabled it will supply an
+     *                    injectable object with the same instance since its first copy is created for injection until
+     *                    last instance is released. Otherwise all providers registered by this component will always
+     *                    generate new instances.
+     */
+    public MvcComponent(String name, boolean enableCache) {
+        super(name, enableCache);
     }
 
     @SuppressWarnings("unchecked")

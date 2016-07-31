@@ -26,3 +26,4 @@ include 'samples:benchmark'
 
 include 'samples:simple-mvp:app'
 include 'samples:simple-mvp:core'
+include 'samples:poke-sample'
