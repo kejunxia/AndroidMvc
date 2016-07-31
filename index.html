@@ -250,8 +250,6 @@ Services abstract out data access logic so that they can be replaced by differen
 
 <h4>
 <a id="sample-code-to-implement-mvvm" class="anchor" href="#sample-code-to-implement-mvvm" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sample code to implement MVVM</h4>
-</li>
-</ul>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-c">//A concrete controller as a ViewModel</span>
     <span class="pl-k">public</span> <span class="pl-k">static</span> <span class="pl-k">class</span> <span class="pl-en">SomeController</span> <span class="pl-k">extends</span> <span class="pl-e">Controller&lt;<span class="pl-smi">SomeController</span>.Model</span>, <span class="pl-e">UiView</span>&gt; {
@@ -363,6 +361,8 @@ Services abstract out data access logic so that they can be replaced by differen
             <span class="pl-c">//...</span>
         }
     }</pre></div>
+</li>
+</ul>
 
 <h2>
 <a id="fragment-life-cycles" class="anchor" href="#fragment-life-cycles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fragment Life cycles</h2>
@@ -780,7 +780,7 @@ rootComponent<span class="pl-k">.</span>attach(overridingComponent, overriding);
 <span class="pl-k">private</span> <span class="pl-smi">EventBus</span> eventBusV;</pre></div>
 </li>
 <li>
-<p><strong>Events are defined by a class type.</strong> It's recommended to define it as enclosed class if it's closedly related to the class. As a result, the observer knows what events are for what. For example, </p>
+<p><strong>Events are defined by a class type.</strong> It's recommended to define it as enclosed class if it's closely related to the class. As a result, the observer knows what events are for what. For example, </p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">UserManager</span> {
     <span class="pl-k">interface</span> <span class="pl-en">Event</span> {
@@ -816,7 +816,7 @@ class OnUserLoggedIn {
 <li>Some internal state change. e.g. a polling every 3 seconds</li>
 </ul>
 
-<p>In this case, define a sender argument in the event class. Then when observers receive the event they know who intially request the refresh and handle differently.</p>
+<p>In this case, define a sender argument in the event class. Then when observers receive the event they know who initially request the refresh and handle differently.</p>
 </li>
 <li>
 <strong>Events are observed by methods with naming convention.</strong> To subscribe an event by declaring a method called <strong>onEvent</strong> with <strong>one argument</strong> in the class type of the event. The name of the event doesn't matter. For example
@@ -830,7 +830,7 @@ public class OneView {
 </code>
 </li>
 <li>
-<p><strong>Event bus needs to be registered to observe event</strong> by calling EventBus.register(Object observer). However, these pre-defined Mvc objects reigister by themselves so you don't need to worry about to registering by using them. Just define your onEvent methods to subscribe. These objects are:</p>
+<p><strong>Event bus needs to be registered to observe event</strong> by calling EventBus.register(Object observer). However, these pre-defined Mvc objects register by themselves so you don't need to worry about to registering by using them. Just define your onEvent methods to subscribe. These objects are:</p>
 
 <ul>
 <li>
@@ -968,9 +968,9 @@ public class OneView {
 
 <p>Instance state management in standard Android SDK is painful. It requires defining countless key-value pairs. No mention to create Paracelable needs to write a lot of boilerplate code and it's error prone.</p>
 
-<p>AndroidMvc framework manages the state automatically. Since a controller represents a view in abstraction so it has a property called model to contain the state of its view. AndroidMvc just getModel() and serialize it when the app is pushed to background and deserialize the model and bind it to the controller and view automatically. This is why you just need to bind the view in UiView.update() method and then no matter the view is newly created or restored, it's always reflecting the latest state of the model managed by the view's controller. Review <a href="#-Implement-MVC/MVP/MVVM-pattern">Implement MVC/MVP/MVVM pattern</a> to check the patterns.</p>
+<p>AndroidMvc framework manages the state automatically. Since a controller represents a view in abstraction so it has a property called model to contain the state of its view. AndroidMvc just getModel() and serialise it when the app is pushed to background and deserialise the model and bind it to the controller and view automatically. This is why you just need to bind the view in UiView.update() method and then no matter the view is newly created or restored, it's always reflecting the latest state of the model managed by the view's controller. Review <a href="#-Implement-MVC/MVP/MVVM-pattern">Implement MVC/MVP/MVVM pattern</a> to check the patterns.</p>
 
-<p>Also not just controllers manage their state automatically, managers, services and any injected objects extending Bean(#<a href="https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/Bean.java">https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/Bean.java</a>) and returns non-null class type in its method modelType() will be automatically managed. See more details about Bean.java and injeciton in section <a href="#Dependency-injection-(Poke)">Dependency injection</a></p>
+<p>Also not just controllers manage their state automatically, managers, services and any injected objects extending Bean(#<a href="https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/Bean.java">https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/Bean.java</a>) and returns non-null class type in its method modelType() will be automatically managed. See more details about Bean.java and injection in section <a href="#Dependency-injection-(Poke)">Dependency injection</a></p>
 
 <h2>
 <a id="dependency-injection-poke" class="anchor" href="#dependency-injection-poke" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependency injection (Poke)</h2>
@@ -980,7 +980,7 @@ Why reinvent the wheel?</p>
 
 <ul>
 <li>The main reason is to incorporate with <a href="http://kejunxia.github.io/AndroidMvc/">AndroidMvc</a> framework, it needs to do <strong>reference count</strong>. Since <a href="http://kejunxia.github.io/AndroidMvc/">AndroidMvc</a> automatically saves and restores state of controllers, when a controller is not used its state won't need to be managed any more. So <a href="http://kejunxia.github.io/AndroidMvc/">AndroidMvc</a> needs to know when a controller is not referenced.</li>
-<li>Another reason: In Dagger, a lot of boiler plate code still needs to be done. This definitely minimized run time overhead for injection but there are just two much codes. And you need to remember to declare you injection. It's almost like writting a setter or inject method for each injectable class and then we need to mannually set or inject objects.</li>
+<li>Another reason: In Dagger, a lot of boiler plate code still needs to be done. This definitely minimizes run time overhead for injection but there are just two much codes. And you need to remember to declare you injection. It's almost like writting a setter or inject method for each injectable class and then we need to manually set or inject objects.</li>
 </ul>
 
 <p>To find the balance between simpler code and runtime performance, <strong>Poke</strong> can use naming convention to automatically locate implementations. So we don't need to repeatedly declare implementations by writing in <strong>real</strong> application with. However, <strong>Poke</strong> also allows registering implementation manually. This is helpful either for dynamical replacement of implementations or mocking injectable dependencies in unit tests.</p>
@@ -990,7 +990,7 @@ Why reinvent the wheel?</p>
 
 <p>Classes and interfaces can be injected with the their instances. There are some classes can be injected with some special behaviours. These classes are called beans. A <a href="https://github.com/kejunxia/AndroidMvc/blob/master/library/android-mvc-core/src/main/java/com/shipdream/lib/android/mvc/Bean.java">Bean</a> is an object 
 1. has life cycles. When a bean is created by the first injection, its method <strong>onCreated</strong> will be called. When a bean is released by the last object it was injected into, it method <strong>onDestroy</strong> will be called. 
-2. has a model. A model contains the state of the bean that can be serialized and deserialized. So the bean's state can be saved and restored during the Android's activity and fragment's life cycles.</p>
+2. has a model. A model contains the state of the bean that can be serialised and deserialised. So the bean's state can be saved and restored during the Android's activity and fragment's life cycles.</p>
 
 <p>In AndroidMvc framework there are a couple of pre-defined beans</p>
 
@@ -1012,22 +1012,113 @@ So controllers and managers(can be thought as partial controller that are shared
 <li>
 <strong>Providers</strong> provide instances. Providers can be registered to component.</li>
 <li>
-<strong>Components</strong> contain providers. Components can also the attached to other components to form a component tree. 
+<p><strong>Components</strong> contain providers. Components can also the attached to other components to form a component tree. </p>
 
 <ul>
 <li>
 <strong>Scope</strong> A component has a cache to cache instances provided by providers held by the component. So providers are <strong>singleton</strong> in the scope of a component. You can set the cache of a component to be null. Then the providers in this component will always create new instances. </li>
 <li>By default, a component tree can only have unique provider providing instances with a specific class type and qualifier. Registering a provider to a component tree with duplicate to provide instance of type and qualifier already existing will throw exceptions.</li>
-<li>But you can explicitly declare you want to register a provider overriding the existing providers with the same class type and qualifier in the component tree. Last overriding provider registered wins.
-<code>java
-boolean overriding = true;
-rootComponent.attach(overridingComponent, overriding);
-</code>
+<li>
+<p>But you can explicitly declare you want to register a provider overriding the existing providers with the same class type and qualifier in the component tree. Last overriding provider registered wins.</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">boolean</span> overriding <span class="pl-k">=</span> <span class="pl-c1">true</span>;
+rootComponent<span class="pl-k">.</span>attach(overridingComponent, overriding);</pre></div>
 </li>
 </ul>
 </li>
 <li>
 <strong>Graph</strong> A graph is used to inject instances into target objects. A graph has a root component with providers or its child components providers to provide instances to be injected. Usually an application should have only one graph. So by default, providers registered to the root component of the graph is Singleton globally. To have different scope, simply manage your own components and attach/detach them to/from the root components of the graph. Providers of these components will be singleton until the components are detached from the graph.</li>
+</ul>
+
+<h4>
+<a id="how-to-inject" class="anchor" href="#how-to-inject" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How to inject</h4>
+
+<p>With poke and AndroidMvc, to inject an instance is easy. It doesn't need to declare  what needs to don't need to  Below we will explore how to inject in different scenarios.</p>
+
+<ul>
+<li>
+<p>Inject an instance of a concrete class</p>
+
+<p>AndroidMvc automatically inject concrete classes that have an empty default constructors.</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">Break</span> {
+      <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">slow</span>(<span class="pl-smi">Car</span> <span class="pl-v">car</span>) {
+          car<span class="pl-k">.</span>setSpeed(car<span class="pl-k">.</span>getSpeed() <span class="pl-k">-</span> <span class="pl-c1">1</span>);
+      }
+  }
+  <span class="pl-k">public</span> <span class="pl-k">class</span> <span class="pl-en">Car</span> {
+      <span class="pl-k">@Inject</span>
+      <span class="pl-k">private</span> <span class="pl-smi">Break</span> aBreak;
+      <span class="pl-k">private</span> <span class="pl-k">float</span> speed;
+      <span class="pl-k">public</span> <span class="pl-k">float</span> <span class="pl-en">getSpeed</span>() {
+          <span class="pl-k">return</span> speed;
+      }
+      <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">setSpeed</span>(<span class="pl-k">float</span> <span class="pl-v">speed</span>) {
+          <span class="pl-v">this</span><span class="pl-k">.</span>speed <span class="pl-k">=</span> speed;
+      }
+      <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">decelerate</span>() {
+          aBreak<span class="pl-k">.</span>slow(<span class="pl-v">this</span>);
+      }
+  }
+  @<span class="pl-smi">Test</span>
+  <span class="pl-k">public</span> <span class="pl-k">void</span> run_car_with_default_components() {
+      <span class="pl-smi">Car</span> car <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">Car</span>();
+      <span class="pl-smi">Mvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>inject(car);
+      car<span class="pl-k">.</span>decelerate();
+  }</pre></div>
+</li>
+<li>
+<p>Inject an instance of an interface or abstract class</p>
+
+<p>By default, AndroidMvc will look for implementation class of interface or abstract class in the sub package <strong>"internal"</strong> at the same level of the package of the interface or abstract class. The implementation class should have the same name of the interface or abstract class but with a suffix <strong>"impl"</strong>. And the rest steps to inject an instance of an interface or an abstract class is exactly the same as injecting a concrete class as above.
+For example, when we have an interface called Engine under package com.xyz. To let AndroidMvc find its implementation automatically, the concrete class should call Engine<strong>Impl</strong> and resides under com.xyz.<strong>internal</strong>*. See the file structure below</p>
+
+<pre><code>  --com
+    --xyz
+      Engine.java
+      --internal
+        EngineImpl.java
+</code></pre>
+</li>
+<li>
+<p>Customise providers</p>
+
+<p>You can also register a provider to a component attached to the graph. Or register an object with methods annotated by <a href="https://github.com/Provides" class="user-mention">@Provides</a> to provide instance.</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-smi">MvcComponent</span> testComponent <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-smi">MvcComponent</span>(<span class="pl-s"><span class="pl-pds">"</span>TestComponent<span class="pl-pds">"</span></span>);
+
+  <span class="pl-c">//Register new providers with better v8 engine and racing break</span>
+  testComponent<span class="pl-k">.</span>register(<span class="pl-k">new</span> <span class="pl-smi">Object</span>(){
+      <span class="pl-k">@Provides</span>
+      <span class="pl-k">public</span> <span class="pl-smi">Engine</span> <span class="pl-en">v8Engine</span>() {
+          <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">Engine</span>() {
+              <span class="pl-k">@Override</span>
+              <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">push</span>(<span class="pl-smi">Car</span> <span class="pl-v">car</span>) {
+                  car<span class="pl-k">.</span>setSpeed(car<span class="pl-k">.</span>getSpeed() <span class="pl-k">+</span> <span class="pl-c1">3</span>);
+              }
+          };
+      }
+
+      <span class="pl-k">@Provides</span>
+      <span class="pl-k">public</span> <span class="pl-smi">Break</span> <span class="pl-en">racingBreak</span>() {
+          <span class="pl-k">return</span> <span class="pl-k">new</span> <span class="pl-smi">Break</span>() {
+              <span class="pl-k">@Override</span>
+              <span class="pl-k">public</span> <span class="pl-k">void</span> <span class="pl-en">slow</span>(<span class="pl-smi">Car</span> <span class="pl-v">car</span>) {
+                  car<span class="pl-k">.</span>setSpeed(car<span class="pl-k">.</span>getSpeed() <span class="pl-k">-</span> <span class="pl-c1">2.5f</span>);
+              }
+          };
+      }
+  });</pre></div>
+</li>
+<li>
+<p>Override existing providers</p>
+
+<p>Registering providers providing classes for same signature of class (same class type and qualifier) will result in throwing out exceptions since AndroidMvc won't be able to figure out which provider should be used. But the you can implicitly inform AndroidMvc you want to override providers with code like below</p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-c">//Attach the component to the graph's root component to override default providers</span>
+  <span class="pl-k">boolean</span> overrideExistingProviders <span class="pl-k">=</span> <span class="pl-c1">true</span>;
+  <span class="pl-smi">Mvc</span><span class="pl-k">.</span>graph()<span class="pl-k">.</span>getRootComponent()<span class="pl-k">.</span>attach(testComponent, overrideExistingProviders);</pre></div>
+</li>
 </ul>
 
       <footer class="site-footer">
