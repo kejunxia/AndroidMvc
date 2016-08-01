@@ -17,10 +17,14 @@
 package com.shipdream.lib.android.mvc.view.viewpager.controller;
 
 import com.shipdream.lib.android.mvc.FragmentController;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.view.viewpager.TabModel;
 
 public class TabControllerA extends FragmentController<TabModel, UiView> {
+     static final String INIT_TEXT = "Tab A";
+     static final String RESTORE_TEXT = "Restored TabA";
+
      @Override
      public Class<TabModel> modelType() {
           return TabModel.class;
@@ -28,5 +32,36 @@ public class TabControllerA extends FragmentController<TabModel, UiView> {
 
      public void setName(String name) {
           getModel().setName(name);
+     }
+
+     @Override
+     public void onViewReady(Reason reason) {
+          super.onViewReady(reason);
+          if (reason.isFirstTime()) {
+               getModel().setName(INIT_TEXT);
+          }
+          if (reason.isRestored()) {
+               getModel().setName(RESTORE_TEXT);
+          }
+     }
+
+     @Override
+     public TabModel getModel() {
+          return super.getModel();
+     }
+
+     @Override
+     public void restoreModel(TabModel restoredModel) {
+          super.restoreModel(restoredModel);
+     }
+
+     @Override
+     public void bindModel(TabModel tabModel) {
+          super.bindModel(tabModel);
+     }
+
+     @Override
+     public void onRestored() {
+          super.onRestored();
      }
 }

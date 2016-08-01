@@ -265,7 +265,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText("Tab A")).check(matches(isDisplayed()));
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
 
         lifeCycleValidatorA.expect(
                 LifeCycle.onCreateViewNull,
@@ -336,7 +336,7 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
 
         onView(withId(R.id.viewpager)).perform(swipeRight());
         onView(withText("Tab B")).check(matches(not(isDisplayed())));
-        onView(withText("Tab A")).check(matches(isDisplayed()));
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
 
         lifeCycleValidatorA.expect(
                 LifeCycle.onCreateViewNull,
@@ -383,6 +383,133 @@ public class TestFragmentsInViewPager extends BaseTestCase <ViewPagerTestActivit
         onView(withId(R.id.viewpager)).perform(swipeLeft());
         onView(withId(R.id.viewpager)).perform(swipeLeft());
         onView(withText("Tab C")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_should_display_restored_text_when_fragment_A_destroyed_by_adapter() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
+
+        //=============================> At Home
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+
+        bringBack(pressHome());
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_should_display_restored_text_when_fragment_A_destroyed_OS_in_background() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
+
+        //=============================> At Home
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        bringBack(pressHome());
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+
+        rotateMainActivity(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab C")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_should_display_restored_text_when_fragment_A_destroyed_by_pushed_into_back_stack() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
+
+        //=============================> At Home
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(SecondFragmentController.class);
+        navigationManager.navigate(this).back();
+
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        bringBack(pressHome());
+        navigationManager.navigate(this).to(SecondFragmentController.class);
+        navigationManager.navigate(this).back();
+
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_should_display_restored_text_when_fragment_A_destroyed_by_pushed_into_back_stack2() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
+
+        //=============================> At Home
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        navigationManager.navigate(this).to(SecondFragmentController.class);
+        String key = pressHome();
+        bringBack(key);
+        navigationManager.navigate(this).back();
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void test_should_display_restored_text_when_fragment_A_destroyed_by_pushed_into_back_stack3() throws Throwable {
+        if (!isDontKeepActivities()) {
+            Log.i(getClass().getSimpleName(), "TestFragmentsInViewPager not tested as Don't Keep Activities setting is disabled");
+            return;
+        }
+
+        //=============================> At Home
+        onView(withText("Tab A")).check(matches(isDisplayed()));
+
+        onView(withId(R.id.viewpager)).perform(swipeLeft());
+        onView(withText("Tab B")).check(matches(isDisplayed()));
+
+        bringBack(pressHome());
+
+        onView(withId(R.id.viewpager)).perform(swipeRight());
+        onView(withText("Restored TabA")).check(matches(isDisplayed()));
     }
 
     @Override

@@ -75,6 +75,9 @@ public class BaseTest {
     public void setUp() throws Exception {
         eventBusC = new EventBusImpl();
         eventBusV = new EventBusImpl();
+
+        //Mock executor service so that all async tasks run on non-UI thread in app will
+        //run on the testing thread (main thread for testing) to avoid multithreading headache
         executorService = mock(ExecutorService.class);
 
         doAnswer(new Answer() {
@@ -113,9 +116,9 @@ public class BaseTest {
         prepareGraph(overridingComponent);
 
         Component rootComponent = Mvc.graph().getRootComponent();
-        //Indicates the if duplicate providers for the same class type and qualifier registered,
-        //providers registered to the overriding component will override the existing providers
-        //until the overridingComponent is detached from the component tree
+
+        //overriding indicates providers of this component attached to the root component will override
+        //existing providers managing to provide instances with the same type and qualifier.
         boolean overriding = true;
         rootComponent.attach(overridingComponent, overriding);
 

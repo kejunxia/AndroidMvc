@@ -29,6 +29,8 @@ import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterMasterController;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 public class CounterMasterScreen extends AbstractFragment<CounterMasterController>
@@ -139,7 +141,15 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
     }
 
     @Override
-    public void showErrorMessageToFetchIp() {
-        Toast.makeText(getContext(), "Error to get your IP", Toast.LENGTH_SHORT).show();
+    public void showHttpError(int statusCode, String message) {
+        Toast.makeText(getContext(), String.format("Http error(%d): %s", statusCode, message),
+                Toast.LENGTH_SHORT).show();
     }
+
+    @Override
+    public void showNetworkError(IOException e) {
+        Toast.makeText(getContext(), String.format("Network error: %s", e.getMessage())
+                , Toast.LENGTH_SHORT).show();
+    }
+
 }

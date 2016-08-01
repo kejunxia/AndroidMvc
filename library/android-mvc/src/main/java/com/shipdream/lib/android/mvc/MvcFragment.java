@@ -239,10 +239,10 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
         }
 
         if (restoring) {
-            reason.isRestored = true;
+            reason.isRestored = !reason.isRotated;
         } else if (!orientationChanged && !aboutToPopOut) {
-            //When the view is created not by orientation change nor poping out from back stack
-            reason.isFirstTime = true;
+            //When the view is created not by orientation change nor popping out from back stack
+            reason.isFirstTime = !reason.isRotated;
         }
 
         if (aboutToPopOut) {
@@ -271,6 +271,8 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
         if (controller != null) {
             controller.onViewReady(reason);
         }
+
+        update();
     }
 
     /**

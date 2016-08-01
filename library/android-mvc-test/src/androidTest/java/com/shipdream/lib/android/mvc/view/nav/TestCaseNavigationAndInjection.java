@@ -207,6 +207,8 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         //quit
         navigateBackByFragment();
 
+        Thread.sleep(100);
+
         Assert.assertEquals(fm.getFragments().size(), 4);
         Assert.assertNull(fm.getFragments().get(0));
         Assert.assertNull(fm.getFragments().get(1));

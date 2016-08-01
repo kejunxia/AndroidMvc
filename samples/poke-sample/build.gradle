@@ -14,16 +14,32 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc'
-include ':library:android-mvc-test'
-include ':library:android-mvc-core'
-include ':library:poke'
+apply plugin: 'java'
 
-include ':extension:service-core'
-include ':extension:service-mediastore'
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
-include 'samples:benchmark'
+repositories {
+    jcenter()
+    mavenLocal()
+}
 
-include 'samples:simple-mvp:app'
-include 'samples:simple-mvp:core'
-include 'samples:poke-sample'
+sourceSets {
+    main {
+        java.srcDir 'src/main/java'
+        resources.srcDir 'src/main/resources'
+    }
+
+    test {
+        java.srcDir 'src/test/java'
+        resources.srcDir 'src/test/resources'
+    }
+}
+
+dependencies {
+    compile project(':library:android-mvc-core')
+
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
+    testCompile rootProject.ext.lib.slf4jLog
+}

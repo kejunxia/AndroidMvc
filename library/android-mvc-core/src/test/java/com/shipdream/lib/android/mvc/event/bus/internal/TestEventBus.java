@@ -32,11 +32,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 public class TestEventBus {
-    private com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl eventBus;
+    private EventBusImpl eventBus;
 
     @Before
     public void setUp() throws Exception {
-        eventBus = new com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl();
+        eventBus = new EventBusImpl();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -75,7 +75,7 @@ public class TestEventBus {
         Subscriber sub = new Subscriber();
 
         //Action
-        com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl eventBus1 = new com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl();
+        EventBusImpl eventBus1 = new EventBusImpl();
         eventBus1.register(sub);
 
         //Assert
@@ -97,7 +97,7 @@ public class TestEventBus {
         Subscriber2 sub2 = new Subscriber2("", "");
 
         //Action
-        com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl eventBus2 = new com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl();
+        EventBusImpl eventBus2 = new EventBusImpl();
         eventBus2.register(sub2);
 
         //Assert
@@ -116,7 +116,7 @@ public class TestEventBus {
         }
         Subscriber3 sub3 = new Subscriber3();
 
-        com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl eventBus3 = new com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl();
+        EventBusImpl eventBus3 = new EventBusImpl();
         eventBus3.register(sub3);
 
         Assert.assertEquals(eventBus3.subscribers.size(), 2);
@@ -141,7 +141,7 @@ public class TestEventBus {
         Subscriber sub = new Subscriber();
 
         //Action
-        com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl eventBus = new com.shipdream.lib.android.mvc.event.bus.internal.EventBusImpl();
+        EventBusImpl eventBus = new EventBusImpl();
         eventBus.register(sub);
 
         try {

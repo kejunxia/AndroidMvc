@@ -14,16 +14,32 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc'
-include ':library:android-mvc-test'
-include ':library:android-mvc-core'
-include ':library:poke'
+package sample.basic;
 
-include ':extension:service-core'
-include ':extension:service-mediastore'
+import javax.inject.Inject;
 
-include 'samples:benchmark'
+public class Car {
+    @Inject
+    private Engine engine;
 
-include 'samples:simple-mvp:app'
-include 'samples:simple-mvp:core'
-include 'samples:poke-sample'
+    @Inject
+    private Break aBreak;
+
+    private float speed;
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public void accelerate() {
+        engine.push(this);
+    }
+
+    public void decelerate() {
+        aBreak.slow(this);
+    }
+}

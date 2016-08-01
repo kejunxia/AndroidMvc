@@ -24,7 +24,6 @@ import com.shipdream.lib.poke.Provides;
 import com.shipdream.lib.poke.exception.CircularDependenciesException;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProvideException;
-import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.slf4j.Logger;
@@ -58,9 +57,14 @@ public class MvcGraph {
             }
         };
 
+        MvcComponent rootComponent = new MvcComponent("MvcRootComponent");
         graph = new Graph();
+        prepareInternalGraph(graph, rootComponent);
+    }
+
+    Graph prepareInternalGraph(Graph graph, MvcComponent rootComponent) {
         try {
-            graph.setRootComponent(new MvcComponent("MvcRootComponent"));
+            graph.setRootComponent(rootComponent);
             graph.getRootComponent().register(new Object() {
                 @Provides
                 public UiThreadRunner uiThreadRunner() {
@@ -68,11 +72,9 @@ public class MvcGraph {
                 }
             });
         } catch (Graph.IllegalRootComponentException e) {
-            throw new RuntimeException(e);
-        } catch (ProvideException e) {
-            throw new RuntimeException(e);
-        } catch (ProviderConflictException e) {
-            throw new RuntimeException(e);
+            throw new MvcGraphException(e.getMessage(), e);
+        } catch (PokeException e) {
+            throw new MvcGraphException(e.getMessage(), e);
         }
         graph.registerDisposeListener(new Provider.DisposeListener() {
             @Override
@@ -87,6 +89,8 @@ public class MvcGraph {
                 }
             }
         });
+
+        return graph;
     }
 
     /**
@@ -94,8 +98,17 @@ public class MvcGraph {
      *
      * @param monitor The monitor
      */
-    public void registerMonitor(Graph.Monitor monitor) {
-        graph.registerMonitor(monitor);
+    public void registerMonitor(final Graph.Monitor monitor) {
+        if (uiThreadRunner.isOnUiThread()) {
+            graph.registerMonitor(monitor);
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    graph.registerMonitor(monitor);
+                }
+            });
+        }
     }
 
     /**
@@ -103,15 +116,33 @@ public class MvcGraph {
      *
      * @param monitor The monitor
      */
-    public void unregisterMonitor(Graph.Monitor monitor) {
-        graph.unregisterMonitor(monitor);
+    public void unregisterMonitor(final Graph.Monitor monitor) {
+        if (uiThreadRunner.isOnUiThread()) {
+            graph.unregisterMonitor(monitor);
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    graph.unregisterMonitor(monitor);
+                }
+            });
+        }
     }
 
     /**
      * Clear {@link Graph.Monitor} which will be called the graph is about to inject or release an object
      */
     public void clearMonitors() {
-        graph.clearMonitors();
+        if (uiThreadRunner.isOnUiThread()) {
+            graph.clearMonitors();
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    graph.clearMonitors();
+                }
+            });
+        }
     }
 
     /**
@@ -139,9 +170,17 @@ public class MvcGraph {
      */
     public <T> void dereference(T instance, Class<T> type, Annotation qualifier)
             throws ProviderMissingException {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot dereference an instance from Non-UiThread");
+        if (uiThreadRunner.isOnUiThread()) {
+
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+
+                }
+            });
         }
+
         graph.dereference(instance, type, qualifier, Inject.class);
     }
 
@@ -151,13 +190,23 @@ public class MvcGraph {
      * @param consumer Consume to use the instance
      */
     public <T> void use(final Class<T> type, final Consumer<T> consumer) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot use an instance from Non-UiThread");
-        }
-        try {
-            graph.use(type, Inject.class, consumer);
-        } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+        if (uiThreadRunner.isOnUiThread()) {
+            try {
+                graph.use(type, Inject.class, consumer);
+            } catch (PokeException e) {
+                throw new MvcGraphException(e.getMessage(), e);
+            }
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        graph.use(type, Inject.class, consumer);
+                    } catch (PokeException e) {
+                        throw new MvcGraphException(e.getMessage(), e);
+                    }
+                }
+            });
         }
     }
 
@@ -273,13 +322,23 @@ public class MvcGraph {
      * @throws MvcGraphException throw when there are exceptions during the consumption of the instance
      */
     public <T> void use(final Class<T> type, final Annotation qualifier, final Consumer<T> consumer) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot use an instance from Non-UiThread");
-        }
-        try {
-            graph.use(type, qualifier, Inject.class, consumer);
-        } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+        if (uiThreadRunner.isOnUiThread()) {
+            try {
+                graph.use(type, qualifier, Inject.class, consumer);
+            } catch (PokeException e) {
+                throw new MvcGraphException(e.getMessage(), e);
+            }
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        graph.use(type, qualifier, Inject.class, consumer);
+                    } catch (PokeException e) {
+                        throw new MvcGraphException(e.getMessage(), e);
+                    }
+                }
+            });
         }
     }
 
@@ -289,14 +348,24 @@ public class MvcGraph {
      *
      * @param target The target object whose fields annotated by {@link Inject} will be injected.
      */
-    public void inject(Object target) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot inject an instance from Non-UiThread");
-        }
-        try {
-            graph.inject(target, Inject.class);
-        } catch (PokeException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+    public void inject(final Object target) {
+        if (uiThreadRunner.isOnUiThread()) {
+            try {
+                graph.inject(target, Inject.class);
+            } catch (PokeException e) {
+                throw new MvcGraphException(e.getMessage(), e);
+            }
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        graph.inject(target, Inject.class);
+                    } catch (PokeException e) {
+                        throw new MvcGraphException(e.getMessage(), e);
+                    }
+                }
+            });
         }
     }
 
@@ -307,14 +376,24 @@ public class MvcGraph {
      *
      * @param target of which the object fields will be released.
      */
-    public void release(Object target) {
-        if (!uiThreadRunner.isOnUiThread()) {
-            throw new MvcGraphException("Cannot release an instance from Non-UiThread");
-        }
-        try {
-            graph.release(target, Inject.class);
-        } catch (ProviderMissingException e) {
-            throw new MvcGraphException(e.getMessage(), e);
+    public void release(final Object target) {
+        if (uiThreadRunner.isOnUiThread()) {
+            try {
+                graph.release(target, Inject.class);
+            } catch (ProviderMissingException e) {
+                throw new MvcGraphException(e.getMessage(), e);
+            }
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        graph.release(target, Inject.class);
+                    } catch (ProviderMissingException e) {
+                        throw new MvcGraphException(e.getMessage(), e);
+                    }
+                }
+            });
         }
     }
 
@@ -323,8 +402,25 @@ public class MvcGraph {
      *
      * @param component The root {@link Component} of this graph.
      */
-    public void setRootComponent(MvcComponent component) throws Graph.IllegalRootComponentException {
-        graph.setRootComponent(component);
+    public void setRootComponent(final MvcComponent component) {
+        if (uiThreadRunner.isOnUiThread()) {
+            try {
+                graph.setRootComponent(component);
+            } catch (Graph.IllegalRootComponentException e) {
+                throw new MvcGraphException(e.getMessage(), e);
+            }
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        graph.setRootComponent(component);
+                    } catch (Graph.IllegalRootComponentException e) {
+                        throw new MvcGraphException(e.getMessage(), e);
+                    }
+                }
+            });
+        }
     }
 
     public MvcComponent getRootComponent() {
@@ -336,8 +432,18 @@ public class MvcGraph {
      *
      * @param onProviderFreedListener The listener
      */
-    public void registerDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
-        graph.registerDereferencedListener(onProviderFreedListener);
+    public void registerDereferencedListener(
+            final Provider.DereferenceListener onProviderFreedListener) {
+        if (uiThreadRunner.isOnUiThread()) {
+            graph.registerDereferencedListener(onProviderFreedListener);
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    graph.registerDereferencedListener(onProviderFreedListener);
+                }
+            });
+        }
     }
 
     /**
@@ -346,8 +452,18 @@ public class MvcGraph {
      *
      * @param onProviderFreedListener The listener
      */
-    public void unregisterDereferencedListener(Provider.DereferenceListener onProviderFreedListener) {
-        graph.unregisterDereferencedListener(onProviderFreedListener);
+    public void unregisterDereferencedListener(
+            final Provider.DereferenceListener onProviderFreedListener) {
+        if (uiThreadRunner.isOnUiThread()) {
+            graph.unregisterDereferencedListener(onProviderFreedListener);
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    graph.unregisterDereferencedListener(onProviderFreedListener);
+                }
+            });
+        }
     }
 
     /**
@@ -355,6 +471,15 @@ public class MvcGraph {
      * instance of an injected contract is freed.
      */
     public void clearDereferencedListeners() {
-        graph.clearDereferencedListeners();
+        if (uiThreadRunner.isOnUiThread()) {
+            graph.clearDereferencedListeners();
+        } else {
+            uiThreadRunner.post(new Runnable() {
+                @Override
+                public void run() {
+                    graph.clearDereferencedListeners();
+                }
+            });
+        }
     }
 }

@@ -81,7 +81,6 @@ public class TestController extends BaseTest{
         String event = ";";
         controller.postEvent(event);
 
-        verify(uiThreadRunner).post(any(Runnable.class));
         verify(eventBusV).post(eq(event));
     }
 

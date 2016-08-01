@@ -31,9 +31,6 @@ import com.shipdream.lib.android.mvc.view.viewpager.controller.TabControllerA;
 import javax.inject.Inject;
 
 public class TabFragmentA extends BaseTabFragment<TabControllerA> {
-    static final String INIT_TEXT = "Tab A";
-    static final String RESTORE_TEXT = "Restored TabA";
-
     private TextView textView;
 
     @Inject
@@ -61,12 +58,6 @@ public class TabFragmentA extends BaseTabFragment<TabControllerA> {
         super.onViewReady(view, savedInstanceState, reason);
 
         textView = (TextView) view.findViewById(R.id.fragment_view_pager_tab_text);
-        if (reason.isFirstTime()) {
-            textView.setText(INIT_TEXT);
-            controller.setName(RESTORE_TEXT);
-        } else if (reason.isRestored()) {
-            textView.setText(controller.getModel().getName());
-        }
 
         textView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +84,6 @@ public class TabFragmentA extends BaseTabFragment<TabControllerA> {
 
     @Override
     public void update() {
-
+        textView.setText(controller.getModel().getName());
     }
 }

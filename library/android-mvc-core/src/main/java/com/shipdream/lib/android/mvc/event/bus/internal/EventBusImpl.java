@@ -16,12 +16,14 @@
 
 package com.shipdream.lib.android.mvc.event.bus.internal;
 
+import com.shipdream.lib.android.mvc.event.bus.EventBus;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class EventBusImpl implements com.shipdream.lib.android.mvc.event.bus.EventBus {
+public class EventBusImpl implements EventBus {
     Map<Class<?>, Map<Object, Method>> subscribers = new LinkedHashMap<>();
 
     public void register(Object subscriber) {

@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc'
-include ':library:android-mvc-test'
-include ':library:android-mvc-core'
-include ':library:poke'
+package sample.basic;
 
-include ':extension:service-core'
-include ':extension:service-mediastore'
-
-include 'samples:benchmark'
-
-include 'samples:simple-mvp:app'
-include 'samples:simple-mvp:core'
-include 'samples:poke-sample'
+public interface Engine {
+    void push(Car car);
+}

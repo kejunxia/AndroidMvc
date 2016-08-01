@@ -43,7 +43,7 @@ public abstract class MvcActivity extends AppCompatActivity {
     private List<Runnable> actionsOnDestroy = new CopyOnWriteArrayList<>();
 
     String getDelegateFragmentTag() {
-        return FRAGMENT_TAG_PREFIX + getDelegateFragmentClass().getName();
+        return FRAGMENT_TAG_PREFIX + checkDelegateFragmentClass().getName();
     }
 
     private EventRegister eventRegister;
@@ -64,7 +64,7 @@ public abstract class MvcActivity extends AppCompatActivity {
             //Brand new container fragment
             try {
                 delegateFragment = (DelegateFragment) new ReflectUtils.newObjectByType(
-                        getDelegateFragmentClass()).newInstance();
+                        checkDelegateFragmentClass()).newInstance();
             } catch (Exception e) {
                 throw new RuntimeException("Failed to instantiate delegate fragment.", e);
             }
@@ -72,6 +72,14 @@ public abstract class MvcActivity extends AppCompatActivity {
             trans.replace(android.R.id.content, delegateFragment, getDelegateFragmentTag());
             trans.commitNow();
         }
+    }
+
+    private Class<? extends DelegateFragment> checkDelegateFragmentClass() {
+        Class<? extends DelegateFragment> clazz = getDelegateFragmentClass();
+        if (clazz == null) {
+            throw new IllegalStateException("Mvc.getDelegateFragmentClass() must return a non-null class type of a MvcActivity.DelegateFragment");
+        }
+        return clazz;
     }
 
     @Override
@@ -101,7 +109,7 @@ public abstract class MvcActivity extends AppCompatActivity {
      * Specify the routing mapping from a screen controller to the fragment class of the screen.
      * When navigate with {@link NavigationManager}, this method will be used to find out which
      * fragment as a screen will be launched for the controller type in the activity.
-     *
+     * <p>
      * <p>
      * The mapping between controller class and fragment class can be listed one by one here. However,
      * it needs to keep modifying this method to add new mapping when a new screen is add. To make
@@ -121,7 +129,8 @@ public abstract class MvcActivity extends AppCompatActivity {
      * during navigation. By default, {@link DelegateFragment}.class is provided. Overrides this
      * method to provide custom delegate fragment.
      *
-     * @return The class type of the delegate fragment
+     * @return The class type of the delegate fragment. Null is not allowed to be returned otherwise
+     * an illegal exception will be thrown
      */
     protected abstract Class<? extends DelegateFragment> getDelegateFragmentClass();
 
@@ -143,6 +152,7 @@ public abstract class MvcActivity extends AppCompatActivity {
     protected void postEvent2V(Object event) {
         eventRegister.postEvent2V(event);
     }
+
     /**
      * Add callback so that onViewReady will be delay to call after all instance state are restored
      *
@@ -391,7 +401,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                 @Override
                 public void manipulate(Fragment fragment) {
                     if (fragment != null && fragment.isAdded() && fragment instanceof MvcFragment) {
-                        ((MvcFragment)fragment).isStateManagedByRootDelegateFragment = selfManaged;
+                        ((MvcFragment) fragment).isStateManagedByRootDelegateFragment = selfManaged;
                     }
                 }
             });
@@ -503,7 +513,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                     @Override
                     public void manipulate(Fragment fragment) {
                         if (fragment != null && fragment instanceof MvcFragment) {
-                            ((MvcFragment)fragment).onPushToBackStack();
+                            ((MvcFragment) fragment).onPushToBackStack();
                         }
                     }
                 });
@@ -514,7 +524,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                         @Override
                         public void manipulate(Fragment fragment) {
                             if (fragment != null && fragment instanceof MvcFragment) {
-                                ((MvcFragment)fragment).onPreNavigationTransaction(transaction, currentFragment);
+                                ((MvcFragment) fragment).onPreNavigationTransaction(transaction, currentFragment);
                             }
                         }
                     });
@@ -577,7 +587,7 @@ public abstract class MvcActivity extends AppCompatActivity {
                         @Override
                         public void manipulate(Fragment fragment) {
                             if (fragment != null && fragment instanceof MvcFragment) {
-                                final MvcFragment frag = ((MvcFragment)fragment);
+                                final MvcFragment frag = ((MvcFragment) fragment);
                                 frag.aboutToPopOut = true;
                                 frag.registerOnViewReadyListener(new Runnable() {
                                     @Override

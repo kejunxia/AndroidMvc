@@ -16,6 +16,7 @@
 
 package com.shipdream.lib.android.mvc;
 
+import com.shipdream.lib.poke.Component;
 import com.shipdream.lib.poke.Consumer;
 import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.Provider;
@@ -26,6 +27,7 @@ import com.shipdream.lib.poke.exception.ProviderConflictException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -100,6 +102,66 @@ public class TestMvcGraph extends BaseTest{
         @Inject
         @Apple
         private Os os;
+    }
+
+    @Override
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        graph.uiThreadRunner = mock(UiThreadRunner.class);
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Runnable runnable = (Runnable) invocation.getArguments()[0];
+                runnable.run();
+                return null;
+            }
+        }).when(graph.uiThreadRunner).post(any(Runnable.class));
+    }
+
+    @Test
+    public void should_be_able_to_post_on_default_ui_thread_runner() {
+        new MvcGraph().uiThreadRunner.post(mock(Runnable.class));
+
+        new MvcGraph().uiThreadRunner.postDelayed(mock(Runnable.class), 100);
+    }
+
+    @Test
+    public void should_throw_IllegalRootComponentException_on_graph_preparation_with_attached_component() throws Component.MultiParentException, ProviderConflictException {
+        MvcComponent parent = new MvcComponent("");
+        MvcComponent child = new MvcComponent("");
+        parent.attach(child);
+
+        boolean caught = false;
+        try {
+            graph.prepareInternalGraph(new Graph(), child);
+        } catch (MvcGraphException e) {
+            if (e.getCause() instanceof Graph.IllegalRootComponentException) {
+                caught = true;
+            }
+        }
+        Assert.assertTrue(caught);
+    }
+
+    @Test
+    public void should_throw_ProviderConflictException_on_graph_preparation_by_duplicate_registration() throws Component.MultiParentException, ProviderConflictException, ProvideException {
+        MvcComponent component = new MvcComponent("");
+        component.register(new Object() {
+            @Provides
+            public UiThreadRunner uiThreadRunner() {
+                return mock(UiThreadRunner.class);
+            }
+        });
+        boolean caught = false;
+        try {
+            graph.prepareInternalGraph(new Graph(), component);
+        } catch (MvcGraphException e) {
+            if (e.getCause() instanceof ProviderConflictException) {
+                caught = true;
+            }
+        }
+        Assert.assertTrue(caught);
     }
 
     @Test
@@ -181,10 +243,7 @@ public class TestMvcGraph extends BaseTest{
         graph.release(device);  //OsReferenceCount = 0
     }
 
-    @Test
-    public void use_method_should_retain_and_release_instance_correctly() throws ProvideException, ProviderConflictException {
-        graph.getRootComponent().register(new DeviceModule());
-
+    private void do_use_method_should_retain_and_release_instance_correctly() {
         @Apple
         class NeedIoS {
 
@@ -268,6 +327,13 @@ public class TestMvcGraph extends BaseTest{
     }
 
     @Test
+    public void use_method_should_retain_and_release_instance_correctly() throws ProvideException, ProviderConflictException {
+        graph.getRootComponent().register(new DeviceModule());
+
+        do_use_method_should_retain_and_release_instance_correctly();
+    }
+
+    @Test
     public void should_delegate_mvc_graph_properly() throws ProvideException, ProviderConflictException {
         // Arrange
         Graph graphMock = mock(Graph.class);
@@ -317,6 +383,12 @@ public class TestMvcGraph extends BaseTest{
         verify(graphMock).clearDereferencedListeners();
     }
 
+    @Test
+    public void non_ui_thread_should_delegate_mvc_graph_properly() throws Exception {
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        should_delegate_mvc_graph_properly();
+    }
+
     @Test (expected = IllegalStateException.class)
     public void should_throw_out_exceptions_when_registering_component()
             throws ProvideException, ProviderConflictException, Graph.IllegalRootComponentException {
@@ -338,7 +410,6 @@ public class TestMvcGraph extends BaseTest{
         mvcGraph.getRootComponent().register(obj);
     }
 
-
     interface UnimplementedInterface{}
 
     @Test(expected = MvcGraphException.class)
@@ -351,6 +422,24 @@ public class TestMvcGraph extends BaseTest{
     }
 
     @Test(expected = MvcGraphException.class)
+    public void should_raise_mvc_graph_exception_when_inject_on_poke_exception_on_non_ui_thread() {
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+
+        should_raise_mvc_graph_exception_when_inject_on_poke_exception();
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_raise_mvc_graph_exception_when_use_on_poke_exception_on_non_ui_thread() {
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+
+        class View {
+            @Inject
+            UnimplementedInterface unimplementedInterface;
+        }
+        graph.use(UnimplementedInterface.class, null, mock(Consumer.class));
+    }
+
+    @Test(expected = MvcGraphException.class)
     public void should_raise_mvc_graph_exception_when_release_on_poke_exception() {
         class View {
             @Inject
@@ -360,6 +449,13 @@ public class TestMvcGraph extends BaseTest{
         view.unimplementedInterface = new UnimplementedInterface() {
         };
         graph.release(view);
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_raise_mvc_graph_exception_when_release_on_poke_exception_on_non_ui_thread() {
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+
+        should_raise_mvc_graph_exception_when_release_on_poke_exception();
     }
 
     @Test(expected = MvcGraphException.class)
@@ -376,100 +472,135 @@ public class TestMvcGraph extends BaseTest{
     }
 
     @Test(expected = MvcGraphException.class)
+    public void should_raise_mvc_graph_exception_when_use_on_poke_exception_on_non_thread() {
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        should_raise_mvc_graph_exception_when_use_on_poke_exception();
+    }
+
+    @Test
     public void should_throw_exception_when_mvc_graph_use_consumer_on_non_main_thread() {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
         graph.use(String.class, mock(Consumer.class));
     }
 
-    @Test(expected = MvcGraphException.class)
+    @Test
     public void should_throw_exception_when_mvc_graph_use_consumer_without_annotation_on_non_main_thread() {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
         graph.use(String.class, null, mock(Consumer.class));
     }
 
     @Test(expected = MvcGraphException.class)
     public void should_throw_exception_when_mvc_graph_reference_on_non_main_thread() throws ProvideException, CircularDependenciesException, ProviderMissingException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
+        graph.reference(String.class, null);
+
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
         graph.reference(String.class, null);
     }
 
-    @Test(expected = MvcGraphException.class)
+    @Test
     public void should_throw_exception_when_mvc_graph_dreference_on_non_main_thread() throws ProvideException, CircularDependenciesException, ProviderMissingException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.dereference(this, TestMvcGraph.class, null);
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.dereference(this, TestMvcGraph.class, null);
     }
 
-    @Test(expected = MvcGraphException.class)
+    @Test
     public void should_throw_exception_when_mvc_graph_inject_on_non_main_thread() {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.inject(this);
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.inject(this);
     }
 
-    @Test(expected = MvcGraphException.class)
+    @Test
     public void should_throw_exception_when_mvc_graph_release_on_non_main_thread() {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
         graph.release(this);
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
+        graph.release(this);
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_throw_exception_when_set_attached_root_component_to_graph_on_main_thread() throws Graph.IllegalRootComponentException, Component.MultiParentException, ProviderConflictException {
+        MvcComponent parent = new MvcComponent("parent");
+        MvcComponent child = new MvcComponent("");
+        parent.attach(child);
+        graph.setRootComponent(child);
+    }
+
+    @Test(expected = MvcGraphException.class)
+    public void should_throw_exception_when_set_attached_root_component_to_graph_on_non_main_thread() throws Graph.IllegalRootComponentException, Component.MultiParentException, ProviderConflictException {
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        MvcComponent parent = new MvcComponent("parent");
+        MvcComponent child = new MvcComponent("");
+        parent.attach(child);
+        graph.setRootComponent(child);
     }
 
     @Test
     public void should_throw_exception_when_mvc_graph_set_rootComponent_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
+        graph.setRootComponent(new MvcComponent(""));
+
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
         graph.setRootComponent(new MvcComponent(""));
     }
 
     @Test
-    public void should_throw_exception_when_mvc_graph_get_rootComponent_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
-        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
-        graph.getRootComponent();
-    }
-
-    @Test
     public void should_throw_exception_when_mvc_graph_register_deferenceListener_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.registerDereferencedListener(mock(Provider.DereferenceListener.class));
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.registerDereferencedListener(mock(Provider.DereferenceListener.class));
     }
 
     @Test
     public void should_throw_exception_when_mvc_graph_unregister_deferenceListener_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.unregisterDereferencedListener(mock(Provider.DereferenceListener.class));
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.unregisterDereferencedListener(mock(Provider.DereferenceListener.class));
     }
 
     @Test
     public void should_throw_exception_when_mvc_graph_clear_deferenceListeners_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
+
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.clearDereferencedListeners();
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.clearDereferencedListeners();
     }
 
     @Test
     public void should_throw_exception_when_mvc_graph_register_monitor_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.registerMonitor(mock(Graph.Monitor.class));
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.registerMonitor(mock(Graph.Monitor.class));
     }
 
     @Test
     public void should_throw_exception_when_mvc_graph_unregister_monitor_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.unregisterMonitor(mock(Graph.Monitor.class));
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.unregisterMonitor(mock(Graph.Monitor.class));
     }
 
     @Test
     public void should_throw_exception_when_mvc_graph_clear_monitors_on_non_main_thread() throws Graph.IllegalRootComponentException {
-        graph.uiThreadRunner = mock(UiThreadRunner.class);
         when(graph.uiThreadRunner.isOnUiThread()).thenReturn(false);
+        graph.clearMonitors();
+
+        when(graph.uiThreadRunner.isOnUiThread()).thenReturn(true);
         graph.clearMonitors();
     }
 

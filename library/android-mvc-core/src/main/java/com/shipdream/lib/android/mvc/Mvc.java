@@ -51,7 +51,25 @@ public class Mvc {
                     @Provides
                     @EventBusV
                     public EventBus eventBusV() {
-                        return new EventBusImpl();
+                        return new EventBusImpl() {
+                            @Override
+                            public void post(final Object event) {
+                                if (graph.uiThreadRunner.isOnUiThread()) {
+                                    postEvent(event);
+                                } else {
+                                    graph.uiThreadRunner.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            postEvent(event);
+                                        }
+                                    });
+                                }
+                            }
+
+                            private void postEvent(Object event) {
+                                super.post(event);
+                            }
+                        };
                     }
 
                     @Provides
@@ -71,9 +89,9 @@ public class Mvc {
                     }
                 });
             } catch (ProvideException e) {
-                e.printStackTrace();
+                throw new MvcGraphException("Failed to register base Mvc dependencies", e);
             } catch (ProviderConflictException e) {
-                e.printStackTrace();
+                throw new MvcGraphException("Failed to register base Mvc dependencies", e);
             }
         }
         return graph;

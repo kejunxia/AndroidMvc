@@ -60,7 +60,7 @@ class MvcStateKeeperHolder {
                 Bean bean = (Bean) v;
 
                 if (bean.modelType() != null) {
-                    stateKeeper.saveState(bean.modelType().getName(), bean.getModel());
+                    stateKeeper.saveState(key, bean.getModel());
                 }
             }
         }
@@ -93,12 +93,10 @@ class MvcStateKeeperHolder {
             if (v instanceof Bean) {
                 Bean bean = (Bean) v;
                 if (bean.modelType() != null) {
-                    Object model = stateKeeper.restoreState(
-                            bean.modelType().getName(), bean.modelType());
+                    Object model = stateKeeper.restoreState(key, bean.modelType());
 
-                    bean.bindModel(model);
+                    bean.restoreModel(model);
                 }
-
             }
         }
     }

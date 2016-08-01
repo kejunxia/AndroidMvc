@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc'
-include ':library:android-mvc-test'
-include ':library:android-mvc-core'
-include ':library:poke'
+package sample.basic.internal;
 
-include ':extension:service-core'
-include ':extension:service-mediastore'
+import sample.basic.Car;
+import sample.basic.Engine;
 
-include 'samples:benchmark'
-
-include 'samples:simple-mvp:app'
-include 'samples:simple-mvp:core'
-include 'samples:poke-sample'
+public class EngineImpl implements Engine{
+    @Override
+    public void push(Car car) {
+        car.setSpeed(car.getSpeed() + 1);
+    }
+}

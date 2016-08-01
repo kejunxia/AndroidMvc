@@ -14,48 +14,18 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc;
+package sample.scope;
 
-import com.shipdream.lib.android.mvc.inject.test.Phone;
-import com.shipdream.lib.android.mvc.inject.test.Robot;
-import com.shipdream.lib.android.mvc.inject.test.Smart;
+import com.shipdream.lib.android.mvc.Mvc;
+import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.poke.Provides;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import javax.inject.Inject;
+import sample.basic.Car;
 
-public class TestMvcComponent extends BaseTest {
-    @Test(expected = MvcGraphException.class)
-    public void should_throw_provider_missing_exception_when_locate_an_qualified_class() {
-        class Shop {
-            @Inject
-            private Phone nexus6;
-        }
-
-        Mvc.graph().inject(new Shop());
-    }
-
-    @Test(expected = MvcGraphException.class)
-    public void should_throw_provider_missing_exception_when_locate_an_unqualified_class() {
-        class Shop {
-            @Inject
-            @Smart
-            private Robot nexus6;
-        }
-
-        Mvc.graph().inject(new Shop());
-    }
-
-    private class Car{
-    }
-
-    public class Tourist {
-        @Inject
-        private Car car;
-    }
-
+public class TestScope {
     @Test
     public void test_injection_with_different_component_for_different_scoping() throws Exception{
         //A component with a cache by default
