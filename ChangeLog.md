@@ -1,4 +1,4 @@
-Version: 3.0.4
+Version: 3.1.0
 * Uplift Android Support Library to 24.1.1
 
 Version: 3.0.3:
@@ -6,7 +6,7 @@ Version: 3.0.3:
 * Add some more detailed info for logging
 
 Version: 3.0.1
-* Fix issue that interim navigation pages are not popped out on back navgation correctly
+* Fix issue that interim navigation pages are not popped out on back navigation correctly
 * Uplift target compile SDK to 24.
 
 Version: 3.0.0
