@@ -29,22 +29,22 @@
 
 <ul>
 <li>
-<a href="#Implement-MVC/MVP/MVVM-pattern">Easy to implement MVC/MVP/MVVM pattern</a> for Android development</li>
+<a href="#implement-mvcmvpmvvm-pattern">Easy to implement MVC/MVP/MVVM pattern</a> for Android development</li>
 <li>
-<a href="#Fragment-Life-cycles">Enhanced Android life cycles</a> - e.g. when view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. Android mvc framework provides more granular life cycles</li>
+<a href="#fragment-life-cycles">Enhanced Android life cycles</a> - e.g. when view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. Android mvc framework provides more granular life cycles</li>
 <li>
-<a href="#FragmentController-Life-cycles">All fragment life cycles are mapped into FragmentController</a> thus more business logic can be moved into controllers including the ones in life cycles. Apps are more testable on JVM!</li>
+<a href="#fragmentcontroller-life-cycles">All fragment life cycles are mapped into FragmentController</a> thus more business logic can be moved into controllers including the ones in life cycles. Apps are more testable on JVM!</li>
 <li>
-<a href="#Navigation">Easy and clean navigation</a>. Navigation is done in controllers instead of views. Thus navigation can be unit tested on JVM</li>
+<a href="#navigation">Easy and clean navigation</a>. Navigation is done in controllers instead of views. Thus navigation can be unit tested on JVM</li>
 <li>
-<a href="#Run-AsyncTask-in-controller">Run async tasks in controllers</a> and easy mocking of http requests</li>
+<a href="#run-asynctask-in-controller">Run async tasks in controllers</a> and easy mocking of http requests</li>
 <li>
-<a href="#Easy-Unit-Test">Easy unit test on JVM</a> since controllers don't depend on any Android APIs</li>
+<a href="#easy-unit-test">Easy unit test on JVM</a> since controllers don't depend on any Android APIs</li>
 <li>
-<a href="#Event-Bus">Built in Event Bus</a>. Event bus also automatically guarantees post event view events on the UI thread</li>
+<a href="#event-bus">Built in Event Bus</a>. Event bus also automatically guarantees post event view events on the UI thread</li>
 <li>
-<a href="#Instance-State-Management">Automatically save and restore instance state</a>. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.</li>
-<li><a href="#Dependency-injection-(Poke)">Built in simple dependency injection</a></li>
+<a href="#instance-state-management">Automatically save and restore instance state</a>. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.</li>
+<li><a href="#ependency-injection-poke">Built in simple dependency injection</a></li>
 <li>Well tested - non-Android components are tested as the test coverage status <a href="https://coveralls.io/r/kejunxia/AndroidMvc"><img src="https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg" alt="Coverage Status"></a>. For Android dependent module "android-mvc", it's tested by real emulator with <a href="https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test">this UI test module</a>. <strong>It's also tested with "Don't Keep Activities" turned on in dev options</strong> to guarantee your app doesn't crash due to loss of instance state after it's killed by OS in the background!</li>
 </ul>
 
