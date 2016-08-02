@@ -78,3 +78,8 @@ android {
     }
 
 }
+
+//Enforce tests of core to be run before assembling each variant.
+android.applicationVariants.all {
+    variant -> variant.assemble.dependsOn(":samples:simple-mvp:core:test")
+}

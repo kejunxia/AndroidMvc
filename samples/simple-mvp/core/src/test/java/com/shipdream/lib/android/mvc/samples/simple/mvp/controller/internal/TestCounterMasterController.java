@@ -128,7 +128,6 @@ public class TestCounterMasterController extends BaseTest {
         //3. Verify
         verify(view, times(1)).update();
         Assert.assertEquals(String.valueOf(value + 1), controller.getModel().getCount());
-
     }
 
     @Test
