@@ -51,7 +51,7 @@
 <h2>
 <a id="implement-mvcmvpmvvm-pattern" class="anchor" href="#implement-mvcmvpmvvm-pattern" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Implement MVC/MVP/MVVM pattern</h2>
 
-<p>As we know MVP and MVVM patterns are just simply derivatives of MVC pattern. All of them are targeting the same goal - Separation. </p>
+<p>MVP and MVVM patterns are just derivatives of MVC pattern. All of them are targeting the same goal - Separation. </p>
 
 <p>Separating Views and Controllers allows moving more business logic away from views into controllers. This makes code cleaner and, more importantly, it makes code more testable since most logical components are not depending on specific views. In the sense of Android, it means more fuctions can be written without depending on Android API therefore not have to be tested on emulators.</p>
 
@@ -618,10 +618,13 @@ monitor<span class="pl-k">.</span>cancel(canInterrupt);</pre></div>
 <p>As most codes are wrapped in controllers without Android API dependencies. You can just simply test everything on JVM. Because in app, there are dependencies implemented with Android API which are lacking in the sole controller module, those dependencies' implementations need to be replaced by mocked instances. For example, every controller has an injected field - ExecutorService to run a aysncTask by 
 controller.runTask(Task task). In unit test, this ExecutorService can be mocked and run task immediately on the same thread to mimic a http response with mocked data.</p>
 
-<p>To override providers to replace injectable classes, 
-1. create a MvcComponent say overridingComponent
-2. register your providers to provider mocking objects
-3. attach the overridingComponent to Mvc.graph().getRootComponent() with the </p>
+<p>To override providers to replace injectable classes, </p>
+
+<ol>
+<li>create a MvcComponent say overridingComponent</li>
+<li>register your providers to provider mocking objects</li>
+<li>attach the overridingComponent to Mvc.graph().getRootComponent() with the </li>
+</ol>
 
 <p>See the code sample below</p>
 
