@@ -51,7 +51,7 @@
 <h2>
 <a id="implement-mvcmvpmvvm-pattern" class="anchor" href="#implement-mvcmvpmvvm-pattern" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Implement MVC/MVP/MVVM pattern</h2>
 
-<p>MVP and MVVM patterns are just derivatives of MVC pattern. All of them are targeting the same goal - Separation. </p>
+<p>As we know MVP and MVVM patterns are just simply derivatives of MVC pattern. All of them are targeting the same goal - Separation. </p>
 
 <p>Separating Views and Controllers allows moving more business logic away from views into controllers. This makes code cleaner and, more importantly, it makes code more testable since most logical components are not depending on specific views. In the sense of Android, it means more fuctions can be written without depending on Android API therefore not have to be tested on emulators.</p>
 
@@ -611,6 +611,18 @@ monitor<span class="pl-k">.</span>cancel(canInterrupt);</pre></div>
 <a id="easy-unit-test" class="anchor" href="#easy-unit-test" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Easy Unit Test</h2>
 
 <p>So far, you should have already got some ideas how much business logic can be written in controllers with AndroidMvc. <a href="https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvp/core/src/test/java/com/shipdream/lib/android/mvc/samples/simple/mvp/controller/internal">See sample unit tests here</a></p>
+
+<h4>
+<a id="enforce-running-controller-tests" class="anchor" href="#enforce-running-controller-tests" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Enforce running controller tests</h4>
+
+<p>To enforce your controllers' unit tests to run successfull before assempling your Android app you can add a gradle task dependency of the controller's test task in your Android app module's build.gradle. So that your Android app won't compile until all your controllers' unit tests pass.</p>
+
+<p>See the <a href="https://github.com/kejunxia/AndroidMvc/blob/master/samples/simple-mvp/app/build.gradle">sample code's build.gradle</a></p>
+
+<div class="highlight highlight-source-java"><pre>  <span class="pl-c">//Enforce tests of core to be run before assembling each variant.</span>
+  android<span class="pl-k">.</span>applicationVariants<span class="pl-k">.</span>all {
+  variant <span class="pl-k">-</span><span class="pl-k">&gt;</span> variant<span class="pl-k">.</span>assemble<span class="pl-k">.</span>dependsOn(<span class="pl-s"><span class="pl-pds">"</span>:core:test<span class="pl-pds">"</span></span>)
+  }</pre></div>
 
 <h4>
 <a id="mock-dependencies" class="anchor" href="#mock-dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mock dependencies</h4>
