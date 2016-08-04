@@ -23,10 +23,13 @@ import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.AbstractController;
 
+import butterknife.ButterKnife;
+
 public abstract class AbstractFragment<C extends AbstractController>
         extends MvcFragment<C> implements UiView {
     @Override
     public void onViewReady(android.view.View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
+        ButterKnife.bind(this, view);
     }
 }

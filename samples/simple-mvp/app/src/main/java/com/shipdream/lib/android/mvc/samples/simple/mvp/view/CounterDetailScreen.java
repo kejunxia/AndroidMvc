@@ -17,22 +17,22 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.view;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.view.service.CountService;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnTouch;
+
 public class CounterDetailScreen extends AbstractFragment<CounterDetailController> {
-    private TextView display;
-    private Button increment;
-    private Button decrement;
-    private Button autoIncrement;
+    @BindView(R.id.fragment_b_counterDisplay)
+    TextView display;
+
     @Override
     protected Class<CounterDetailController> getControllerClass() {
         return CounterDetailController.class;
@@ -41,67 +41,6 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_counter_detail;
-    }
-
-    @Override
-    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
-        super.onViewReady(view, savedInstanceState, reason);
-
-        display = (TextView) view.findViewById(R.id.fragment_b_counterDisplay);
-        increment = (Button) view.findViewById(R.id.fragment_b_buttonIncrement);
-        decrement = (Button) view.findViewById(R.id.fragment_b_buttonDecrement);
-        autoIncrement = (Button) view.findViewById(R.id.fragment_b_buttonAutoIncrement);
-
-        increment.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(final View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        controller.startContinuousIncrement();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        controller.stopContinuousIncrement();
-                        break;
-                }
-                return false;
-            }
-        });
-
-        decrement.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(final View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        controller.startContinuousDecrement();
-                        break;
-                    case MotionEvent.ACTION_UP:
-                    case MotionEvent.ACTION_CANCEL:
-                        controller.stopContinuousDecrement();
-                        break;
-                }
-                return false;
-            }
-        });
-
-        autoIncrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CountService.class);
-                getActivity().startService(intent);
-            }
-        });
-    }
-
-    @Override
-    public boolean onBackButtonPressed() {
-        //Use counterController to manage navigation back make navigation testable
-        controller.goBackToBasicView(this);
-        //Return true to not pass the back button pressed event to upper level handler.
-        return true;
-        //Or we can let the fragment manage back navigation back automatically where we don't
-        //override this method which will call NavigationManager.navigateBack(Object sender)
-        //automatically
     }
 
     @Override
@@ -114,4 +53,48 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
         display.setText(controller.getCount());
     }
 
+    @OnClick(R.id.fragment_b_buttonAutoIncrement)
+    void onClick(View v) {
+        Intent intent = new Intent(getActivity(), CountService.class);
+        getActivity().startService(intent);
+    }
+
+    @OnTouch(R.id.fragment_b_buttonIncrement)
+    boolean onTouchIncrement(final View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                controller.startContinuousIncrement();
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                controller.stopContinuousIncrement();
+                break;
+        }
+        return false;
+    }
+
+    @OnTouch(R.id.fragment_b_buttonDecrement)
+    boolean onTouch(final View v, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                controller.startContinuousDecrement();
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                controller.stopContinuousDecrement();
+                break;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onBackButtonPressed() {
+        //Use counterController to manage navigation back make navigation testable
+        controller.goBackToBasicView(this);
+        //Return true to not pass the back button pressed event to upper level handler.
+        return true;
+        //Or we can let the fragment manage back navigation back automatically where we don't
+        //override this method which will call NavigationManager.navigateBack(Object sender)
+        //automatically
+    }
 }

@@ -16,16 +16,16 @@
 
 package com.shipdream.lib.android.mvc.samples.simple.mvp.view;
 
-import android.os.Bundle;
-import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterMasterInsideController;
 
+import butterknife.BindView;
+
 public class CounterMasterInsideView extends AbstractFragment<CounterMasterInsideController> {
-    private TextView txtCountInEnglish;
+    @BindView(R.id.fragment_a_sub_countInEnglish)
+    TextView txtCountInEnglish;
 
     @Override
     protected Class<CounterMasterInsideController> getControllerClass() {
@@ -35,13 +35,6 @@ public class CounterMasterInsideView extends AbstractFragment<CounterMasterInsid
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_a_sub;
-    }
-
-    @Override
-    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
-        super.onViewReady(view, savedInstanceState, reason);
-
-        txtCountInEnglish = (TextView) view.findViewById(R.id.fragment_a_sub_countInEnglish);
     }
 
     @Override

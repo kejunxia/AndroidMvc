@@ -18,8 +18,6 @@ package com.shipdream.lib.android.mvc.samples.simple.mvp.view;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,19 +31,21 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+
 public class CounterMasterScreen extends AbstractFragment<CounterMasterController>
         implements CounterMasterController.View{
 
     @Inject
     private NavigationManager navigationManager;
 
-    private TextView display;
-    private TextView ipValue;
-    private ProgressBar ipProgress;
-    private ImageView ipRefresh;
-    private Button increment;
-    private Button decrement;
-    private Button buttonGoToDetailScreen;
+    @BindView(R.id.fragment_a_counterDisplay)
+    TextView display;
+    @BindView(R.id.fragment_a_ipValue)
+    TextView ipValue;
+    @BindView(R.id.fragment_a_ipProgress)
+    ProgressBar ipProgress;
 
     @Override
     protected Class<CounterMasterController> getControllerClass() {
@@ -58,6 +58,26 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
     @Override
     protected int getLayoutResId() {
         return R.layout.fragment_counter_basic;
+    }
+
+    @OnClick(R.id.fragment_a_buttonIncrement)
+    void increment(View v) {
+        controller.increment(v);
+    }
+
+    @OnClick(R.id.fragment_a_buttonDecrement)
+    void decrement(View v) {
+        controller.decrement(v);
+    }
+
+    @OnClick(R.id.fragment_a_buttonShowDetailScreen)
+    void goToDetailPage(View v) {
+        controller.goToDetailScreen(v);
+    }
+
+    @OnClick(R.id.fragment_a_ipRefresh)
+    void refreshIp(){
+        controller.refreshIp();
     }
 
     /**
@@ -73,36 +93,6 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
 
-        display = (TextView) view.findViewById(R.id.fragment_a_counterDisplay);
-        ipValue = (TextView) view.findViewById(R.id.fragment_a_ipValue);
-        ipProgress = (ProgressBar) view.findViewById(R.id.fragment_a_ipProgress);
-        ipRefresh = (ImageView) view.findViewById(R.id.fragment_a_ipRefresh);
-        increment = (Button) view.findViewById(R.id.fragment_a_buttonIncrement);
-        decrement = (Button) view.findViewById(R.id.fragment_a_buttonDecrement);
-        buttonGoToDetailScreen = (Button) view.findViewById(R.id.fragment_a_buttonShowDetailScreen);
-
-        increment.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                controller.increment(v);
-            }
-        });
-
-        decrement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                controller.decrement(v);
-            }
-        });
-
-        buttonGoToDetailScreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Use counterController to manage navigation to make navigation testable
-                controller.goToDetailScreen(v);
-            }
-        });
-
         if (reason.isFirstTime()) {
             CounterMasterInsideView f = new CounterMasterInsideView();
 
@@ -110,14 +100,7 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
                     .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();
         }
 
-        ipRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                controller.refreshIp();
-            }
-        });
     }
-
 
     @Override
     public void update() {
