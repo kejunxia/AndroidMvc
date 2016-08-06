@@ -18,13 +18,21 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
+    compile 'org.projectlombok:lombok:1.16.4'
+
     compile project(':library:android-mvc')
-    compile project(':samples:simple-mvp:core')
     compile rootProject.lib.logbackAndroidCore
     compile rootProject.lib.logbackAndroidClassic
 
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
+    testCompile rootProject.ext.lib.slf4jLog
 }
 
 android {
@@ -41,7 +49,7 @@ android {
     buildToolsVersion rootProject.ext.androidBuildToolVersion
 
     defaultConfig {
-        applicationId "com.shipdream.lib.android.mvc.samples.simple.mvp"
+        applicationId "com.shipdream.lib.android.mvc.samples.simple.mvvm"
         minSdkVersion rootProject.ext.androidMinSdkVersion
         targetSdkVersion rootProject.ext.androidTargetSdkVersion
         versionCode 1
@@ -81,9 +89,7 @@ android {
         }
     }
 
-}
-
-//Enforce tests of core to be run before assembling each variant.
-android.applicationVariants.all {
-    variant -> variant.assemble.dependsOn(":samples:simple-mvp:core:test")
+    dataBinding {
+        enabled = true
+    }
 }

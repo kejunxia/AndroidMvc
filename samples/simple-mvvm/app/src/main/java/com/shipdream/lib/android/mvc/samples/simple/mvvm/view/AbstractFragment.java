@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.samples.simple.mvp.view;
+package com.shipdream.lib.android.mvc.samples.simple.mvvm.view;
 
 import android.os.Bundle;
 
 import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.MvcFragment;
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.AbstractController;
-
-import butterknife.ButterKnife;
+import com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.AbstractController;
 
 public abstract class AbstractFragment<C extends AbstractController>
         extends MvcFragment<C> implements UiView {
     @Override
     public void onViewReady(android.view.View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
-        ButterKnife.bind(this, view);
     }
 }

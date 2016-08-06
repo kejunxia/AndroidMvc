@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.samples.simple.mvp.view;
+package com.shipdream.lib.android.mvc.samples.simple.mvvm.view;
 
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterMasterController;
+import com.shipdream.lib.android.mvc.samples.simple.mvvm.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.CounterMasterController;
+import com.shipdream.lib.android.mvc.samples.simple.mvvm.databinding.FragmentCounterMasterBinding;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
-
-import butterknife.BindView;
-import butterknife.OnClick;
 
 public class CounterMasterScreen extends AbstractFragment<CounterMasterController>
         implements CounterMasterController.View{
@@ -40,12 +41,13 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
     @Inject
     private NavigationManager navigationManager;
 
-    @BindView(R.id.fragment_a_counterDisplay)
-    TextView display;
-    @BindView(R.id.fragment_a_ipValue)
-    TextView ipValue;
-    @BindView(R.id.fragment_a_ipProgress)
-    ProgressBar ipProgress;
+    private TextView display;
+    private TextView ipValue;
+    private ProgressBar ipProgress;
+    private ImageView ipRefresh;
+    private Button increment;
+    private Button decrement;
+    private Button buttonGoToDetailScreen;
 
     @Override
     protected Class<CounterMasterController> getControllerClass() {
@@ -57,41 +59,17 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
      */
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_counter_basic;
+        return R.layout.fragment_counter_master;
     }
 
-    @OnClick(R.id.fragment_a_buttonIncrement)
-    void increment(View v) {
-        controller.increment(v);
-    }
-
-    @OnClick(R.id.fragment_a_buttonDecrement)
-    void decrement(View v) {
-        controller.decrement(v);
-    }
-
-    @OnClick(R.id.fragment_a_buttonShowDetailScreen)
-    void goToDetailPage(View v) {
-        controller.goToDetailScreen(v);
-    }
-
-    @OnClick(R.id.fragment_a_ipRefresh)
-    void refreshIp(){
-        controller.refreshIp();
-    }
-
-    /**
-     * Lifecycle similar to onViewCreated by with more granular control with an extra argument to
-     * indicate why this view is created: 1. first time created, or 2. rotated or 3. restored
-     * @param view The root view of the fragment
-     * @param savedInstanceState The savedInstanceState when the fragment is being recreated after
-     *                           its enclosing activity is killed by OS, otherwise null including on
-     *                           rotation
-     * @param reason Indicates the {@link Reason} why the onViewReady is called.
-     */
+    private FragmentCounterMasterBinding binding;
     @Override
     public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
         super.onViewReady(view, savedInstanceState, reason);
+
+        binding = DataBindingUtil.bind(view);
+        binding.setController(controller);
+        binding.setModel(controller.getModel());
 
         if (reason.isFirstTime()) {
             CounterMasterInsideView f = new CounterMasterInsideView();
@@ -99,28 +77,11 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
             getChildFragmentManager().beginTransaction()
                     .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();
         }
-
     }
+
 
     @Override
     public void update() {
-        display.setText(controller.getModel().getCount());
-    }
-
-    @Override
-    public void showProgress() {
-        ipProgress.setVisibility(View.VISIBLE);
-    }
-
-    @Override
-    public void hideProgress() {
-        ipProgress.setVisibility(View.INVISIBLE);
-    }
-
-    @Override
-    public void updateIpValue(String ip) {
-        ipValue.setVisibility(View.VISIBLE);
-        ipValue.setText(ip);
     }
 
     @Override

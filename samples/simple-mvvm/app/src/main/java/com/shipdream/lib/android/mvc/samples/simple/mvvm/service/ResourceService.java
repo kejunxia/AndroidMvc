@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-include ':library:android-mvc'
-include ':library:android-mvc-test'
-include ':library:android-mvc-core'
-include ':library:poke'
+package com.shipdream.lib.android.mvc.samples.simple.mvvm.service;
 
-include ':extension:service-core'
-include ':extension:service-mediastore'
+import com.shipdream.lib.android.mvc.FragmentController;
 
-include 'samples:benchmark'
-
-include 'samples:poke-sample'
-include 'samples:simple-mvp:app'
-include 'samples:simple-mvp:core'
-include 'samples:simple-mvvm:app'
+public interface ResourceService {
+    <C extends FragmentController> String getDefaultTitle(Class<C> controllerClass);
+}

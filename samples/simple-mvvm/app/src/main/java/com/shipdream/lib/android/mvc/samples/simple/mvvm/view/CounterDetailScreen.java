@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.samples.simple.mvp.view;
+package com.shipdream.lib.android.mvc.samples.simple.mvvm.view;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterDetailController;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.view.service.CountService;
+import com.shipdream.lib.android.mvc.Reason;
+import com.shipdream.lib.android.mvc.samples.simple.mvvm.R;
+import com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.CounterDetailController;
+import com.shipdream.lib.android.mvc.samples.simple.mvvm.view.service.CountService;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnTouch;
 
 public class CounterDetailScreen extends AbstractFragment<CounterDetailController> {
-    @BindView(R.id.fragment_b_counterDisplay)
-    TextView display;
+    @BindView(R.id.fragment_detail_counterDisplay)
+    TextView countDisplay;
 
     @Override
     protected Class<CounterDetailController> getControllerClass() {
@@ -44,22 +47,28 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
     }
 
     @Override
-    public void update() {
-        /**
-         * Controller will call update() whenever the controller thinks the state of the screen
-         * changes. So just bind the state of the controller to this screen then the screen is always
-         * reflecting the latest state/model of the controller
-         */
-        display.setText(controller.getCount());
+    public void onViewReady(View view, Bundle savedInstanceState, Reason reason) {
+        super.onViewReady(view, savedInstanceState, reason);
+        ButterKnife.bind(this, view);
     }
 
-    @OnClick(R.id.fragment_b_buttonAutoIncrement)
+    @Override
+    public void update() {
+        //Bind model to view here
+        countDisplay.setText(controller.getModel().getCount());
+    }
+
+    private void onEvent(CounterDetailController.Event.OnCountUpdated event) {
+        countDisplay.setText(event.getCount());
+    }
+
+    @OnClick(R.id.fragment_detail_buttonAutoIncrement)
     void onClick(View v) {
         Intent intent = new Intent(getActivity(), CountService.class);
         getActivity().startService(intent);
     }
 
-    @OnTouch(R.id.fragment_b_buttonIncrement)
+    @OnTouch(R.id.fragment_detail_buttonIncrement)
     boolean onTouchIncrement(final View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -73,7 +82,7 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
         return false;
     }
 
-    @OnTouch(R.id.fragment_b_buttonDecrement)
+    @OnTouch(R.id.fragment_detail_buttonDecrement)
     boolean onTouch(final View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
