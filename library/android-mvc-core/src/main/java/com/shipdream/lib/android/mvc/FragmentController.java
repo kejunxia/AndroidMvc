@@ -24,8 +24,7 @@ public abstract class FragmentController<MODEL, VIEW extends UiView> extends Con
     }
 
     /**
-     * Called when the view of the corresponding fragment is created. It calls {@link UiView#update()}
-     * automatically.
+     * Called when the view of the corresponding fragment is created.
      */
     public void onViewReady(Reason reason) {
     }
