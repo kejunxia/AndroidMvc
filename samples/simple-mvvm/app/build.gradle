@@ -1,0 +1,95 @@
+/*
+ * Copyright 2016 Kejun Xia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+dependencies {
+    compile 'org.projectlombok:lombok:1.16.4'
+
+    compile project(':library:android-mvc')
+    compile rootProject.lib.logbackAndroidCore
+    compile rootProject.lib.logbackAndroidClassic
+
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    compile 'com.jakewharton:butterknife:8.2.1'
+    apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    testCompile rootProject.ext.lib.junit
+    testCompile rootProject.ext.lib.mokito
+    testCompile rootProject.ext.lib.slf4jLog
+}
+
+android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    compileSdkVersion rootProject.ext.androidCompileSdkVersion
+    buildToolsVersion rootProject.ext.androidBuildToolVersion
+
+    defaultConfig {
+        applicationId "com.shipdream.lib.android.mvc.samples.simple.mvvm"
+        minSdkVersion rootProject.ext.androidMinSdkVersion
+        targetSdkVersion rootProject.ext.androidTargetSdkVersion
+        versionCode 1
+        versionName "1.0.0"
+
+        multiDexEnabled false
+    }
+
+    sourceSets {
+        main {
+            java.srcDir 'src/main/java'
+        }
+
+        test {
+            java.srcDir 'src/test/java'
+        }
+    }
+
+    signingConfigs {
+        DefaultConfig {
+            storeFile file("../../AndroidMvcKeyStore.jks")
+            storePassword "AndroidMvc"
+            keyAlias "AndroidMvc"
+            keyPassword "AndroidMvc"
+        }
+    }
+
+    buildTypes {
+        debug {
+            debuggable true
+            signingConfig signingConfigs.DefaultConfig
+        }
+
+        release {
+            debuggable false
+            signingConfig signingConfigs.DefaultConfig
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}

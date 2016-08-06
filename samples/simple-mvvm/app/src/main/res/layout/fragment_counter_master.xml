@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2016 Kejun Xia
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="controller"
+            type="com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.CounterMasterController" />
+        <variable
+            name="model"
+            type="com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.CounterMasterController.Model" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/fragment_a_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#aaa"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="Fragment A"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/fragment_a_sampleExplanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_a_title"
+            android:padding="10dp"
+            android:text="The sample demonstrates how multiple UIs for count value are updated by the same event, including this FragmentA, the nestedFragment, next FragmentB and notification view created by AdvancedView"
+            android:textSize="18sp" />
+
+        <FrameLayout
+            android:id="@+id/fragment_a_anotherFragmentContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_a_sampleExplanation"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp" />
+
+        <RelativeLayout
+            android:id="@+id/fragment_a_counter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/fragment_a_anotherFragmentContainer"
+            android:layout_margin="20dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/fragment_a_buttonDecrement"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/fragment_a_counterDisplay"
+                android:text="-"
+                android:onClick="@{(v) -> controller.decrement(v)}"
+                android:textSize="50sp" />
+
+            <TextView
+                android:id="@+id/fragment_a_counterDisplay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:minWidth="100dp"
+                android:text="@{model.count}"
+                android:textSize="50sp" />
+
+            <Button
+                android:id="@+id/fragment_a_buttonIncrement"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/fragment_a_counterDisplay"
+                android:text="+"
+                android:onClick="@{(v) -> controller.increment(v)}"
+                android:textSize="50sp" />
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/fragment_a_buttonShowDetailScreenExplanation"
+            android:layout_centerHorizontal="true"
+            android:gravity="center">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Your IP:" />
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp">
+
+                <TextView
+                    android:id="@+id/fragment_a_ipValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="123.123.123.123"
+                    android:visibility="invisible"
+                    tools:visibility="visible"/>
+
+                <ProgressBar
+                    android:id="@+id/fragment_a_ipProgress"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_centerInParent="true"
+                    android:visibility="@{model.progressVisible ? View.VISIBLE : View.GONE}"
+                    tools:visibility="visible"/>
+
+            </RelativeLayout>
+
+            <ImageView
+                android:id="@+id/fragment_a_ipRefresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/stat_notify_sync"
+                android:layout_marginLeft="10dp"
+                android:onClick="@{() -> controller.refreshIp()}"
+                android:tint="#999"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/fragment_a_buttonShowDetailScreenExplanation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/fragment_a_buttonShowDetailScreen"
+            android:padding="10dp"
+            android:text="Go to AdvancedView in new fragment that keep count value in sync"
+            android:onClick="@{() -> controller.refreshIp()}"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/fragment_a_buttonShowDetailScreen"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="Go to AdvancedView"
+            android:onClick="@{(v) -> controller.goToDetailScreen(v)}"/>
+
+    </RelativeLayout>
+</layout>
