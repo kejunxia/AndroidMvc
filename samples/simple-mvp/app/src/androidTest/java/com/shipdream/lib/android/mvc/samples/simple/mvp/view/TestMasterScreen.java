@@ -27,7 +27,6 @@ import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.MainActivity;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.R;
-import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterDetailController;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
@@ -138,7 +137,7 @@ public class TestMasterScreen {
         onView(withId(R.id.screen_master_counterDisplay)).check(matches(withText("1")));
 
         //Navigate to detail screen
-        navigationManager.navigate(this).to(CounterDetailController.class);
+        onView(withId(R.id.fragment_master_buttonShowDetailScreen)).perform(click());
 
         //Check count on detail screen
         onView(withId(R.id.screen_detail_counterDisplay)).check(matches(withText("1")));
