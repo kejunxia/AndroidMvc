@@ -228,6 +228,8 @@ public abstract class BaseTestCase<T extends TestActivity> extends ActivityInstr
 
     @After
     public void tearDown() throws Exception {
+        navigationManager.navigate(this).back(null);
+        navigationManager.navigate(this).back();
         try {
             Mvc.graph().getRootComponent().getCache().clear();
             Mvc.graph().getRootComponent().detach(component);

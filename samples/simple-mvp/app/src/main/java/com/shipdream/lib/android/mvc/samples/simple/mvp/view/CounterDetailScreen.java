@@ -30,7 +30,7 @@ import butterknife.OnClick;
 import butterknife.OnTouch;
 
 public class CounterDetailScreen extends AbstractFragment<CounterDetailController> {
-    @BindView(R.id.fragment_b_counterDisplay)
+    @BindView(R.id.screen_detail_counterDisplay)
     TextView display;
 
     @Override
@@ -40,7 +40,7 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
 
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_counter_detail;
+        return R.layout.screen_detail;
     }
 
     @Override
@@ -53,13 +53,13 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
         display.setText(controller.getCount());
     }
 
-    @OnClick(R.id.fragment_b_buttonAutoIncrement)
+    @OnClick(R.id.screen_detail_buttonAutoIncrement)
     void onClick(View v) {
         Intent intent = new Intent(getActivity(), CountService.class);
         getActivity().startService(intent);
     }
 
-    @OnTouch(R.id.fragment_b_buttonIncrement)
+    @OnTouch(R.id.screen_detail_buttonIncrement)
     boolean onTouchIncrement(final View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
@@ -73,7 +73,7 @@ public class CounterDetailScreen extends AbstractFragment<CounterDetailControlle
         return false;
     }
 
-    @OnTouch(R.id.fragment_b_buttonDecrement)
+    @OnTouch(R.id.screen_detail_buttonDecrement)
     boolean onTouch(final View v, MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:

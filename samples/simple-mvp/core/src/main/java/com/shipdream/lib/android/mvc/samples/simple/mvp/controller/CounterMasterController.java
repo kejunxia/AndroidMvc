@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc.samples.simple.mvp.controller;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
+import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.Task;
 import com.shipdream.lib.android.mvc.UiView;
 import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
@@ -64,6 +65,12 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
 
     @Inject
     private ServiceFactory serviceFactory;
+
+    @Override
+    public void onViewReady(Reason reason) {
+        super.onViewReady(reason);
+        getModel().count = String.valueOf(counterManager.getModel().getCount());
+    }
 
     public void increment(Object sender) {
         int count = counterManager.getModel().getCount();

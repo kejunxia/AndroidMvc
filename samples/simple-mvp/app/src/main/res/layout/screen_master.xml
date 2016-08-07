@@ -20,7 +20,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/fragment_a_title"
+        android:id="@+id/screen_master_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#aaa"
@@ -31,41 +31,41 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/fragment_a_sampleExplanation"
+        android:id="@+id/screen_master_sampleExplanation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_a_title"
+        android:layout_below="@+id/screen_master_title"
         android:padding="10dp"
         android:text="The sample demonstrates how multiple UIs for count value are updated by the same event, including this FragmentA, the nestedFragment, next FragmentB and notification view created by AdvancedView"
         android:textSize="18sp" />
 
     <FrameLayout
-        android:id="@+id/fragment_a_anotherFragmentContainer"
+        android:id="@+id/screen_master_anotherFragmentContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_a_sampleExplanation"
+        android:layout_below="@+id/screen_master_sampleExplanation"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp" />
 
     <RelativeLayout
-        android:id="@+id/fragment_a_counter"
+        android:id="@+id/screen_master_counter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/fragment_a_anotherFragmentContainer"
+        android:layout_below="@+id/screen_master_anotherFragmentContainer"
         android:layout_margin="20dp"
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/fragment_a_buttonDecrement"
+            android:id="@+id/screen_master_buttonDecrement"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/fragment_a_counterDisplay"
+            android:layout_toLeftOf="@+id/screen_master_counterDisplay"
             android:text="-"
             android:textSize="50sp" />
 
         <TextView
-            android:id="@+id/fragment_a_counterDisplay"
+            android:id="@+id/screen_master_counterDisplay"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
@@ -75,11 +75,11 @@
             android:textSize="50sp" />
 
         <Button
-            android:id="@+id/fragment_a_buttonIncrement"
+            android:id="@+id/screen_master_buttonIncrement"
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@id/fragment_a_counterDisplay"
+            android:layout_toRightOf="@id/screen_master_counterDisplay"
             android:text="+"
             android:textSize="50sp" />
 
@@ -88,7 +88,7 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/fragment_a_buttonShowDetailScreenExplanation"
+        android:layout_above="@+id/fragment_master_buttonShowDetailScreenExplanation"
         android:layout_centerHorizontal="true"
         android:gravity="center">
 
@@ -103,7 +103,7 @@
             android:layout_marginLeft="5dp">
 
             <TextView
-                android:id="@+id/fragment_a_ipValue"
+                android:id="@+id/fragment_master_ipValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="123.123.123.123"
@@ -111,7 +111,7 @@
                 tools:visibility="visible"/>
 
             <ProgressBar
-                android:id="@+id/fragment_a_ipProgress"
+                android:id="@+id/fragment_master_ipProgress"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:layout_centerInParent="true"
@@ -121,7 +121,7 @@
         </RelativeLayout>
 
         <ImageView
-            android:id="@+id/fragment_a_ipRefresh"
+            android:id="@+id/fragment_master_ipRefresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@android:drawable/stat_notify_sync"
@@ -130,16 +130,16 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/fragment_a_buttonShowDetailScreenExplanation"
+        android:id="@+id/fragment_master_buttonShowDetailScreenExplanation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/fragment_a_buttonShowDetailScreen"
+        android:layout_above="@+id/fragment_master_buttonShowDetailScreen"
         android:padding="10dp"
         android:text="Go to AdvancedView in new fragment that keep count value in sync"
         android:textSize="18sp" />
 
     <Button
-        android:id="@+id/fragment_a_buttonShowDetailScreen"
+        android:id="@+id/fragment_master_buttonShowDetailScreen"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"

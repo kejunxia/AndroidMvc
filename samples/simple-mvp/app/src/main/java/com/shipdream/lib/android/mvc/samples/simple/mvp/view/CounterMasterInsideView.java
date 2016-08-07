@@ -24,7 +24,7 @@ import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterMaster
 import butterknife.BindView;
 
 public class CounterMasterInsideView extends AbstractFragment<CounterMasterInsideController> {
-    @BindView(R.id.fragment_a_sub_countInEnglish)
+    @BindView(R.id.screen_master_sub_countInEnglish)
     TextView txtCountInEnglish;
 
     @Override
@@ -34,7 +34,7 @@ public class CounterMasterInsideView extends AbstractFragment<CounterMasterInsid
 
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_a_sub;
+        return R.layout.screen_master_subview;
     }
 
     @Override

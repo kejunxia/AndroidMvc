@@ -30,20 +30,20 @@
         android:background="#aaa"
         android:textStyle="bold"
         android:textSize="20sp"
-        android:id="@+id/fragment_a_nestedTitle"/>
+        android:id="@+id/screen_master_sub_nestedTitle"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="18sp"
-        android:layout_below="@+id/fragment_a_nestedTitle"
-        android:layout_alignRight="@+id/fragment_a_nestedTitle"
+        android:layout_below="@+id/screen_master_sub_nestedTitle"
+        android:layout_alignRight="@+id/screen_master_sub_nestedTitle"
         android:text="Observes the same count update event and update count in English"
-        android:id="@+id/fragment_a_nestedDescription"/>
+        android:id="@+id/screen_master_sub_nestedDescription"/>
 
     <TextView
-        android:id="@+id/fragment_a_sub_countInEnglish"
+        android:id="@+id/screen_master_sub_countInEnglish"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -56,6 +56,6 @@
         android:textSize="26sp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:layout_below="@+id/fragment_a_nestedDescription"/>
+        android:layout_below="@+id/screen_master_sub_nestedDescription"/>
 
 </RelativeLayout>
