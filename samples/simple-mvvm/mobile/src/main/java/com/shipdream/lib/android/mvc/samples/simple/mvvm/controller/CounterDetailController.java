@@ -82,7 +82,7 @@ public class CounterDetailController extends AbstractScreenController<
     @Override
     public void onViewReady(Reason reason) {
         super.onViewReady(reason);
-        getModel().count = String.valueOf(counterManager.getModel().getCount());
+        getModel().count = Integer.toString(counterManager.getModel().getCount());
     }
 
     public void startContinuousIncrement() {
@@ -126,7 +126,7 @@ public class CounterDetailController extends AbstractScreenController<
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {
         //receive the event from manager and process the data and pass to view through
         //eventBusV
-        getModel().count = String.valueOf(event.getCount());
+        getModel().count = Integer.toString(event.getCount());
         postEvent(new Event.OnCountUpdated(getModel().getCount()));
     }
 }
