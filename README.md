@@ -6,7 +6,7 @@
 ## Features
 
   - Easy to implement MVC/MVP/MVVM pattern for Android development
-  - Enhanced Android life cycles - e.g. when view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. Android mvc framework provides more granular life cycles
+  - Enhanced Android life cycles - e.g. a view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific enough to differentiate the two scenarios. Android mvc framework provides more granular life cycles
   - All fragment life cycles are mapped into controllers thus logic in life cycles are testable on JVM
   - Easy navigation between pages. Navigation is done in controllers instead of views so navigation can be unit tested on JVM
   - Easy unit test on JVM since controllers don't depend on any Android APIs
