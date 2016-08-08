@@ -32,7 +32,7 @@ android:
   #- adb shell input keyevent 82 &
 
 # Don't do connectedCheck to skip instrumentTest on Travis
-script: "./gradlew build --stacktrace"
+script: "./gradlew build --info"
 
 jdk:
   - oraclejdk8
