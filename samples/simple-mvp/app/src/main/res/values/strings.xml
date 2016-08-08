@@ -19,4 +19,5 @@
     <string name="app_name">AndMvp-Simple</string>
     <string name="title_master_screen">Master Screen</string>
     <string name="title_detail_screen">Detail Screen</string>
+    <string name="network_error_to_get_ip">Network error to get IP address</string>
 </resources>

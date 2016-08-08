@@ -40,11 +40,11 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
     @Inject
     private NavigationManager navigationManager;
 
-    @BindView(R.id.fragment_a_counterDisplay)
+    @BindView(R.id.screen_master_counterDisplay)
     TextView display;
-    @BindView(R.id.fragment_a_ipValue)
+    @BindView(R.id.fragment_master_ipValue)
     TextView ipValue;
-    @BindView(R.id.fragment_a_ipProgress)
+    @BindView(R.id.fragment_master_ipProgress)
     ProgressBar ipProgress;
 
     @Override
@@ -57,25 +57,25 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
      */
     @Override
     protected int getLayoutResId() {
-        return R.layout.fragment_counter_basic;
+        return R.layout.screen_master;
     }
 
-    @OnClick(R.id.fragment_a_buttonIncrement)
+    @OnClick(R.id.screen_master_buttonIncrement)
     void increment(View v) {
         controller.increment(v);
     }
 
-    @OnClick(R.id.fragment_a_buttonDecrement)
+    @OnClick(R.id.screen_master_buttonDecrement)
     void decrement(View v) {
         controller.decrement(v);
     }
 
-    @OnClick(R.id.fragment_a_buttonShowDetailScreen)
+    @OnClick(R.id.fragment_master_buttonShowDetailScreen)
     void goToDetailPage(View v) {
         controller.goToDetailScreen(v);
     }
 
-    @OnClick(R.id.fragment_a_ipRefresh)
+    @OnClick(R.id.fragment_master_ipRefresh)
     void refreshIp(){
         controller.refreshIp();
     }
@@ -97,7 +97,7 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
             CounterMasterInsideView f = new CounterMasterInsideView();
 
             getChildFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_a_anotherFragmentContainer, f).commit();
+                    .replace(R.id.screen_master_anotherFragmentContainer, f).commit();
         }
 
     }
@@ -131,7 +131,7 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
 
     @Override
     public void showNetworkError(IOException e) {
-        Toast.makeText(getContext(), String.format("Network error: %s", e.getMessage())
+        Toast.makeText(getContext(), R.string.network_error_to_get_ip
                 , Toast.LENGTH_SHORT).show();
     }
 

@@ -1,4 +1,8 @@
 language: android
+
+addons:
+  artifacts: true
+
 android:
   components:
     # Uncomment the lines below if you want to
@@ -28,7 +32,7 @@ android:
   #- adb shell input keyevent 82 &
 
 # Don't do connectedCheck to skip instrumentTest on Travis
-script: "./gradlew build"
+script: "./gradlew build --info"
 
 jdk:
   - oraclejdk8

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright 2016 Kejun Xia
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/screen_master_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#aaa"
+        android:gravity="center"
+        android:padding="10dp"
+        android:text="Fragment A"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/screen_master_sampleExplanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/screen_master_title"
+        android:padding="10dp"
+        android:text="The sample demonstrates how multiple UIs for count value are updated by the same event, including this FragmentA, the nestedFragment, next FragmentB and notification view created by AdvancedView"
+        android:textSize="18sp" />
+
+    <FrameLayout
+        android:id="@+id/screen_master_anotherFragmentContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/screen_master_sampleExplanation"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+
+    <RelativeLayout
+        android:id="@+id/screen_master_counter"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/screen_master_anotherFragmentContainer"
+        android:layout_margin="20dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/screen_master_buttonDecrement"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/screen_master_counterDisplay"
+            android:text="-"
+            android:textSize="50sp" />
+
+        <TextView
+            android:id="@+id/screen_master_counterDisplay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:minWidth="100dp"
+            android:text="0"
+            android:textSize="50sp" />
+
+        <Button
+            android:id="@+id/screen_master_buttonIncrement"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/screen_master_counterDisplay"
+            android:text="+"
+            android:textSize="50sp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_master_buttonShowDetailScreenExplanation"
+        android:layout_centerHorizontal="true"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Your IP:" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp">
+
+            <TextView
+                android:id="@+id/fragment_master_ipValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="123.123.123.123"
+                android:visibility="invisible"
+                tools:visibility="visible"/>
+
+            <ProgressBar
+                android:id="@+id/fragment_master_ipProgress"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerInParent="true"
+                android:visibility="invisible"
+                tools:visibility="visible"/>
+
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/fragment_master_ipRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@android:drawable/stat_notify_sync"
+            android:layout_marginLeft="10dp"
+            android:tint="#999"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/fragment_master_buttonShowDetailScreenExplanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/fragment_master_buttonShowDetailScreen"
+        android:padding="10dp"
+        android:text="Go to AdvancedView in new fragment that keep count value in sync"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/fragment_master_buttonShowDetailScreen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="Go to AdvancedView" />
+
+</RelativeLayout>

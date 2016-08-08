@@ -25,6 +25,13 @@ dependencies {
 
     compile 'com.jakewharton:butterknife:8.2.1'
     apt 'com.jakewharton:butterknife-compiler:8.2.1'
+
+    // Testing-only dependencies
+    androidTestCompile 'com.android.support.test:runner:0.5'
+    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
+    androidTestCompile "com.android.support:support-annotations:$rootProject.supportLibVersion"
+    androidTestCompile 'com.google.dexmaker:dexmaker-mockito:1.2'
 }
 
 android {
@@ -48,6 +55,8 @@ android {
         versionName "1.0.0"
 
         multiDexEnabled false
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
     sourceSets {
