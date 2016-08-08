@@ -29,7 +29,7 @@
 
 <ul>
 <li>
-<a href="#implement-mvcmvpmvvm-pattern">Easy to implement MVC/MVP/MVVM pattern</a> for Android development</li>
+<a href="#implement-mvcmvpmvvm-pattern">Easy to implement MVC/MVP/MVVM pattern</a> for Android development including using Android data binding libraray</li>
 <li>
 <a href="#fragment-life-cycles">Enhanced Android life cycles</a> - e.g. when view needs to refresh when being brought back to foreground but not on rotation, onResume() is not specific to differentiate the two scenarios. Android mvc framework provides more granular life cycles</li>
 <li>
@@ -51,6 +51,11 @@
 <h2>
 <a id="implement-mvcmvpmvvm-pattern" class="anchor" href="#implement-mvcmvpmvvm-pattern" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Implement MVC/MVP/MVVM pattern</h2>
 
+<ul>
+<li><a href="https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvp">See MVP sample here</a></li>
+<li><a href="https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvvm">See MVVM sample here</a></li>
+</ul>
+
 <p>As we know MVP and MVVM patterns are just simply derivatives of MVC pattern. All of them are targeting the same goal - Separation. </p>
 
 <p>Separating Views and Controllers allows moving more business logic away from views into controllers. This makes code cleaner and, more importantly, it makes code more testable since most logical components are not depending on specific views. In the sense of Android, it means more fuctions can be written without depending on Android API therefore not have to be tested on emulators.</p>
@@ -62,8 +67,8 @@
 <p><strong>Controller</strong>: A controller is a delegate for business logic of a view. Thus controllers and views have <strong>one-to-one</strong> relationship. A controller provides methods to be invoked by the view to receive user's interactions such as click and long press. Once user's input is processed in controller, the state of view would be changed. And the controller needs to notify the view the change. When the controller needs to update view, it can be done differently in MVP and MVVM pattern</p>
 
 <ul>
-<li>In <strong>MVP</strong>: controller calls the method view.update() of the view it holds to update the entire view. If the needed, the view can define more granular methods to update just a part of the entire view. For example, view.showProgressBar() or view.hideProgressBar().</li>
-<li>In <strong>MVVM</strong>: controller post an event to view. View uses methods onEvent([EventClassType] event) to mointore the posted event. In the mothods the view update the UI accordingly.</li>
+<li>In <strong>MVP</strong>: controller calls the method view.update() of the view it holds to update the entire view. If the needed, the view can define more granular methods to update just a part of the entire view. For example, view.showProgressBar() or view.hideProgressBar(). </li>
+<li>In <strong>MVVM</strong>: controller post an event to view. View uses methods onEvent([EventClassType] event) to mointore the posted event. In the mothods the view update the UI accordingly. </li>
 </ul>
 </li>
 <li>
@@ -363,6 +368,11 @@ Services abstract out data access logic so that they can be replaced by differen
     }</pre></div>
 </li>
 </ul>
+
+<h4>
+<a id="sample-of-mvvm-with-android-data-binding-library" class="anchor" href="#sample-of-mvvm-with-android-data-binding-library" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sample of MVVM with Android Data Binding Library</h4>
+
+<p>Check the {sample project here](<a href="https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvvm">https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvvm</a>), in which Android Data Binding Library is used in master screen and eventbus is used in detail screen to demostrate different ways to implement MVVM.</p>
 
 <h2>
 <a id="fragment-life-cycles" class="anchor" href="#fragment-life-cycles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fragment Life cycles</h2>
