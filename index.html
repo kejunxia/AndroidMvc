@@ -44,7 +44,9 @@
 <a href="#event-bus">Built in Event Bus</a>. Event bus also automatically guarantees post event view events on the UI thread</li>
 <li>
 <a href="#instance-state-management">Automatically save and restore instance state</a>. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.</li>
-<li><a href="#ependency-injection-poke">Built in simple dependency injection</a></li>
+<li><a href="#dependency-injection-poke">Built in simple dependency injection</a></li>
+<li>Easy to mock objects in UI tests with the dependency injection. <a href="https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvp/core/src/test/java/com/shipdream/lib/android/mvc/samples/simple/mvp/controller/internal">See sample here</a>
+</li>
 <li>Well tested - non-Android components are tested as the test coverage status <a href="https://coveralls.io/r/kejunxia/AndroidMvc"><img src="https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg" alt="Coverage Status"></a>. For Android dependent module "android-mvc", it's tested by real emulator with <a href="https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test">this UI test module</a>. <strong>It's also tested with "Don't Keep Activities" turned on in dev options</strong> to guarantee your app doesn't crash due to loss of instance state after it's killed by OS in the background!</li>
 </ul>
 
@@ -372,7 +374,7 @@ Services abstract out data access logic so that they can be replaced by differen
 <h4>
 <a id="sample-of-mvvm-with-android-data-binding-library" class="anchor" href="#sample-of-mvvm-with-android-data-binding-library" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Sample of MVVM with Android Data Binding Library</h4>
 
-<p>Check the {sample project here](<a href="https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvvm">https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvvm</a>), in which Android Data Binding Library is used in master screen and eventbus is used in detail screen to demostrate different ways to implement MVVM.</p>
+<p>Check the <a href="https://github.com/kejunxia/AndroidMvc/tree/master/samples/simple-mvvm">sample project here</a>, in which Android Data Binding Library is used in master screen and eventbus is used in detail screen to demostrate different ways to implement MVVM.</p>
 
 <h2>
 <a id="fragment-life-cycles" class="anchor" href="#fragment-life-cycles" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fragment Life cycles</h2>
