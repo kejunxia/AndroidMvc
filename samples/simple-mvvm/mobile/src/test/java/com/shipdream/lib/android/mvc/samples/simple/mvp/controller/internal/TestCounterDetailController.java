@@ -96,6 +96,6 @@ public class TestCounterDetailController extends BaseTest {
                 ArgumentCaptor.forClass(CounterDetailController.Event.OnCountUpdated.class);
         verify(view).onEvent(event.capture());
         //Check whether the event carries correct value
-        assertEquals(event.getValue().getCount(), "1");
+        assertEquals("1", event.getValue().getCount());
     }
 }

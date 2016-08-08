@@ -1,4 +1,8 @@
 language: android
+
+addons:
+  artifacts: true
+
 android:
   components:
     # Uncomment the lines below if you want to
