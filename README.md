@@ -46,6 +46,13 @@ buttonGoToDetailScreen.setOnClickListener(
             controller.goToDetailView(v);
         }
     });
+    
+//If you use Butterknife, the code can be shorten as below. Also you can use Android Data 
+//Binding library to shorten the code similarly
+@OnClick(R.id.fragment_master_buttonShowDetailScreen)
+void goToDetailPage(View v) {
+    controller.goToDetailScreen(v);
+}
 ```
 
 In CounterDetailScreen
@@ -55,7 +62,10 @@ public void update() {
     /**
      * Controller will call update() whenever the controller thinks the state of the screen
      * changes. So just bind the state of the controller to this screen then the screen is always
-     * reflecting the latest state/model of the controller
+     * reflecting the latest state/model of the controller. This is a simple solution but works for most cases.
+     * This solution can be thought as refreshing the whole web page in a browser. If you want more granular 
+     * control like ajax to update partial page, define more callbacks in View for MVP pattern and events for MVVM 
+     * pattern and call them in the controller when needed.
      */
     display.setText(controller.getCount());
 }
