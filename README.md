@@ -47,8 +47,10 @@ buttonGoToDetailScreen.setOnClickListener(
         }
     });
     
-//If you use Butterknife, the code can be shorten as below. Also you can use Android Data 
-//Binding library to shorten the code similarly
+```
+
+If you use Butterknife, the code can be shorten as below. Also you can use Android Data Binding library to shorten the code similarly
+```java
 @OnClick(R.id.fragment_master_buttonShowDetailScreen)
 void goToDetailPage(View v) {
     controller.goToDetailScreen(v);
