@@ -1,4 +1,5 @@
 # AndroidMvc Framework
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AndroidMvc-green.svg?style=true)](https://android-arsenal.com/details/1/4098)
 [![Build Status](https://travis-ci.org/kejunxia/AndroidMvc.svg?branch=ci-travis)](https://travis-ci.org/kejunxia/AndroidMvc)
 [![Coverage Status](https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg)](https://coveralls.io/r/kejunxia/AndroidMvc)
 [![jCenter](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
