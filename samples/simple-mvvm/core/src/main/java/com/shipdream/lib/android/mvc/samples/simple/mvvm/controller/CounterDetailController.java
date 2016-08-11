@@ -14,28 +14,15 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.samples.simple.mvvm.controller;
+package com.shipdream.lib.android.mvc.samples.simple.mvp.controller;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
 import com.shipdream.lib.android.mvc.Reason;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.manager.CounterManager;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 
 import javax.inject.Inject;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-public class CounterDetailController extends AbstractScreenController<CounterDetailController.Model> {
-    @Getter public static class Model {
-        private String count;
-    }
-
-    public interface Event {
-        @Getter @AllArgsConstructor class OnCountUpdated{
-            private final String count;
-        }
-    }
-
+public class CounterDetailController extends AbstractScreenController {
     private class ContinuousCounter implements Runnable {
         private final boolean incrementing;
         private boolean canceled = false;
@@ -64,8 +51,8 @@ public class CounterDetailController extends AbstractScreenController<CounterDet
     }
 
     @Override
-    public Class<Model> modelType() {
-        return Model.class;
+    public Class modelType() {
+        return null;
     }
 
     @Inject
@@ -80,7 +67,7 @@ public class CounterDetailController extends AbstractScreenController<CounterDet
     @Override
     public void onViewReady(Reason reason) {
         super.onViewReady(reason);
-        getModel().count = Integer.toString(counterManager.getModel().getCount());
+        view.update();
     }
 
     public void startContinuousIncrement() {
@@ -107,6 +94,10 @@ public class CounterDetailController extends AbstractScreenController<CounterDet
         }
     }
 
+    public String getCount() {
+        return String.valueOf(counterManager.getModel().getCount());
+    }
+
     public void increment(Object sender) {
         int count = counterManager.getModel().getCount();
         counterManager.setCount(sender, ++count);
@@ -122,9 +113,6 @@ public class CounterDetailController extends AbstractScreenController<CounterDet
     }
 
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {
-        //receive the event from manager and process the data and pass to view through
-        //eventBusV
-        getModel().count = Integer.toString(event.getCount());
-        postEvent(new Event.OnCountUpdated(getModel().getCount()));
+        view.update();
     }
 }

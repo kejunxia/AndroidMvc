@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.samples.simple.mvvm.controller;
+package com.shipdream.lib.android.mvc.samples.simple.mvp.controller;
 
 import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.UiView;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.manager.AppManager;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.service.ResourceService;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.AppManager;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.service.ResourceService;
 
 import javax.inject.Inject;
 
 /**
  * Controller for fragments used as a screen - full screen page
  */
-public abstract class AbstractScreenController<MODEL> extends AbstractController<MODEL, UiView> {
+public abstract class AbstractScreenController<MODEL, VIEW extends UiView>
+        extends AbstractController<MODEL, VIEW> {
     @Inject
     protected AppManager appManager;
 

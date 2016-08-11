@@ -14,41 +14,24 @@
  * limitations under the License.
  */
 
-package com.shipdream.lib.android.mvc.samples.simple.mvvm.controller;
-
-import android.databinding.BaseObservable;
-import android.databinding.Bindable;
+package com.shipdream.lib.android.mvc.samples.simple.mvp.controller;
 
 import com.shipdream.lib.android.mvc.NavigationManager;
-import com.shipdream.lib.android.mvc.Reason;
 import com.shipdream.lib.android.mvc.Task;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.BR;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.dto.IpPayload;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.factory.ServiceFactory;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.http.IpService;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.manager.CounterManager;
+import com.shipdream.lib.android.mvc.UiView;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
 
 import java.io.IOException;
 
 import javax.inject.Inject;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import retrofit2.Response;
 
-
-public class CounterMasterController extends AbstractScreenController<CounterMasterController.Model> {
-    public interface Event {
-        @Getter @AllArgsConstructor class OnHttpError {
-            private final int statusCode;
-            private final String message;
-        }
-
-        @Getter @AllArgsConstructor class OnNetworkError {
-            private final IOException ioException;
-        }
-    }
-
+public class CounterMasterController extends AbstractScreenController<CounterMasterController.Model,
+        CounterMasterController.View> {
     @Override
     public Class<Model> modelType() {
         return Model.class;
@@ -57,40 +40,20 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
     /**
      * The view model of the CounterMasterScreen
      */
-    public static class Model extends BaseObservable {
+    public static class Model {
         private String count;
-        private String ipAddress;
-        private boolean progressVisible;
 
-        public void setCount(String count) {
-            this.count = count;
-            notifyPropertyChanged(BR.count);
-        }
-
-        @Bindable
         public String getCount() {
             return count;
         }
+    }
 
-        @Bindable
-        public String getIpAddress() {
-            return ipAddress;
-        }
-
-        public void setIpAddress(String ipAddress) {
-            this.ipAddress = ipAddress;
-            notifyPropertyChanged(BR.ipAddress);
-        }
-
-        @Bindable
-        public boolean isProgressVisible() {
-            return progressVisible;
-        }
-
-        public void setProgressVisible(boolean progressVisible) {
-            this.progressVisible = progressVisible;
-            notifyPropertyChanged(BR.progressVisible);
-        }
+    public interface View extends UiView{
+        void showProgress();
+        void hideProgress();
+        void updateIpValue(String ip);
+        void showHttpError(int statusCode, String message);
+        void showNetworkError(IOException e);
     }
 
     @Inject
@@ -101,13 +64,6 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
 
     @Inject
     private ServiceFactory serviceFactory;
-
-    @Override
-    public void onViewReady(Reason reason) {
-        super.onViewReady(reason);
-        //Initialize model
-        getModel().setCount(String.valueOf(counterManager.getModel().getCount()));
-    }
 
     public void increment(Object sender) {
         int count = counterManager.getModel().getCount();
@@ -120,7 +76,7 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
     }
 
     public void refreshIp() {
-        getModel().setProgressVisible(true);
+        view.showProgress();
 
         runTask(new Task<Response<IpPayload>>() {
             @Override
@@ -133,9 +89,9 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
             public void onSuccess(Response<IpPayload> response) {
                 super.onSuccess(response);
                 if (response.isSuccessful()) {
-                    getModel().setIpAddress(response.body().getIp());
+                    view.updateIpValue(response.body().getIp());
                 } else {
-                    postEvent(new Event.OnHttpError(response.code(), response.message()));
+                    view.showHttpError(response.code(), response.message());
                     logger.warn("Http error to get ip. error({}): {}", response.code(), response.message());
                 }
             }
@@ -143,7 +99,7 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
             @Override
             public void onException(Exception e) {
                 if (e instanceof IOException) {
-                    postEvent(new Event.OnNetworkError((IOException) e));
+                    view.showNetworkError((IOException) e);
                 }
 
                 logger.warn(e.getMessage(), e);
@@ -152,7 +108,7 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
             @Override
             public void onFinally() {
                 super.onFinally();
-                getModel().setProgressVisible(false);
+                view.hideProgress();
             }
         });
     }
@@ -171,7 +127,11 @@ public class CounterMasterController extends AbstractScreenController<CounterMas
      * @param event
      */
     private void onEvent(CounterManager.Event2C.OnCounterUpdated event) {
-        getModel().setCount(String.valueOf(event.getCount()));
+        getModel().count = String.valueOf(event.getCount());
+
+        if (view != null) {
+            view.update();
+        }
     }
 
 }

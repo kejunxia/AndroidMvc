@@ -19,18 +19,18 @@ package com.shipdream.lib.android.mvc.samples.simple.mvp.controller.internal;
 import com.shipdream.lib.android.mvc.Mvc;
 import com.shipdream.lib.android.mvc.MvcComponent;
 import com.shipdream.lib.android.mvc.NavigationManager;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.CounterDetailController;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.CounterMasterController;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.dto.IpPayload;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.factory.ServiceFactory;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.http.IpService;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.manager.CounterManager;
-import com.shipdream.lib.android.mvc.samples.simple.mvvm.service.ResourceService;
+import com.shipdream.lib.android.mvc.TestUtil;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterDetailController;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.controller.CounterMasterController;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.dto.IpPayload;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.factory.ServiceFactory;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.http.IpService;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.manager.CounterManager;
+import com.shipdream.lib.android.mvc.samples.simple.mvp.service.ResourceService;
 import com.shipdream.lib.poke.Provides;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.io.IOException;
 import java.util.Random;
@@ -41,9 +41,10 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,17 +56,11 @@ public class TestCounterMasterController extends BaseTest {
     @Inject
     private NavigationManager navigationManager;
 
+    private CounterMasterController.View view;
     private CounterMasterController controller;
 
     private ResourceService resourceServiceMock;
     private Call<IpPayload> ipServiceCallMock;
-
-    class ErrorMonitor {
-        public void onEvent(CounterMasterController.Event.OnHttpError event) {}
-        public void onEvent(CounterMasterController.Event.OnNetworkError event) {}
-    }
-    private ArgumentCaptor<CounterMasterController.Event.OnHttpError> httpErrorCaptor;
-    private ArgumentCaptor<CounterMasterController.Event.OnNetworkError> networkErrorCaptor;
 
     //Prepare injection graph before calling setup method
     @Override
@@ -102,8 +97,6 @@ public class TestCounterMasterController extends BaseTest {
         });
     }
 
-    private ErrorMonitor errorMonitorView;
-
     @Override
     public void setUp() throws Exception {
         super.setUp();
@@ -112,15 +105,16 @@ public class TestCounterMasterController extends BaseTest {
         Mvc.graph().inject(controller);
         controller.onCreated();
 
-        errorMonitorView = mock(ErrorMonitor.class);
-        eventBusV.register(errorMonitorView);
-
-        httpErrorCaptor = ArgumentCaptor.forClass(CounterMasterController.Event.OnHttpError.class);
-        networkErrorCaptor = ArgumentCaptor.forClass(CounterMasterController.Event.OnNetworkError.class);
+        view = mock(CounterMasterController.View.class);
+        TestUtil.assignControllerView(controller, view);
     }
 
     @Test
     public void increment_should_post_counter_update_event_with_incremented_value() {
+        //1. Prepare view
+        CounterMasterController.View view = mock(CounterMasterController.View.class);
+        TestUtil.assignControllerView(controller, view);
+
         //mock controller model for count value
         int value = new Random().nextInt();
         CounterManager.Model counterModel = new CounterManager.Model();
@@ -128,14 +122,12 @@ public class TestCounterMasterController extends BaseTest {
         //Mock the model of manager
         counterManager.bindModel(this, counterModel);
 
-        CounterMasterController.Model modelSpy = spy(controller.getModel());
-        controller.bindModel(modelSpy);
-
         //2. Act
         controller.increment(this);
 
         //3. Verify
-        verify(modelSpy, times(1)).setCount(String.valueOf(value + 1));
+        verify(view, times(1)).update();
+        Assert.assertEquals(String.valueOf(value + 1), controller.getModel().getCount());
     }
 
     @Test
@@ -165,22 +157,20 @@ public class TestCounterMasterController extends BaseTest {
         when(payload.getIp()).thenReturn(fakeIpResult);
         when(ipServiceCallMock.execute()).thenReturn(Response.success(payload));
 
-        CounterMasterController.Model modelSpy = spy(controller.getModel());
-        controller.bindModel(modelSpy);
-
         //Action
         controller.refreshIp();
 
         //Verify
-        verify(modelSpy).setProgressVisible(true);
+        //Showed loading progress
+        verify(view).showProgress();
         //Dismissed loading progress
-        verify(modelSpy).setProgressVisible(true);
-        //View's ip address text view should not be updated
-        verify(modelSpy, times(1)).setIpAddress(fakeIpResult);
+        verify(view).hideProgress();
+        //Updated view's text view by the given fake ip result
+        verify(view).updateIpValue(fakeIpResult);
         //Should not show error message
-        verify(errorMonitorView, times(0)).onEvent(httpErrorCaptor.capture());
+        verify(view, times(0)).showHttpError(anyInt(), anyString());
         //Should not show network error message
-        verify(errorMonitorView, times(0)).onEvent(networkErrorCaptor.capture());
+        verify(view, times(0)).showNetworkError(any(IOException.class));
     }
 
     @Test
@@ -192,24 +182,20 @@ public class TestCounterMasterController extends BaseTest {
         when(ipServiceCallMock.execute()).thenReturn(
                 Response.<IpPayload>error(errorStatusCode, responseBody));
 
-        CounterMasterController.Model modelSpy = spy(controller.getModel());
-        controller.bindModel(modelSpy);
-
         //Action
         controller.refreshIp();
 
         //Verify
         //Showed loading progress
-        verify(modelSpy).setProgressVisible(true);
+        verify(view).showProgress();
         //Dismissed loading progress
-        verify(modelSpy).setProgressVisible(true);
+        verify(view).hideProgress();
         //View's ip address text view should not be updated
-        verify(modelSpy, times(0)).setIpAddress(anyString());
+        verify(view, times(0)).updateIpValue(anyString());
         //Should show http error message with given mocking data
-        verify(errorMonitorView, times(1)).onEvent(httpErrorCaptor.capture());
-        Assert.assertEquals(errorStatusCode, httpErrorCaptor.getValue().getStatusCode());
+        verify(view, times(1)).showHttpError(errorStatusCode, null);
         //Should not show network error message
-        verify(errorMonitorView, times(0)).onEvent(networkErrorCaptor.capture());
+        verify(view, times(0)).showNetworkError(any(IOException.class));
     }
 
     @Test
@@ -219,22 +205,19 @@ public class TestCounterMasterController extends BaseTest {
         IOException ioExceptionMock = mock(IOException.class);
         when(ipServiceCallMock.execute()).thenThrow(ioExceptionMock);
 
-        CounterMasterController.Model modelSpy = spy(controller.getModel());
-        controller.bindModel(modelSpy);
-
         //Action
         controller.refreshIp();
 
         //Verify
         //Showed loading progress
-        verify(modelSpy).setProgressVisible(true);
+        verify(view).showProgress();
         //Dismissed loading progress
-        verify(modelSpy).setProgressVisible(true);
+        verify(view).hideProgress();
         //View's ip address text view should not be updated
-        verify(modelSpy, times(0)).setIpAddress(anyString());
+        verify(view, times(0)).updateIpValue(anyString());
         //Should not show http error message
-        verify(errorMonitorView, times(0)).onEvent(httpErrorCaptor.capture());
+        verify(view, times(0)).showHttpError(anyInt(), anyString());
         //Should show network error message with the given mocking exception
-        verify(errorMonitorView, times(1)).onEvent(networkErrorCaptor.capture());
+        verify(view, times(1)).showNetworkError(ioExceptionMock);
     }
 }

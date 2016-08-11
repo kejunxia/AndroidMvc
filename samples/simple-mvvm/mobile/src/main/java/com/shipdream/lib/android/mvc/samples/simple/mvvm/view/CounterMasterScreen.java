@@ -31,12 +31,9 @@ import com.shipdream.lib.android.mvc.samples.simple.mvvm.R;
 import com.shipdream.lib.android.mvc.samples.simple.mvvm.controller.CounterMasterController;
 import com.shipdream.lib.android.mvc.samples.simple.mvvm.databinding.FragmentCounterMasterBinding;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
-public class CounterMasterScreen extends AbstractFragment<CounterMasterController>
-        implements CounterMasterController.View{
+public class CounterMasterScreen extends AbstractFragment<CounterMasterController> {
 
     @Inject
     private NavigationManager navigationManager;
@@ -84,15 +81,13 @@ public class CounterMasterScreen extends AbstractFragment<CounterMasterControlle
     public void update() {
     }
 
-    @Override
-    public void showHttpError(int statusCode, String message) {
-        Toast.makeText(getContext(), String.format("Http error(%d): %s", statusCode, message),
+    private void onEvent(CounterMasterController.Event.OnHttpError event) {
+        Toast.makeText(getContext(), String.format("Http error(%d): %s", event.getStatusCode(), event.getMessage()),
                 Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void showNetworkError(IOException e) {
-        Toast.makeText(getContext(), String.format("Network error: %s", e.getMessage())
+    private void onEvent(CounterMasterController.Event.OnNetworkError event) {
+        Toast.makeText(getContext(), String.format("Network error: %s", event.getIoException().getMessage())
                 , Toast.LENGTH_SHORT).show();
     }
 
