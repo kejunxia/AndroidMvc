@@ -611,14 +611,14 @@ public class Graph {
         /**
          * Called when the graph is about to inject dependencies into the given object
          *
-         * @param target The object to inject into
+         * @param target The object whose injectable fields have been injected
          */
         void onInject(Object target);
 
         /**
          * Called when the graph is about to release dependencies from the given object
          *
-         * @param target The object to release
+         * @param target The object whose injectable fields have been released
          */
         void onRelease(Object target);
     }
