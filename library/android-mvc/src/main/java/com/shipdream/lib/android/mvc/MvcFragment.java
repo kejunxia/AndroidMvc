@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -66,6 +67,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     private Object newInstanceChecker;
     boolean isStateManagedByRootDelegateFragment;
     protected CONTROLLER controller;
+    private Graph.Monitor graphMonitor;
 
     /**
      *
@@ -151,6 +153,20 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        graphMonitor = new Graph.Monitor() {
+            @Override
+            public void onInject(Object target) {
+                if (controller != null && target == MvcFragment.this) {
+                    controller.view = MvcFragment.this;
+                }
+            }
+
+            @Override
+            public void onRelease(Object target) {
+            }
+        };
+        Mvc.graph().registerMonitor(graphMonitor);
+
         eventRegister = new EventRegister(this);
 
         if (savedInstanceState == null) {
@@ -220,7 +236,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
         int currentOrientation = getResources().getConfiguration().orientation;
         if (controller != null) {
-            controller.view = this;
             controller.orientation = parseOrientation(currentOrientation);
         }
 
@@ -437,6 +452,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
         releaseDependencies();
 
+        Mvc.graph().unregisterMonitor(graphMonitor);
         eventRegister = null;
     }
 
