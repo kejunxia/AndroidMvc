@@ -1,8 +1,9 @@
 # AndroidMvc Framework
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AndroidMvc-green.svg?style=true)](https://android-arsenal.com/details/1/4098)
+
 [![Build Status](https://travis-ci.org/kejunxia/AndroidMvc.svg?branch=ci-travis)](https://travis-ci.org/kejunxia/AndroidMvc)
 [![Coverage Status](https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg)](https://coveralls.io/r/kejunxia/AndroidMvc)
 [![jCenter](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AndroidMvc-green.svg?style=true)](https://android-arsenal.com/details/1/4098)
 
 ## Features
 
@@ -15,6 +16,8 @@
   - Automatically save and restore instance state. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.
   - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
   - Well tested - non-Android components are tested as the test coverage shown above (over 90%). For Android dependent module "android-mvc", it's tested by real emulator with [this UI test module](https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test), even with  "Don't Keep Activities" turned on in dev options to guarantee your app doesn't crash due to loss of instance state after it's killed by OS in the background!
+
+### More details on [website](http://kejunxia.github.io/AndroidMvc)
 
 ## Code quick glance
 
