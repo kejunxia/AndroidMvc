@@ -17,7 +17,9 @@
   - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
   - Well tested - non-Android components are tested as the test coverage shown above (over 90%). For Android dependent module "android-mvc", it's tested by real emulator with [this UI test module](https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test), even with  "Don't Keep Activities" turned on in dev options to guarantee your app doesn't crash due to loss of instance state after it's killed by OS in the background!
 
-### More details on [Website](http://kejunxia.github.io/AndroidMvc)
+## More details on 
+
+[Website](http://kejunxia.github.io/AndroidMvc)
 
 ## Code quick glance
 
@@ -154,3 +156,7 @@ Here is the the latest version number in jCenter
     ```groovy
     compile "com.shipdream:android-mvc-core:[LatestVersion]"
     ```
+
+## More details on 
+
+[Website](http://kejunxia.github.io/AndroidMvc)
