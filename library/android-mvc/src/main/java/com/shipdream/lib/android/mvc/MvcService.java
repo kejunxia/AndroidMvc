@@ -19,7 +19,8 @@ package com.shipdream.lib.android.mvc;
 import android.app.Service;
 
 import com.shipdream.lib.poke.Graph;
-import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.slf4j.Logger;
@@ -65,10 +66,13 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
         if (getControllerClass() != null) {
             try {
                 controller = Mvc.graph().reference(getControllerClass(), null);
-            } catch (PokeException e) {
-                throw new IllegalArgumentException("Unable to find controller "
-                        + getControllerClass().getName() + ". Either create a controller with " +
-                        "default constructor or register it to Mvc.graph().getRootComponent()");
+            } catch (CircularDependenciesException e) {
+                e.printStackTrace();
+            } catch (ProvideException e) {
+                e.printStackTrace();
+            } catch (ProviderMissingException e) {
+                throw new IllegalStateException("Unable to inject "
+                        + getControllerClass().getName() + ".\n" + e.getMessage(), e);
             }
         }
 
