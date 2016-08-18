@@ -118,38 +118,6 @@ See the illustration below
 
 ![AndroidMvc Layers](http://i.imgur.com/dfW8TLM.png)
 
-## How to use
-
-To enforce you don't write Android dependent functions into controllers to make unit tests harder, 
-you can separate your Android project into 2 modules:
-
-- **app**: View layer - a lean module depending on Android API only bind model to Android UI and 
-pass user interactions to core module. This module should include lib **"android-mvc"** explained 
-in download section below. This module includes:
-  - Activities, Fragments, Views, Android Services and anything as views depending on Android API
-  - Implementations of abstract contract defined in core module that depending on Android API. 
-  For example, a SharedPreferenceImpl that depends on Android context object.
-- **core**: Controller layer - also includes model, managers and services. It's a module doesn't 
-have any Android dependency so can be tested straight away on JVM. This module should include lib 
-**"android-mvc-core"** explained in download section below. This module includes:
-  - Controllers
-  - Models
-  - Managers - shared by controllers
-  - Data services. When a service needs Android API it can be defined as an interface and 
-  implemented in app module. For example, define an interface SharedPreference to save and get data 
-  from Android preference. So in core module, the interface can be easily to be mocked for 
-  controllers or managers to provide mocked shared preference in unit tests.
-
-However, separating the android project into two modules as above is not necessary. They for sure 
-can be merged into one module and just depend on lib **"android-mvc"**, which has already included 
-**"android-mvc-core"**. But in this way, you may accidentally write android dependent functions into 
-controller to make mocking harder in controller unit tests.
-
-See the chart below as an example of how to separate the modules. Also check out the 
-**[Sample Code](https://github.com/kejunxia/AndroidMvc/tree/SampleWithInterimFragment/samples/simple)**
-
-![Project structure](http://i.imgur.com/Nx1vtyz.png)
-
 ## Download
 Here is the the latest version number in jCenter
 
