@@ -1,3 +1,7 @@
+Version: 3.1.1
+* Add MvcDialog and deprecate MvcDialogFragment
+* Better description for injection errors for fragments and services
+
 Version: 3.1.0
 * Uplift Android Support Library to 24.1.1
 
