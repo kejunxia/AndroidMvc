@@ -23,7 +23,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 
 dependencies {
     compile project(':library:android-mvc-core')
-    compile rootProject.lib.androidSupportLib
+    compile "com.android.support:appcompat-v7:$rootProject.supportLibVersion"
 }
 
 android {
