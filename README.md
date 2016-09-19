@@ -1,8 +1,9 @@
 # AndroidMvc Framework
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AndroidMvc-green.svg?style=true)](https://android-arsenal.com/details/1/4098)
+
 [![Build Status](https://travis-ci.org/kejunxia/AndroidMvc.svg?branch=ci-travis)](https://travis-ci.org/kejunxia/AndroidMvc)
 [![Coverage Status](https://coveralls.io/repos/kejunxia/AndroidMvc/badge.svg)](https://coveralls.io/r/kejunxia/AndroidMvc)
 [![jCenter](https://api.bintray.com/packages/kejunxia/maven/android-mvc/images/download.svg)](https://bintray.com/kejunxia/maven/android-mvc/_latestVersion)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-AndroidMvc-green.svg?style=true)](https://android-arsenal.com/details/1/4098)
 
 ## Features
 
@@ -15,6 +16,10 @@
   - Automatically save and restore instance state. You don't have to touch onSaveInstance and onCreate(savedInstanceState) with countless key-value pairs, it's all managed by the framework.
   - [Dependency injection with Poke to make mock easy](https://github.com/kejunxia/AndroidMvc/tree/master/library/poke)
   - Well tested - non-Android components are tested as the test coverage shown above (over 90%). For Android dependent module "android-mvc", it's tested by real emulator with [this UI test module](https://github.com/kejunxia/AndroidMvc/tree/master/library/android-mvc-test), even with  "Don't Keep Activities" turned on in dev options to guarantee your app doesn't crash due to loss of instance state after it's killed by OS in the background!
+
+## More details on 
+
+[Website](http://kejunxia.github.io/AndroidMvc)
 
 ## Code quick glance
 
@@ -115,38 +120,6 @@ See the illustration below
 
 ![AndroidMvc Layers](http://i.imgur.com/dfW8TLM.png)
 
-## How to use
-
-To enforce you don't write Android dependent functions into controllers to make unit tests harder, 
-you can separate your Android project into 2 modules:
-
-- **app**: View layer - a lean module depending on Android API only bind model to Android UI and 
-pass user interactions to core module. This module should include lib **"android-mvc"** explained 
-in download section below. This module includes:
-  - Activities, Fragments, Views, Android Services and anything as views depending on Android API
-  - Implementations of abstract contract defined in core module that depending on Android API. 
-  For example, a SharedPreferenceImpl that depends on Android context object.
-- **core**: Controller layer - also includes model, managers and services. It's a module doesn't 
-have any Android dependency so can be tested straight away on JVM. This module should include lib 
-**"android-mvc-core"** explained in download section below. This module includes:
-  - Controllers
-  - Models
-  - Managers - shared by controllers
-  - Data services. When a service needs Android API it can be defined as an interface and 
-  implemented in app module. For example, define an interface SharedPreference to save and get data 
-  from Android preference. So in core module, the interface can be easily to be mocked for 
-  controllers or managers to provide mocked shared preference in unit tests.
-
-However, separating the android project into two modules as above is not necessary. They for sure 
-can be merged into one module and just depend on lib **"android-mvc"**, which has already included 
-**"android-mvc-core"**. But in this way, you may accidentally write android dependent functions into 
-controller to make mocking harder in controller unit tests.
-
-See the chart below as an example of how to separate the modules. Also check out the 
-**[Sample Code](https://github.com/kejunxia/AndroidMvc/tree/SampleWithInterimFragment/samples/simple)**
-
-![Project structure](http://i.imgur.com/Nx1vtyz.png)
-
 ## Download
 Here is the the latest version number in jCenter
 
@@ -183,3 +156,7 @@ Here is the the latest version number in jCenter
     ```groovy
     compile "com.shipdream:android-mvc-core:[LatestVersion]"
     ```
+
+## More details on 
+
+[Website](http://kejunxia.github.io/AndroidMvc)
