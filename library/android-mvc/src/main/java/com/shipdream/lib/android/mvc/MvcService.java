@@ -18,7 +18,9 @@ package com.shipdream.lib.android.mvc;
 
 import android.app.Service;
 
-import com.shipdream.lib.poke.exception.PokeException;
+import com.shipdream.lib.poke.Graph;
+import com.shipdream.lib.poke.exception.CircularDependenciesException;
+import com.shipdream.lib.poke.exception.ProvideException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
 import org.slf4j.Logger;
@@ -31,6 +33,7 @@ import org.slf4j.LoggerFactory;
 public abstract class MvcService<CONTROLLER extends Controller> extends Service implements UiView {
     private EventRegister eventRegister;
     protected CONTROLLER controller;
+    private Graph.Monitor graphMonitor;
 
     /**
      * Specify the controller of this service. Returns null if this service doesn't need a controller
@@ -45,16 +48,32 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
     public void onCreate() {
         super.onCreate();
 
+        graphMonitor = new Graph.Monitor() {
+            @Override
+            public void onInject(Object target) {
+                if (controller != null && target == MvcService.this) {
+                    controller.view = MvcService.this;
+                }
+            }
+
+            @Override
+            public void onRelease(Object target) {
+
+            }
+        };
+        Mvc.graph().registerMonitor(graphMonitor);
+
         if (getControllerClass() != null) {
             try {
                 controller = Mvc.graph().reference(getControllerClass(), null);
-            } catch (PokeException e) {
-                throw new IllegalArgumentException("Unable to find controller "
-                        + getControllerClass().getName() + ". Either create a controller with " +
-                        "default constructor or register it to Mvc.graph().getRootComponent()");
+            } catch (CircularDependenciesException e) {
+                e.printStackTrace();
+            } catch (ProvideException e) {
+                e.printStackTrace();
+            } catch (ProviderMissingException e) {
+                throw new IllegalStateException("Unable to inject "
+                        + getControllerClass().getName() + ".\n" + e.getMessage(), e);
             }
-
-            controller.view = this;
         }
 
         Mvc.graph().inject(this);
@@ -82,6 +101,8 @@ public abstract class MvcService<CONTROLLER extends Controller> extends Service 
         }
 
         Mvc.graph().release(this);
+
+        Mvc.graph().unregisterMonitor(graphMonitor);
     }
 
     /**

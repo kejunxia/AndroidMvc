@@ -320,7 +320,6 @@ public abstract class MvcActivity extends AppCompatActivity {
                 Bundle mvcOutState = savedInstanceState.getBundle(MVC_STATE_BUNDLE_KEY);
                 long ts = System.currentTimeMillis();
 
-                //TODO: if its rotation, consider not restore since the fragment is retained
                 MvcStateKeeperHolder.restoreState(mvcOutState);
                 logger.trace("Restored state of all active controllers, {}ms used.", System.currentTimeMillis() - ts);
 

@@ -375,13 +375,13 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         final MonitorProxy proxy = mock(MonitorProxy.class);
         Graph.Monitor monitor = new Graph.Monitor() {
             @Override
-            public void onInject(Object target) {
-                proxy.onInject(target);
+            public void onInject(Object intoTarget) {
+                proxy.onInject(intoTarget);
             }
 
             @Override
-            public void onRelease(Object target) {
-                proxy.onRelease(target);
+            public void onRelease(Object fromTarget) {
+                proxy.onRelease(fromTarget);
             }
         };
         graph.registerMonitor(monitor);
@@ -413,13 +413,13 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         final MonitorProxy proxy = mock(MonitorProxy.class);
         Graph.Monitor monitor = new Graph.Monitor() {
             @Override
-            public void onInject(Object target) {
-                proxy.onInject(target);
+            public void onInject(Object intoTarget) {
+                proxy.onInject(intoTarget);
             }
 
             @Override
-            public void onRelease(Object target) {
-                proxy.onRelease(target);
+            public void onRelease(Object fromTarget) {
+                proxy.onRelease(fromTarget);
             }
         };
         graph.registerMonitor(monitor);
@@ -453,13 +453,13 @@ public class TestInjectionReferenceCount extends BaseTestCases {
         final MonitorProxy proxy = mock(MonitorProxy.class);
         Graph.Monitor monitor = new Graph.Monitor() {
             @Override
-            public void onInject(Object target) {
-                proxy.onInject(target);
+            public void onInject(Object intoTarget) {
+                proxy.onInject(intoTarget);
             }
 
             @Override
-            public void onRelease(Object target) {
-                proxy.onRelease(target);
+            public void onRelease(Object fromTarget) {
+                proxy.onRelease(fromTarget);
             }
         };
         graph.registerMonitor(monitor);

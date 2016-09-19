@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.shipdream.lib.poke.Graph;
 import com.shipdream.lib.poke.exception.PokeException;
 import com.shipdream.lib.poke.exception.ProviderMissingException;
 
@@ -66,6 +67,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     private Object newInstanceChecker;
     boolean isStateManagedByRootDelegateFragment;
     protected CONTROLLER controller;
+    private Graph.Monitor graphMonitor;
 
     /**
      *
@@ -112,9 +114,8 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
                 try {
                     controller = Mvc.graph().reference(getControllerClass(), null);
                 } catch (PokeException e) {
-                    throw new IllegalArgumentException("Unable to find controller "
-                            + getControllerClass().getName() + ".\nYou may miss some dependencies otherwise either create a controller with " +
-                            "default constructor or register it to Mvc.graph().getRootComponent()", e);
+                    throw new IllegalStateException("Unable to inject "
+                            + getControllerClass().getName() + ".\n" + e.getMessage(), e);
                 }
             }
 
@@ -150,6 +151,20 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        graphMonitor = new Graph.Monitor() {
+            @Override
+            public void onInject(Object target) {
+                if (controller != null && target == MvcFragment.this) {
+                    controller.view = MvcFragment.this;
+                }
+            }
+
+            @Override
+            public void onRelease(Object target) {
+            }
+        };
+        Mvc.graph().registerMonitor(graphMonitor);
 
         eventRegister = new EventRegister(this);
 
@@ -220,7 +235,6 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
     private void doOnViewCreatedCallBack(View view, Bundle savedInstanceState, boolean restoring) {
         int currentOrientation = getResources().getConfiguration().orientation;
         if (controller != null) {
-            controller.view = this;
             controller.orientation = parseOrientation(currentOrientation);
         }
 
@@ -437,6 +451,7 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
 
         releaseDependencies();
 
+        Mvc.graph().unregisterMonitor(graphMonitor);
         eventRegister = null;
     }
 
@@ -452,28 +467,28 @@ public abstract class MvcFragment<CONTROLLER extends FragmentController> extends
      * life cycles and gets created and ready to use. If this is one time action, use
      * {@link #unregisterOnViewReadyListener(Runnable)} (Runnable)}  unregister itself in the given onCreateViewAction.
      *
-     * @param onCreateViewAction The action to register
+     * @param action The action to registered to be run after view is ready
      */
-    public void registerOnViewReadyListener(Runnable onCreateViewAction) {
+    public void registerOnViewReadyListener(Runnable action) {
         if (onViewReadyListeners == null) {
             onViewReadyListeners = new CopyOnWriteArrayList<>();
         }
-        onViewReadyListeners.add(onCreateViewAction);
+        onViewReadyListeners.add(action);
     }
 
     /**
-     * Unregister the callback that to be called in {@link #onViewCreated(View, Bundle)}
+     * Unregister the callback that to be called in {@link #onViewReady(View, Bundle, Reason)}
      *
-     * @param onResumeAction The action to run in onResume callback
+     * @param action The action to unregistered
      */
-    public void unregisterOnViewReadyListener(Runnable onResumeAction) {
+    public void unregisterOnViewReadyListener(Runnable action) {
         if (onViewReadyListeners != null) {
-            onViewReadyListeners.remove(onResumeAction);
+            onViewReadyListeners.remove(action);
         }
     }
 
     /**
-     * Unregister callbacks that to be called after {@link #onViewReady(View, Bundle, Reason)}
+     * Unregister all actions to be called after {@link #onViewReady(View, Bundle, Reason)}
      */
     public void clearOnViewReadyListener() {
         if (onViewReadyListeners != null) {

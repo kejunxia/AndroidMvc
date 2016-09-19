@@ -27,6 +27,8 @@ import android.view.View;
  * doesn't need to be designed with awareness how it is going to be used and can be reused as a
  * normal fragment as well. This class is FINAL and don't extend this class to custom your dialog.
  * <p/>
+ *
+ * @deprecated Use {@link MvcDialog} instead
  */
 public class MvcDialogFragment extends DialogFragment {
     private EventRegister eventRegister;

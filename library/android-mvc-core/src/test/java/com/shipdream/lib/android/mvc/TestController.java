@@ -17,6 +17,7 @@
 package com.shipdream.lib.android.mvc;
 
 import com.shipdream.lib.android.mvc.event.bus.EventBus;
+import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusC;
 import com.shipdream.lib.android.mvc.event.bus.annotation.EventBusV;
 import com.shipdream.lib.poke.Provides;
 
@@ -34,7 +35,6 @@ import static org.mockito.Mockito.verify;
 
 public class TestController extends BaseTest{
     private UiThreadRunner uiThreadRunner;
-    private EventBus eventBusV;
 
     @Override
     @Before
@@ -50,6 +50,8 @@ public class TestController extends BaseTest{
             }
         }).when(uiThreadRunner).post(any(Runnable.class));
 
+        eventBusC = mock(EventBus.class);
+
         eventBusV = mock(EventBus.class);
 
         MvcComponent component = new MvcComponent("");
@@ -60,12 +62,34 @@ public class TestController extends BaseTest{
             }
 
             @Provides
+            @EventBusC
+            EventBus eventBus2C() {
+                return eventBusC;
+            }
+
+            @Provides
             @EventBusV
-            EventBus eventBus() {
+            EventBus eventBus2V() {
                 return eventBusV;
             }
         });
         graph.getRootComponent().attach(component, true);
+    }
+
+    @Test
+    public void should_post_event_to_event2v_channel_old() throws Exception {
+        Controller controller = new Controller() {
+            @Override
+            public Class modelType() {
+                return null;
+            }
+        };
+        graph.inject(controller);
+
+        String event = ";";
+        controller.postEvent(event);
+
+        verify(eventBusV).post(eq(event));
     }
 
     @Test
@@ -79,9 +103,25 @@ public class TestController extends BaseTest{
         graph.inject(controller);
 
         String event = ";";
-        controller.postEvent(event);
+        controller.postEvent2V(event);
 
         verify(eventBusV).post(eq(event));
+    }
+
+    @Test
+    public void should_post_event_to_event2c_channel() throws Exception {
+        Controller controller = new Controller() {
+            @Override
+            public Class modelType() {
+                return null;
+            }
+        };
+        graph.inject(controller);
+
+        String event = ";";
+        controller.postEvent2C(event);
+
+        verify(eventBusC).post(eq(event));
     }
 
     @Test

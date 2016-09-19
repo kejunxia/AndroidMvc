@@ -52,16 +52,16 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         int fragDReleaseCount = 0;
 
         @Override
-        public void onInject(Object target) {
+        public void onInject(Object intoTarget) {
             synchronized (this) {
                 if (valid) {
-                    if (target instanceof NavFragmentA) {
+                    if (intoTarget instanceof NavFragmentA) {
                         fragAInjectCount++;
-                    } else if (target instanceof NavFragmentB) {
+                    } else if (intoTarget instanceof NavFragmentB) {
                         fragBInjectCount++;
-                    } else if (target instanceof NavFragmentC) {
+                    } else if (intoTarget instanceof NavFragmentC) {
                         fragCInjectCount++;
-                    } else if (target instanceof NavFragmentD) {
+                    } else if (intoTarget instanceof NavFragmentD) {
                         fragDInjectCount++;
                     }
                 }
@@ -69,17 +69,17 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
         }
 
         @Override
-        public void onRelease(Object target) {
+        public void onRelease(Object fromTarget) {
 
             synchronized (this) {
                 if (valid) {
-                    if (target instanceof NavFragmentA) {
+                    if (fromTarget instanceof NavFragmentA) {
                         fragAReleaseCount++;
-                    } else if (target instanceof NavFragmentB) {
+                    } else if (fromTarget instanceof NavFragmentB) {
                         fragBReleaseCount++;
-                    } else if (target instanceof NavFragmentC) {
+                    } else if (fromTarget instanceof NavFragmentC) {
                         fragCReleaseCount++;
-                    } else if (target instanceof NavFragmentD) {
+                    } else if (fromTarget instanceof NavFragmentD) {
                         fragDReleaseCount++;
                     }
                 }
@@ -184,9 +184,9 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
             boolean released = false;
 
             @Override
-            public void onRelease(Object target) {
-                super.onRelease(target);
-                if (target instanceof NavFragmentA) {
+            public void onRelease(Object fromTarget) {
+                super.onRelease(fromTarget);
+                if (fromTarget instanceof NavFragmentA) {
                     released = true;
                     synchronized (this) {
                         notify();
@@ -453,9 +453,9 @@ public class TestCaseNavigationAndInjection extends BaseTestCase<MvcTestActivity
             boolean released = false;
 
             @Override
-            public void onRelease(Object target) {
-                super.onRelease(target);
-                if (target instanceof NavFragmentA) {
+            public void onRelease(Object fromTarget) {
+                super.onRelease(fromTarget);
+                if (fromTarget instanceof NavFragmentA) {
                     released = true;
                     synchronized (this) {
                         notify();

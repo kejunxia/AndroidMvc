@@ -357,10 +357,83 @@ public abstract class Controller<MODEL, VIEW extends UiView> extends Bean<MODEL>
      *  }
      * </pre>
      *
-     * @param eventV The event
+     * @param event2V The event
+     * @deprecated Use {@link #postEvent2V(Object)} instead
      */
-    protected void postEvent(final Object eventV) {
-        eventBusV.post(eventV);
+    protected void postEvent(final Object event2V) {
+        postEvent2V(event2V);
     }
 
+    /**
+     * <p>
+     * Post the event to other core components such as controllers and managers. Event will be
+     * captured on the thread of the invoker.
+     * </p>
+     *
+     * <p>
+     * The event will be captured by {@link Controller}s, {@link Manager}s or others registered to
+     * {@link EventBus} annotated by {@link EventBusC} and has corresponding method named onEvent()
+     * with single parameter with the same type of the event. For example
+     * </p>
+     *
+     * @param event2C The event to other {@link Controller}s, {@link Manager}s
+     */
+    protected void postEvent2C(final Object event2C) {
+        eventBusC.post(event2C);
+    }
+
+    /**
+     * <p>
+     * Post the event to views. It automatically guarantees the event will be received
+     * and run on UI thread of Android.
+     * </p>
+     *
+     * <p>
+     * The event will be captured by views or any objects registered to {@link EventBus} annotated
+     * by {@link EventBusV} and has corresponding method named onEvent() with single parameter with
+     * the same type of the event. For example
+     * </p>
+     * <pre>
+     *  public class OnTextChangedEvent {
+     *      private String text;
+     *
+     *      public OnTextChangedEvent(String text) {
+     *          this.text = text;
+     *      }
+     *
+     *      public String getText() {
+     *          return text;
+     *      }
+     *  }
+     *
+     *  public class SomeView {
+     *      @ Inject
+     *      @ EventBusV
+     *      private EventBus eventBusV;
+     *
+     *      private TextView textView;
+     *
+     *      public class SomeView() {
+     *          //This is just needed when you have a view not inheriting MvcFragment, MvcService or etc.
+     *          //In MvcFragment or MvcService will register to the event bus in onCreate automatically.
+     *          eventBusV.register(this);
+     *      }
+     *
+     *      public void onEvent(OnTextChangedEvent onTextChangedEvent) {
+     *          textView.setText(onTextChangedEvent.getText());
+     *      }
+     *  }
+     *
+     *  public class SomeController{
+     *      private void func() {
+     *          postEvent(new OnTextChangedEvent("Controller Wants to change text"));
+     *      }
+     *  }
+     * </pre>
+     *
+     * @param eventV The event
+     */
+    protected void postEvent2V(final Object eventV) {
+        eventBusV.post(eventV);
+    }
 }
