@@ -159,8 +159,15 @@ public interface Task<RESULT> {
     abstract class Callback<RESULT> {
         /**
          * Called when the execution of the task starts
+         * @deprecated
          */
         public void onStarted() {}
+
+        /**
+         * Called when the execution of the task starts
+         * @param monitor The monitor to watch this task. The task can be cancelled by {@link Monitor#cancel(boolean)}
+         */
+        public void onStarted(Monitor monitor) {}
 
         /**
          * Called when the execution of the task completes successfully

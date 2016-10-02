@@ -156,6 +156,12 @@ public class TestRunAsyncTask extends BaseTest {
             }
 
             @Override
+            public void onStarted(Task.Monitor monitor) {
+                super.onStarted(monitor);
+                callback.onStarted(monitor);
+            }
+
+            @Override
             public void onSuccess(Object o) {
                 super.onSuccess(o);
                 callback.onSuccess(o);
@@ -181,7 +187,7 @@ public class TestRunAsyncTask extends BaseTest {
 
         Thread.sleep(100);
 
-        verify(callback, times(1)).onStarted();
+        verify(callback, times(1)).onStarted(monitor1);
         verify(callback, times(1)).onException(any(Exception.class));
         verify(callback, times(0)).onSuccess(anyObject());
         verify(callback, times(0)).onCancelled(anyBoolean());
@@ -210,13 +216,13 @@ public class TestRunAsyncTask extends BaseTest {
 
         Thread.sleep(WAIT_DURATION + 100);
 
-        verify(callback, times(1)).onStarted();
+        verify(callback, times(1)).onStarted(monitor1);
         verify(callback, times(0)).onException(any(Exception.class));
         verify(callback, times(1)).onSuccess(anyObject());
         verify(callback, times(0)).onCancelled(anyBoolean());
         verify(callback, times(1)).onFinally();
 
-        verify(callback2, times(0)).onStarted();
+        verify(callback2, times(0)).onStarted(monitor2);
         verify(callback2, times(0)).onException(any(Exception.class));
         verify(callback2, times(0)).onSuccess(anyObject());
         verify(callback2, times(1)).onCancelled(anyBoolean());

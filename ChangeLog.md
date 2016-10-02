@@ -1,3 +1,6 @@
+Version: 3.2.0
+* Change Task#onStarted to have a parameter "monitor", so that the invoker can use the monitor to cancel the task before the task runs or when it's running
+
 Version: 3.1.1
 * Add MvcDialog and deprecate MvcDialogFragment
 * Better description for injection errors for fragments and services
