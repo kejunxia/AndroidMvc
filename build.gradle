@@ -29,7 +29,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0-rc1'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.4.1'
 
@@ -73,17 +73,17 @@ ext {
     gitUrl = 'https://github.com/kejunxia/AndroidMvc.git'   // Git repository URL
     version = [
         major: 3,
-        minor: 1,
-        patch : 1
+        minor: 3,
+        patch : 0
     ]
     libGroup = 'com.shipdream'
     libVersion = "${version.major}.${version.minor}.${version.patch}"
     shouldPublish = false
 
     androidMinSdkVersion = 14
-    androidCompileSdkVersion = 24
-    androidBuildToolVersion = "23.0.3"
-    supportLibVersion = "24.2.0"
+    androidCompileSdkVersion = 25
+    androidBuildToolVersion = "25.0.2"
+    supportLibVersion = "25.1.0"
     androidTargetSdkVersion = androidCompileSdkVersion
     lib = [
             intelljAnnoatations: 'com.intellij:annotations:12.0',
