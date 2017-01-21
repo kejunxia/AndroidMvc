@@ -1,3 +1,6 @@
+Version: 3.3
+* Update to latest android build tools, support library.
+
 Version: 3.2.0
 * Change Task#onStarted to have a parameter "monitor", so that the invoker can use the monitor to cancel the task before the task runs or when it's running
 
